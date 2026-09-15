@@ -29,6 +29,37 @@ window.toggleTheme = function () {
 };
 
 /* =======================================
+   MOTION BUDGET HELPERS
+   ======================================= */
+// Honour the OS "reduce motion" switch for every decorative effect.
+const prefersReducedMotion = window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// An element that cannot paint (display:none, 0x0, detached) must not drive
+// an animation loop — several effects on this page used to do exactly that.
+function isPaintable(el) {
+    if (!el || !el.isConnected) return false;
+    if (el.getClientRects().length === 0) return false;
+    const cs = getComputedStyle(el);
+    return cs.display !== 'none' && cs.visibility !== 'hidden';
+}
+
+// Pointer handlers here write inline styles; without this they run once per
+// mousemove event and force a layout each time. Coalesce to one write a frame.
+function onPointerFrame(el, type, handler) {
+    let frame = 0;
+    let latest = null;
+    el.addEventListener(type, (e) => {
+        latest = { clientX: e.clientX, clientY: e.clientY };
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+            frame = 0;
+            if (latest) handler(latest);
+        });
+    }, { passive: true });
+}
+
+/* =======================================
    UI INTERACTIONS & NAVIGATION
    ======================================= */
 // Robust Initialization Function
@@ -152,7 +183,8 @@ function initializeScripts() {
 
     // === Holographic Fragment 3D Interaction ===
     document.querySelectorAll('.feature-fragment').forEach(fragment => {
-        fragment.addEventListener('mousemove', (e) => {
+        if (prefersReducedMotion) return;
+        onPointerFrame(fragment, 'mousemove', (e) => {
             const rect = fragment.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
             const y = (e.clientY - rect.top) / rect.height;
@@ -187,64 +219,25 @@ function initializeScripts() {
         });
     });
 
-    // === Manifesto Full-Width Card 3D Interaction ===
-    const manifestoCard = document.querySelector('.manifesto-v2__card--full');
-    if (manifestoCard) {
-        manifestoCard.addEventListener('mousemove', (e) => {
-            const rect = manifestoCard.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width;
-            const y = (e.clientY - rect.top) / rect.height;
-
-            const tiltX = (y - 0.5) * 12;
-            const tiltY = (x - 0.5) * -12;
-
-            manifestoCard.style.transform = `perspective(2000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.01)`;
-            
-            // Premium dynamic spotlight reflection following cursor
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            if (isDark) {
-                manifestoCard.style.background = `radial-gradient(circle at ${x * rect.width}px ${y * rect.height}px, rgba(139, 92, 246, 0.12) 0%, rgba(10, 15, 30, 0.65) 75%)`;
-            } else {
-                manifestoCard.style.background = `radial-gradient(circle at ${x * rect.width}px ${y * rect.height}px, rgba(99, 102, 241, 0.12) 0%, rgba(255, 255, 255, 0.85) 75%)`;
-            }
-
-            const content = manifestoCard.querySelector('.manifesto-v2__card-content');
-            const visual = manifestoCard.querySelector('.manifesto-v2__card-visual-wrapper');
-
-            if (content) {
-                content.style.transform = `translateZ(40px) translateX(${(x - 0.5) * 15}px) translateY(${(y - 0.5) * 15}px)`;
-            }
-            if (visual) {
-                visual.style.transform = `translateZ(70px) translateX(${(x - 0.5) * -15}px) translateY(${(y - 0.5) * -15}px)`;
-            }
-        });
-
-        manifestoCard.addEventListener('mouseleave', () => {
-            manifestoCard.style.transform = '';
-            manifestoCard.style.background = '';
-            const content = manifestoCard.querySelector('.manifesto-v2__card-content');
-            const visual = manifestoCard.querySelector('.manifesto-v2__card-visual-wrapper');
-            if (content) content.style.transform = '';
-            if (visual) visual.style.transform = '';
-        });
+    // === Viewport gate ===
+    // Every [data-inview] block only runs its CSS animations while it is on
+    // screen. Keeps the decorative SVG loops off the compositor when the
+    // section is parked far above/below the fold.
+    const inviewTargets = document.querySelectorAll('[data-inview]');
+    if (inviewTargets.length > 0) {
+        const inviewObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                entry.target.classList.toggle('is-inview', entry.isIntersecting);
+            });
+        }, { rootMargin: '120px 0px', threshold: 0 });
+        inviewTargets.forEach(el => inviewObserver.observe(el));
     }
 
     // Section-wide Z-Parallax on Scroll
     if (typeof ScrollTrigger !== 'undefined' && typeof gsap !== 'undefined') {
-        const fragments = document.querySelectorAll('.feature-fragment');
-        fragments.forEach((f, i) => {
-            gsap.to(f, {
-                scrollTrigger: {
-                    trigger: '#features',
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: 1
-                },
-                z: i % 2 === 0 ? 100 : -100, // Disperse in Z-space correctly
-                y: i % 2 === 0 ? -50 : 50,
-                ease: 'none'
-            });
-        });
+        // The old Z-parallax pushed every other "how it works" card 50px out of
+        // line, so the row read as broken rather than dispersed — and it ran a
+        // scrub transform on all three for the whole section. Dropped.
 
         // Orbital Accelerator Rotation
         gsap.to('.orbital-ring', {
@@ -580,7 +573,7 @@ function initializeScripts() {
         const leftBeam = debateGraphic.querySelector('.spotlight-beam--left');
         const rightBeam = debateGraphic.querySelector('.spotlight-beam--right');
         
-        debateGraphic.addEventListener('mousemove', (e) => {
+        onPointerFrame(debateGraphic, 'mousemove', (e) => {
             const rect = debateGraphic.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
             const dx = (x - 0.5) * 55; // Swing spotlight bottom points based on cursor
@@ -609,7 +602,7 @@ function initializeScripts() {
         orvelisCard.style.transformStyle = 'preserve-3d';
         const glare = orvelisCard.querySelector('.orvelis-card-glare');
 
-        orvelisCard.addEventListener('mousemove', (e) => {
+        onPointerFrame(orvelisCard, 'mousemove', (e) => {
             const rect = orvelisCard.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
             const y = (e.clientY - rect.top) / rect.height;
@@ -711,7 +704,10 @@ window.addEventListener('load', () => {
     // Particle Canvas Animation
     (function () {
         const canvas = document.getElementById('particleCanvas');
-        if (!canvas || isMobile) return; // Skip on mobile
+        // Skipped on mobile, when motion is reduced, and — the expensive case —
+        // when the canvas is hidden by CSS: it used to run an O(n^2) link pass
+        // every frame while painting nothing at all.
+        if (!canvas || isMobile || prefersReducedMotion || !isPaintable(canvas)) return;
         const ctx = canvas.getContext('2d');
         let w, h;
         const particles = [];
@@ -760,7 +756,7 @@ window.addEventListener('load', () => {
             });
             requestAnimationFrame(draw);
         }
-        draw();
+        draw(); // rAF is already suspended by the browser while the tab is hidden
     })();
 
     // Live Feed Simulation
@@ -782,7 +778,7 @@ window.addEventListener('load', () => {
     }
 
     // Spawn Floating 3D Video Cards to emphasize "Short Video Platform"
-    if (!isMobile) {
+    if (!isMobile && !prefersReducedMotion && typeof gsap !== 'undefined') {
         const targetSections = [document.querySelector('.section--screens'), document.querySelector('.section--beta')];
 
         targetSections.forEach(sec => {

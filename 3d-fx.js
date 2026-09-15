@@ -8,11 +8,70 @@ window.addEventListener('load', () => {
     }
 
     /* =========================================================
+       FX BUDGET
+       Every WebGL scene on this page used to render at full rate
+       for the whole session — including the ones whose container is
+       display:none and the ones parked several screens away. That is
+       what made the page feel heavy on desktop.
+
+       FX gates them: a scene is not created at all if its container
+       can never paint, and a created scene only renders while it is
+       near the viewport, the tab is visible, and the frame budget
+       allows it.
+       ========================================================= */
+    const FX = (() => {
+        const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const near = new WeakSet();
+        const last = new WeakMap();
+        // background scenes do not need 60fps — 32 is plenty for slow drifts
+        const MIN_FRAME_MS = 1000 / 32;
+
+        let observer = null;
+        if ('IntersectionObserver' in window) {
+            observer = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) near.add(e.target); else near.delete(e.target);
+                });
+            }, { rootMargin: '200px 0px' });
+        }
+
+        // true when the element can never produce pixels (display:none, 0x0, detached)
+        function dead(el) {
+            if (!el || !el.isConnected) return true;
+            if (el.getClientRects().length === 0) return true;
+            const cs = getComputedStyle(el);
+            if (cs.display === 'none' || cs.visibility === 'hidden') return true;
+            return el.clientWidth === 0 || el.clientHeight === 0;
+        }
+
+        return {
+            reduced,
+            dpr() { return Math.min(window.devicePixelRatio || 1, 1.5); },
+            // call once per scene before building anything
+            enabled(el) {
+                if (reduced || dead(el)) return false;
+                if (observer) { near.add(el); observer.observe(el); }
+                return true;
+            },
+            // call at the top of every rAF loop; true means "skip this frame"
+            idle(el) {
+                if (document.hidden) return true;
+                if (observer && !near.has(el)) return true;
+                const now = performance.now();
+                const prev = last.get(el) || 0;
+                if (now - prev < MIN_FRAME_MS) return true;
+                last.set(el, now);
+                return false;
+            }
+        };
+    })();
+
+    /* =========================================================
        ANIMATION 1: THE AI CORE (Middle - Manifesto Section)
        ========================================================= */
     function initMiddleAnimation() {
         const container = document.getElementById('canvas-3d-middle');
-        if (!container) return;
+        if (!container || !FX.enabled(container)) return;
 
         // Scene Setup
         const scene = new THREE.Scene();
@@ -23,7 +82,7 @@ window.addEventListener('load', () => {
         try {
             renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            renderer.setPixelRatio(FX.dpr());
             container.appendChild(renderer.domElement);
         } catch (e) {
             console.warn('initMiddleAnimation: Renderer creation failed.', e);
@@ -106,6 +165,7 @@ window.addEventListener('load', () => {
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
+            if (FX.idle(container)) return;
 
             // Rotate core
             sphereCore.rotation.y += 0.005;
@@ -142,7 +202,7 @@ window.addEventListener('load', () => {
        ========================================================= */
     function initEndAnimation() {
         const container = document.getElementById('canvas-3d-end');
-        if (!container) return;
+        if (!container || !FX.enabled(container)) return;
 
         // Scene Setup
         const scene = new THREE.Scene();
@@ -151,7 +211,7 @@ window.addEventListener('load', () => {
         try {
             renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            renderer.setPixelRatio(FX.dpr());
             container.appendChild(renderer.domElement);
         } catch (e) {
             console.warn('initEndAnimation: Renderer creation failed.', e);
@@ -228,6 +288,7 @@ window.addEventListener('load', () => {
         // Animation Loop
         function animate() {
             requestAnimationFrame(animate);
+            if (FX.idle(container)) return;
 
             // Default slow rotation
             torusKnot.rotation.z += 0.001;
@@ -259,7 +320,7 @@ window.addEventListener('load', () => {
        ========================================================= */
     function initVideoScreensAnimation() {
         const container = document.getElementById('canvas-3d-hero');
-        if (!container) return;
+        if (!container || !FX.enabled(container)) return;
 
         const scene = new THREE.Scene();
         const isLight = document.documentElement.getAttribute('data-theme') === 'light';
@@ -270,7 +331,7 @@ window.addEventListener('load', () => {
         try {
             renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, logarithmicDepthBuffer: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(FX.dpr());
             container.appendChild(renderer.domElement);
         } catch (e) {
             console.warn('initVideoScreensAnimation: Renderer creation failed.', e);
@@ -362,6 +423,7 @@ window.addEventListener('load', () => {
 
         function animate() {
             requestAnimationFrame(animate);
+            if (FX.idle(container)) return;
 
             // Move screens up, mimicking vertical scroll feed
             screens.forEach(screen => {
@@ -399,7 +461,7 @@ window.addEventListener('load', () => {
        ========================================================= */
     function initFeaturesAnimation() {
         const container = document.getElementById('canvas-3d-features');
-        if (!container) return;
+        if (!container || !FX.enabled(container)) return;
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
@@ -407,7 +469,7 @@ window.addEventListener('load', () => {
         try {
             renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(FX.dpr());
             container.appendChild(renderer.domElement);
         } catch (e) {
             console.warn('initFeaturesAnimation: Renderer creation failed.', e);
@@ -516,6 +578,7 @@ window.addEventListener('load', () => {
 
         function animate() {
             requestAnimationFrame(animate);
+            if (FX.idle(container)) return;
 
             // Subtle base rotation
             group.rotation.y += 0.002;
@@ -593,7 +656,7 @@ window.addEventListener('load', () => {
        ========================================================= */
     function initOrvelisAnimation() {
         const container = document.getElementById('canvas-3d-orvelis');
-        if (!container) return;
+        if (!container || !FX.enabled(container)) return;
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
@@ -603,7 +666,7 @@ window.addEventListener('load', () => {
         try {
             renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(FX.dpr());
             container.appendChild(renderer.domElement);
         } catch (e) {
             console.warn('initOrvelisAnimation: Renderer creation failed.', e);
@@ -768,6 +831,7 @@ window.addEventListener('load', () => {
 
         function animate() {
             requestAnimationFrame(animate);
+            if (FX.idle(container)) return;
 
             const elapsed = clock.getElapsedTime();
 
@@ -889,7 +953,7 @@ window.addEventListener('load', () => {
        ========================================================= */
     function initGlobeAnimation() {
         const container = document.getElementById('canvas-3d-globe');
-        if (!container) return;
+        if (!container || !FX.enabled(container)) return;
 
         console.log('Globe: Initializing...');
 
@@ -905,7 +969,7 @@ window.addEventListener('load', () => {
 
             const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(W, H);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(FX.dpr());
             container.appendChild(renderer.domElement);
 
             const scene = new THREE.Scene();
@@ -954,6 +1018,7 @@ window.addEventListener('load', () => {
 
             function animate() {
                 requestAnimationFrame(animate);
+                if (FX.idle(container)) return;
                 globe.rotation.y += 0.003;
                 cityGroup.children.forEach(c => {
                     c.userData.pulse += 0.05;
@@ -1003,6 +1068,7 @@ window.addEventListener('load', () => {
         window.addEventListener('resize', resize);
 
         function draw(now) {
+            if (FX.idle(container)) { requestAnimationFrame(draw); return; }
             const W = container.clientWidth;
             const H = container.clientHeight;
             if (W === 0 || H === 0) {
@@ -1251,7 +1317,7 @@ window.addEventListener('load', () => {
        ========================================================= */
     function initManifestoConnectionAnimation() {
         const container = document.getElementById('canvas-3d-manifesto');
-        if (!container) return;
+        if (!container || !FX.enabled(container)) return;
 
         // Scene Setup
         const scene = new THREE.Scene();
@@ -1262,7 +1328,7 @@ window.addEventListener('load', () => {
         try {
             renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(FX.dpr());
             container.appendChild(renderer.domElement);
         } catch (e) {
             console.warn('initManifestoConnectionAnimation: Renderer creation failed.', e);
@@ -1488,6 +1554,7 @@ window.addEventListener('load', () => {
 
         function animate() {
             requestAnimationFrame(animate);
+            if (FX.idle(container)) return;
 
             const elapsed = clock.getElapsedTime();
 

@@ -13,12 +13,12 @@
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@datariot_xyz">
-    <meta name="twitter:title" content="Datariot - Content with gravity.">
+    <meta name="twitter:title" content="Datariot — Content with gravity.">
     <meta name="twitter:description" content="On camera. Unlimited time. Logic wins, not likes.">
     <meta name="twitter:image" content="https://info.datariot.xyz/assets/twitter-card-v101.png">
 
     <!-- Open Graph data -->
-    <meta property="og:title" content="Datariot - Content with gravity.">
+    <meta property="og:title" content="Datariot — Content with gravity.">
     <meta property="og:description" content="On camera. Unlimited time. Logic wins, not likes.">
     <meta property="og:image" content="https://info.datariot.xyz/assets/twitter-card-v101.png">
     <meta property="og:url" content="https://info.datariot.xyz/">
@@ -27,10 +27,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Oxanium:wght@400;500;600;700;800&family=Syncopate:wght@400;700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Unbounded:wght@300..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=3.2.7" />
-    <!-- Cache-Bust-Hash: 49294f77-8f99-4c6e-bc63-4e1b887698df -->
+    <link rel="stylesheet" href="style.css?v=3.3.0" />
+    <!-- Cache-Bust-Hash: 80285c55-869e-4082-aa01-b69d6a0c9e16 -->
     <style>
         :root {
             --bg-main: #ffffff;
@@ -108,7 +108,7 @@
             font-weight: 900;
             margin: 0 0 15px 0 !important;
             color: var(--text-primary) !important;
-            letter-spacing: -4px;
+            letter-spacing: -0.045em;
             line-height: 0.95;
             text-transform: uppercase;
             display: block !important;
@@ -158,7 +158,8 @@
             height: 100%;
             border-radius: 40px;
             overflow: hidden;
-            background: #f9f9f9;
+            /* dark so a slow or blocked video never flashes a white slab */
+            background: linear-gradient(180deg, #101A2E 0%, #060A13 100%);
             position: relative;
         }
 
@@ -186,6 +187,17 @@
             background: #fcfcfc !important;
             border-right: 1px solid #eeeeee !important;
             z-index: 3000 !important;
+        }
+
+        /* the sidebar used to stay white in dark mode */
+        [data-theme="dark"] .sidebar {
+            background: #0C0D12 !important;
+            border-right: 1px solid rgba(217, 228, 255, 0.07) !important;
+        }
+
+        [data-theme="dark"] .sidebar__logo {
+            background: #13151D !important;
+            border-color: rgba(217, 228, 255, 0.1) !important;
         }
 
         /* App Downloads */
@@ -313,7 +325,6 @@
     <div class="ambient-glow ambient-glow--2"></div>
     <div class="ambient-glow ambient-glow--3"></div>
     <div class="grid-overlay"></div>
-    <div class="mouse-spotlight" id="mouseSpotlight"></div>
     <canvas id="particleCanvas" class="particle-canvas"></canvas>
     <div class="floating-orbs">
         <div class="floating-orb floating-orb--1"></div>
@@ -322,24 +333,6 @@
         <div class="floating-orb floating-orb--4"></div>
     </div>
 
-    <!-- Flying Birds -->
-    <div class="birds-container">
-        <div class="bird bird--1"><svg viewBox="0 0 24 24">
-                <path d="M2 13l10-5 10 5" />
-            </svg></div>
-        <div class="bird bird--2"><svg viewBox="0 0 24 24">
-                <path d="M2 13l10-5 10 5" />
-            </svg></div>
-        <div class="bird bird--3"><svg viewBox="0 0 24 24">
-                <path d="M2 13l10-5 10 5" />
-            </svg></div>
-        <div class="bird bird--4"><svg viewBox="0 0 24 24">
-                <path d="M2 13l10-5 10 5" />
-            </svg></div>
-        <div class="bird bird--5"><svg viewBox="0 0 24 24">
-                <path d="M2 13l10-5 10 5" />
-            </svg></div>
-    </div>
 
     <!-- Left Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
@@ -483,7 +476,7 @@
                         <defs>
                             <path id="textCircle" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" />
                         </defs>
-                        <text font-size="11" font-family="'Oxanium', monospace" font-weight="600" fill="currentColor"
+                        <text font-size="11" font-family="'JetBrains Mono', monospace" font-weight="600" fill="currentColor"
                             opacity="0.6">
                             <textPath href="#textCircle" startOffset="0%">
                                 DATARIOT • SHORT VIDEO • CREATIVE FREEDOM • ARENA •
@@ -497,8 +490,42 @@
 
             <div class="hero__main-layout">
                 <div class="hero__content hero__content--left">
+                    <div class="hero__eyebrow">
+                        <span class="hero__eyebrow-pill">
+                            <span class="hero__eyebrow-dot"></span>
+                            SHORT-FORM VIDEO
+                        </span>
+                        <span class="hero__eyebrow-text">DEBATE ARENA&nbsp;&nbsp;//&nbsp;&nbsp;V0.1 BETA</span>
+                    </div>
                     <h1 class="hero__brand-text">DATARIOT</h1>
                     <p class="hero__tagline">Content with gravity.</p>
+                    <p class="hero__lede">
+                        A short-video platform for arguments worth watching. Record your take,
+                        get answered on camera, and let the room decide who actually made sense.
+                    </p>
+                    <ul class="hero__marks">
+                        <li class="hero__mark">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <rect x="2.5" y="6" width="13" height="12" rx="3.2" stroke="currentColor" stroke-width="1.6" />
+                                <path d="M15.5 11.2 21 8.2v7.6l-5.5-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                            </svg>
+                            On camera
+                        </li>
+                        <li class="hero__mark">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.6" />
+                                <path d="M12 7.6V12l3 1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                            </svg>
+                            No time limit
+                        </li>
+                        <li class="hero__mark">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M12 3.4l7 3v5.2c0 4.2-2.9 7.3-7 8.9-4.1-1.6-7-4.7-7-8.9V6.4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                                <path d="M9 12.2l2.2 2.2L15.4 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Verified humans
+                        </li>
+                    </ul>
                     <div class="app-downloads">
                         <button class="app-dl-btn" onclick="showSoon(this)">
                             <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: currentColor;">
@@ -527,7 +554,42 @@
                     </div>
                 </div>
 
-                <div class="hero__phone-showcase" id="heroPhone">
+                <div class="hero__phone-showcase" id="heroPhone" data-inview>
+                    <div class="hero__clip-stack" aria-hidden="true">
+                        <span class="hero__clip-stack-card hero__clip-stack-card--1"></span>
+                        <span class="hero__clip-stack-card hero__clip-stack-card--2"></span>
+                    </div>
+
+                    <div class="hero__swipe" aria-hidden="true">
+                        <svg viewBox="0 0 28 44" fill="none">
+                            <path d="M6 20l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6 32l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span>SWIPE FOR THE NEXT TAKE</span>
+                    </div>
+
+                    <div class="hero__float hero__float--live" aria-hidden="true">
+                        <span class="hero__float-dot"></span>
+                        LIVE
+                        <b>00:47</b>
+                    </div>
+
+                    <div class="hero__float hero__float--reply" aria-hidden="true">
+                        <span class="hero__float-avatar"></span>
+                        <span class="hero__float-body">
+                            <b>Video reply</b>
+                            <i>answered on camera</i>
+                        </span>
+                    </div>
+
+                    <div class="hero__float hero__float--verdict" aria-hidden="true">
+                        <span class="hero__float-body">
+                            <b>Orvelis AI</b>
+                            <i>logic scan · 92%</i>
+                        </span>
+                        <span class="hero__float-meter"><span></span></span>
+                    </div>
+
                     <div class="hero__phone-frame">
                         <div class="phone__notch"></div>
                         <div class="phone__screen">
@@ -559,220 +621,335 @@
                 </div>
             </div>
 
+            <div class="hero__ticker" data-inview aria-hidden="true">
+                <div class="hero__ticker-track">
+                    <div class="hero__ticker-run"><span>ON CAMERA</span><em>◆</em><span>NO TIME LIMIT</span><em>◆</em><span>VIDEO REPLIES</span><em>◆</em><span>VERIFIED HUMANS</span><em>◆</em><span>ORVELIS AI</span><em>◆</em><span>LOGIC OVER LIKES</span><em>◆</em><span>UNLIMITED SPEECH</span><em>◆</em><span>NO ANON MOBS</span><em>◆</em></div>
+                    <div class="hero__ticker-run"><span>ON CAMERA</span><em>◆</em><span>NO TIME LIMIT</span><em>◆</em><span>VIDEO REPLIES</span><em>◆</em><span>VERIFIED HUMANS</span><em>◆</em><span>ORVELIS AI</span><em>◆</em><span>LOGIC OVER LIKES</span><em>◆</em><span>UNLIMITED SPEECH</span><em>◆</em><span>NO ANON MOBS</span><em>◆</em></div>
+                </div>
+            </div>
+
             <div class="scroll-indicator">
                 <div class="scroll-indicator__line"></div>
             </div>
         </section>
 
-        <!-- MANIFESTO SECTION -->
-        <section class="section section--manifesto manifesto-v2" id="manifesto">
-            <!-- Decorative floating elements -->
-            <div class="manifesto-v2__decor">
-                <div class="manifesto-v2__orb manifesto-v2__orb--1"></div>
-                <div class="manifesto-v2__orb manifesto-v2__orb--2"></div>
-                <div class="manifesto-v2__orb manifesto-v2__orb--3"></div>
-                <div class="manifesto-v2__grid-lines"></div>
-                <div class="manifesto-v2__radial-glow"></div>
-            </div>
 
-            <div class="manifesto-v2__inner">
-                <!-- Section label -->
-                <div class="manifesto-v2__label-row">
-                    <span class="manifesto-v2__label">[ 01 — THE ARENA ]</span>
-                    <div class="manifesto-v2__label-line"></div>
+        <!-- ============================================================
+             01 — THE ARENA  (frameless editorial block + "AI watches the clip" scene)
+             ============================================================ -->
+        <section class="section arena-v3" id="manifesto" data-inview>
+            <div class="arena-v3__bleed" aria-hidden="true"></div>
+
+            <div class="arena-v3__inner">
+
+                <div class="arena-v3__eyebrow">
+                    <span class="arena-v3__eyebrow-tag">[ 01 — THE ARENA ]</span>
+                    <span class="arena-v3__eyebrow-rule"></span>
+                    <span class="arena-v3__eyebrow-meta">SHORT-FORM VIDEO&nbsp;&nbsp;//&nbsp;&nbsp;ON CAMERA</span>
                 </div>
 
-                <!-- Value cards row -->
-                <div class="manifesto-v2__cards">
-                    <!-- DEBATE TREE FULL-WIDTH CARD (STYLING MAKES CONTAINER SEAMLESS & BORDERLESS) -->
-                    <div class="manifesto-v2__card manifesto-v2__card--full" id="manifestoCardFull">
-                        <div class="manifesto-v2__card-inner manifesto-v2__card-inner--full">
-                            <div class="manifesto-v2__card-content">
-                                <span class="manifesto-v2__card-tag">[ ACTIVE ARENA // DEBATE ON CAMERA ]</span>
-                                <h2 class="manifesto-v2__headline" style="margin-top: 10px; margin-bottom: 24px;">
-                                    DATARIOT FIXES THIS. <span class="manifesto-v2__highlight">YOU ARGUE ON CAMERA.</span>
-                                </h2>
-                                <p class="manifesto-v2__subheadline" style="margin-bottom: 40px;">
-                                    Others respond. The community votes on logic, not vibes.
-                                </p>
+                <div class="arena-v3__grid">
 
-                                <div class="manifesto-v2__card-stats-row">
-                                    <div class="manifesto-v2__card-stat">
-                                        <span class="manifesto-v2__card-stat-num">[ UNLIMITED ]</span>
-                                        <span class="manifesto-v2__card-stat-label">SPEECH DURATION</span>
-                                    </div>
-                                    <div class="manifesto-v2__card-stat">
-                                        <span class="manifesto-v2__card-stat-num">[ 100% VERIFIED ]</span>
-                                        <span class="manifesto-v2__card-stat-label">IDENTITY CHECK</span>
-                                    </div>
-                                    <div class="manifesto-v2__card-stat">
-                                        <span class="manifesto-v2__card-stat-num">[ ORVELIS AI ]</span>
-                                        <span class="manifesto-v2__card-stat-label">CONSENSUS SCANNER</span>
-                                    </div>
-                                </div>
+                    <!-- ---------------- COPY ---------------- -->
+                    <div class="arena-v3__copy">
+                        <span class="arena-v3__chip">
+                            <span class="arena-v3__chip-dot"></span>
+                            ACTIVE ARENA // DEBATE ON CAMERA
+                        </span>
+
+                        <h2 class="arena-v3__headline">
+                            Datariot fixes this.<br />
+                            <span class="arena-v3__headline-accent">You argue on camera.</span>
+                        </h2>
+
+                        <p class="arena-v3__sub">
+                            Others respond with their own clip. The community votes on logic, not vibes.
+                        </p>
+
+                        <!-- three-step micro flow: makes the short-video loop explicit -->
+                        <ol class="arena-v3__flow">
+                            <li class="arena-v3__step">
+                                <span class="arena-v3__step-num">01</span>
+                                <span class="arena-v3__step-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <rect x="2.5" y="6" width="13" height="12" rx="3.2" stroke="currentColor" stroke-width="1.6" />
+                                        <path d="M15.5 11.2 21 8.2v7.6l-5.5-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                                        <circle cx="6" cy="9.6" r="1.1" fill="currentColor" />
+                                    </svg>
+                                </span>
+                                <span class="arena-v3__step-body">
+                                    <b>Record</b>
+                                    <i>Hit record. No time limit, no edit tricks.</i>
+                                </span>
+                            </li>
+                            <li class="arena-v3__step">
+                                <span class="arena-v3__step-num">02</span>
+                                <span class="arena-v3__step-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M9 7 4 11.5 9 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M4.4 11.5H14a6 6 0 0 1 6 6V19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                                    </svg>
+                                </span>
+                                <span class="arena-v3__step-body">
+                                    <b>Reply</b>
+                                    <i>Anyone can answer — with their own face on screen.</i>
+                                </span>
+                            </li>
+                            <li class="arena-v3__step">
+                                <span class="arena-v3__step-num">03</span>
+                                <span class="arena-v3__step-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M4 15.5 9 10l3.6 3.4L20 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M15.4 6H20v4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span class="arena-v3__step-body">
+                                    <b>Verdict</b>
+                                    <i>Orvelis AI maps the logic. The room votes.</i>
+                                </span>
+                            </li>
+                        </ol>
+
+                        <div class="arena-v3__stats">
+                            <div class="arena-v3__stat">
+                                <span class="arena-v3__stat-num">Unlimited</span>
+                                <span class="arena-v3__stat-label">SPEECH DURATION</span>
                             </div>
-
-                            <div class="manifesto-v2__card-visual-wrapper">
-                                <div class="manifesto-v2__card-graphic-box manifesto-v2__card-graphic-box--full">
-                                    <div class="debate-arena-graphic">
-                                        <!-- Inline SVG representing the debate arena -->
-                                        <svg viewBox="0 0 800 500" class="debate-svg" xmlns="http://www.w3.org/2000/svg">
-                                            <defs>
-                                                <!-- Spotlight Gradients (Ice Blue) -->
-                                                <linearGradient id="spotlightLGrad" x1="0.5" y1="0" x2="0.5" y2="1">
-                                                    <stop offset="0%" stop-color="#D9E4FF" stop-opacity="0.35"/>
-                                                    <stop offset="60%" stop-color="#3B82F6" stop-opacity="0.08"/>
-                                                    <stop offset="100%" stop-color="#08090D" stop-opacity="0.0"/>
-                                                </linearGradient>
-                                                <linearGradient id="spotlightRGrad" x1="0.5" y1="0" x2="0.5" y2="1">
-                                                    <stop offset="0%" stop-color="#D9E4FF" stop-opacity="0.35"/>
-                                                    <stop offset="60%" stop-color="#8B5CF6" stop-opacity="0.08"/>
-                                                    <stop offset="100%" stop-color="#08090D" stop-opacity="0.0"/>
-                                                </linearGradient>
-                                                
-                                                <!-- Luminous Gradient Accents -->
-                                                <linearGradient id="cyberBlue" x1="0" y1="0" x2="1" y2="0">
-                                                    <stop offset="0%" stop-color="#2563EB"/>
-                                                    <stop offset="50%" stop-color="#38BDF8"/>
-                                                    <stop offset="100%" stop-color="#1E3A8A"/>
-                                                </linearGradient>
-                                                <linearGradient id="cyberViolet" x1="0" y1="0" x2="1" y2="0">
-                                                    <stop offset="0%" stop-color="#7C3AED"/>
-                                                    <stop offset="50%" stop-color="#C084FC"/>
-                                                    <stop offset="100%" stop-color="#4C1D95"/>
-                                                </linearGradient>
-                                                
-                                                <!-- Hologram Podiums Glass -->
-                                                <linearGradient id="podiumGlass" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stop-color="rgba(217, 228, 255, 0.12)"/>
-                                                    <stop offset="100%" stop-color="rgba(217, 228, 255, 0.01)"/>
-                                                </linearGradient>
-                                                
-                                                <!-- Core Reactor Glow -->
-                                                <radialGradient id="reactorGlow" cx="50%" cy="50%" r="50%">
-                                                    <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.35"/>
-                                                    <stop offset="60%" stop-color="#8B5CF6" stop-opacity="0.15"/>
-                                                    <stop offset="100%" stop-color="#08090D" stop-opacity="0"/>
-                                                </radialGradient>
-
-                                                <!-- Laptop Screen Glow -->
-                                                <radialGradient id="screenGlow" cx="0.5" cy="0.5" r="0.5">
-                                                    <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.6"/>
-                                                    <stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/>
-                                                </radialGradient>
-                                            </defs>
- 
-                                            <!-- Perspective Tech Floor Grid -->
-                                            <g class="debate-grid-lines" stroke="rgba(217, 228, 255, 0.05)" stroke-width="1">
-                                                <line x1="0" y1="460" x2="800" y2="460" stroke-width="1.5" stroke="rgba(217, 228, 255, 0.08)"/>
-                                                <line x1="0" y1="420" x2="800" y2="420"/>
-                                                <line x1="0" y1="390" x2="800" y2="390"/>
-                                                <line x1="0" y1="360" x2="800" y2="360"/>
-                                                
-                                                <line x1="400" y1="330" x2="-200" y2="500" stroke-width="1.5" />
-                                                <line x1="400" y1="330" x2="100" y2="500"/>
-                                                <line x1="400" y1="330" x2="250" y2="500"/>
-                                                <line x1="400" y1="330" x2="550" y2="500"/>
-                                                <line x1="400" y1="330" x2="700" y2="500"/>
-                                                <line x1="400" y1="330" x2="1000" y2="500" stroke-width="1.5" />
-                                            </g>
- 
-                                            <!-- Spotlight Beams -->
-                                            <polygon points="180,30 100,480 260,480" fill="url(#spotlightLGrad)" class="spotlight-beam spotlight-beam--left"/>
-                                            <polygon points="620,30 540,480 700,480" fill="url(#spotlightRGrad)" class="spotlight-beam spotlight-beam--right"/>
-
-                                            <!-- Spotlight Rising Code Particles -->
-                                            <circle cx="160" cy="300" r="2" fill="#D9E4FF" opacity="0.3">
-                                                <animate attributeName="cy" from="420" to="80" dur="6s" repeatCount="indefinite" />
-                                                <animate attributeName="opacity" values="0;0.6;0" dur="6s" repeatCount="indefinite" />
-                                            </circle>
-                                            <circle cx="210" cy="250" r="1.5" fill="#D9E4FF" opacity="0.2">
-                                                <animate attributeName="cy" from="380" to="60" dur="4s" repeatCount="indefinite" />
-                                                <animate attributeName="opacity" values="0;0.5;0" dur="4s" repeatCount="indefinite" />
-                                            </circle>
-                                            <circle cx="590" cy="280" r="2" fill="#D9E4FF" opacity="0.3">
-                                                <animate attributeName="cy" from="420" to="80" dur="5.5s" repeatCount="indefinite" />
-                                                <animate attributeName="opacity" values="0;0.6;0" dur="5.5s" repeatCount="indefinite" />
-                                            </circle>
-                                            <circle cx="630" cy="220" r="1.5" fill="#D9E4FF" opacity="0.2">
-                                                <animate attributeName="cy" from="370" to="50" dur="4.5s" repeatCount="indefinite" />
-                                                <animate attributeName="opacity" values="0;0.5;0" dur="4.5s" repeatCount="indefinite" />
-                                            </circle>
- 
-                                            <!-- Connecting Speech Logic Buses -->
-                                            <g class="speech-waves">
-                                                <!-- Left flow -->
-                                                <path d="M 205,275 Q 302,225 368,240" fill="none" stroke="rgba(56, 189, 248, 0.15)" stroke-width="2" stroke-dasharray="4 4" />
-                                                <path class="flow-path-left" d="M 205,275 Q 302,225 368,240" fill="none" stroke="#38BDF8" stroke-width="2" stroke-dasharray="10 120" />
-                                                
-                                                <!-- Right flow -->
-                                                <path d="M 595,275 Q 498,225 432,240" fill="none" stroke="rgba(139, 92, 246, 0.15)" stroke-width="2" stroke-dasharray="4 4" />
-                                                <path class="flow-path-right" d="M 595,275 Q 498,225 432,240" fill="none" stroke="#C084FC" stroke-width="2" stroke-dasharray="10 120" />
-                                            </g>
- 
-                                            <!-- Central VS Reactor Node -->
-                                            <g class="vs-node-group">
-                                                <circle cx="400" cy="240" r="70" fill="url(#reactorGlow)"/>
-                                                <!-- Dial ring -->
-                                                <circle cx="400" cy="240" r="45" fill="none" stroke="rgba(217, 228, 255, 0.1)" stroke-width="1"/>
-                                                <circle class="vs-dial-spin" cx="400" cy="240" r="45" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="25 60 15 40" style="transform-origin: 400px 240px; animation: reticleSpin 25s linear infinite;" />
-                                                
-                                                <circle cx="400" cy="240" r="32" fill="#08090d" stroke="rgba(217, 228, 255, 0.25)" stroke-width="2" class="vs-circle"/>
-                                                <text x="400" y="246" text-anchor="middle" font-family="'Syncopate', sans-serif" font-size="13" font-weight="700" fill="#EEEEF0" class="vs-text" letter-spacing="1">VS</text>
-                                            </g>
- 
-                                            <!-- Left Speaker (PRO Avatar) -->
-                                            <g class="speaker-group speaker-group--left">
-                                                <!-- Platform Holographic Podium -->
-                                                <polygon points="135,460 225,460 210,330 150,330" fill="url(#podiumGlass)" stroke="rgba(56, 189, 248, 0.25)" stroke-width="1.5" />
-                                                <!-- Horizon grid rings on podium -->
-                                                <line x1="147" y1="360" x2="213" y2="360" stroke="rgba(56, 189, 248, 0.4)" stroke-width="1.5" />
-                                                <line x1="142" y1="400" x2="218" y2="400" stroke="rgba(56, 189, 248, 0.4)" stroke-width="1.5" />
-                                                
-                                                <!-- Avatar Body (Cyber outline) -->
-                                                <path d="M 155,330 L 155,275 C 155,260 205,260 205,275 L 205,330 Z" fill="rgba(37, 99, 235, 0.12)" stroke="url(#cyberBlue)" stroke-width="1.5"/>
-                                                <line x1="180" y1="260" x2="180" y2="320" stroke="rgba(56, 189, 248, 0.25)" stroke-width="1.5" stroke-dasharray="4 2"/>
-                                                
-                                                <!-- Avatar Neck & Head -->
-                                                <line x1="180" y1="241" x2="180" y2="255" stroke="#38BDF8" stroke-width="2" />
-                                                <circle cx="180" cy="225" r="15" fill="#08090d" stroke="#38BDF8" stroke-width="2"/>
-                                                <circle cx="180" cy="225" r="5" fill="#38BDF8" />
-                                                <circle cx="180" cy="225" r="20" fill="none" stroke="rgba(56, 189, 248, 0.2)" stroke-width="1" stroke-dasharray="3 3"/>
- 
-                                                <!-- Laptop (Hologram Screen) -->
-                                                <polygon points="188,330 218,330 224,315 194,315" fill="#1e293b" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1"/>
-                                                <polygon points="194,315 224,315 221,300 191,300" fill="#0f172a" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1"/>
-                                                <polygon points="195,313 223,313 220,301 192,301" fill="url(#screenGlow)" opacity="0.8"/>
-                                            </g>
- 
-                                            <!-- Right Speaker (CON Avatar) -->
-                                            <g class="speaker-group speaker-group--right">
-                                                <!-- Platform Holographic Podium -->
-                                                <polygon points="575,460 665,460 650,330 590,330" fill="url(#podiumGlass)" stroke="rgba(139, 92, 246, 0.25)" stroke-width="1.5" />
-                                                <!-- Horizon grid rings on podium -->
-                                                <line x1="587" y1="360" x2="653" y2="360" stroke="rgba(139, 92, 246, 0.4)" stroke-width="1.5" />
-                                                <line x1="582" y1="400" x2="658" y2="400" stroke="rgba(139, 92, 246, 0.4)" stroke-width="1.5" />
-                                                
-                                                <!-- Avatar Body (Cyber outline) -->
-                                                <path d="M 595,330 L 595,275 C 595,260 645,260 645,275 L 645,330 Z" fill="rgba(139, 92, 246, 0.12)" stroke="url(#cyberViolet)" stroke-width="1.5"/>
-                                                <line x1="620" y1="260" x2="620" y2="320" stroke="rgba(139, 92, 246, 0.25)" stroke-width="1.5" stroke-dasharray="4 2"/>
-                                                
-                                                <!-- Avatar Neck & Head -->
-                                                <line x1="620" y1="241" x2="620" y2="255" stroke="#8B5CF6" stroke-width="2" />
-                                                <circle cx="620" cy="225" r="15" fill="#08090d" stroke="#8B5CF6" stroke-width="2"/>
-                                                <circle cx="620" cy="225" r="5" fill="#8B5CF6" />
-                                                <circle cx="620" cy="225" r="20" fill="none" stroke="rgba(139, 92, 246, 0.2)" stroke-width="1" stroke-dasharray="3 3"/>
- 
-                                                <!-- Laptop (Hologram Screen) -->
-                                                <polygon points="582,330 612,330 606,315 576,315" fill="#1e293b" stroke="rgba(139, 92, 246, 0.3)" stroke-width="1"/>
-                                                <polygon points="576,315 606,315 609,300 579,300" fill="#0f172a" stroke="rgba(139, 92, 246, 0.3)" stroke-width="1"/>
-                                                <polygon points="577,313 605,313 608,301 580,301" fill="url(#screenGlow)" opacity="0.8"/>
-                                            </g>
-                                        </svg>
-                                    </div>
-                                </div>
+                            <div class="arena-v3__stat">
+                                <span class="arena-v3__stat-num">100% Verified</span>
+                                <span class="arena-v3__stat-label">IDENTITY CHECK</span>
+                            </div>
+                            <div class="arena-v3__stat">
+                                <span class="arena-v3__stat-num">Orvelis AI</span>
+                                <span class="arena-v3__stat-label">CONSENSUS SCANNER</span>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- ---------------- SCENE ---------------- -->
+                    <div class="arena-v3__scene">
+                        <svg class="arena-scene" viewBox="0 0 720 560" role="img"
+                            aria-label="A short-video clip playing on a phone while the Orvelis AI robot watches it and reads the argument.">
+                            <defs>
+                                <linearGradient id="av3-screen" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#101A2E" />
+                                    <stop offset="100%" stop-color="#050912" />
+                                </linearGradient>
+                                <linearGradient id="av3-spark" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stop-color="#2563EB" stop-opacity="0" />
+                                    <stop offset="35%" stop-color="#3B82F6" />
+                                    <stop offset="100%" stop-color="#7C3AED" />
+                                </linearGradient>
+                                <radialGradient id="av3-eyeglow" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#60A5FA" stop-opacity=".85" />
+                                    <stop offset="100%" stop-color="#60A5FA" stop-opacity="0" />
+                                </radialGradient>
+                                <radialGradient id="av3-halo" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#3B82F6" stop-opacity=".20" />
+                                    <stop offset="100%" stop-color="#3B82F6" stop-opacity="0" />
+                                </radialGradient>
+                                <clipPath id="av3-screen-clip">
+                                    <rect x="162" y="76" width="176" height="376" rx="20" />
+                                </clipPath>
+                            </defs>
+
+                            <ellipse class="av3-halo" cx="380" cy="280" rx="330" ry="250" fill="url(#av3-halo)" />
+
+                            <!-- hairline floor under the feed -->
+                            <g class="av3-floor">
+                                <line x1="206" y1="496" x2="438" y2="496" />
+                            </g>
+
+                            <!-- ============ FEED STACK: there is always a next clip ============ -->
+                            <g class="av3-stack">
+                                <g transform="rotate(-9 139 263)">
+                                    <rect class="av3-stack-card" x="80" y="140" width="118" height="246" rx="18" />
+                                    <path class="av3-stack-play" d="M130 250l19 11-19 11z" />
+                                </g>
+                                <g transform="rotate(-5 174 261)">
+                                    <rect class="av3-stack-card av3-stack-card--2" x="110" y="118" width="128" height="286" rx="20" />
+                                    <path class="av3-stack-play" d="M165 248l20 12-20 12z" />
+                                </g>
+                            </g>
+
+                            <!-- vertical-feed swipe hint -->
+                            <g class="av3-swipe">
+                                <path d="M38 306l14-14 14 14" />
+                                <path d="M38 332l14-14 14 14" />
+                                <text x="52" y="366" text-anchor="middle">SWIPE</text>
+                            </g>
+
+                            <!-- ============ PHONE ============ -->
+                            <g class="av3-phone">
+                                <rect class="av3-phone-body" x="150" y="64" width="200" height="400" rx="30" />
+                                <rect class="av3-phone-screen" x="162" y="76" width="176" height="376" rx="20"
+                                    fill="url(#av3-screen)" />
+
+                                <g clip-path="url(#av3-screen-clip)">
+                                    <rect x="162" y="76" width="176" height="376" fill="#0A1120" />
+                                    <circle class="av3-cam-glow" cx="240" cy="196" r="92" fill="url(#av3-eyeglow)" opacity=".3" />
+
+                                    <!-- the person on camera -->
+                                    <rect class="av3-speaker" x="226" y="228" width="28" height="34" rx="10" />
+                                    <path class="av3-speaker" d="M182 312c0-33 26-58 58-58s58 25 58 58v66H182z" />
+                                    <circle class="av3-speaker" cx="240" cy="206" r="30" />
+                                    <path class="av3-speaker-rim" d="M215 186a30 30 0 0 1 40 3M200 300a56 56 0 0 1 30-18" />
+
+                                    <!-- burnt-in subtitles -->
+                                    <g class="av3-caption">
+                                        <rect x="178" y="320" width="104" height="6" rx="3" opacity=".62" />
+                                        <rect x="178" y="332" width="128" height="6" rx="3" opacity=".44" />
+                                        <rect x="178" y="344" width="62" height="6" rx="3" opacity=".26" />
+                                    </g>
+
+                                    <!-- live voice waveform -->
+                                    <g class="av3-wave">
+                                        <rect x="180" y="378" width="3" height="8" rx="1.5" />
+                                        <rect x="188" y="373" width="3" height="18" rx="1.5" />
+                                        <rect x="196" y="367" width="3" height="30" rx="1.5" />
+                                        <rect x="204" y="371" width="3" height="22" rx="1.5" />
+                                        <rect x="212" y="364" width="3" height="36" rx="1.5" />
+                                        <rect x="220" y="369" width="3" height="26" rx="1.5" />
+                                        <rect x="228" y="375" width="3" height="14" rx="1.5" />
+                                        <rect x="236" y="365" width="3" height="34" rx="1.5" />
+                                        <rect x="244" y="373" width="3" height="18" rx="1.5" />
+                                        <rect x="252" y="368" width="3" height="28" rx="1.5" />
+                                        <rect x="260" y="377" width="3" height="10" rx="1.5" />
+                                        <rect x="268" y="371" width="3" height="22" rx="1.5" />
+                                        <rect x="276" y="364" width="3" height="36" rx="1.5" />
+                                        <rect x="284" y="374" width="3" height="16" rx="1.5" />
+                                    </g>
+
+                                    <!-- framing marks: it is shot, not written -->
+                                    <g class="av3-frame-marks">
+                                        <path d="M178 164V150h14M322 164V150h-14M178 396v14h14M322 396v14h-14" />
+                                    </g>
+                                </g>
+
+                                <!-- clip HUD -->
+                                <g class="av3-hud">
+                                    <rect class="av3-live-pill" x="174" y="88" width="62" height="20" rx="10" />
+                                    <circle class="av3-live-dot" cx="185" cy="98" r="3.4" />
+                                    <text class="av3-live-text" x="194" y="102">LIVE</text>
+                                    <text class="av3-time" x="326" y="102" text-anchor="end">00:47</text>
+                                    <g class="av3-replyto">
+                                        <rect x="174" y="116" width="126" height="22" rx="11" />
+                                        <circle cx="187" cy="127" r="7" />
+                                        <text x="200" y="131">REPLYING TO A CLIP</text>
+                                    </g>
+                                </g>
+
+                                <!-- action rail -->
+                                <g class="av3-rail">
+                                    <g class="av3-rail-item">
+                                        <circle cx="316" cy="186" r="11" />
+                                        <path d="M316 191.4c-3.7-2.7-5.6-4.6-5.6-6.7a2.9 2.9 0 0 1 5.6-1 2.9 2.9 0 0 1 5.6 1c0 2.1-1.9 4-5.6 6.7z" />
+                                        <text x="316" y="211">12k</text>
+                                    </g>
+                                    <g class="av3-rail-item">
+                                        <circle cx="316" cy="238" r="11" />
+                                        <rect x="310.5" y="233.5" width="8" height="7" rx="1.8" />
+                                        <path d="M319.8 235.8l3-1.7v5.8l-3-1.7z" />
+                                        <text x="316" y="263">842</text>
+                                    </g>
+                                    <g class="av3-rail-item">
+                                        <circle cx="316" cy="290" r="11" />
+                                        <path d="M312.4 290l7-3.5-1.7 3.5 1.7 3.5z" />
+                                        <text x="316" y="315">SHARE</text>
+                                    </g>
+                                </g>
+
+                                <!-- scrubber -->
+                                <g class="av3-scrub">
+                                    <rect x="178" y="410" width="144" height="3" rx="1.5" />
+                                    <rect class="av3-scrub-fill" x="178" y="410" width="54" height="3" rx="1.5" />
+                                    <circle class="av3-scrub-knob" cx="232" cy="411.5" r="5" />
+                                </g>
+
+                                <!-- reply-with-video CTA -->
+                                <g class="av3-cta">
+                                    <rect x="178" y="420" width="144" height="26" rx="13" />
+                                    <text x="250" y="437" text-anchor="middle">REPLY ON CAMERA</text>
+                                </g>
+                            </g>
+
+                            <!-- floating chips -->
+                            <g class="av3-chip av3-chip--a">
+                                <rect x="44" y="478" width="140" height="34" rx="17" />
+                                <circle cx="64" cy="495" r="9" />
+                                <text x="82" y="499">+1 VIDEO REPLY</text>
+                            </g>
+                            <g class="av3-chip av3-chip--b">
+                                <rect x="338" y="22" width="128" height="32" rx="16" />
+                                <text x="356" y="42">NO TIME LIMIT</text>
+                            </g>
+
+                            <!-- ============ THE SPARK: the clip feeds the AI ============ -->
+                            <g class="av3-link">
+                                <path class="av3-link-halo" d="M348 250C400 246 448 232 500 216" />
+                                <path class="av3-link-base" d="M348 250C400 246 448 232 500 216" />
+                                <path class="av3-link-live" d="M348 250C400 246 448 232 500 216" stroke="url(#av3-spark)" />
+                                <circle class="av3-link-spark" r="4.5" />
+                                <path class="av3-bolt" d="M356 234l-10 17h8l-4 14 13-18h-8z" />
+                                <g class="av3-link-dust">
+                                    <circle cx="398" cy="240" r="1.8" />
+                                    <circle cx="436" cy="230" r="1.4" />
+                                    <circle cx="470" cy="222" r="2" />
+                                </g>
+                            </g>
+
+                            <!-- ============ ORVELIS ROBOT ============ -->
+                            <g class="av3-robot">
+                                <path class="av3-robot-body" d="M456 400c0-46 42-70 94-70s94 24 94 70v18H456z" />
+                                <path class="av3-robot-seam" d="M492 418c0-32 24-52 58-52s58 20 58 52" />
+                                <rect class="av3-robot-chest" x="520" y="352" width="64" height="30" rx="8" />
+                                <g class="av3-robot-chest-bars">
+                                    <rect x="530" y="362" width="30" height="4" rx="2" />
+                                    <rect x="530" y="371" width="18" height="4" rx="2" />
+                                </g>
+                                <rect class="av3-robot-neck" x="532" y="282" width="36" height="34" rx="10" />
+
+                                <g class="av3-robot-head">
+                                    <rect class="av3-robot-skull" x="470" y="140" width="160" height="146" rx="40" />
+                                    <rect class="av3-robot-ear" x="456" y="192" width="16" height="42" rx="8" />
+                                    <rect class="av3-robot-ear" x="628" y="192" width="16" height="42" rx="8" />
+                                    <path class="av3-robot-antenna" d="M550 140v-26" />
+                                    <circle class="av3-robot-beacon" cx="550" cy="106" r="8" />
+
+                                    <rect class="av3-robot-visor" x="492" y="178" width="116" height="68" rx="30" />
+                                    <circle class="av3-robot-eyeglow" cx="520" cy="212" r="26" fill="url(#av3-eyeglow)" />
+                                    <rect class="av3-robot-eye" x="511" y="202" width="18" height="21" rx="9" />
+                                    <rect class="av3-robot-eye av3-robot-eye--r" x="549" y="202" width="18" height="21" rx="9" />
+                                    <rect class="av3-robot-scan" x="494" y="186" width="112" height="3" rx="1.5" />
+                                    <circle class="av3-link-impact" cx="512" cy="212" r="18" />
+
+                                    <g class="av3-robot-grille">
+                                        <rect x="526" y="258" width="48" height="4" rx="2" />
+                                        <rect x="534" y="267" width="32" height="4" rx="2" />
+                                    </g>
+                                </g>
+                            </g>
+
+                            <!-- ============ CONSENSUS READOUT ============ -->
+                            <g class="av3-readout">
+                                <text class="av3-readout-title" x="456" y="452">ORVELIS AI // CONSENSUS SCAN</text>
+                                <g class="av3-meter">
+                                    <text x="456" y="478">LOGIC</text>
+                                    <rect class="av3-meter-track" x="536" y="470" width="150" height="6" rx="3" />
+                                    <rect class="av3-meter-fill av3-meter-fill--1" x="536" y="470" height="6" rx="3" />
+                                </g>
+                                <g class="av3-meter">
+                                    <text x="456" y="502">EVIDENCE</text>
+                                    <rect class="av3-meter-track" x="536" y="494" width="150" height="6" rx="3" />
+                                    <rect class="av3-meter-fill av3-meter-fill--2" x="536" y="494" height="6" rx="3" />
+                                </g>
+                                <g class="av3-meter">
+                                    <text x="456" y="526">TONE</text>
+                                    <rect class="av3-meter-track" x="536" y="518" width="150" height="6" rx="3" />
+                                    <rect class="av3-meter-fill av3-meter-fill--3" x="536" y="518" height="6" rx="3" />
+                                </g>
+                            </g>
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -800,15 +977,15 @@
                                 <svg class="argue-hud-svg" viewBox="0 0 320 160" style="width:100%; height:100%; display:block;">
                                     <!-- Background grid -->
                                     <defs>
-                                        <pattern id="argue-grid-1" width="16" height="16" patternUnits="userSpaceOnUse">
+                                        <pattern id="argue-grid-2" width="16" height="16" patternUnits="userSpaceOnUse">
                                             <path d="M 16 0 L 0 0 0 16" fill="none" stroke="rgba(217, 228, 255, 0.05)" stroke-width="1"/>
                                         </pattern>
-                                        <linearGradient id="wave-grad-1" x1="0" y1="0" x2="0" y2="1">
+                                        <linearGradient id="wave-grad-2" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="0%" stop-color="#ef4444" />
                                             <stop offset="100%" stop-color="#ec4899" />
                                         </linearGradient>
                                     </defs>
-                                    <rect width="100%" height="100%" fill="url(#argue-grid-1)" opacity="0.6" />
+                                    <rect width="100%" height="100%" fill="url(#argue-grid-2)" opacity="0.6" />
                                     
                                     <!-- Corner brackets -->
                                     <path d="M 12,20 L 12,12 L 20,12" stroke="#ef4444" stroke-width="1.5" fill="none" opacity="0.8" />
@@ -831,32 +1008,32 @@
                                     <!-- REC indicator -->
                                     <g transform="translate(20, 26)">
                                         <circle class="rec-dot-blink" cx="6" cy="6" r="4" fill="#ef4444" />
-                                        <text x="16" y="9" fill="#ef4444" font-family="'Oxanium', monospace" font-size="8" font-weight="800">REC [00:14:29]</text>
+                                        <text x="16" y="9" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">REC [00:14:29]</text>
                                     </g>
                                     
                                     <!-- Telemetry -->
-                                    <text x="300" y="32" fill="rgba(217, 228, 255, 0.5)" font-family="'Oxanium', monospace" font-size="8" text-anchor="end">1080P 60FPS</text>
-                                    <text x="300" y="42" fill="rgba(217, 228, 255, 0.5)" font-family="'Oxanium', monospace" font-size="8" text-anchor="end">ISO 400 | f/2.8</text>
-                                    <text x="20" y="142" fill="rgba(217, 228, 255, 0.3)" font-family="'Oxanium', monospace" font-size="7">CAM_01_ACTIVE // RAW_STREAM</text>
-                                    <text x="300" y="142" fill="rgba(217, 228, 255, 0.3)" font-family="'Oxanium', monospace" font-size="7" text-anchor="end">AUDIO_CH1: [OK]</text>
+                                    <text x="300" y="32" fill="rgba(217, 228, 255, 0.5)" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="end">1080P 60FPS</text>
+                                    <text x="300" y="42" fill="rgba(217, 228, 255, 0.5)" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="end">ISO 400 | f/2.8</text>
+                                    <text x="20" y="142" fill="rgba(217, 228, 255, 0.3)" font-family="'JetBrains Mono', monospace" font-size="7">CAM_01_ACTIVE // RAW_STREAM</text>
+                                    <text x="300" y="142" fill="rgba(217, 228, 255, 0.3)" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="end">AUDIO_CH1: [OK]</text>
                                     
                                     <!-- Waveform bars -->
                                     <g class="voice-waveform-group" transform="translate(62, 64)">
                                         <rect class="wave-bar-anim wba-1" x="10" y="10" width="2.5" height="15" rx="1" fill="#ef4444" opacity="0.8"/>
                                         <rect class="wave-bar-anim wba-2" x="18" y="5" width="2.5" height="25" rx="1" fill="#ef4444" opacity="0.85"/>
-                                        <rect class="wave-bar-anim wba-3" x="26" y="8" width="2.5" height="20" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-4" x="34" y="2" width="2.5" height="32" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-5" x="42" y="12" width="2.5" height="12" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-6" x="50" y="7" width="2.5" height="22" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-7" x="58" y="1" width="2.5" height="34" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-8" x="66" y="9" width="2.5" height="18" rx="1" fill="url(#wave-grad-1)" />
+                                        <rect class="wave-bar-anim wba-3" x="26" y="8" width="2.5" height="20" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-4" x="34" y="2" width="2.5" height="32" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-5" x="42" y="12" width="2.5" height="12" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-6" x="50" y="7" width="2.5" height="22" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-7" x="58" y="1" width="2.5" height="34" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-8" x="66" y="9" width="2.5" height="18" rx="1" fill="url(#wave-grad-2)" />
                                         
-                                        <rect class="wave-bar-anim wba-9" x="126" y="9" width="2.5" height="18" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-10" x="134" y="1" width="2.5" height="34" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-11" x="142" y="7" width="2.5" height="22" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-12" x="150" y="12" width="2.5" height="12" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-13" x="158" y="2" width="2.5" height="32" rx="1" fill="url(#wave-grad-1)" />
-                                        <rect class="wave-bar-anim wba-14" x="166" y="8" width="2.5" height="20" rx="1" fill="url(#wave-grad-1)" />
+                                        <rect class="wave-bar-anim wba-9" x="126" y="9" width="2.5" height="18" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-10" x="134" y="1" width="2.5" height="34" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-11" x="142" y="7" width="2.5" height="22" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-12" x="150" y="12" width="2.5" height="12" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-13" x="158" y="2" width="2.5" height="32" rx="1" fill="url(#wave-grad-2)" />
+                                        <rect class="wave-bar-anim wba-14" x="166" y="8" width="2.5" height="20" rx="1" fill="url(#wave-grad-2)" />
                                         <rect class="wave-bar-anim wba-15" x="174" y="5" width="2.5" height="25" rx="1" fill="#ef4444" opacity="0.85"/>
                                         <rect class="wave-bar-anim wba-16" x="182" y="10" width="2.5" height="15" rx="1" fill="#ef4444" opacity="0.8"/>
                                     </g>
@@ -866,8 +1043,7 @@
                         <div class="fragment-content">
                             <span class="fragment-tag tag--argue">[ 01 // ARGUE ]</span>
                             <h3>Make your case</h3>
-                            <p>Record your argument on camera. Unlimited time. Say exactly what you mean without
-                                interruptions.</p>
+                            <p>Record your argument on camera. Unlimited time. Say exactly what you mean without interruptions.</p>
                         </div>
                     </div>
 
@@ -879,11 +1055,11 @@
                             <div class="visual-respond-premium" style="width: 100%; height: 100%;">
                                 <svg class="respond-tree-svg" viewBox="0 0 320 160" style="width:100%; height:100%; display:block;">
                                     <defs>
-                                        <pattern id="respond-grid-1" width="16" height="16" patternUnits="userSpaceOnUse">
+                                        <pattern id="respond-grid-2" width="16" height="16" patternUnits="userSpaceOnUse">
                                             <circle cx="2" cy="2" r="0.7" fill="rgba(217, 228, 255, 0.08)" />
                                         </pattern>
                                     </defs>
-                                    <rect width="100%" height="100%" fill="url(#respond-grid-1)" />
+                                    <rect width="100%" height="100%" fill="url(#respond-grid-2)" />
                                     
                                     <!-- Branches -->
                                     <g class="branch-connections" stroke-width="1.5" fill="none">
@@ -913,7 +1089,7 @@
                                     <g transform="translate(60, 40)">
                                         <g class="pro-node-group">
                                             <circle r="12" fill="#08090d" stroke="#0ea5e9" stroke-width="1.5" />
-                                            <text x="0" y="3" fill="#0ea5e9" font-family="'Oxanium', monospace" font-size="7" font-weight="800" text-anchor="middle">PRO</text>
+                                            <text x="0" y="3" fill="#0ea5e9" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">PRO</text>
                                             <circle class="ping-ring-slow" cx="0" cy="0" r="12" fill="none" stroke="#0ea5e9" stroke-width="1" opacity="0.6" />
                                         </g>
                                     </g>
@@ -922,7 +1098,7 @@
                                     <g transform="translate(260, 40)">
                                         <g class="con-node-group">
                                             <circle r="12" fill="#08090d" stroke="#8b5cf6" stroke-width="1.5" />
-                                            <text x="0" y="3" fill="#8b5cf6" font-family="'Oxanium', monospace" font-size="7" font-weight="800" text-anchor="middle">CON</text>
+                                            <text x="0" y="3" fill="#8b5cf6" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">CON</text>
                                             <circle class="ping-ring-slow" cx="0" cy="0" r="12" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.6" />
                                         </g>
                                     </g>
@@ -930,20 +1106,19 @@
                                     <!-- CHALLENGE Badge overlay -->
                                     <g transform="translate(160, 130)">
                                         <rect x="-38" y="-8" width="76" height="16" rx="5" fill="rgba(139, 92, 246, 0.12)" stroke="rgba(139, 92, 246, 0.3)" stroke-width="1" />
-                                        <text x="0" y="3" fill="#a78bfa" font-family="'Oxanium', monospace" font-size="7" font-weight="800" text-anchor="middle">+1 CHALLENGE</text>
+                                        <text x="0" y="3" fill="#a78bfa" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">+1 CHALLENGE</text>
                                     </g>
                                 </svg>
                             </div>
                         </div>
                         <div class="fragment-content">
                             <span class="fragment-tag tag--respond">[ 02 // RESPOND ]</span>
-                            <h3>Dispute & branch</h3>
-                            <p>Respond directly to any point on camera. Challenge assertions, support reasoning, and
-                                shape structured debate trees rather than chaotic comment walls.</p>
+                            <h3>Get challenged</h3>
+                            <p>Others respond directly on camera. A structured face-first exchange, not a toxic comment war.</p>
                         </div>
                     </div>
 
-                    <!-- CARD 3: ORVELIS AI -->
+                    <!-- CARD 3: VOTE -->
                     <div class="feature-fragment feature-fragment--vote">
                         <div class="fragment-glow glow--vote"></div>
                         <div class="fragment-visual">
@@ -951,11 +1126,11 @@
                             <div class="visual-vote-premium" style="width: 100%; height: 100%;">
                                 <svg class="vote-radar-svg" viewBox="0 0 320 160" style="width:100%; height:100%; display:block;">
                                     <defs>
-                                        <pattern id="radar-grid-1" width="16" height="16" patternUnits="userSpaceOnUse">
+                                        <pattern id="radar-grid-2" width="16" height="16" patternUnits="userSpaceOnUse">
                                             <path d="M 16 0 L 0 0 0 16" fill="none" stroke="rgba(16, 185, 129, 0.03)" stroke-width="1"/>
                                         </pattern>
                                     </defs>
-                                    <rect width="100%" height="100%" fill="url(#radar-grid-1)" />
+                                    <rect width="100%" height="100%" fill="url(#radar-grid-2)" />
                                     
                                     <!-- Concentric Scanner Rings -->
                                     <g transform="translate(160, 80)">
@@ -976,45 +1151,43 @@
                                     
                                     <!-- Mini Telemetry Dashboard readouts -->
                                     <g transform="translate(20, 38)">
-                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'Oxanium', monospace" font-size="7">BIAS INDEX</text>
-                                        <text x="0" y="9" fill="#10b981" font-family="'Oxanium', monospace" font-size="8" font-weight="800">0.0% COGNITIVE</text>
+                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'JetBrains Mono', monospace" font-size="7">BIAS INDEX</text>
+                                        <text x="0" y="9" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">0.0% COGNITIVE</text>
                                     </g>
                                     
                                     <g transform="translate(20, 126)">
-                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'Oxanium', monospace" font-size="7">LOGIC FLOW</text>
-                                        <text x="0" y="9" fill="#10b981" font-family="'Oxanium', monospace" font-size="8" font-weight="800">99.8% FIDELITY</text>
+                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'JetBrains Mono', monospace" font-size="7">LOGIC FLOW</text>
+                                        <text x="0" y="9" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">99.8% FIDELITY</text>
                                     </g>
                                     
                                     <g transform="translate(245, 38)">
-                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'Oxanium', monospace" font-size="7">MODEL INPUT</text>
-                                        <text x="0" y="9" fill="#10b981" font-family="'Oxanium', monospace" font-size="8" font-weight="800">ORVELIS v3.0</text>
+                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'JetBrains Mono', monospace" font-size="7">MODEL INPUT</text>
+                                        <text x="0" y="9" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">ORVELIS v3.0</text>
                                     </g>
                                     
                                     <g transform="translate(245, 126)">
-                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'Oxanium', monospace" font-size="7">STATUS CHECK</text>
-                                        <text x="0" y="9" fill="#10b981" font-family="'Oxanium', monospace" font-size="8" font-weight="800">SECURE [OK]</text>
+                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'JetBrains Mono', monospace" font-size="7">STATUS CHECK</text>
+                                        <text x="0" y="9" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">SECURE [OK]</text>
                                     </g>
                                     
                                     <!-- Central Score box -->
                                     <g transform="translate(160, 80)">
                                         <rect x="-22" y="-16" width="44" height="32" rx="5" fill="#08090d" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1.5" />
-                                        <text x="0" y="3" fill="#10b981" font-family="'Oxanium', monospace" font-size="14" font-weight="800" text-anchor="middle">9.8</text>
-                                        <text x="0" y="11" fill="rgba(16, 185, 129, 0.6)" font-family="'Inter', sans-serif" font-size="5" font-weight="800" text-anchor="middle">SCORE</text>
+                                        <text x="0" y="3" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="800" text-anchor="middle">9.8</text>
+                                        <text x="0" y="11" fill="rgba(16, 185, 129, 0.6)" font-family="'Manrope', sans-serif" font-size="5" font-weight="800" text-anchor="middle">SCORE</text>
                                     </g>
                                     
                                     <!-- Verdict -->
                                     <g transform="translate(160, 146)">
-                                        <text x="0" y="0" fill="#10b981" font-family="'Oxanium', monospace" font-size="7" font-weight="800" text-anchor="middle" letter-spacing="1.5">ORVELIS VERDICT: VALID</text>
+                                        <text x="0" y="0" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle" letter-spacing="1.5">ORVELIS VERDICT: VALID</text>
                                     </g>
                                 </svg>
                             </div>
                         </div>
                         <div class="fragment-content">
-                            <span class="fragment-tag tag--vote">[ 03 // ORVELIS AI ]</span>
-                            <h3>Orvelis AI decides</h3>
-                            <p>Our proprietary cognitive neural core conducts high-fidelity forensic scans of the
-                                argument structure. Orvelis stress-tests logical parameters, flags cognitive bias, and
-                                analyzes factual alignment to deliver an objective Logic Index score.</p>
+                            <span class="fragment-tag tag--vote">[ 03 // VOTE ]</span>
+                            <h3>Community decides</h3>
+                            <p>The audience scores the exchange based on reasoning and evidence. Logic wins, not vibes.</p>
                         </div>
                     </div>
                 </div>
@@ -1046,7 +1219,7 @@
         </section>
 
         <!-- DEBATE ARENA MOCKUP SECTION -->
-        <section class="section section--debates" id="debates">
+        <section class="section section--debates" id="debates" data-inview>
             <div id="canvas-3d-end"></div>
             <div class="section__container">
                 <div class="section__header">
@@ -1072,24 +1245,50 @@
                                 <span class="side-tag side-tag--for">[ SIDE // AFFIRMATIVE ]</span>
                                 <span class="handle">@pro_logic_22</span>
                             </div>
-                            <div class="terminal-window">
-                                <div class="terminal-window__header">
-                                    <div class="terminal-window__dots">
-                                        <span class="dot dot--red"></span>
-                                        <span class="dot dot--yellow"></span>
-                                        <span class="dot dot--green"></span>
+                            <div class="clip-card clip-card--for">
+                                <div class="clip-card__frame">
+                                    <svg class="clip-card__figure" viewBox="0 0 320 190" aria-hidden="true">
+                                        <rect width="320" height="190" fill="none" />
+                                        <circle class="clip-card__glow" cx="160" cy="92" r="78" />
+                                        <rect class="clip-card__fig" x="150" y="76" width="20" height="26" rx="8" />
+                                        <path class="clip-card__fig" d="M108 190v-44c0-28 23-48 52-48s52 20 52 48v44z" />
+                                        <circle class="clip-card__fig" cx="160" cy="62" r="26" />
+                                        <path class="clip-card__rim" d="M139 46a26 26 0 0 1 34 2" />
+                                        <path class="clip-card__marks" d="M14 30V14h16M306 30V14h-16M14 160v16h16M306 160v16h-16" />
+                                    </svg>
+
+                                    <div class="clip-card__badge">
+                                        <span class="clip-card__badge-dot"></span>
+                                        ON CAMERA
                                     </div>
-                                    <span class="terminal-window__title">rebuttal_engine.sh</span>
+                                    <div class="clip-card__time">04:12</div>
+
+                                    <div class="clip-card__wave" aria-hidden="true">
+                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                    </div>
+
+                                    <p class="clip-card__caption">“Show me the mechanism, not the slogan.”</p>
+
+                                    <div class="clip-card__scrub"><span></span></div>
                                 </div>
-                                <div class="panel-terminal">
-                                    <div class="terminal-line"><span class="term-prompt">&gt;</span> <span
-                                            class="term-keyword">Analyzing</span> counter-argument...</div>
-                                    <div class="terminal-line"><span class="term-prompt">&gt;</span> Logic score: <span
-                                            class="term-success">9.4/10</span></div>
-                                    <div class="terminal-line"><span class="term-prompt">&gt;</span> <span
-                                            class="term-keyword">Synthesizing</span> rebuttal <span
-                                            class="term-accent">[88%]</span></div>
-                                    <div class="terminal-cursor"></div>
+
+                                <div class="clip-card__meta">
+                                    <span class="clip-card__meta-item">
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M8 6.5 18 12 8 17.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                                        </svg>
+                                        1.2M
+                                    </span>
+                                    <span class="clip-card__meta-item">
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M9 7 4 11.5 9 16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M4.4 11.5H14a6 6 0 0 1 6 6V19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                                        </svg>
+                                        842
+                                    </span>
+                                    <span class="clip-card__meta-item clip-card__meta-item--a">UNCUT</span>
                                 </div>
                             </div>
                             <div class="panel-stats">
@@ -1110,24 +1309,50 @@
                                 <span class="side-tag side-tag--against">[ SIDE // NEGATIVE ]</span>
                                 <span class="handle">@critique_master</span>
                             </div>
-                            <div class="terminal-window">
-                                <div class="terminal-window__header">
-                                    <div class="terminal-window__dots">
-                                        <span class="dot dot--red"></span>
-                                        <span class="dot dot--yellow"></span>
-                                        <span class="dot dot--green"></span>
+                            <div class="clip-card clip-card--against">
+                                <div class="clip-card__frame">
+                                    <svg class="clip-card__figure" viewBox="0 0 320 190" aria-hidden="true">
+                                        <rect width="320" height="190" fill="none" />
+                                        <circle class="clip-card__glow" cx="160" cy="92" r="78" />
+                                        <rect class="clip-card__fig" x="150" y="76" width="20" height="26" rx="8" />
+                                        <path class="clip-card__fig" d="M108 190v-44c0-28 23-48 52-48s52 20 52 48v44z" />
+                                        <circle class="clip-card__fig" cx="160" cy="62" r="26" />
+                                        <path class="clip-card__rim" d="M139 46a26 26 0 0 1 34 2" />
+                                        <path class="clip-card__marks" d="M14 30V14h16M306 30V14h-16M14 160v16h16M306 160v16h-16" />
+                                    </svg>
+
+                                    <div class="clip-card__badge">
+                                        <span class="clip-card__badge-dot"></span>
+                                        RECORDING REPLY
                                     </div>
-                                    <span class="terminal-window__title">fallacy_detector.py</span>
+                                    <div class="clip-card__time">02:38</div>
+
+                                    <div class="clip-card__wave" aria-hidden="true">
+                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                    </div>
+
+                                    <p class="clip-card__caption">“That mechanism has never shipped anywhere.”</p>
+
+                                    <div class="clip-card__scrub"><span></span></div>
                                 </div>
-                                <div class="panel-terminal">
-                                    <div class="terminal-line"><span class="term-prompt">&gt;</span> <span
-                                            class="term-keyword term-keyword--warn">detecting</span> logical fallacy...
-                                    </div>
-                                    <div class="terminal-line"><span class="term-prompt">&gt;</span> Confidence: <span
-                                            class="term-warn">42%</span></div>
-                                    <div class="terminal-line"><span class="term-prompt">&gt;</span> Waiting for
-                                        input<span class="term-blink">_</span></div>
-                                    <div class="terminal-cursor terminal-cursor--against"></div>
+
+                                <div class="clip-card__meta">
+                                    <span class="clip-card__meta-item">
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M8 6.5 18 12 8 17.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                                        </svg>
+                                        910k
+                                    </span>
+                                    <span class="clip-card__meta-item">
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M9 7 4 11.5 9 16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M4.4 11.5H14a6 6 0 0 1 6 6V19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                                        </svg>
+                                        506
+                                    </span>
+                                    <span class="clip-card__meta-item clip-card__meta-item--b">UNCUT</span>
                                 </div>
                             </div>
                             <div class="panel-stats">
@@ -1141,8 +1366,7 @@
 
                     <div class="arena-topic-alt">
                         <div class="topic-meta">[ MOTION // DEBATE ]</div>
-                        <p class="topic-content">"Decentralized governance is the only viable path for global
-                            consensus."</p>
+                        <p class="topic-content">"Decentralized governance is the only viable path for global consensus."</p>
                     </div>
 
                     <div class="arena-cta">
@@ -1409,9 +1633,10 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=2"></script>
+    <script defer src="3d-fx.js?v=3.3.0"></script>
 
-    <script defer src="script.js?v=3.1.0"></script>
+    <script defer src="script.js?v=3.3.0"></script>
 </body>
 
 </html>
+
