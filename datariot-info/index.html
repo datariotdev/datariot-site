@@ -27,15 +27,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Unbounded:wght@300..900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=3.3.0" />
-    <!-- Cache-Bust-Hash: 80285c55-869e-4082-aa01-b69d6a0c9e16 -->
+    <link rel="stylesheet" href="style.css?v=3.4.0" />
+    <!-- Cache-Bust-Hash: 160bce84-9e7e-4ed7-b0f6-22ebf51b3bbe -->
     <style>
         :root {
             --bg-main: #ffffff;
             --text-primary: #050505;
-            --accent: #0ea5e9;
+            --accent: #2F80E8;
         }
 
         [data-theme="dark"] {
@@ -44,10 +44,7 @@
         }
 
         html,
-        body,
-        .main,
-        .section,
-        #hero {
+        body {
             background-color: var(--bg-main) !important;
             background: var(--bg-main) !important;
             color: var(--text-primary) !important;
@@ -55,10 +52,15 @@
             padding: 0;
         }
 
-        /* Let manifesto-v2 override white background */
-        .manifesto-v2 {
-            background: var(--bg-main) !important;
+        /* Sections stay transparent so the ambient backdrop on <body> shows
+           through; they used to paint flat white over it. */
+        .main,
+        .section,
+        #hero {
+            background: transparent !important;
             color: var(--text-primary) !important;
+            margin: 0;
+            padding: 0;
         }
 
         /* HARD CLEANUP: Remove all old background elements and wireframes */
@@ -81,7 +83,7 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
-            background: var(--bg-main) !important;
+            background: transparent !important;
             z-index: 100;
         }
 
@@ -192,12 +194,12 @@
         /* the sidebar used to stay white in dark mode */
         [data-theme="dark"] .sidebar {
             background: #0C0D12 !important;
-            border-right: 1px solid rgba(217, 228, 255, 0.07) !important;
+            border-right: 1px solid rgba(216, 231, 250, 0.07) !important;
         }
 
         [data-theme="dark"] .sidebar__logo {
             background: #13151D !important;
-            border-color: rgba(217, 228, 255, 0.1) !important;
+            border-color: rgba(216, 231, 250, 0.1) !important;
         }
 
         /* App Downloads */
@@ -611,20 +613,13 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Floating reaction bubbles inside showcase but outside frame -->
-                    <div class="hero__phone-reactions">
-                        <div class="phone__reaction phone__reaction--1">🔥</div>
-                        <div class="phone__reaction phone__reaction--2">💡</div>
-                        <div class="phone__reaction phone__reaction--3">⚡</div>
-                        <div class="phone__reaction phone__reaction--4">🎯</div>
-                    </div>
                 </div>
             </div>
 
             <div class="hero__ticker" data-inview aria-hidden="true">
                 <div class="hero__ticker-track">
-                    <div class="hero__ticker-run"><span>ON CAMERA</span><em>◆</em><span>NO TIME LIMIT</span><em>◆</em><span>VIDEO REPLIES</span><em>◆</em><span>VERIFIED HUMANS</span><em>◆</em><span>ORVELIS AI</span><em>◆</em><span>LOGIC OVER LIKES</span><em>◆</em><span>UNLIMITED SPEECH</span><em>◆</em><span>NO ANON MOBS</span><em>◆</em></div>
-                    <div class="hero__ticker-run"><span>ON CAMERA</span><em>◆</em><span>NO TIME LIMIT</span><em>◆</em><span>VIDEO REPLIES</span><em>◆</em><span>VERIFIED HUMANS</span><em>◆</em><span>ORVELIS AI</span><em>◆</em><span>LOGIC OVER LIKES</span><em>◆</em><span>UNLIMITED SPEECH</span><em>◆</em><span>NO ANON MOBS</span><em>◆</em></div>
+                    <div class="hero__ticker-run"><span>ON CAMERA</span><em>//</em><span>NO TIME LIMIT</span><em>//</em><span>VIDEO REPLIES</span><em>//</em><span>VERIFIED HUMANS</span><em>//</em><span>ORVELIS AI</span><em>//</em><span>LOGIC OVER LIKES</span><em>//</em><span>UNLIMITED SPEECH</span><em>//</em><span>NO ANON MOBS</span><em>//</em></div>
+                    <div class="hero__ticker-run"><span>ON CAMERA</span><em>//</em><span>NO TIME LIMIT</span><em>//</em><span>VIDEO REPLIES</span><em>//</em><span>VERIFIED HUMANS</span><em>//</em><span>ORVELIS AI</span><em>//</em><span>LOGIC OVER LIKES</span><em>//</em><span>UNLIMITED SPEECH</span><em>//</em><span>NO ANON MOBS</span><em>//</em></div>
                 </div>
             </div>
 
@@ -736,17 +731,17 @@
                                     <stop offset="100%" stop-color="#050912" />
                                 </linearGradient>
                                 <linearGradient id="av3-spark" x1="0" y1="0" x2="1" y2="0">
-                                    <stop offset="0%" stop-color="#2563EB" stop-opacity="0" />
-                                    <stop offset="35%" stop-color="#3B82F6" />
-                                    <stop offset="100%" stop-color="#7C3AED" />
+                                    <stop offset="0%" stop-color="#1F6FE0" stop-opacity="0" />
+                                    <stop offset="35%" stop-color="#4A8BEC" />
+                                    <stop offset="100%" stop-color="#5B47D6" />
                                 </linearGradient>
                                 <radialGradient id="av3-eyeglow" cx="50%" cy="50%" r="50%">
-                                    <stop offset="0%" stop-color="#60A5FA" stop-opacity=".85" />
-                                    <stop offset="100%" stop-color="#60A5FA" stop-opacity="0" />
+                                    <stop offset="0%" stop-color="#7FB0F5" stop-opacity=".85" />
+                                    <stop offset="100%" stop-color="#7FB0F5" stop-opacity="0" />
                                 </radialGradient>
                                 <radialGradient id="av3-halo" cx="50%" cy="50%" r="50%">
-                                    <stop offset="0%" stop-color="#3B82F6" stop-opacity=".20" />
-                                    <stop offset="100%" stop-color="#3B82F6" stop-opacity="0" />
+                                    <stop offset="0%" stop-color="#4A8BEC" stop-opacity=".20" />
+                                    <stop offset="100%" stop-color="#4A8BEC" stop-opacity="0" />
                                 </radialGradient>
                                 <clipPath id="av3-screen-clip">
                                     <rect x="162" y="76" width="176" height="376" rx="20" />
@@ -978,7 +973,7 @@
                                     <!-- Background grid -->
                                     <defs>
                                         <pattern id="argue-grid-2" width="16" height="16" patternUnits="userSpaceOnUse">
-                                            <path d="M 16 0 L 0 0 0 16" fill="none" stroke="rgba(217, 228, 255, 0.05)" stroke-width="1"/>
+                                            <path d="M 16 0 L 0 0 0 16" fill="none" stroke="rgba(216, 231, 250, 0.05)" stroke-width="1"/>
                                         </pattern>
                                         <linearGradient id="wave-grad-2" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="0%" stop-color="#ef4444" />
@@ -996,12 +991,12 @@
                                     <!-- Reticle translated to center -->
                                     <g transform="translate(160, 80)">
                                         <g class="focus-reticle">
-                                            <circle r="22" stroke="rgba(217, 228, 255, 0.15)" stroke-width="1.5" fill="none" stroke-dasharray="6 3" />
+                                            <circle r="22" stroke="rgba(216, 231, 250, 0.15)" stroke-width="1.5" fill="none" stroke-dasharray="6 3" />
                                             <circle r="12" stroke="rgba(239, 68, 68, 0.4)" stroke-width="1" fill="none" />
-                                            <line x1="-30" y1="0" x2="-18" y2="0" stroke="rgba(217, 228, 255, 0.3)" stroke-width="1" />
-                                            <line x1="18" y1="0" x2="30" y2="0" stroke="rgba(217, 228, 255, 0.3)" stroke-width="1" />
-                                            <line x1="0" y1="-30" x2="0" y2="-18" stroke="rgba(217, 228, 255, 0.3)" stroke-width="1" />
-                                            <line x1="0" y1="18" x2="0" y2="30" stroke="rgba(217, 228, 255, 0.3)" stroke-width="1" />
+                                            <line x1="-30" y1="0" x2="-18" y2="0" stroke="rgba(216, 231, 250, 0.3)" stroke-width="1" />
+                                            <line x1="18" y1="0" x2="30" y2="0" stroke="rgba(216, 231, 250, 0.3)" stroke-width="1" />
+                                            <line x1="0" y1="-30" x2="0" y2="-18" stroke="rgba(216, 231, 250, 0.3)" stroke-width="1" />
+                                            <line x1="0" y1="18" x2="0" y2="30" stroke="rgba(216, 231, 250, 0.3)" stroke-width="1" />
                                         </g>
                                     </g>
                                     
@@ -1012,10 +1007,10 @@
                                     </g>
                                     
                                     <!-- Telemetry -->
-                                    <text x="300" y="32" fill="rgba(217, 228, 255, 0.5)" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="end">1080P 60FPS</text>
-                                    <text x="300" y="42" fill="rgba(217, 228, 255, 0.5)" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="end">ISO 400 | f/2.8</text>
-                                    <text x="20" y="142" fill="rgba(217, 228, 255, 0.3)" font-family="'JetBrains Mono', monospace" font-size="7">CAM_01_ACTIVE // RAW_STREAM</text>
-                                    <text x="300" y="142" fill="rgba(217, 228, 255, 0.3)" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="end">AUDIO_CH1: [OK]</text>
+                                    <text x="300" y="32" fill="rgba(216, 231, 250, 0.5)" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="end">1080P 60FPS</text>
+                                    <text x="300" y="42" fill="rgba(216, 231, 250, 0.5)" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="end">ISO 400 | f/2.8</text>
+                                    <text x="20" y="142" fill="rgba(216, 231, 250, 0.3)" font-family="'JetBrains Mono', monospace" font-size="7">CAM_01_ACTIVE // RAW_STREAM</text>
+                                    <text x="300" y="142" fill="rgba(216, 231, 250, 0.3)" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="end">AUDIO_CH1: [OK]</text>
                                     
                                     <!-- Waveform bars -->
                                     <g class="voice-waveform-group" transform="translate(62, 64)">
@@ -1056,20 +1051,20 @@
                                 <svg class="respond-tree-svg" viewBox="0 0 320 160" style="width:100%; height:100%; display:block;">
                                     <defs>
                                         <pattern id="respond-grid-2" width="16" height="16" patternUnits="userSpaceOnUse">
-                                            <circle cx="2" cy="2" r="0.7" fill="rgba(217, 228, 255, 0.08)" />
+                                            <circle cx="2" cy="2" r="0.7" fill="rgba(216, 231, 250, 0.08)" />
                                         </pattern>
                                     </defs>
                                     <rect width="100%" height="100%" fill="url(#respond-grid-2)" />
                                     
                                     <!-- Branches -->
                                     <g class="branch-connections" stroke-width="1.5" fill="none">
-                                        <path d="M 160,80 Q 110,40 60,40" stroke="#0ea5e9" stroke-dasharray="3 3" />
-                                        <path d="M 160,80 Q 210,40 260,40" stroke="#8b5cf6" stroke-dasharray="3 3" />
-                                        <path d="M 160,80 Q 160,110 160,126" stroke="rgba(217, 228, 255, 0.2)" />
+                                        <path d="M 160,80 Q 110,40 60,40" stroke="#2F80E8" stroke-dasharray="3 3" />
+                                        <path d="M 160,80 Q 210,40 260,40" stroke="#7C6BEA" stroke-dasharray="3 3" />
+                                        <path d="M 160,80 Q 160,110 160,126" stroke="rgba(216, 231, 250, 0.2)" />
                                     </g>
                                     
                                     <!-- Animated flowing packets -->
-                                    <circle r="2.5" fill="#38bdf8">
+                                    <circle r="2.5" fill="#6BA5F2">
                                         <animateMotion dur="2s" repeatCount="indefinite" path="M 160,80 Q 110,40 60,40" />
                                     </circle>
                                     <circle r="2.5" fill="#a78bfa">
@@ -1079,33 +1074,33 @@
                                     <!-- Root Node (Original Claim) translated center -->
                                     <g transform="translate(160, 80)">
                                         <g class="ping-ring-group">
-                                            <circle r="14" fill="#08090d" stroke="#a5c6ff" stroke-width="1.5" />
+                                            <circle r="14" fill="#08090d" stroke="#AFCDF8" stroke-width="1.5" />
                                             <circle r="7" fill="rgba(165, 198, 255, 0.35)" />
-                                            <circle class="ping-ring" cx="0" cy="0" r="14" fill="none" stroke="#a5c6ff" stroke-width="1" opacity="0.8" />
+                                            <circle class="ping-ring" cx="0" cy="0" r="14" fill="none" stroke="#AFCDF8" stroke-width="1" opacity="0.8" />
                                         </g>
                                     </g>
                                     
                                     <!-- PRO Node (Left) translated -->
                                     <g transform="translate(60, 40)">
                                         <g class="pro-node-group">
-                                            <circle r="12" fill="#08090d" stroke="#0ea5e9" stroke-width="1.5" />
-                                            <text x="0" y="3" fill="#0ea5e9" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">PRO</text>
-                                            <circle class="ping-ring-slow" cx="0" cy="0" r="12" fill="none" stroke="#0ea5e9" stroke-width="1" opacity="0.6" />
+                                            <circle r="12" fill="#08090d" stroke="#2F80E8" stroke-width="1.5" />
+                                            <text x="0" y="3" fill="#2F80E8" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">PRO</text>
+                                            <circle class="ping-ring-slow" cx="0" cy="0" r="12" fill="none" stroke="#2F80E8" stroke-width="1" opacity="0.6" />
                                         </g>
                                     </g>
                                     
                                     <!-- CON Node (Right) translated -->
                                     <g transform="translate(260, 40)">
                                         <g class="con-node-group">
-                                            <circle r="12" fill="#08090d" stroke="#8b5cf6" stroke-width="1.5" />
-                                            <text x="0" y="3" fill="#8b5cf6" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">CON</text>
-                                            <circle class="ping-ring-slow" cx="0" cy="0" r="12" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.6" />
+                                            <circle r="12" fill="#08090d" stroke="#7C6BEA" stroke-width="1.5" />
+                                            <text x="0" y="3" fill="#7C6BEA" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">CON</text>
+                                            <circle class="ping-ring-slow" cx="0" cy="0" r="12" fill="none" stroke="#7C6BEA" stroke-width="1" opacity="0.6" />
                                         </g>
                                     </g>
                                     
                                     <!-- CHALLENGE Badge overlay -->
                                     <g transform="translate(160, 130)">
-                                        <rect x="-38" y="-8" width="76" height="16" rx="5" fill="rgba(139, 92, 246, 0.12)" stroke="rgba(139, 92, 246, 0.3)" stroke-width="1" />
+                                        <rect x="-38" y="-8" width="76" height="16" rx="5" fill="rgba(124, 107, 234, 0.12)" stroke="rgba(124, 107, 234, 0.3)" stroke-width="1" />
                                         <text x="0" y="3" fill="#a78bfa" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">+1 CHALLENGE</text>
                                     </g>
                                 </svg>
@@ -1378,90 +1373,134 @@
         </section>
 
         <!-- ORVELIS AI CORE SECTION -->
-        <section class="section section--ai" id="ai-core">
+        <section class="section section--ai" id="ai-core" data-inview>
             <div class="section__container">
                 <div class="ai-core-layout">
                     <div class="ai-showcase__visual">
                         <div class="orvelis-canvas-container" id="canvas-3d-orvelis"></div>
-                        <div class="orvelis-card-container">
+
+                        <div class="orvelis-card-container aic-card">
                             <div class="orvelis-card-glare"></div>
-                            <div class="orvelis-header">
-                                <div class="orvelis-icon-wrapper">
-                                    <svg class="orvelis-robot-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#38BDF8" stroke-width="1.5">
-                                        <rect x="3" y="11" width="18" height="10" rx="2" />
-                                        <path d="M12 2v3M9 5h6M8 15h.01M16 15h.01M12 18H8" stroke-linecap="round" />
+                            <span class="aic-corner aic-corner--tl" aria-hidden="true"></span>
+                            <span class="aic-corner aic-corner--tr" aria-hidden="true"></span>
+                            <span class="aic-corner aic-corner--bl" aria-hidden="true"></span>
+                            <span class="aic-corner aic-corner--br" aria-hidden="true"></span>
+                            <span class="aic-scan" aria-hidden="true"></span>
+
+                            <div class="aic-strip">
+                                <span class="aic-strip-ticks" aria-hidden="true"></span>
+                                <span class="aic-strip-id">ORV / 3.0.1 / ARENA-LINK</span>
+                            </div>
+
+                            <div class="orvelis-header aic-head">
+                                <span class="aic-avatar" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                                        <rect x="3.2" y="10.5" width="17.6" height="10" rx="3" />
+                                        <path d="M12 2.4v3.2M9 5.6h6" stroke-linecap="round" />
+                                        <rect x="7.4" y="14" width="3" height="3.4" rx="1.5" fill="currentColor" stroke="none" />
+                                        <rect x="13.6" y="14" width="3" height="3.4" rx="1.5" fill="currentColor" stroke="none" />
+                                        <path d="M1.6 13.4v4.2M22.4 13.4v4.2" stroke-linecap="round" />
                                     </svg>
+                                </span>
+                                <span class="aic-head-text">
+                                    <b>ORVELIS</b>
+                                    <i>AI CORE <em>//</em> CONSENSUS ENGINE</i>
+                                </span>
+                                <span class="aic-online"><i aria-hidden="true"></i>ONLINE</span>
+                            </div>
+
+                            <div class="aic-now">
+                                <span class="aic-now-thumb" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M9.5 7.5 17 12l-7.5 4.5z" fill="currentColor" />
+                                    </svg>
+                                </span>
+                                <span class="aic-now-body">
+                                    <b>NOW SCANNING</b>
+                                    <i>@pro_logic_22 &mdash; 04:12 on camera</i>
+                                </span>
+                                <span class="aic-now-wave" aria-hidden="true">
+                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                </span>
+                            </div>
+
+                            <div class="orvelis-subcard aic-block">
+                                <div class="aic-block-head">
+                                    <span class="aic-tag">DAILY INSIGHT</span>
+                                    <span class="aic-block-id">01</span>
                                 </div>
-                                <div class="orvelis-title-wrap">
-                                    <h3 class="orvelis-title">Orvelis</h3>
-                                    <div class="orvelis-status-row">
-                                        <span class="orvelis-subtitle">AI CORE</span>
-                                        <span class="orvelis-dot-sep">·</span>
-                                        <div class="orvelis-status-badge">
-                                            <span class="orvelis-status-dot"></span>
-                                            <div class="orvelis-status-pulse"></div>
-                                            <span class="orvelis-status-text">ONLINE</span>
-                                        </div>
-                                    </div>
+                                <div class="aic-score">
+                                    <span class="aic-score-num">92</span>
+                                    <span class="aic-score-unit">LQI</span>
+                                    <span class="aic-score-delta">
+                                        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.2 10.4 9H1.6z" fill="currentColor"/></svg>
+                                        15%
+                                    </span>
+                                </div>
+                                <div class="aic-meter" aria-hidden="true">
+                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                </div>
+                                <span class="aic-state">DEEP FOCUS</span>
+                                <p class="aic-copy">Your logical pathways are primed for high-complexity analysis today. Ready for debate.</p>
+                            </div>
+
+                            <div class="orvelis-subcard aic-block">
+                                <div class="aic-block-head">
+                                    <span class="aic-tag">TRUTH ANALYSIS</span>
+                                    <span class="aic-block-id">02</span>
+                                </div>
+                                <div class="aic-row aic-row--ok">
+                                    <span class="aic-row-tag">ESSENCE</span>
+                                    <p class="aic-copy">Advocating structural transparency in governance models, weighting empirical evidence over rhetoric.</p>
+                                </div>
+                                <div class="aic-row aic-row--warn">
+                                    <span class="aic-row-tag">MANIPULATION</span>
+                                    <p class="aic-copy">False dichotomy detected at 04:12 &mdash; 4.2% weight, decentralized vs centralized efficiency.</p>
                                 </div>
                             </div>
 
-                            <div class="orvelis-subcard orvelis-subcard--insight">
-                                <div class="orvelis-subcard-header">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#38BDF8" stroke-width="1.5" style="margin-right: 6px; opacity: 0.7;">
-                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    <span class="orvelis-subcard-label">DAILY INSIGHT</span>
-                                </div>
-                                <div class="orvelis-score-row">
-                                    <span class="orvelis-score-num">92<span class="score-unit">LQI</span></span>
-                                    <div class="orvelis-trend-badge">
-                                        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#10B981" stroke-width="2.5" style="margin-right: 2px;">
-                                            <path d="M23 6l-9.5 9.5-5-5L1 18" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M17 6h6v6" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        <span class="orvelis-trend-text">+15%</span>
-                                    </div>
-                                </div>
-                                <span class="orvelis-score-status">DEEP FOCUS</span>
-                                <p class="orvelis-subcard-desc">Your logical cognitive pathways are primed for high-complexity analysis today. Ready for debate.</p>
-                            </div>
-
-                            <div class="orvelis-subcard orvelis-subcard--analysis">
-                                <div class="orvelis-subcard-header">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8B5CF6" stroke-width="1.5" style="margin-right: 6px; opacity: 0.7;">
-                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke-linecap="round"/>
-                                        <path d="M12 6v6l4 2" stroke-linecap="round"/>
-                                    </svg>
-                                    <span class="orvelis-subcard-label">TRUTH ANALYSIS</span>
-                                </div>
-                                <div class="analysis-tag-box">
-                                    <span class="analysis-tag analysis-tag--essence">// ESSENCE</span>
-                                    <p class="orvelis-subcard-desc" style="margin-top: 4px;">Advocating for structural transparency in governance models, emphasizing empirical evidence over rhetoric.</p>
-                                </div>
-                                <div class="analysis-tag-box">
-                                    <span class="analysis-tag analysis-tag--manipulation">// MANIPULATION</span>
-                                    <p class="orvelis-subcard-desc" style="margin-top: 4px;">Detected slight false dichotomy fallacy (4.2% weight) on decentralized vs centralized efficiency metrics.</p>
-                                </div>
+                            <div class="aic-foot">
+                                <span class="aic-foot-item"><b>0.4</b><i>S LATENCY</i></span>
+                                <span class="aic-foot-item"><b>12</b><i>SIGNALS</i></span>
+                                <span class="aic-foot-item"><b>96</b><i>% CONFIDENCE</i></span>
                             </div>
                         </div>
                     </div>
+
                     <div class="ai-showcase__content">
                         <span class="section__label">[ 05 — COGNITIVE LAYER ]</span>
                         <h2 class="section__title" style="margin-bottom: 24px;">COGNITIVE POWER.<br><span class="text-gradient">EMPIRICALLY VERIFIED.</span></h2>
                         <p class="manifesto-v2__card-desc">
-                            Meet <strong>Orvelis</strong> — the neural backbone of the Arena. Operating at sub-second speeds, it evaluates every camera debate for logical flow, structural bias, and fallacious statements.
+                            Meet <strong>Orvelis</strong> — the neural backbone of the Arena. Operating at sub-second speeds, it reads every camera debate for logical flow, structural bias and fallacious statements.
                         </p>
-                        <div class="cluster-boxes">
-                            <div class="cluster-box cluster-box--blue">
-                                <span class="cluster-box__tag cluster-box__tag--blue">[ ENGINE // TRUTH_DETECTOR ]</span>
-                                <h4>Logic & Fallacy Detection</h4>
-                                <p>Flags logical fallacies, emotional manipulation, and rhetorical traps automatically as the debate progresses on camera.</p>
+                        <div class="cluster-boxes aic-stack">
+                            <div class="cluster-box aic-mod">
+                                <span class="aic-mod-index">01</span>
+                                <span class="aic-mod-tag">[ ENGINE // TRUTH_DETECTOR ]</span>
+                                <h4>Logic &amp; fallacy detection</h4>
+                                <p>Flags logical fallacies, emotional manipulation and rhetorical traps automatically, timestamped to the second they happen on camera.</p>
+                                <span class="aic-mod-meta">
+                                    <em>14 FALLACY CLASSES</em><em>REAL-TIME</em>
+                                </span>
                             </div>
-                            <div class="cluster-box cluster-box--violet">
-                                <span class="cluster-box__tag cluster-box__tag--violet">[ BIO_ANALYTICS // INSIGHTS ]</span>
-                                <h4>Cognitive Flow Insights</h4>
-                                <p>Receive a personalized daily logical index showing your reasoning strengths, debate speed, and intellectual growth metrics.</p>
+                            <div class="cluster-box aic-mod">
+                                <span class="aic-mod-index">02</span>
+                                <span class="aic-mod-tag">[ BIO_ANALYTICS // INSIGHTS ]</span>
+                                <h4>Cognitive flow insights</h4>
+                                <p>A personal daily logical index — reasoning strengths, debate tempo and growth over every clip you have ever posted.</p>
+                                <span class="aic-mod-meta">
+                                    <em>DAILY LQI</em><em>PRIVATE BY DEFAULT</em>
+                                </span>
+                            </div>
+                            <div class="cluster-box aic-mod">
+                                <span class="aic-mod-index">03</span>
+                                <span class="aic-mod-tag">[ SIGNAL // IDENTITY ]</span>
+                                <h4>One face, one voice</h4>
+                                <p>Every clip is tied to a verified human on camera. No anonymous pile-ons, no sock puppets, no bot swarms in the vote.</p>
+                                <span class="aic-mod-meta">
+                                    <em>100% VERIFIED</em><em>NO ANON VOTES</em>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -1562,7 +1601,11 @@
                             <span class="beta__card-note">No spam. Unsubscribe anytime.</span>
                         </div>
                         <div class="beta__success" id="betaSuccess">
-                            <div class="beta__success-icon">✓</div>
+                            <div class="beta__success-icon">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M4 12.6 9.4 18 20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
                             <h3>You're on the list!</h3>
                             <p>We'll reach out with access details soon.</p>
                         </div>
@@ -1633,9 +1676,9 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=3.3.0"></script>
+    <script defer src="3d-fx.js?v=3.4.0"></script>
 
-    <script defer src="script.js?v=3.3.0"></script>
+    <script defer src="script.js?v=3.4.0"></script>
 </body>
 
 </html>
