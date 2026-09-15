@@ -29,8 +29,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=3.4.0" />
-    <!-- Cache-Bust-Hash: 160bce84-9e7e-4ed7-b0f6-22ebf51b3bbe -->
+    <link rel="stylesheet" href="style.css?v=3.5.0" />
+    <!-- Cache-Bust-Hash: 79ecd56e-3801-45ba-883a-38d666ff236b -->
     <style>
         :root {
             --bg-main: #ffffff;
@@ -962,229 +962,169 @@
                         <span class="text-layer text-layer--accent">REAL STAKES.</span>
                     </h2>
                 </div>
-                <div class="features__fragments">
-                    <!-- CARD 1: ARGUE -->
-                    <div class="feature-fragment feature-fragment--argue">
-                        <div class="fragment-glow glow--argue"></div>
-                        <div class="fragment-visual">
-                            <!-- Premium SVG Hud Visual -->
-                            <div class="visual-argue-premium" style="width: 100%; height: 100%;">
-                                <svg class="argue-hud-svg" viewBox="0 0 320 160" style="width:100%; height:100%; display:block;">
-                                    <!-- Background grid -->
-                                    <defs>
-                                        <pattern id="argue-grid-2" width="16" height="16" patternUnits="userSpaceOnUse">
-                                            <path d="M 16 0 L 0 0 0 16" fill="none" stroke="rgba(216, 231, 250, 0.05)" stroke-width="1"/>
-                                        </pattern>
-                                        <linearGradient id="wave-grad-2" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stop-color="#ef4444" />
-                                            <stop offset="100%" stop-color="#ec4899" />
-                                        </linearGradient>
-                                    </defs>
-                                    <rect width="100%" height="100%" fill="url(#argue-grid-2)" opacity="0.6" />
-                                    
-                                    <!-- Corner brackets -->
-                                    <path d="M 12,20 L 12,12 L 20,12" stroke="#ef4444" stroke-width="1.5" fill="none" opacity="0.8" />
-                                    <path d="M 308,20 L 308,12 L 300,12" stroke="#ef4444" stroke-width="1.5" fill="none" opacity="0.8" />
-                                    <path d="M 12,140 L 12,148 L 20,148" stroke="#ef4444" stroke-width="1.5" fill="none" opacity="0.8" />
-                                    <path d="M 308,140 L 308,148 L 300,148" stroke="#ef4444" stroke-width="1.5" fill="none" opacity="0.8" />
-                                    
-                                    <!-- Reticle translated to center -->
-                                    <g transform="translate(160, 80)">
-                                        <g class="focus-reticle">
-                                            <circle r="22" stroke="rgba(216, 231, 250, 0.15)" stroke-width="1.5" fill="none" stroke-dasharray="6 3" />
-                                            <circle r="12" stroke="rgba(239, 68, 68, 0.4)" stroke-width="1" fill="none" />
-                                            <line x1="-30" y1="0" x2="-18" y2="0" stroke="rgba(216, 231, 250, 0.3)" stroke-width="1" />
-                                            <line x1="18" y1="0" x2="30" y2="0" stroke="rgba(216, 231, 250, 0.3)" stroke-width="1" />
-                                            <line x1="0" y1="-30" x2="0" y2="-18" stroke="rgba(216, 231, 250, 0.3)" stroke-width="1" />
-                                            <line x1="0" y1="18" x2="0" y2="30" stroke="rgba(216, 231, 250, 0.3)" stroke-width="1" />
-                                        </g>
-                                    </g>
-                                    
-                                    <!-- REC indicator -->
-                                    <g transform="translate(20, 26)">
-                                        <circle class="rec-dot-blink" cx="6" cy="6" r="4" fill="#ef4444" />
-                                        <text x="16" y="9" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">REC [00:14:29]</text>
-                                    </g>
-                                    
-                                    <!-- Telemetry -->
-                                    <text x="300" y="32" fill="rgba(216, 231, 250, 0.5)" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="end">1080P 60FPS</text>
-                                    <text x="300" y="42" fill="rgba(216, 231, 250, 0.5)" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="end">ISO 400 | f/2.8</text>
-                                    <text x="20" y="142" fill="rgba(216, 231, 250, 0.3)" font-family="'JetBrains Mono', monospace" font-size="7">CAM_01_ACTIVE // RAW_STREAM</text>
-                                    <text x="300" y="142" fill="rgba(216, 231, 250, 0.3)" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="end">AUDIO_CH1: [OK]</text>
-                                    
-                                    <!-- Waveform bars -->
-                                    <g class="voice-waveform-group" transform="translate(62, 64)">
-                                        <rect class="wave-bar-anim wba-1" x="10" y="10" width="2.5" height="15" rx="1" fill="#ef4444" opacity="0.8"/>
-                                        <rect class="wave-bar-anim wba-2" x="18" y="5" width="2.5" height="25" rx="1" fill="#ef4444" opacity="0.85"/>
-                                        <rect class="wave-bar-anim wba-3" x="26" y="8" width="2.5" height="20" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-4" x="34" y="2" width="2.5" height="32" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-5" x="42" y="12" width="2.5" height="12" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-6" x="50" y="7" width="2.5" height="22" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-7" x="58" y="1" width="2.5" height="34" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-8" x="66" y="9" width="2.5" height="18" rx="1" fill="url(#wave-grad-2)" />
-                                        
-                                        <rect class="wave-bar-anim wba-9" x="126" y="9" width="2.5" height="18" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-10" x="134" y="1" width="2.5" height="34" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-11" x="142" y="7" width="2.5" height="22" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-12" x="150" y="12" width="2.5" height="12" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-13" x="158" y="2" width="2.5" height="32" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-14" x="166" y="8" width="2.5" height="20" rx="1" fill="url(#wave-grad-2)" />
-                                        <rect class="wave-bar-anim wba-15" x="174" y="5" width="2.5" height="25" rx="1" fill="#ef4444" opacity="0.85"/>
-                                        <rect class="wave-bar-anim wba-16" x="182" y="10" width="2.5" height="15" rx="1" fill="#ef4444" opacity="0.8"/>
-                                    </g>
-                                </svg>
-                            </div>
+                <div class="features__fragments step-grid">
+
+                    <!-- STEP 01 — RECORD -->
+                    <article class="step-card" data-inview>
+                        <div class="step-card__frame">
+                            <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
+                                <defs>
+                                    <linearGradient id="st1-screen" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#101A2E" /><stop offset="100%" stop-color="#050912" />
+                                    </linearGradient>
+                                </defs>
+                                <path class="st-grid" d="M0 40h300M0 80h300M0 120h300M0 160h300M60 0v200M120 0v200M180 0v200M240 0v200" />
+
+                                <!-- phone, recording -->
+                                <rect class="st-shell" x="108" y="18" width="84" height="164" rx="12" />
+                                <rect x="114" y="24" width="72" height="152" rx="8" fill="url(#st1-screen)" />
+                                <circle class="st-halo" cx="150" cy="82" r="40" />
+                                <path class="st-fig" d="M128 150v-14c0-12 10-22 22-22s22 10 22 22v14z" />
+                                <circle class="st-fig" cx="150" cy="98" r="14" />
+                                <path class="st-framing" d="M122 40V32h8M178 40V32h-8M122 160v8h8M178 160v8h-8" />
+
+                                <!-- rec chip + running timer -->
+                                <g class="st-rec">
+                                    <rect x="118" y="28" width="32" height="14" rx="2" />
+                                    <circle class="st-rec-dot" cx="126" cy="35" r="3" />
+                                    <text x="133" y="38">REC</text>
+                                </g>
+                                <text class="st-time" x="183" y="38" text-anchor="end">24:06</text>
+
+                                <!-- no-limit meter: bar that never fills -->
+                                <g class="st-meter">
+                                    <rect x="118" y="160" width="64" height="4" rx="2" />
+                                    <rect class="st-meter-fill" x="118" y="160" width="40" height="4" rx="2" />
+                                </g>
+
+                                <!-- waveform spilling outside the phone -->
+                                <g class="st-wave">
+                                    <rect x="28" y="92" width="3" height="16" rx="1.5" /><rect x="36" y="86" width="3" height="28" rx="1.5" />
+                                    <rect x="44" y="78" width="3" height="44" rx="1.5" /><rect x="52" y="88" width="3" height="24" rx="1.5" />
+                                    <rect x="60" y="72" width="3" height="56" rx="1.5" /><rect x="68" y="84" width="3" height="32" rx="1.5" />
+                                    <rect x="76" y="94" width="3" height="12" rx="1.5" /><rect x="84" y="80" width="3" height="40" rx="1.5" />
+                                    <rect x="213" y="80" width="3" height="40" rx="1.5" /><rect x="221" y="94" width="3" height="12" rx="1.5" />
+                                    <rect x="229" y="84" width="3" height="32" rx="1.5" /><rect x="237" y="72" width="3" height="56" rx="1.5" />
+                                    <rect x="245" y="88" width="3" height="24" rx="1.5" /><rect x="253" y="78" width="3" height="44" rx="1.5" />
+                                    <rect x="261" y="86" width="3" height="28" rx="1.5" /><rect x="269" y="92" width="3" height="16" rx="1.5" />
+                                </g>
+
+                                <g class="st-note"><text x="12" y="188">CAM_01 // RAW</text></g>
+                                <g class="st-note"><text x="288" y="188" text-anchor="end">NO CUTS</text></g>
+                            </svg>
                         </div>
-                        <div class="fragment-content">
-                            <span class="fragment-tag tag--argue">[ 01 // ARGUE ]</span>
+                        <div class="step-card__body">
+                            <span class="step-card__index">01</span>
+                            <span class="step-card__tag">[ ARGUE // ON CAMERA ]</span>
                             <h3>Make your case</h3>
-                            <p>Record your argument on camera. Unlimited time. Say exactly what you mean without interruptions.</p>
+                            <p>Record your argument on camera. Unlimited time. Say exactly what you mean, without interruptions.</p>
+                            <span class="step-card__chips"><em>NO TIME LIMIT</em><em>ONE TAKE</em></span>
                         </div>
-                    </div>
+                    </article>
 
-                    <!-- CARD 2: RESPOND -->
-                    <div class="feature-fragment feature-fragment--respond">
-                        <div class="fragment-glow glow--respond"></div>
-                        <div class="fragment-visual">
-                            <!-- Premium SVG Branch Tree Visual -->
-                            <div class="visual-respond-premium" style="width: 100%; height: 100%;">
-                                <svg class="respond-tree-svg" viewBox="0 0 320 160" style="width:100%; height:100%; display:block;">
-                                    <defs>
-                                        <pattern id="respond-grid-2" width="16" height="16" patternUnits="userSpaceOnUse">
-                                            <circle cx="2" cy="2" r="0.7" fill="rgba(216, 231, 250, 0.08)" />
-                                        </pattern>
-                                    </defs>
-                                    <rect width="100%" height="100%" fill="url(#respond-grid-2)" />
-                                    
-                                    <!-- Branches -->
-                                    <g class="branch-connections" stroke-width="1.5" fill="none">
-                                        <path d="M 160,80 Q 110,40 60,40" stroke="#2F80E8" stroke-dasharray="3 3" />
-                                        <path d="M 160,80 Q 210,40 260,40" stroke="#7C6BEA" stroke-dasharray="3 3" />
-                                        <path d="M 160,80 Q 160,110 160,126" stroke="rgba(216, 231, 250, 0.2)" />
-                                    </g>
-                                    
-                                    <!-- Animated flowing packets -->
-                                    <circle r="2.5" fill="#6BA5F2">
-                                        <animateMotion dur="2s" repeatCount="indefinite" path="M 160,80 Q 110,40 60,40" />
-                                    </circle>
-                                    <circle r="2.5" fill="#a78bfa">
-                                        <animateMotion dur="2.5s" repeatCount="indefinite" path="M 160,80 Q 210,40 260,40" />
-                                    </circle>
-                                    
-                                    <!-- Root Node (Original Claim) translated center -->
-                                    <g transform="translate(160, 80)">
-                                        <g class="ping-ring-group">
-                                            <circle r="14" fill="#08090d" stroke="#AFCDF8" stroke-width="1.5" />
-                                            <circle r="7" fill="rgba(165, 198, 255, 0.35)" />
-                                            <circle class="ping-ring" cx="0" cy="0" r="14" fill="none" stroke="#AFCDF8" stroke-width="1" opacity="0.8" />
-                                        </g>
-                                    </g>
-                                    
-                                    <!-- PRO Node (Left) translated -->
-                                    <g transform="translate(60, 40)">
-                                        <g class="pro-node-group">
-                                            <circle r="12" fill="#08090d" stroke="#2F80E8" stroke-width="1.5" />
-                                            <text x="0" y="3" fill="#2F80E8" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">PRO</text>
-                                            <circle class="ping-ring-slow" cx="0" cy="0" r="12" fill="none" stroke="#2F80E8" stroke-width="1" opacity="0.6" />
-                                        </g>
-                                    </g>
-                                    
-                                    <!-- CON Node (Right) translated -->
-                                    <g transform="translate(260, 40)">
-                                        <g class="con-node-group">
-                                            <circle r="12" fill="#08090d" stroke="#7C6BEA" stroke-width="1.5" />
-                                            <text x="0" y="3" fill="#7C6BEA" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">CON</text>
-                                            <circle class="ping-ring-slow" cx="0" cy="0" r="12" fill="none" stroke="#7C6BEA" stroke-width="1" opacity="0.6" />
-                                        </g>
-                                    </g>
-                                    
-                                    <!-- CHALLENGE Badge overlay -->
-                                    <g transform="translate(160, 130)">
-                                        <rect x="-38" y="-8" width="76" height="16" rx="5" fill="rgba(124, 107, 234, 0.12)" stroke="rgba(124, 107, 234, 0.3)" stroke-width="1" />
-                                        <text x="0" y="3" fill="#a78bfa" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle">+1 CHALLENGE</text>
-                                    </g>
-                                </svg>
-                            </div>
+                    <!-- STEP 02 — RESPOND -->
+                    <article class="step-card" data-inview>
+                        <div class="step-card__frame">
+                            <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
+                                <path class="st-grid" d="M0 40h300M0 80h300M0 120h300M0 160h300M60 0v200M120 0v200M180 0v200M240 0v200" />
+
+                                <!-- the original clip -->
+                                <g class="st-clip st-clip--root">
+                                    <rect x="16" y="66" width="86" height="60" rx="3" />
+                                    <circle class="st-clip-face" cx="42" cy="90" r="9" />
+                                    <path class="st-clip-face" d="M30 116v-6c0-7 5-12 12-12s12 5 12 12v6z" />
+                                    <rect class="st-clip-bar" x="60" y="82" width="32" height="4" rx="2" />
+                                    <rect class="st-clip-bar" x="60" y="92" width="22" height="4" rx="2" />
+                                    <text x="20" y="136">@pro_logic_22</text>
+                                </g>
+
+                                <!-- branch lines -->
+                                <path class="st-branch" d="M102 96h24M126 96V44h34M126 96v52h34" />
+                                <circle class="st-branch-dot" cx="126" cy="96" r="3.5" />
+
+                                <!-- two video replies -->
+                                <g class="st-clip st-clip--reply">
+                                    <rect x="162" y="20" width="76" height="48" rx="3" />
+                                    <circle class="st-clip-face" cx="182" cy="38" r="7" />
+                                    <path class="st-clip-face" d="M172 60v-5c0-6 4-10 10-10s10 4 10 10v5z" />
+                                    <rect class="st-clip-bar" x="196" y="32" width="30" height="3.5" rx="1.75" />
+                                    <rect class="st-clip-bar" x="196" y="40" width="20" height="3.5" rx="1.75" />
+                                    <text x="166" y="78">REPLY // 00:48</text>
+                                </g>
+                                <g class="st-clip st-clip--reply">
+                                    <rect x="162" y="124" width="76" height="48" rx="3" />
+                                    <circle class="st-clip-face" cx="182" cy="142" r="7" />
+                                    <path class="st-clip-face" d="M172 164v-5c0-6 4-10 10-10s10 4 10 10v5z" />
+                                    <rect class="st-clip-bar" x="196" y="136" width="30" height="3.5" rx="1.75" />
+                                    <rect class="st-clip-bar" x="196" y="144" width="20" height="3.5" rx="1.75" />
+                                    <text x="166" y="182">REPLY // 02:11</text>
+                                </g>
+
+                                <!-- queue of further replies -->
+                                <g class="st-queue">
+                                    <rect x="250" y="34" width="34" height="20" rx="2" />
+                                    <rect x="254" y="60" width="26" height="16" rx="2" />
+                                    <rect x="250" y="138" width="34" height="20" rx="2" />
+                                    <text x="267" y="98" text-anchor="middle">+12</text>
+                                </g>
+
+                                <g class="st-note"><text x="12" y="188">THREAD // FACE-FIRST</text></g>
+                            </svg>
                         </div>
-                        <div class="fragment-content">
-                            <span class="fragment-tag tag--respond">[ 02 // RESPOND ]</span>
+                        <div class="step-card__body">
+                            <span class="step-card__index">02</span>
+                            <span class="step-card__tag">[ RESPOND // VIDEO ]</span>
                             <h3>Get challenged</h3>
-                            <p>Others respond directly on camera. A structured face-first exchange, not a toxic comment war.</p>
+                            <p>Others answer directly on camera. A structured face-first exchange, not a toxic comment war.</p>
+                            <span class="step-card__chips"><em>VIDEO REPLIES</em><em>THREADED</em></span>
                         </div>
-                    </div>
+                    </article>
 
-                    <!-- CARD 3: VOTE -->
-                    <div class="feature-fragment feature-fragment--vote">
-                        <div class="fragment-glow glow--vote"></div>
-                        <div class="fragment-visual">
-                            <!-- Premium SVG Radar Scanner Visual -->
-                            <div class="visual-vote-premium" style="width: 100%; height: 100%;">
-                                <svg class="vote-radar-svg" viewBox="0 0 320 160" style="width:100%; height:100%; display:block;">
-                                    <defs>
-                                        <pattern id="radar-grid-2" width="16" height="16" patternUnits="userSpaceOnUse">
-                                            <path d="M 16 0 L 0 0 0 16" fill="none" stroke="rgba(16, 185, 129, 0.03)" stroke-width="1"/>
-                                        </pattern>
-                                    </defs>
-                                    <rect width="100%" height="100%" fill="url(#radar-grid-2)" />
-                                    
-                                    <!-- Concentric Scanner Rings -->
-                                    <g transform="translate(160, 80)">
-                                        <circle r="60" fill="none" stroke="rgba(16, 185, 129, 0.05)" stroke-width="1" />
-                                        <circle r="50" fill="none" stroke="rgba(16, 185, 129, 0.08)" stroke-width="1" />
-                                        <circle r="40" fill="none" stroke="rgba(16, 185, 129, 0.12)" stroke-width="1" stroke-dasharray="4 4" />
-                                        <circle r="28" fill="none" stroke="rgba(16, 185, 129, 0.15)" stroke-width="1.5" />
-                                        
-                                        <!-- Radar Hand / Beam -->
-                                        <g class="radar-hand-group">
-                                            <line class="radar-hand" x1="0" y1="0" x2="35" y2="35" stroke="rgba(16, 185, 129, 0.8)" stroke-width="1.5" />
-                                            <circle class="radar-beam" r="3" fill="#10b981" cx="35" cy="35" />
-                                        </g>
-                                    </g>
-                                    
-                                    <!-- Compass ticks -->
-                                    <path d="M 160,12 L 160,18 M 160,148 L 160,142 M 92,80 L 98,80 M 228,80 L 222,80" stroke="rgba(16, 185, 129, 0.25)" stroke-width="1" />
-                                    
-                                    <!-- Mini Telemetry Dashboard readouts -->
-                                    <g transform="translate(20, 38)">
-                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'JetBrains Mono', monospace" font-size="7">BIAS INDEX</text>
-                                        <text x="0" y="9" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">0.0% COGNITIVE</text>
-                                    </g>
-                                    
-                                    <g transform="translate(20, 126)">
-                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'JetBrains Mono', monospace" font-size="7">LOGIC FLOW</text>
-                                        <text x="0" y="9" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">99.8% FIDELITY</text>
-                                    </g>
-                                    
-                                    <g transform="translate(245, 38)">
-                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'JetBrains Mono', monospace" font-size="7">MODEL INPUT</text>
-                                        <text x="0" y="9" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">ORVELIS v3.0</text>
-                                    </g>
-                                    
-                                    <g transform="translate(245, 126)">
-                                        <text x="0" y="0" fill="rgba(16, 185, 129, 0.4)" font-family="'JetBrains Mono', monospace" font-size="7">STATUS CHECK</text>
-                                        <text x="0" y="9" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">SECURE [OK]</text>
-                                    </g>
-                                    
-                                    <!-- Central Score box -->
-                                    <g transform="translate(160, 80)">
-                                        <rect x="-22" y="-16" width="44" height="32" rx="5" fill="#08090d" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1.5" />
-                                        <text x="0" y="3" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="800" text-anchor="middle">9.8</text>
-                                        <text x="0" y="11" fill="rgba(16, 185, 129, 0.6)" font-family="'Manrope', sans-serif" font-size="5" font-weight="800" text-anchor="middle">SCORE</text>
-                                    </g>
-                                    
-                                    <!-- Verdict -->
-                                    <g transform="translate(160, 146)">
-                                        <text x="0" y="0" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="800" text-anchor="middle" letter-spacing="1.5">ORVELIS VERDICT: VALID</text>
-                                    </g>
-                                </svg>
-                            </div>
+                    <!-- STEP 03 — VOTE -->
+                    <article class="step-card" data-inview>
+                        <div class="step-card__frame">
+                            <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
+                                <path class="st-grid" d="M0 40h300M0 80h300M0 120h300M0 160h300M60 0v200M120 0v200M180 0v200M240 0v200" />
+
+                                <!-- the ballot -->
+                                <g class="st-vote">
+                                    <text x="24" y="44">PRO</text>
+                                    <rect class="st-vote-track" x="24" y="52" width="252" height="10" rx="1" />
+                                    <rect class="st-vote-fill st-vote-fill--pro" x="24" y="52" height="10" rx="1" />
+                                    <text class="st-vote-pct" x="276" y="44" text-anchor="end">72%</text>
+
+                                    <text x="24" y="84">CON</text>
+                                    <rect class="st-vote-track" x="24" y="92" width="252" height="10" rx="1" />
+                                    <rect class="st-vote-fill st-vote-fill--con" x="24" y="92" height="10" rx="1" />
+                                    <text class="st-vote-pct" x="276" y="84" text-anchor="end">28%</text>
+                                </g>
+
+                                <!-- who voted -->
+                                <g class="st-voters">
+                                    <circle cx="30" cy="126" r="7" /><circle cx="44" cy="126" r="7" /><circle cx="58" cy="126" r="7" />
+                                    <circle cx="72" cy="126" r="7" /><circle cx="86" cy="126" r="7" /><circle cx="100" cy="126" r="7" />
+                                    <text x="116" y="130">4,812 VERIFIED VOTERS</text>
+                                </g>
+
+                                <!-- the verdict strip -->
+                                <g class="st-verdict">
+                                    <rect x="24" y="148" width="252" height="34" rx="2" />
+                                    <circle class="st-verdict-dot" cx="42" cy="165" r="6" />
+                                    <text class="st-verdict-label" x="58" y="162">ORVELIS VERDICT</text>
+                                    <text class="st-verdict-value" x="58" y="175">LOGIC 9.4 / EVIDENCE 8.1 / NO FALLACY</text>
+                                </g>
+
+                                <g class="st-note"><text x="24" y="192">[ CONSENSUS // LIVE ]</text></g>
+                            </svg>
                         </div>
-                        <div class="fragment-content">
-                            <span class="fragment-tag tag--vote">[ 03 // VOTE ]</span>
+                        <div class="step-card__body">
+                            <span class="step-card__index">03</span>
+                            <span class="step-card__tag">[ VOTE // CONSENSUS ]</span>
                             <h3>Community decides</h3>
-                            <p>The audience scores the exchange based on reasoning and evidence. Logic wins, not vibes.</p>
+                            <p>The room scores the exchange on reasoning and evidence, with Orvelis marking the logic. Logic wins, not vibes.</p>
+                            <span class="step-card__chips"><em>VERIFIED VOTES</em><em>AI SCORED</em></span>
                         </div>
-                    </div>
+                    </article>
                 </div>
             </div>
         </section>
@@ -1242,14 +1182,81 @@
                             </div>
                             <div class="clip-card clip-card--for">
                                 <div class="clip-card__frame">
-                                    <svg class="clip-card__figure" viewBox="0 0 320 190" aria-hidden="true">
-                                        <rect width="320" height="190" fill="none" />
-                                        <circle class="clip-card__glow" cx="160" cy="92" r="78" />
-                                        <rect class="clip-card__fig" x="150" y="76" width="20" height="26" rx="8" />
-                                        <path class="clip-card__fig" d="M108 190v-44c0-28 23-48 52-48s52 20 52 48v44z" />
-                                        <circle class="clip-card__fig" cx="160" cy="62" r="26" />
-                                        <path class="clip-card__rim" d="M139 46a26 26 0 0 1 34 2" />
-                                        <path class="clip-card__marks" d="M14 30V14h16M306 30V14h-16M14 160v16h16M306 160v16h-16" />
+                                    <svg class="clip-card__figure" viewBox="0 0 320 200" aria-hidden="true">
+                                        <defs>
+                                            <linearGradient id="cc-back-for" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".30" />
+                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
+                                            </linearGradient>
+                                            <radialGradient id="cc-key-for" cx="50%" cy="40%" r="60%">
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".42" />
+                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
+                                            </radialGradient>
+                                            <clipPath id="cc-crop-for"><rect width="320" height="200" /></clipPath>
+                                        </defs>
+
+                                        <g clip-path="url(#cc-crop-for)">
+                                            <!-- set: backdrop wash, key light, floor line -->
+                                            <rect width="320" height="200" fill="url(#cc-back-for)" />
+                                            <ellipse cx="186" cy="84" rx="112" ry="92" fill="url(#cc-key-for)" />
+                                            <path class="cc-line" d="M0 150h320" />
+                                            <path class="cc-line cc-line--soft" d="M0 168h320M0 132h320" />
+
+                                            <!-- softbox rig, left -->
+                                            <g class="cc-rig">
+                                                <rect x="16" y="26" width="38" height="52" rx="4" />
+                                                <path d="M35 78v62M18 140h34" />
+                                                <path class="cc-rig-beam" d="M54 34 118 58 118 96 54 74z" />
+                                            </g>
+
+                                            <!-- plant, right, for depth -->
+                                            <g class="cc-plant">
+                                                <path d="M288 150v-30" />
+                                                <path d="M288 128c-12-4-16-16-13-26 10 2 16 13 13 26z" />
+                                                <path d="M288 134c11-6 13-19 9-28-10 4-14 16-9 28z" />
+                                                <rect x="279" y="150" width="19" height="16" rx="3" />
+                                            </g>
+
+                                            <!-- the person -->
+                                            <g class="cc-person">
+                                                <!-- torso -->
+                                                <path class="cc-body" d="M112 200v-24c0-25 20-45 45-45h20c25 0 45 20 45 45v24z" />
+                                                <path class="cc-body-lit" d="M177 131h0c25 0 45 20 45 45v24h-30v-24c0-19-6-34-15-45z" />
+                                                <!-- collar -->
+                                                <path class="cc-detail" d="M152 134l15 16 15-16" />
+                                                <!-- neck -->
+                                                <path class="cc-skin" d="M155 118h24v20c0 6-24 6-24 0z" />
+                                                <!-- head -->
+                                                <path class="cc-skin" d="M141 84c0-16 11-28 26-28s26 12 26 28v10c0 16-11 28-26 28s-26-12-26-28z" />
+                                                <!-- hair -->
+                                                <path class="cc-hair" d="M139 86c-2-22 10-36 28-36s30 13 28 34c-4-10-12-14-12-14-8 7-25 9-34 4-2 5-6 9-10 12z" />
+                                                <!-- brow + eyes, turned toward camera -->
+                                                <path class="cc-detail" d="M152 84h9M175 84h9" />
+                                                <circle class="cc-eye" cx="156" cy="90" r="2.4" />
+                                                <circle class="cc-eye" cx="179" cy="90" r="2.4" />
+                                                <!-- mouth, mid-sentence -->
+                                                <path class="cc-detail" d="M162 104c4 4 10 4 14 0" />
+                                                <!-- headphones -->
+                                                <path class="cc-gear" d="M137 88V78c0-17 13-30 30-30s30 13 30 30v10" />
+                                                <rect class="cc-gear-solid" x="130" y="84" width="12" height="22" rx="6" />
+                                                <rect class="cc-gear-solid" x="192" y="84" width="12" height="22" rx="6" />
+                                            </g>
+
+                                            <!-- boom mic, angled in from the right -->
+                                            <g class="cc-mic">
+                                                <path d="M262 62 214 100" />
+                                                <rect x="198" y="94" width="22" height="13" rx="6.5" transform="rotate(-38 209 100)" />
+                                                <path class="cc-mic-grille" d="M203 95l10 8M206 91l10 8" />
+                                            </g>
+
+                                            <!-- forearm and hand, beating along with the point -->
+                                            <g class="cc-hand">
+                                                <path class="cc-arm-edge" d="M142 198 124 170 112 154" />
+                                                <path class="cc-arm" d="M142 198 124 170 112 154" />
+                                                <path class="cc-skin" d="M99 156c-7-7-6-18 2-23 5-3 10-1 13 3l8 11c3 4 2 10-2 13-7 5-14 2-21-4z" />
+                                                <path class="cc-detail" d="M106 139l-3-11M113 137l-1-12" />
+                                            </g>
+                                        </g>
                                     </svg>
 
                                     <div class="clip-card__badge">
@@ -1306,14 +1313,81 @@
                             </div>
                             <div class="clip-card clip-card--against">
                                 <div class="clip-card__frame">
-                                    <svg class="clip-card__figure" viewBox="0 0 320 190" aria-hidden="true">
-                                        <rect width="320" height="190" fill="none" />
-                                        <circle class="clip-card__glow" cx="160" cy="92" r="78" />
-                                        <rect class="clip-card__fig" x="150" y="76" width="20" height="26" rx="8" />
-                                        <path class="clip-card__fig" d="M108 190v-44c0-28 23-48 52-48s52 20 52 48v44z" />
-                                        <circle class="clip-card__fig" cx="160" cy="62" r="26" />
-                                        <path class="clip-card__rim" d="M139 46a26 26 0 0 1 34 2" />
-                                        <path class="clip-card__marks" d="M14 30V14h16M306 30V14h-16M14 160v16h16M306 160v16h-16" />
+                                    <svg class="clip-card__figure" viewBox="0 0 320 200" aria-hidden="true">
+                                        <defs>
+                                            <linearGradient id="cc-back-against" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".30" />
+                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
+                                            </linearGradient>
+                                            <radialGradient id="cc-key-against" cx="50%" cy="40%" r="60%">
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".42" />
+                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
+                                            </radialGradient>
+                                            <clipPath id="cc-crop-against"><rect width="320" height="200" /></clipPath>
+                                        </defs>
+
+                                        <g clip-path="url(#cc-crop-against)" transform="scale(-1,1) translate(-320,0)">
+                                            <!-- set: backdrop wash, key light, floor line -->
+                                            <rect width="320" height="200" fill="url(#cc-back-against)" />
+                                            <ellipse cx="186" cy="84" rx="112" ry="92" fill="url(#cc-key-against)" />
+                                            <path class="cc-line" d="M0 150h320" />
+                                            <path class="cc-line cc-line--soft" d="M0 168h320M0 132h320" />
+
+                                            <!-- softbox rig, left -->
+                                            <g class="cc-rig">
+                                                <rect x="16" y="26" width="38" height="52" rx="4" />
+                                                <path d="M35 78v62M18 140h34" />
+                                                <path class="cc-rig-beam" d="M54 34 118 58 118 96 54 74z" />
+                                            </g>
+
+                                            <!-- plant, right, for depth -->
+                                            <g class="cc-plant">
+                                                <path d="M288 150v-30" />
+                                                <path d="M288 128c-12-4-16-16-13-26 10 2 16 13 13 26z" />
+                                                <path d="M288 134c11-6 13-19 9-28-10 4-14 16-9 28z" />
+                                                <rect x="279" y="150" width="19" height="16" rx="3" />
+                                            </g>
+
+                                            <!-- the person -->
+                                            <g class="cc-person">
+                                                <!-- torso -->
+                                                <path class="cc-body" d="M112 200v-24c0-25 20-45 45-45h20c25 0 45 20 45 45v24z" />
+                                                <path class="cc-body-lit" d="M177 131h0c25 0 45 20 45 45v24h-30v-24c0-19-6-34-15-45z" />
+                                                <!-- collar -->
+                                                <path class="cc-detail" d="M152 134l15 16 15-16" />
+                                                <!-- neck -->
+                                                <path class="cc-skin" d="M155 118h24v20c0 6-24 6-24 0z" />
+                                                <!-- head -->
+                                                <path class="cc-skin" d="M141 84c0-16 11-28 26-28s26 12 26 28v10c0 16-11 28-26 28s-26-12-26-28z" />
+                                                <!-- hair -->
+                                                <path class="cc-hair" d="M139 86c-2-22 10-36 28-36s30 13 28 34c-4-10-12-14-12-14-8 7-25 9-34 4-2 5-6 9-10 12z" />
+                                                <!-- brow + eyes, turned toward camera -->
+                                                <path class="cc-detail" d="M152 84h9M175 84h9" />
+                                                <circle class="cc-eye" cx="156" cy="90" r="2.4" />
+                                                <circle class="cc-eye" cx="179" cy="90" r="2.4" />
+                                                <!-- mouth, mid-sentence -->
+                                                <path class="cc-detail" d="M162 104c4 4 10 4 14 0" />
+                                                <!-- headphones -->
+                                                <path class="cc-gear" d="M137 88V78c0-17 13-30 30-30s30 13 30 30v10" />
+                                                <rect class="cc-gear-solid" x="130" y="84" width="12" height="22" rx="6" />
+                                                <rect class="cc-gear-solid" x="192" y="84" width="12" height="22" rx="6" />
+                                            </g>
+
+                                            <!-- boom mic, angled in from the right -->
+                                            <g class="cc-mic">
+                                                <path d="M262 62 214 100" />
+                                                <rect x="198" y="94" width="22" height="13" rx="6.5" transform="rotate(-38 209 100)" />
+                                                <path class="cc-mic-grille" d="M203 95l10 8M206 91l10 8" />
+                                            </g>
+
+                                            <!-- forearm and hand, beating along with the point -->
+                                            <g class="cc-hand">
+                                                <path class="cc-arm-edge" d="M142 198 124 170 112 154" />
+                                                <path class="cc-arm" d="M142 198 124 170 112 154" />
+                                                <path class="cc-skin" d="M99 156c-7-7-6-18 2-23 5-3 10-1 13 3l8 11c3 4 2 10-2 13-7 5-14 2-21-4z" />
+                                                <path class="cc-detail" d="M106 139l-3-11M113 137l-1-12" />
+                                            </g>
+                                        </g>
                                     </svg>
 
                                     <div class="clip-card__badge">
@@ -1676,9 +1750,9 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=3.4.0"></script>
+    <script defer src="3d-fx.js?v=3.5.0"></script>
 
-    <script defer src="script.js?v=3.4.0"></script>
+    <script defer src="script.js?v=3.5.0"></script>
 </body>
 
 </html>

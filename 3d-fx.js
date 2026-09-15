@@ -90,7 +90,7 @@ window.addEventListener('load', () => {
         }
 
         // Lights
-        const light = new THREE.DirectionalLight(0x0EA5E9, 1);
+        const light = new THREE.DirectionalLight(0x2F80E8, 1);
         light.position.set(1, 1, 2);
         scene.add(light);
         const ambient = new THREE.AmbientLight(0x404040); // Soft white light
@@ -101,8 +101,8 @@ window.addEventListener('load', () => {
 
         // We will create a dual-material setup to make it look premium
         const materialCore = new THREE.MeshPhongMaterial({
-            color: 0x0EA5E9,
-            emissive: 0x0EA5E9,
+            color: 0x2F80E8,
+            emissive: 0x2F80E8,
             emissiveIntensity: 0.2,
             wireframe: true,
             transparent: true,
@@ -122,7 +122,7 @@ window.addEventListener('load', () => {
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
         const particleMaterial = new THREE.PointsMaterial({
             size: 0.05,
-            color: 0x7DD3FC,
+            color: 0x9DC0F7,
             transparent: true,
             opacity: 0.6
         });
@@ -221,22 +221,22 @@ window.addEventListener('load', () => {
         camera.position.z = 6;
 
         // Lights
-        const pointLight1 = new THREE.PointLight(0x38BDF8, 2, 50);
+        const pointLight1 = new THREE.PointLight(0x6BA5F2, 2, 50);
         pointLight1.position.set(2, 3, 4);
         scene.add(pointLight1);
 
-        const pointLight2 = new THREE.PointLight(0x0EA5E9, 2, 50);
+        const pointLight2 = new THREE.PointLight(0x2F80E8, 2, 50);
         pointLight2.position.set(-2, -3, -4);
         scene.add(pointLight2);
 
         // The central Torus Knot
         const geometry = new THREE.TorusKnotGeometry(1.5, 0.4, 128, 16);
         const material = new THREE.MeshStandardMaterial({
-            color: 0x0EA5E9,
+            color: 0x2F80E8,
             metalness: 0.8,
             roughness: 0.2,
             wireframe: true,
-            emissive: 0x38BDF8,
+            emissive: 0x6BA5F2,
             emissiveIntensity: 0.4
         });
         const torusKnot = new THREE.Mesh(geometry, material);
@@ -246,7 +246,7 @@ window.addEventListener('load', () => {
         const boxes = [];
         const boxGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
         const boxMat = new THREE.MeshStandardMaterial({
-            color: 0x7DD3FC,
+            color: 0x9DC0F7,
             transparent: true,
             opacity: 0.7,
             roughness: 0.1,
@@ -345,7 +345,7 @@ window.addEventListener('load', () => {
         const ambient = new THREE.AmbientLight(0xffffff, isLight ? 0.8 : 0.5);
         scene.add(ambient);
 
-        const pointLight = new THREE.PointLight(0x0EA5E9, isLight ? 1.5 : 2, 50);
+        const pointLight = new THREE.PointLight(0x2F80E8, isLight ? 1.5 : 2, 50);
         pointLight.position.set(0, 5, 5);
         scene.add(pointLight);
 
@@ -356,14 +356,14 @@ window.addEventListener('load', () => {
 
         // A glassmorphic wireframe material or slightly opaque panel
         const material = new THREE.MeshBasicMaterial({
-            color: 0x0EA5E9,
+            color: 0x2F80E8,
             transparent: true,
             opacity: 0.15,
             side: THREE.DoubleSide,
             wireframe: false
         });
 
-        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x38BDF8, transparent: true, opacity: 0.8 });
+        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x6BA5F2, transparent: true, opacity: 0.8 });
 
         const screens = [];
         const numScreens = window.innerWidth < 768 ? 15 : 22;
@@ -511,7 +511,7 @@ window.addEventListener('load', () => {
 
         // White/Cyan glowing points (Ice Blue for platform theme)
         const material = new THREE.PointsMaterial({
-            color: 0xD9E4FF,
+            color: 0xD8E7FA,
             size: 0.15,
             transparent: true,
             opacity: 0.8
@@ -522,7 +522,7 @@ window.addEventListener('load', () => {
 
         // Lines connecting proximal nodes (Luminous translucent secondary accent)
         const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0xA5C6FF,
+            color: 0xAFCDF8,
             transparent: true,
             opacity: 0.15
         });
@@ -676,11 +676,11 @@ window.addEventListener('load', () => {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambientLight);
 
-        const pointLight1 = new THREE.PointLight(0x0ea5e9, 2.5, 50);
+        const pointLight1 = new THREE.PointLight(0x2F80E8, 2.5, 50);
         pointLight1.position.set(5, 5, 5);
         scene.add(pointLight1);
 
-        const pointLight2 = new THREE.PointLight(0x8b5cf6, 2.5, 50);
+        const pointLight2 = new THREE.PointLight(0x7C6BEA, 2.5, 50);
         pointLight2.position.set(-5, -5, 5);
         scene.add(pointLight2);
 
@@ -690,8 +690,8 @@ window.addEventListener('load', () => {
         // Core Glowing Processor Core (Sphere)
         const coreGeometry = new THREE.SphereGeometry(0.75, 32, 32);
         const coreMaterial = new THREE.MeshPhongMaterial({
-            color: 0x38bdf8,
-            emissive: 0x0369a1,
+            color: 0x6BA5F2,
+            emissive: 0x0B4FA8,
             emissiveIntensity: 0.7,
             transparent: true,
             opacity: 0.85,
@@ -703,7 +703,7 @@ window.addEventListener('load', () => {
         // Outer rotating wireframe cage
         const cageGeometry = new THREE.DodecahedronGeometry(1.15, 0);
         const cageMaterial = new THREE.MeshBasicMaterial({
-            color: 0x8b5cf6,
+            color: 0x7C6BEA,
             wireframe: true,
             transparent: true,
             opacity: 0.35
@@ -714,13 +714,13 @@ window.addEventListener('load', () => {
         // Concentric HUD Diagnostic Rings
         const rings = [];
         const ringMaterial1 = new THREE.MeshBasicMaterial({
-            color: 0x38bdf8,
+            color: 0x6BA5F2,
             transparent: true,
             opacity: 0.35,
             side: THREE.DoubleSide
         });
         const ringMaterial2 = new THREE.MeshBasicMaterial({
-            color: 0x8b5cf6,
+            color: 0x7C6BEA,
             transparent: true,
             opacity: 0.25,
             side: THREE.DoubleSide
@@ -736,7 +736,7 @@ window.addEventListener('load', () => {
         // Diagnostic HUD Tick Dials (Ring 2)
         const dialGroup = new THREE.Group();
         const ticks = 36;
-        const tickMaterial = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4 });
+        const tickMaterial = new THREE.LineBasicMaterial({ color: 0x6BA5F2, transparent: true, opacity: 0.4 });
         for (let i = 0; i < ticks; i++) {
             const angle = (i / ticks) * Math.PI * 2;
             const cos = Math.cos(angle);
@@ -754,7 +754,7 @@ window.addEventListener('load', () => {
 
         // Tech Brackets Outer Overlay (Ring 3)
         const bracketsGroup = new THREE.Group();
-        const bracketMaterial = new THREE.LineBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.4, linewidth: 2 });
+        const bracketMaterial = new THREE.LineBasicMaterial({ color: 0x7C6BEA, transparent: true, opacity: 0.4, linewidth: 2 });
         for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 2) {
             const cos = Math.cos(angle);
             const sin = Math.sin(angle);
@@ -805,7 +805,7 @@ window.addEventListener('load', () => {
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         const particlesMaterial = new THREE.PointsMaterial({
             size: 0.09,
-            color: 0x38bdf8,
+            color: 0x6BA5F2,
             transparent: true,
             opacity: 0.8
         });
@@ -814,7 +814,7 @@ window.addEventListener('load', () => {
 
         // Connecting Neural Web lines
         const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x38bdf8,
+            color: 0x6BA5F2,
             transparent: true,
             opacity: 0.22
         });
@@ -924,11 +924,11 @@ window.addEventListener('load', () => {
             if (currentTheme !== lastTheme) {
                 lastTheme = currentTheme;
                 const isDark = currentTheme === 'dark';
-                const targetBlue = isDark ? 0x38bdf8 : 0x0284c7;
-                const targetPurple = isDark ? 0x8b5cf6 : 0x6d28d9;
+                const targetBlue = isDark ? 0x6BA5F2 : 0x1166D4;
+                const targetPurple = isDark ? 0x7C6BEA : 0x5B47D6;
 
                 coreMaterial.color.setHex(targetBlue);
-                coreMaterial.emissive.setHex(isDark ? 0x0369a1 : 0x0ea5e9);
+                coreMaterial.emissive.setHex(isDark ? 0x0B4FA8 : 0x2F80E8);
                 cageMaterial.color.setHex(targetPurple);
                 tickMaterial.color.setHex(targetBlue);
                 bracketMaterial.color.setHex(targetPurple);
@@ -979,7 +979,7 @@ window.addEventListener('load', () => {
             camera.position.z = isMobile ? 11 : 12; // Adjust zoom on mobile
 
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const globeColor = isDark ? 0x0EA5E9 : 0x0284C7;
+            const globeColor = isDark ? 0x2F80E8 : 0x1166D4;
 
             const radius = isMobile ? 2.8 : 4.5;
             const globe = new THREE.Points(
@@ -1009,7 +1009,7 @@ window.addEventListener('load', () => {
                 const theta = (city.lon + 180) * (Math.PI / 180);
                 const dot = new THREE.Mesh(
                     new THREE.SphereGeometry(0.12, 12, 12),
-                    new THREE.MeshBasicMaterial({ color: isDark ? 0x38BDF8 : 0x0369A1 })
+                    new THREE.MeshBasicMaterial({ color: isDark ? 0x6BA5F2 : 0x0B4FA8 })
                 );
                 dot.position.set(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.sin(theta));
                 cityGroup.add(dot);
@@ -1339,11 +1339,11 @@ window.addEventListener('load', () => {
         const ambient = new THREE.AmbientLight(0xffffff, 0.45);
         scene.add(ambient);
 
-        const proLight = new THREE.PointLight(0xD9E4FF, 3.5, 15);
+        const proLight = new THREE.PointLight(0xD8E7FA, 3.5, 15);
         proLight.position.set(-3, 0, 2);
         scene.add(proLight);
 
-        const conLight = new THREE.PointLight(0x8B5CF6, 3.5, 15);
+        const conLight = new THREE.PointLight(0x7C6BEA, 3.5, 15);
         conLight.position.set(3, 0, 2);
         scene.add(conLight);
 
@@ -1365,13 +1365,13 @@ window.addEventListener('load', () => {
         connectionGroup.add(proGroup);
 
         const proCoreGeo = new THREE.SphereGeometry(0.18, 16, 16);
-        const proCoreMat = new THREE.MeshBasicMaterial({ color: 0xD9E4FF });
+        const proCoreMat = new THREE.MeshBasicMaterial({ color: 0xD8E7FA });
         const proCore = new THREE.Mesh(proCoreGeo, proCoreMat);
         proGroup.add(proCore);
 
         const proInnerGeo = new THREE.IcosahedronGeometry(0.55, 1);
         const proInnerMat = new THREE.MeshBasicMaterial({
-            color: 0x38BDF8,
+            color: 0x6BA5F2,
             wireframe: true,
             transparent: true,
             opacity: 0.8
@@ -1381,7 +1381,7 @@ window.addEventListener('load', () => {
 
         const proOuterGeo = new THREE.DodecahedronGeometry(0.8, 0);
         const proOuterMat = new THREE.MeshBasicMaterial({
-            color: 0xD9E4FF,
+            color: 0xD8E7FA,
             wireframe: true,
             transparent: true,
             opacity: 0.35
@@ -1390,12 +1390,12 @@ window.addEventListener('load', () => {
         proGroup.add(proOuter);
 
         const proRingGeo1 = new THREE.RingGeometry(1.05, 1.07, 64);
-        const proRingMat1 = new THREE.MeshBasicMaterial({ color: 0x38BDF8, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+        const proRingMat1 = new THREE.MeshBasicMaterial({ color: 0x6BA5F2, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
         const proRing1 = new THREE.Mesh(proRingGeo1, proRingMat1);
         proGroup.add(proRing1);
 
         const proRingGeo2 = new THREE.RingGeometry(1.15, 1.17, 64);
-        const proRingMat2 = new THREE.MeshBasicMaterial({ color: 0xD9E4FF, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
+        const proRingMat2 = new THREE.MeshBasicMaterial({ color: 0xD8E7FA, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
         const proRing2 = new THREE.Mesh(proRingGeo2, proRingMat2);
         proRing2.rotation.x = Math.PI / 4;
         proRing2.rotation.y = Math.PI / 4;
@@ -1407,13 +1407,13 @@ window.addEventListener('load', () => {
         connectionGroup.add(conGroup);
 
         const conCoreGeo = new THREE.SphereGeometry(0.18, 16, 16);
-        const conCoreMat = new THREE.MeshBasicMaterial({ color: 0x8B5CF6 });
+        const conCoreMat = new THREE.MeshBasicMaterial({ color: 0x7C6BEA });
         const conCore = new THREE.Mesh(conCoreGeo, conCoreMat);
         conGroup.add(conCore);
 
         const conInnerGeo = new THREE.IcosahedronGeometry(0.55, 1);
         const conInnerMat = new THREE.MeshBasicMaterial({
-            color: 0x8B5CF6,
+            color: 0x7C6BEA,
             wireframe: true,
             transparent: true,
             opacity: 0.8
@@ -1423,7 +1423,7 @@ window.addEventListener('load', () => {
 
         const conOuterGeo = new THREE.DodecahedronGeometry(0.8, 0);
         const conOuterMat = new THREE.MeshBasicMaterial({
-            color: 0x6366F1,
+            color: 0x5D6BE6,
             wireframe: true,
             transparent: true,
             opacity: 0.35
@@ -1432,12 +1432,12 @@ window.addEventListener('load', () => {
         conGroup.add(conOuter);
 
         const conRingGeo1 = new THREE.RingGeometry(1.05, 1.07, 64);
-        const conRingMat1 = new THREE.MeshBasicMaterial({ color: 0x8B5CF6, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+        const conRingMat1 = new THREE.MeshBasicMaterial({ color: 0x7C6BEA, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
         const conRing1 = new THREE.Mesh(conRingGeo1, conRingMat1);
         conGroup.add(conRing1);
 
         const conRingGeo2 = new THREE.RingGeometry(1.15, 1.17, 64);
-        const conRingMat2 = new THREE.MeshBasicMaterial({ color: 0x6366F1, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
+        const conRingMat2 = new THREE.MeshBasicMaterial({ color: 0x5D6BE6, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
         const conRing2 = new THREE.Mesh(conRingGeo2, conRingMat2);
         conRing2.rotation.x = -Math.PI / 4;
         conRing2.rotation.y = Math.PI / 4;
@@ -1466,7 +1466,7 @@ window.addEventListener('load', () => {
             const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
             
             const lineMat = new THREE.LineBasicMaterial({
-                color: idx % 2 === 0 ? 0x38BDF8 : 0x8B5CF6,
+                color: idx % 2 === 0 ? 0x6BA5F2 : 0x7C6BEA,
                 transparent: true,
                 opacity: 0.35
             });
@@ -1477,7 +1477,7 @@ window.addEventListener('load', () => {
             const offsetPoints = points.map(p => new THREE.Vector3(p.x, p.y + (Math.sin(p.x * 2) * 0.05), p.z + (Math.cos(p.x * 2) * 0.05)));
             const offsetGeo = new THREE.BufferGeometry().setFromPoints(offsetPoints);
             const offsetMat = new THREE.LineBasicMaterial({
-                color: idx % 2 === 0 ? 0xD9E4FF : 0x6366F1,
+                color: idx % 2 === 0 ? 0xD8E7FA : 0x5D6BE6,
                 transparent: true,
                 opacity: 0.15
             });
@@ -1492,7 +1492,7 @@ window.addEventListener('load', () => {
 
         for (let i = 0; i < packetCount; i++) {
             const curveIdx = i % curves.length;
-            const color = curveIdx % 2 === 0 ? 0xD9E4FF : 0x8B5CF6;
+            const color = curveIdx % 2 === 0 ? 0xD8E7FA : 0x7C6BEA;
             
             const packetMat = new THREE.MeshBasicMaterial({
                 color: color,
@@ -1531,7 +1531,7 @@ window.addEventListener('load', () => {
         starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
         const starMat = new THREE.PointsMaterial({
             size: 0.05,
-            color: 0xD9E4FF,
+            color: 0xD8E7FA,
             transparent: true,
             opacity: 0.5
         });

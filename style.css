@@ -12301,3 +12301,685 @@ body {
     height: 26px;
     display: block;
 }
+
+/* ==========================================================================
+   AI CORE — the core sphere is a backdrop, not something behind the card
+   The WebGL scene (glowing sphere, cage, rings, particles) used to show
+   through a translucent card. The HUD panel is opaque now, so the scene is
+   pushed up and to the right and enlarged: the card overlaps its lower-left
+   quadrant and the core reads as a real object behind the instrument panel.
+   ========================================================================== */
+.ai-showcase__visual {
+    min-height: 780px;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    padding-left: 8px;
+}
+
+.orvelis-canvas-container {
+    width: 560px !important;
+    height: 560px !important;
+    top: 12% !important;
+    left: 60% !important;
+    opacity: 1 !important;
+    z-index: 0 !important;
+}
+
+/* soft halo so the core still reads on a light background */
+.ai-showcase__visual::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    top: 12%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(47, 128, 232, 0.18), rgba(47, 128, 232, 0.05) 42%, transparent 68%);
+}
+
+[data-theme="dark"] .ai-showcase__visual::before {
+    background: radial-gradient(circle, rgba(107, 165, 242, 0.20), rgba(107, 165, 242, 0.05) 42%, transparent 68%);
+}
+
+.aic-card {
+    max-width: 440px !important;
+    margin-top: 168px;
+}
+
+/* copy always paints over any ring that reaches across the gutter */
+.ai-showcase__content {
+    position: relative;
+    z-index: 3;
+}
+
+/* the section must not clip the core */
+.section--ai,
+.section--ai .section__container {
+    overflow: visible;
+}
+
+@media (max-width: 1080px) {
+    .ai-showcase__visual {
+        min-height: 0;
+        justify-content: center !important;
+        padding-left: 0;
+    }
+
+    .orvelis-canvas-container {
+        width: 460px !important;
+        height: 460px !important;
+        top: 50% !important;
+        left: 50% !important;
+        opacity: .5 !important;
+    }
+
+    .ai-showcase__visual::before {
+        width: 420px;
+        height: 420px;
+        top: 50%;
+        left: 50%;
+    }
+
+    .aic-card {
+        margin-top: 0;
+        max-width: 480px !important;
+    }
+}
+
+/* ==========================================================================
+   CLIP CARD — the on-camera scene
+   Replaces the circle-head-on-a-dome silhouette: a lit set with a softbox,
+   boom mic, plant for depth, and a person with hair, headphones and a hand
+   caught mid-gesture. Mirrored for the opposing side.
+   ========================================================================== */
+.cc-line {
+    fill: none;
+    stroke: rgba(150, 180, 232, 0.16);
+    stroke-width: 1;
+}
+
+.cc-line--soft { stroke: rgba(150, 180, 232, 0.07); }
+
+/* --- lighting rig --- */
+.cc-rig path,
+.cc-rig rect {
+    fill: none;
+    stroke: rgba(150, 180, 232, 0.3);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+}
+
+.cc-rig rect { fill: rgba(150, 180, 232, 0.07); }
+
+.cc-rig-beam {
+    fill: var(--clip-accent);
+    opacity: .10;
+    stroke: none !important;
+}
+
+/* --- set dressing --- */
+.cc-plant path,
+.cc-plant rect {
+    fill: none;
+    stroke: rgba(150, 180, 232, 0.26);
+    stroke-width: 1.4;
+    stroke-linejoin: round;
+}
+
+.cc-plant rect { fill: rgba(150, 180, 232, 0.08); }
+
+/* --- the person --- */
+.cc-body {
+    fill: #1B2942;
+    stroke: rgba(157, 192, 247, 0.3);
+    stroke-width: 1.4;
+}
+
+/* key light catches the camera-side shoulder */
+.cc-body-lit {
+    fill: var(--clip-accent);
+    opacity: .22;
+}
+
+.cc-skin {
+    fill: #2C3D5E;
+    stroke: rgba(157, 192, 247, 0.34);
+    stroke-width: 1.4;
+}
+
+.cc-hair {
+    fill: #0E1729;
+    stroke: rgba(157, 192, 247, 0.22);
+    stroke-width: 1.2;
+}
+
+.cc-detail {
+    fill: none;
+    stroke: rgba(180, 208, 250, 0.6);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+}
+
+.cc-eye {
+    fill: #CFE0FB;
+}
+
+.cc-gear {
+    fill: none;
+    stroke: var(--clip-accent);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+}
+
+.cc-gear-solid {
+    fill: var(--clip-accent);
+}
+
+/* --- boom mic --- */
+.cc-mic path,
+.cc-mic rect {
+    fill: none;
+    stroke: rgba(180, 208, 250, 0.45);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+.cc-mic rect { fill: #1B2942; }
+
+.cc-mic-grille { stroke-width: 1.1 !important; opacity: .7; }
+
+/* the speaker leans into the point, the hand beats along with it */
+.cc-person {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: cc-lean 7s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.cc-hand {
+    transform-box: fill-box;
+    transform-origin: 80% 100%;
+    animation: cc-gesture 2.6s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.is-inview .cc-person,
+.is-inview .cc-hand {
+    animation-play-state: running;
+}
+
+@keyframes cc-lean {
+    0%, 100% { transform: rotate(-0.8deg) translateY(0); }
+    50% { transform: rotate(0.8deg) translateY(-2px); }
+}
+
+@keyframes cc-gesture {
+    0%, 100% { transform: rotate(-7deg) translateY(2px); }
+    50% { transform: rotate(6deg) translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cc-person, .cc-hand { animation: none !important; }
+}
+
+/* forearm: a wide dark sleeve stroke with a hairline edge behind it */
+.cc-arm-edge {
+    fill: none;
+    stroke: rgba(157, 192, 247, 0.3);
+    stroke-width: 19;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.cc-arm {
+    fill: none;
+    stroke: #1B2942;
+    stroke-width: 16;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.cc-hand { transform-origin: 88% 96% !important; }
+
+/* ==========================================================================
+   SLIDE 02 — HOW IT WORKS
+   Was three faint hairline sketches in red/pink/green floating on white, with
+   the cards at different heights. Now three equal HUD panels on brand, each
+   carrying a real illustration of the step, a numbered plate and spec chips.
+   ========================================================================== */
+.step-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(18px, 2.4vw, 32px);
+    margin-top: clamp(40px, 5vw, 68px);
+    align-items: stretch;
+}
+
+.step-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.step-card__frame {
+    position: relative;
+    background: linear-gradient(180deg, #101A2E 0%, #060A13 100%);
+    box-shadow: inset 0 0 0 1px rgba(107, 165, 242, 0.28);
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+}
+
+.step-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.step-card__index {
+    font-family: var(--font-lcd);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--brand-500);
+    opacity: .45;
+}
+
+[data-theme="dark"] .step-card__index { color: var(--brand-300); }
+
+/* --- shared art primitives --- */
+.st-grid {
+    fill: none;
+    stroke: rgba(107, 165, 242, 0.12);
+    stroke-width: 1;
+}
+
+.st-shell {
+    fill: #16213A;
+    stroke: rgba(157, 192, 247, 0.4);
+    stroke-width: 1.4;
+}
+
+.st-halo { fill: var(--brand-500); opacity: .2; }
+
+.st-fig {
+    fill: #293A5C;
+    stroke: rgba(157, 192, 247, 0.32);
+    stroke-width: 1.2;
+}
+
+.st-framing {
+    fill: none;
+    stroke: rgba(157, 192, 247, 0.45);
+    stroke-width: 1.4;
+}
+
+.st-note text {
+    font-family: var(--font-tech);
+    font-size: 7.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    fill: rgba(157, 192, 247, 0.55);
+}
+
+/* --- 01 record --- */
+.st-rec rect { fill: rgba(8, 13, 24, 0.85); stroke: rgba(244, 63, 94, 0.5); stroke-width: 1; }
+.st-rec text { font-family: var(--font-tech); font-size: 7.5px; font-weight: 700; letter-spacing: 0.14em; fill: #F8A3AE; }
+
+.st-rec-dot {
+    fill: #F43F5E;
+    animation: st-blink 1.5s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.st-time {
+    font-family: var(--font-lcd);
+    font-size: 9px;
+    font-weight: 700;
+    fill: #CFE0FB;
+}
+
+.st-meter rect { fill: rgba(157, 192, 247, 0.2); }
+
+.st-meter-fill {
+    fill: var(--brand-400) !important;
+    animation: st-fill 5s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+@keyframes st-fill { 0%, 100% { width: 20px; } 50% { width: 58px; } }
+@keyframes st-blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+
+.st-wave rect {
+    fill: var(--brand-400);
+    opacity: .8;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: st-bar 1.2s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.st-wave rect:nth-child(2n) { animation-delay: .14s; }
+.st-wave rect:nth-child(3n) { animation-delay: .3s; }
+.st-wave rect:nth-child(5n) { animation-delay: .46s; }
+
+@keyframes st-bar { 0%, 100% { transform: scaleY(.4); } 50% { transform: scaleY(1.15); } }
+
+/* --- 02 respond --- */
+.st-clip rect:first-of-type {
+    fill: #16213A;
+    stroke: rgba(157, 192, 247, 0.34);
+    stroke-width: 1.3;
+}
+
+.st-clip--root rect:first-of-type { stroke: var(--brand-400); stroke-width: 1.6; }
+
+.st-clip-face { fill: #33456B; }
+.st-clip-bar { fill: rgba(157, 192, 247, 0.4); }
+
+.st-clip text {
+    font-family: var(--font-tech);
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    fill: rgba(157, 192, 247, 0.65);
+}
+
+.st-branch {
+    fill: none;
+    stroke: var(--brand-400);
+    stroke-width: 1.4;
+    stroke-dasharray: 3 4;
+    opacity: .75;
+}
+
+.st-branch-dot { fill: var(--brand-400); }
+
+.st-queue rect { fill: rgba(157, 192, 247, 0.12); }
+
+.st-queue text {
+    font-family: var(--font-lcd);
+    font-size: 10px;
+    font-weight: 700;
+    fill: rgba(157, 192, 247, 0.7);
+}
+
+/* --- 03 vote --- */
+.st-vote text {
+    font-family: var(--font-tech);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.17em;
+    fill: rgba(157, 192, 247, 0.7);
+}
+
+.st-vote-pct { font-family: var(--font-lcd) !important; font-size: 11px !important; fill: #DCE8FB !important; }
+.st-vote-track { fill: rgba(157, 192, 247, 0.16); }
+
+.st-vote-fill {
+    animation: st-vote 3.4s var(--ease-out-expo) forwards;
+    animation-play-state: paused;
+    width: 0;
+}
+
+.st-vote-fill--pro { fill: var(--brand-400); --st-w: 181px; }
+.st-vote-fill--con { fill: var(--brand-alt); --st-w: 71px; animation-delay: .2s; }
+
+@keyframes st-vote { from { width: 0; } to { width: var(--st-w); } }
+
+.st-voters circle { fill: #33456B; stroke: rgba(157, 192, 247, 0.3); stroke-width: 1; }
+
+.st-voters text {
+    font-family: var(--font-tech);
+    font-size: 7.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    fill: rgba(157, 192, 247, 0.6);
+}
+
+.st-verdict rect { fill: rgba(47, 128, 232, 0.12); stroke: rgba(107, 165, 242, 0.32); stroke-width: 1; }
+.st-verdict-dot { fill: #10B981; animation: st-blink 2.2s ease-in-out infinite; animation-play-state: paused; }
+
+.st-verdict-label {
+    font-family: var(--font-tech);
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    fill: var(--brand-300);
+}
+
+.st-verdict-value {
+    font-family: var(--font-tech);
+    font-size: 7.5px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    fill: rgba(157, 192, 247, 0.75);
+}
+
+.step-card.is-inview .st-rec-dot,
+.step-card.is-inview .st-meter-fill,
+.step-card.is-inview .st-wave rect,
+.step-card.is-inview .st-vote-fill,
+.step-card.is-inview .st-verdict-dot {
+    animation-play-state: running;
+}
+
+/* --- copy under each panel --- */
+.step-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 18px 2px 0;
+}
+
+/* the step index sits on the tag line, clear of the panel chamfer */
+.step-card__index + .step-card__tag { margin-top: -2px; }
+
+.step-card__tag {
+    font-family: var(--font-tech);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--brand-600);
+}
+
+[data-theme="dark"] .step-card__tag { color: var(--brand-300); }
+
+.step-card__body h3 {
+    font-family: var(--font-display);
+    font-size: clamp(13px, 1.15vw, 16px);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.step-card__body p {
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.step-card__chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px; }
+
+.step-card__chips em {
+    font-style: normal;
+    padding: 4px 9px 4px 7px;
+    clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+    background: rgba(47, 128, 232, 0.10);
+    font-family: var(--font-tech);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--brand-600);
+}
+
+[data-theme="dark"] .step-card__chips em {
+    background: rgba(216, 231, 250, 0.08);
+    color: var(--brand-300);
+}
+
+@media (max-width: 900px) {
+    .step-grid { grid-template-columns: minmax(0, 1fr); gap: 34px; max-width: 520px; margin-inline: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .step-art * { animation: none !important; }
+    .st-vote-fill--pro { width: 181px; }
+    .st-vote-fill--con { width: 71px; }
+}
+
+/* ==========================================================================
+   MOBILE PASS — 390px and below
+   The desktop rhythm (100vh sections, 120px padding, 440px panels) left huge
+   empty bands and pushed panels past the viewport on a phone.
+   ========================================================================== */
+@media (max-width: 760px) {
+
+    /* --- rhythm: sections size to their content, not the viewport --- */
+    .section {
+        min-height: 0 !important;
+        padding: 72px 20px !important;
+        display: block !important;
+    }
+
+    #hero {
+        min-height: 100svh !important;
+        padding-top: 88px !important;
+    }
+
+    .section__container {
+        padding: 0 !important;
+    }
+
+    .section__header {
+        text-align: left !important;
+        align-items: flex-start !important;
+        margin-bottom: 28px !important;
+    }
+
+    .section__header--center,
+    .section__header--stack {
+        text-align: left !important;
+        align-items: flex-start !important;
+    }
+
+    .section__title {
+        font-size: clamp(20px, 6.6vw, 27px);
+        line-height: 1.22;
+    }
+
+    /* --- HUD labels need a floor size on a phone --- */
+    .section__label,
+    .step-card__tag,
+    .aic-tag,
+    .aic-mod-tag,
+    .arena-v3__eyebrow-tag,
+    .clip-card__meta-item {
+        font-size: 10px !important;
+        letter-spacing: 0.13em !important;
+    }
+
+    .hero__eyebrow-pill,
+    .hero__mark,
+    .hero__eyebrow-text {
+        font-size: 11px !important;
+    }
+
+    /* --- AI Core: the panel fits the screen --- */
+    .aic-card {
+        max-width: 100% !important;
+        width: 100%;
+        margin-top: 0 !important;
+        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px)) !important;
+    }
+
+    .aic-strip { padding: 10px 26px 10px 30px; }
+    .aic-strip-id { font-size: 8px; letter-spacing: 0.12em; }
+    .aic-head { padding: 16px 16px 14px; gap: 11px; }
+    .aic-head-text b { font-size: 15px; }
+    .aic-head-text i { font-size: 8.5px; letter-spacing: 0.1em; }
+    .aic-online { padding: 4px 8px; font-size: 8px; }
+    .aic-now { margin: 0 16px; padding: 10px 12px; }
+    .aic-now-body i { font-size: 11.5px; }
+    .aic-block { padding: 16px !important; }
+    .aic-score-num { font-size: 44px; }
+    .aic-copy { font-size: 12.5px; }
+
+    .aic-foot-item { padding: 11px 12px; }
+    .aic-foot-item:first-child { padding-left: 26px; }
+    .aic-foot-item:last-child { padding-right: 26px; }
+    .aic-foot-item b { font-size: 19px; }
+    .aic-foot-item i { font-size: 7.5px; letter-spacing: 0.08em; white-space: nowrap; }
+
+    /* the WebGL core sits behind an opaque panel here — never build it */
+    .orvelis-canvas-container,
+    .ai-showcase__visual::before {
+        display: none !important;
+    }
+
+    .ai-showcase__visual { min-height: 0 !important; padding-left: 0; }
+    .ai-core-layout { gap: 40px !important; }
+    .aic-mod { padding: 18px 0 18px 48px !important; }
+    .aic-mod::before { left: 18px; }
+
+    /* --- arena (04) --- */
+    .arena-showcase__header { gap: 14px; }
+
+    .arena-separator {
+        margin: 6px 0 !important;
+        display: flex !important;
+        justify-content: center;
+    }
+
+    .arena-separator .data-line { display: none; }
+    .clip-card__caption { font-size: 12px; }
+    .clip-card__frame { min-height: 0; }
+
+    /* --- steps (02) --- */
+    .step-grid { margin-top: 28px; gap: 28px; }
+    .step-card__body { padding-top: 14px; gap: 8px; }
+    .step-card__index { font-size: 22px; }
+
+    /* --- arena scene (01) --- */
+    .arena-v3 { padding: 72px 0 64px !important; }
+    .arena-v3__inner { padding: 0 20px; }
+    .arena-v3__step { grid-template-columns: 28px 24px 1fr; gap: 11px; }
+    .arena-v3__step-icon, .arena-v3__step-icon svg { width: 19px; height: 19px; }
+
+    /* --- hero --- */
+    .hero__lede { font-size: 14.5px; }
+    .app-downloads { gap: 10px; }
+    .app-dl-btn { min-width: 0; flex: 1 1 46%; padding: 11px 14px !important; }
+}
+
+@media (max-width: 420px) {
+    .section { padding: 60px 16px !important; }
+    .arena-v3__inner { padding: 0 16px; }
+    .aic-foot { flex-direction: row; }
+    .aic-foot-item i { font-size: 7px; }
+    .app-downloads { flex-direction: column; }
+    .app-dl-btn { flex: 1 1 auto; width: 100%; }
+}
+
+@media (max-width: 760px) {
+    /* the fill must follow the smaller chamfer, or the edge colour shows through */
+    .aic-card::before {
+        clip-path: polygon(0 0, calc(100% - 17px) 0, 100% 17px, 100% 100%, 17px 100%, 0 calc(100% - 17px)) !important;
+    }
+
+    .aic-strip { padding-right: 34px; }
+    .aic-strip-id { font-size: 7.5px; }
+    .aic-foot-item:first-child { padding-left: 34px; }
+    .aic-foot-item:last-child { padding-right: 34px; }
+}
+
+@media (max-width: 760px) {
+    /* clear the fixed nav button when a section lands at the top of the screen */
+    .arena-v3 { padding-top: 96px !important; }
+}
