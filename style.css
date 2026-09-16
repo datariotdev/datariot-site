@@ -13634,3 +13634,79 @@ body {
     -webkit-mask-image: radial-gradient(circle, #000 30%, transparent 72%);
     mask-image: radial-gradient(circle, #000 30%, transparent 72%);
 }
+
+/* ==========================================================================
+   INK BANDS FADE IN AND OUT
+   A flat #070B14 fill met the light page along a ruler-straight line at both
+   ends of each band. The ink now lives on a masked layer that dissolves over
+   --band-fade at the top and bottom, so the page eases into the band and back
+   out. The fade zone is shorter than the section's top padding, so no light
+   text ever lands on a light background.
+   ========================================================================== */
+.section.band-ink,
+.section.section--global.band-ink,
+[data-theme="dark"] .section.band-ink,
+[data-theme="dark"] .section.section--global.band-ink {
+    --band-fade: 190px;
+    --band-ink: #070B14;
+    background: transparent !important;
+}
+
+[data-theme="dark"] .section.band-ink,
+[data-theme="dark"] .section.section--global.band-ink {
+    --band-ink: #0C111C;
+}
+
+.band-ink::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(900px 520px at 20% 12%, rgba(47, 128, 232, 0.20), transparent 62%),
+        radial-gradient(760px 480px at 88% 88%, rgba(124, 107, 234, 0.16), transparent 64%),
+        var(--band-ink);
+    -webkit-mask-image: linear-gradient(180deg,
+        transparent 0,
+        #000 var(--band-fade),
+        #000 calc(100% - var(--band-fade)),
+        transparent 100%);
+    mask-image: linear-gradient(180deg,
+        transparent 0,
+        #000 var(--band-fade),
+        #000 calc(100% - var(--band-fade)),
+        transparent 100%);
+}
+
+/* the fade is the transition now — no hairline seam */
+.band-ink::after {
+    display: none !important;
+}
+
+/* keep content clear of the fade zone */
+.band-ink {
+    padding-top: max(220px, 160px) !important;
+    padding-bottom: 220px !important;
+}
+
+@media (max-width: 760px) {
+    .section.band-ink,
+    .section.section--global.band-ink,
+    [data-theme="dark"] .section.band-ink,
+    [data-theme="dark"] .section.section--global.band-ink {
+        --band-fade: 80px;
+    }
+
+    .band-ink {
+        padding-top: 120px !important;
+        padding-bottom: 110px !important;
+    }
+}
+
+/* A legacy rule — [data-theme="light"] .section--debates::before { opacity: .08 }
+   — outranked .band-ink::before and rendered the arena's ink layer at 8%, so
+   that band never darkened while the global one did. */
+.section.band-ink::before {
+    opacity: 1 !important;
+}
