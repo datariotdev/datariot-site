@@ -14,8 +14,8 @@
 
 :root {
     /* --- Light Theme (Default) --- */
-    --bg: #ffffff;
-    --bg-elevated: #f8fafc;
+    --bg: #F1F5FC;
+    --bg-elevated: #FFFFFF;
     --surface: rgba(241, 245, 249, 0.7);
     --surface-2: rgba(226, 232, 240, 0.8);
     --border: rgba(0, 0, 0, 0.08);
@@ -101,7 +101,7 @@
 }
 
 [data-theme="light"] {
-    --bg: #ffffff;
+    --bg: #F1F5FC;
     --bg-elevated: #ffffff;
     --surface: #ffffff;
     --surface-2: #f8fafc;
@@ -12235,52 +12235,6 @@ html.lenis body {
 .aic-foot-item:last-child { padding-right: 32px; }
 
 
-/* ==========================================================================
-   AMBIENT BACKDROP
-   Restores the page-wide glow the old stylesheet drew with two animated
-   blur(150px) layers. Plain fixed gradients: no filter, no animation, and
-   it sits behind everything at z-index -1.
-   ========================================================================== */
-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-        radial-gradient(1100px 620px at 82% -6%, rgba(47, 128, 232, 0.13), transparent 62%),
-        radial-gradient(900px 560px at -8% 34%, rgba(124, 107, 234, 0.09), transparent 64%),
-        radial-gradient(800px 520px at 44% 104%, rgba(47, 128, 232, 0.10), transparent 64%);
-}
-
-body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    opacity: .5;
-    background-image:
-        linear-gradient(rgba(47, 128, 232, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(47, 128, 232, 0.05) 1px, transparent 1px);
-    background-size: 108px 108px;
-    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 8%, transparent 78%);
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 8%, transparent 78%);
-}
-
-[data-theme="dark"] body::before {
-    background:
-        radial-gradient(1100px 620px at 82% -6%, rgba(107, 165, 242, 0.14), transparent 62%),
-        radial-gradient(900px 560px at -8% 34%, rgba(124, 107, 234, 0.10), transparent 64%),
-        radial-gradient(800px 520px at 44% 104%, rgba(107, 165, 242, 0.10), transparent 64%);
-}
-
-[data-theme="dark"] body::after {
-    background-image:
-        linear-gradient(rgba(216, 231, 250, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(216, 231, 250, 0.045) 1px, transparent 1px);
-}
-
 /* body paints an opaque page colour, so give it its own stacking context —
    otherwise the z-index:-1 backdrop layers fall behind it and never show. */
 body {
@@ -13398,4 +13352,244 @@ body {
 @media (max-width: 760px) {
     /* clear the fixed nav button, as the other sections do */
     .iface { padding-top: 96px !important; }
+}
+
+/* ==========================================================================
+   PAGE BACKDROP
+   The page used to be one flat white sheet end to end. This is a single fixed
+   stack behind everything: brand light, a blueprint grid, measure rails down
+   the content edges, and a grain tile. All static — no filters, no animation,
+   one paint.
+   ========================================================================== */
+.page-fx {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.page-fx > span {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+/* --- light --- */
+.page-fx__glow {
+    background:
+        radial-gradient(1200px 700px at 84% -8%, rgba(47, 128, 232, 0.20), transparent 62%),
+        radial-gradient(900px 620px at -10% 26%, rgba(124, 107, 234, 0.14), transparent 64%),
+        radial-gradient(1000px 640px at 30% 108%, rgba(47, 128, 232, 0.16), transparent 64%),
+        linear-gradient(180deg, #FAFCFF 0%, #E8EFFA 52%, #F3F7FD 100%);
+}
+
+[data-theme="dark"] .page-fx__glow {
+    background:
+        radial-gradient(1200px 700px at 84% -8%, rgba(107, 165, 242, 0.16), transparent 62%),
+        radial-gradient(900px 620px at -10% 26%, rgba(124, 107, 234, 0.12), transparent 64%),
+        radial-gradient(1000px 640px at 30% 108%, rgba(107, 165, 242, 0.11), transparent 64%),
+        linear-gradient(180deg, #0A0C12 0%, #070A11 52%, #0B0E16 100%);
+}
+
+/* --- blueprint grid: fine cells with a heavier every-fifth line --- */
+.page-fx__grid {
+    background-image:
+        linear-gradient(rgba(47, 128, 232, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(47, 128, 232, 0.16) 1px, transparent 1px),
+        linear-gradient(rgba(47, 128, 232, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(47, 128, 232, 0.07) 1px, transparent 1px);
+    background-size: 320px 320px, 320px 320px, 64px 64px, 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 92% 80% at 50% 42%, #000 4%, rgba(0, 0, 0, 0.45) 46%, transparent 84%);
+    mask-image: radial-gradient(ellipse 92% 80% at 50% 42%, #000 4%, rgba(0, 0, 0, 0.45) 46%, transparent 84%);
+}
+
+[data-theme="dark"] .page-fx__grid {
+    background-image:
+        linear-gradient(rgba(157, 192, 247, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(157, 192, 247, 0.12) 1px, transparent 1px),
+        linear-gradient(rgba(157, 192, 247, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(157, 192, 247, 0.055) 1px, transparent 1px);
+}
+
+/* --- measure rails: hairlines with tick marks down the content edges --- */
+.page-fx__rails {
+    --rail: min(640px, 46vw);
+    background-image:
+        /* left rail: solid line + ticks */
+        linear-gradient(rgba(47, 128, 232, 0.28), rgba(47, 128, 232, 0.28)),
+        repeating-linear-gradient(to bottom, rgba(47, 128, 232, 0.4) 0 9px, transparent 9px 46px),
+        /* right rail */
+        linear-gradient(rgba(47, 128, 232, 0.28), rgba(47, 128, 232, 0.28)),
+        repeating-linear-gradient(to bottom, rgba(47, 128, 232, 0.4) 0 9px, transparent 9px 46px);
+    background-repeat: no-repeat;
+    background-size:
+        1px 100%, 7px 100%,
+        1px 100%, 7px 100%;
+    background-position:
+        calc(50% - var(--rail)) 0, calc(50% - var(--rail) + 1px) 0,
+        calc(50% + var(--rail)) 0, calc(50% + var(--rail) - 7px) 0;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+    opacity: .55;
+}
+
+[data-theme="dark"] .page-fx__rails { opacity: .4; }
+
+/* --- grain: a 160px noise tile, kills the plastic flatness --- */
+.page-fx__grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    opacity: .05;
+    mix-blend-mode: multiply;
+}
+
+[data-theme="dark"] .page-fx__grain {
+    opacity: .1;
+    mix-blend-mode: screen;
+}
+
+@media (max-width: 760px) {
+    .page-fx__rails { display: none; }
+    .page-fx__grid { background-size: 200px 200px, 200px 200px, 48px 48px, 48px 48px; }
+}
+
+/* ==========================================================================
+   INK BAND
+   One long light page has no rhythm. The arena runs as a full-bleed dark band
+   in both themes — in light it is the cinema the dark clip cards belong in,
+   in dark it lifts slightly so the seam still reads. Local token overrides
+   flip the section's own text instead of restyling every child.
+   ========================================================================== */
+.section.band-ink {
+    --text-primary: #EEF1F7;
+    --text-secondary: #9AA3B8;
+    --text-tertiary: #6A7488;
+    --border: rgba(216, 231, 250, 0.10);
+    --border-hover: rgba(216, 231, 250, 0.18);
+    --bg-elevated: #10151F;
+    --surface: #0E121B;
+    --surface-2: #151A25;
+    --brand-600: #9DC0F7;
+    --brand-500: #6BA5F2;
+
+    position: relative;
+    background: #070B14 !important;
+    color: var(--text-primary) !important;
+    isolation: isolate;
+}
+
+[data-theme="dark"] .section.band-ink {
+    background: #0C111C !important;
+}
+
+/* the band carries its own light and structure, sitting over the page grid */
+.band-ink::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(900px 520px at 20% 0%, rgba(47, 128, 232, 0.20), transparent 62%),
+        radial-gradient(760px 480px at 88% 100%, rgba(124, 107, 234, 0.16), transparent 64%);
+}
+
+/* hairline seams so the band reads as a deliberate plate, not a gap */
+.band-ink::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(107, 165, 242, 0.55) 22%, rgba(107, 165, 242, 0.55) 78%, transparent);
+}
+
+.band-ink .section__title,
+.band-ink h2,
+.band-ink h3,
+.band-ink h4 {
+    color: var(--text-primary) !important;
+}
+
+.band-ink .section__label { color: var(--brand-600) !important; }
+
+/* The blanket `margin: 0` in the page's inline reset wiped .main's left
+   offset, so below ~1400px the content ran under the fixed sidebar. The dark
+   band made it obvious. Restore the offset on desktop widths. */
+@media (min-width: 1025px) {
+    .main {
+        margin-left: var(--sidebar-width) !important;
+    }
+}
+
+/* these two painted flat --bg-main over the page backdrop, flattening the
+   grid and glow behind them */
+.section--global,
+.section--interface {
+    background: transparent;
+}
+
+/* second ink band closes the page's rhythm: light → ink → light → ink → light */
+.section.section--global.band-ink {
+    background: #070B14 !important;
+}
+
+[data-theme="dark"] .section.section--global.band-ink {
+    background: #0C111C !important;
+}
+
+/* --- pieces inside the ink bands that were drawn for a white page --- */
+.band-ink .cluster-box {
+    background: rgba(216, 231, 250, 0.05) !important;
+    border-color: rgba(216, 231, 250, 0.12) !important;
+}
+
+.band-ink .cluster-box h4 { color: #EEF1F7 !important; }
+.band-ink .cluster-box p { color: #9AA3B8 !important; }
+.band-ink .cluster-box__tag { color: var(--brand-300) !important; }
+
+.band-ink .stat-box {
+    background: rgba(216, 231, 250, 0.05) !important;
+    border-color: rgba(216, 231, 250, 0.12) !important;
+}
+
+.band-ink .stat-box__label { color: #8B93A8 !important; }
+.band-ink .stat-box__value { color: var(--brand-300) !important; }
+
+.band-ink .arena-showcase,
+.band-ink .arena-topic-alt {
+    background: transparent !important;
+}
+
+.band-ink .vote-btn {
+    background: rgba(216, 231, 250, 0.05) !important;
+    border-color: rgba(216, 231, 250, 0.14) !important;
+    color: #CBD4E6 !important;
+}
+
+.band-ink .vote-btn:hover {
+    background: rgba(107, 165, 242, 0.14) !important;
+    border-color: rgba(107, 165, 242, 0.4) !important;
+    color: #EEF1F7 !important;
+}
+
+.band-ink .topic-content { color: #DDE3EF !important; }
+.band-ink .handle,
+.band-ink .timer-label { color: #8B93A8 !important; }
+
+@media (max-width: 760px) {
+    /* side tag and handle collided with no gap */
+    .panel-header {
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 6px 12px;
+        margin-bottom: 12px !important;
+    }
+
+    .panel-header .handle { font-size: 12px; }
 }

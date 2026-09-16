@@ -29,11 +29,11 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=3.6.0" />
-    <!-- Cache-Bust-Hash: a6683afd-b7be-4138-8034-2ba59114b4d1 -->
+    <link rel="stylesheet" href="style.css?v=3.7.0" />
+    <!-- Cache-Bust-Hash: d9a66fa7-3fa3-4566-a4e3-c2139f22a7c0 -->
     <style>
         :root {
-            --bg-main: #ffffff;
+            --bg-main: #F1F5FC;
             --text-primary: #050505;
             --accent: #2F80E8;
         }
@@ -320,6 +320,15 @@
 </head>
 
 <body>
+
+    <!-- Page backdrop: one fixed stack of light, structure and grain so the
+         page is not a single flat sheet from top to bottom. -->
+    <div class="page-fx" aria-hidden="true">
+        <span class="page-fx__glow"></span>
+        <span class="page-fx__grid"></span>
+        <span class="page-fx__rails"></span>
+        <span class="page-fx__grain"></span>
+    </div>
 
 
     <!-- Ambient glow effects -->
@@ -1221,7 +1230,7 @@
         </section>
 
         <!-- DEBATE ARENA MOCKUP SECTION -->
-        <section class="section section--debates" id="debates" data-inview>
+        <section class="section section--debates band-ink" id="debates" data-inview>
             <div id="canvas-3d-end"></div>
             <div class="section__container">
                 <div class="section__header">
@@ -1651,7 +1660,7 @@
 
 
         <!-- GLOBAL NETWORK SECTION (Restored to main flow) -->
-        <section class="section section--global" id="global">
+        <section class="section section--global band-ink" id="global" data-inview>
             <div class="section__container">
                 <div class="section__header">
                     <span class="section__label">[ 06 — GLOBAL NETWORK ]</span>
@@ -1703,7 +1712,7 @@
                 <div class="beta__layout">
                     <div class="beta__info">
                         <div class="section__header">
-                            <span class="section__label">05 — Early Access</span>
+                            <span class="section__label">[ 07 — EARLY ACCESS ]</span>
                             <h2 class="section__title">Get in before<br />everyone else.</h2>
                         </div>
                         <div class="beta__perks">
@@ -1817,9 +1826,9 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=3.6.0"></script>
+    <script defer src="3d-fx.js?v=3.7.0"></script>
 
-    <script defer src="script.js?v=3.6.0"></script>
+    <script defer src="script.js?v=3.7.0"></script>
 </body>
 
 </html>
