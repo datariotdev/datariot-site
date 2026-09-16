@@ -29,8 +29,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=3.5.0" />
-    <!-- Cache-Bust-Hash: 79ecd56e-3801-45ba-883a-38d666ff236b -->
+    <link rel="stylesheet" href="style.css?v=3.6.0" />
+    <!-- Cache-Bust-Hash: a6683afd-b7be-4138-8034-2ba59114b4d1 -->
     <style>
         :root {
             --bg-main: #ffffff;
@@ -1130,25 +1130,92 @@
         </section>
 
         <!-- APP INTERFACE SHOWCASE -->
-        <section class="section section--interface" id="interface">
+        <section class="section section--interface iface" id="interface" data-inview>
             <div class="section__container">
-                <div class="section__header section__header--center">
-                    <span class="section__label">[ 03 — THE INTERFACE ]</span>
-                    <h2 class="section__title">ELEGANCE IN EVERY INTERACTION.</h2>
+
+                <div class="iface__eyebrow">
+                    <span class="iface__eyebrow-tag">[ 03 — THE INTERFACE ]</span>
+                    <span class="iface__eyebrow-rule"></span>
+                    <span class="iface__eyebrow-meta">BUILT FOR SHORT VIDEO&nbsp;&nbsp;//&nbsp;&nbsp;3 SCREENS</span>
                 </div>
-                <div class="interface__triple-screens">
-                    <div class="interface__screen-card">
-                        <img src="assets/smart-feed-real.jpg" alt="Smart Feed"
-                            style="width: 100%; height: auto; display: block;" />
-                    </div>
-                    <div class="interface__screen-card">
-                        <img src="assets/debate-threads-real.jpg" alt="Debate Threads"
-                            style="width: 100%; height: auto; display: block;" />
-                    </div>
-                    <div class="interface__screen-card">
-                        <img src="assets/creator-dna-real.jpg" alt="Creator DNA"
-                            style="width: 100%; height: auto; display: block;" />
-                    </div>
+
+                <div class="iface__head">
+                    <h2 class="section__title">Elegance in every interaction.</h2>
+                    <p class="iface__lede">
+                        Three screens carry the whole loop: a feed that ranks reasoning, threads that
+                        answer on camera, and a profile that tracks how you actually argue.
+                    </p>
+                </div>
+
+                <div class="iface__rack">
+
+                    <figure class="dev">
+                        <div class="dev__plate">
+                            <span class="dev__corner dev__corner--tl" aria-hidden="true"></span>
+                            <span class="dev__corner dev__corner--br" aria-hidden="true"></span>
+                            <div class="dev__phone">
+                                <span class="dev__notch" aria-hidden="true"></span>
+                                <img class="dev__shot" src="assets/smart-feed-real.jpg" alt="The Datariot feed, ranking clips by reasoning" loading="lazy" />
+                                <span class="dev__sheen" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <figcaption class="dev__cap">
+                            <span class="dev__index">01</span>
+                            <span class="dev__tag">[ SMART FEED ]</span>
+                            <h3>Ranked by reasoning</h3>
+                            <p>A vertical feed that surfaces the clips worth answering, matched to what you actually debate.</p>
+                            <span class="dev__chips"><em>VERTICAL FEED</em><em>97% MATCH</em></span>
+                        </figcaption>
+                    </figure>
+
+                    <figure class="dev dev--lead">
+                        <div class="dev__plate">
+                            <span class="dev__corner dev__corner--tl" aria-hidden="true"></span>
+                            <span class="dev__corner dev__corner--br" aria-hidden="true"></span>
+                            <div class="dev__phone">
+                                <span class="dev__notch" aria-hidden="true"></span>
+                                <img class="dev__shot" src="assets/debate-threads-real.jpg" alt="Debate threads: clips branching into video replies" loading="lazy" />
+                                <span class="dev__sheen" aria-hidden="true"></span>
+                            </div>
+
+                            <!-- HUD callouts; the plate's chamfer is drawn by a
+                                 pseudo-element, so nothing here gets clipped -->
+                            <span class="dev__call dev__call--a">
+                                <i aria-hidden="true"></i>
+                                AI TOPIC CLUSTERS
+                            </span>
+                            <span class="dev__call dev__call--b">
+                                <i aria-hidden="true"></i>
+                                TAP TO REPLY ON CAMERA
+                            </span>
+                        </div>
+                        <figcaption class="dev__cap">
+                            <span class="dev__index">02</span>
+                            <span class="dev__tag">[ DEBATE THREADS ]</span>
+                            <h3>Every clip opens a thread</h3>
+                            <p>Answers stack under the original take, face first, so the whole exchange stays watchable end to end.</p>
+                            <span class="dev__chips"><em>VIDEO REPLIES</em><em>THREADED</em></span>
+                        </figcaption>
+                    </figure>
+
+                    <figure class="dev">
+                        <div class="dev__plate">
+                            <span class="dev__corner dev__corner--tl" aria-hidden="true"></span>
+                            <span class="dev__corner dev__corner--br" aria-hidden="true"></span>
+                            <div class="dev__phone">
+                                <span class="dev__notch" aria-hidden="true"></span>
+                                <img class="dev__shot" src="assets/creator-dna-real.jpg" alt="Creator DNA: a personal reasoning profile scored by Orvelis" loading="lazy" />
+                                <span class="dev__sheen" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <figcaption class="dev__cap">
+                            <span class="dev__index">03</span>
+                            <span class="dev__tag">[ CREATOR DNA ]</span>
+                            <h3>Your reasoning profile</h3>
+                            <p>Orvelis keeps a running read of your logic, tempo and evidence across every clip you post.</p>
+                            <span class="dev__chips"><em>LQI PROFILE</em><em>ORVELIS AI</em></span>
+                        </figcaption>
+                    </figure>
                 </div>
             </div>
         </section>
@@ -1750,9 +1817,9 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=3.5.0"></script>
+    <script defer src="3d-fx.js?v=3.6.0"></script>
 
-    <script defer src="script.js?v=3.5.0"></script>
+    <script defer src="script.js?v=3.6.0"></script>
 </body>
 
 </html>

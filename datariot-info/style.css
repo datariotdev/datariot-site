@@ -12983,3 +12983,419 @@ body {
     /* clear the fixed nav button when a section lands at the top of the screen */
     .arena-v3 { padding-top: 96px !important; }
 }
+
+/* ==========================================================================
+   SLIDE 03 — THE INTERFACE
+   Was three bare screenshots floating with heavy drop shadows and no framing,
+   labels or relation to the rest of the page. The real screens stay — they
+   are the product proof — but each now sits in a chamfered device plate with
+   bracket corners, an index, a caption and spec chips, and the lead device
+   carries HUD callouts.
+   ========================================================================== */
+.iface {
+    background: transparent !important;
+    padding: 120px 0 !important;
+}
+
+.iface__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: clamp(26px, 3vw, 40px);
+}
+
+.iface__eyebrow-tag,
+.iface__eyebrow-meta {
+    font-family: var(--font-tech);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+}
+
+.iface__eyebrow-tag { color: var(--brand-600); }
+[data-theme="dark"] .iface__eyebrow-tag { color: var(--brand-300); }
+.iface__eyebrow-meta { color: var(--text-tertiary); }
+
+.iface__eyebrow-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent 85%);
+}
+
+.iface__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: end;
+    margin-bottom: clamp(44px, 5vw, 72px);
+}
+
+.iface .section__title {
+    text-align: left !important;
+    margin: 0 !important;
+}
+
+.iface__lede {
+    font-family: var(--font-sans);
+    font-size: clamp(14px, 1.15vw, 16px);
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 48ch;
+}
+
+/* --- the rack --- */
+.iface__rack {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 44px);
+    align-items: start;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.dev {
+    margin: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* the plate: chamfered instrument housing behind the phone */
+.dev__plate {
+    position: relative;
+    padding: 18px;
+    background: rgba(47, 128, 232, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(47, 128, 232, 0.22);
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+[data-theme="dark"] .dev__plate {
+    background: rgba(216, 231, 250, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(216, 231, 250, 0.14);
+}
+
+.dev--lead .dev__plate {
+    background: rgba(47, 128, 232, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(47, 128, 232, 0.35);
+}
+
+[data-theme="dark"] .dev--lead .dev__plate {
+    background: rgba(107, 165, 242, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(107, 165, 242, 0.3);
+}
+
+.dev__corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: var(--brand-500);
+    opacity: .8;
+    pointer-events: none;
+}
+
+.dev__corner--tl { top: 7px; left: 7px; border-top: 2px solid; border-left: 2px solid; }
+.dev__corner--br { bottom: 7px; right: 7px; border-bottom: 2px solid; border-right: 2px solid; }
+
+.dev__index {
+    position: absolute;
+    top: 10px;
+    right: 26px;
+    font-family: var(--font-lcd);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--brand-500);
+    opacity: .55;
+}
+
+/* the handset */
+.dev__phone {
+    position: relative;
+    aspect-ratio: 1080 / 2316;
+    border-radius: 22px;
+    overflow: hidden;
+    background: #05070C;
+    box-shadow:
+        0 0 0 6px #0B1220,
+        0 0 0 7px rgba(157, 192, 247, 0.28),
+        0 22px 48px rgba(11, 18, 32, 0.22);
+}
+
+[data-theme="dark"] .dev__phone {
+    box-shadow:
+        0 0 0 6px #10151F,
+        0 0 0 7px rgba(157, 192, 247, 0.22),
+        0 22px 48px rgba(0, 0, 0, 0.6);
+}
+
+.dev--lead .dev__phone { border-radius: 24px; }
+
+.dev__shot {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+
+.dev__notch {
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34%;
+    height: 12px;
+    border-radius: 0 0 8px 8px;
+    background: #05070C;
+    z-index: 2;
+}
+
+/* a single diagonal sheen so the glass reads as glass */
+.dev__sheen {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(118deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 34%);
+}
+
+/* --- HUD callouts on the lead device --- */
+.dev__call {
+    position: absolute;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px 5px 8px;
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+    background: var(--bg-elevated);
+    box-shadow: inset 0 0 0 1px rgba(47, 128, 232, 0.4), 0 8px 20px rgba(11, 18, 32, 0.16);
+    font-family: var(--font-tech);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--brand-600);
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .dev__call {
+    background: #0E131D;
+    box-shadow: inset 0 0 0 1px rgba(107, 165, 242, 0.34), 0 8px 20px rgba(0, 0, 0, 0.5);
+    color: var(--brand-300);
+}
+
+.dev__call i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brand-500);
+    flex: none;
+}
+
+/* leader line back to the screen */
+.dev__call::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 26px;
+    height: 1px;
+    background: var(--brand-500);
+    opacity: .5;
+}
+
+.dev__call--a { top: 16%; left: -30px; }
+.dev__call--a::after { right: -26px; }
+
+.dev__call--b { bottom: 20%; right: -30px; }
+.dev__call--b::after { left: -26px; }
+
+/* --- caption --- */
+.dev__cap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 2px 0;
+}
+
+.dev__tag {
+    font-family: var(--font-tech);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--brand-600);
+}
+
+[data-theme="dark"] .dev__tag { color: var(--brand-300); }
+
+.dev__cap h3 {
+    font-family: var(--font-display);
+    font-size: clamp(12.5px, 1.1vw, 15px);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.dev__cap p {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.dev__chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px; }
+
+.dev__chips em {
+    font-style: normal;
+    padding: 4px 9px 4px 7px;
+    clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+    background: rgba(47, 128, 232, 0.10);
+    font-family: var(--font-tech);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--brand-600);
+}
+
+[data-theme="dark"] .dev__chips em {
+    background: rgba(216, 231, 250, 0.08);
+    color: var(--brand-300);
+}
+
+@media (max-width: 1080px) {
+    .iface__head { grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
+    .dev__call { display: none; }
+}
+
+@media (max-width: 860px) {
+    .iface__rack { grid-template-columns: minmax(0, 1fr); gap: 40px; max-width: 420px; }
+    .iface__eyebrow-meta { display: none; }
+}
+
+@media (max-width: 760px) {
+    .iface { padding: 72px 0 !important; }
+    .iface__eyebrow-tag { font-size: 10px !important; }
+}
+
+/* slide 03 corrections: size the handsets down, and let the callouts escape
+   the plate (clip-path on the plate was cropping them) */
+.dev { position: relative; }
+
+.dev__plate {
+    width: fit-content;
+    margin: 0 auto;
+    padding: 15px !important;
+}
+
+.dev__phone {
+    width: 208px;
+    max-width: 100%;
+}
+
+.dev--lead .dev__phone { width: 234px; }
+
+.dev__index { right: 22px; top: 8px; }
+
+.dev__call--a { top: 20%; left: -8px; }
+.dev__call--b { bottom: 26%; right: -8px; }
+
+.dev__cap { max-width: 300px; margin: 0 auto; }
+
+@media (max-width: 1180px) {
+    .dev__phone { width: 178px; }
+    .dev--lead .dev__phone { width: 200px; }
+}
+
+@media (max-width: 860px) {
+    .dev__phone,
+    .dev--lead .dev__phone { width: 224px; }
+    .dev__cap { max-width: none; }
+}
+
+/* the lead handset is taller, which pushed its caption out of line — subgrid
+   puts every plate on one row and every caption on the next */
+.iface__rack {
+    grid-template-rows: auto auto;
+}
+
+.dev {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
+}
+
+.dev__plate { align-self: end; }
+
+.dev__index {
+    position: static;
+    font-family: var(--font-lcd);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--brand-500);
+    opacity: .45;
+}
+
+[data-theme="dark"] .dev__index { color: var(--brand-300); }
+
+@media (max-width: 860px) {
+    .dev { display: flex; flex-direction: column; grid-row: auto; }
+}
+
+/* Draw the plate's chamfer on a pseudo-element instead of clipping the plate
+   itself, so the callouts can sit inside it and still hang over the edge. */
+.dev__plate {
+    background: transparent !important;
+    box-shadow: none !important;
+    clip-path: none !important;
+}
+
+.dev__plate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: rgba(47, 128, 232, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(47, 128, 232, 0.22);
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+[data-theme="dark"] .dev__plate::before {
+    background: rgba(216, 231, 250, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(216, 231, 250, 0.14);
+}
+
+.dev--lead .dev__plate::before {
+    background: rgba(47, 128, 232, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(47, 128, 232, 0.35);
+}
+
+[data-theme="dark"] .dev--lead .dev__plate::before {
+    background: rgba(107, 165, 242, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(107, 165, 242, 0.3);
+}
+
+.dev__phone { position: relative; z-index: 1; }
+.dev__corner { z-index: 2; }
+
+.dev__call--a { top: 28%; left: -34px; bottom: auto; }
+.dev__call--b { top: 74%; right: -34px; bottom: auto; }
+
+/* .iface sets its own padding, which overrode the mobile section gutter and
+   left the copy running edge to edge */
+@media (max-width: 760px) {
+    .iface { padding: 72px 20px !important; }
+}
+
+@media (max-width: 420px) {
+    .iface { padding: 60px 16px !important; }
+}
+
+@media (max-width: 760px) {
+    /* clear the fixed nav button, as the other sections do */
+    .iface { padding-top: 96px !important; }
+}
