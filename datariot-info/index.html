@@ -29,7 +29,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=4.0.0" />
+    <link rel="stylesheet" href="style.css?v=4.1.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -347,11 +347,6 @@
 
     <!-- Left Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
-        <button class="sidebar__close" onclick="toggleMobileMenu()" aria-label="Close menu">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-        </button>
         <a href="#hero" class="sidebar__logo" data-section="hero" title="Back to top">
             <span
                 style="font-family: var(--font-display); font-weight: 900; color: var(--text-primary); font-size: 14px;">D</span>
@@ -407,39 +402,114 @@
         </div>
     </nav>
 
-    <!-- Mobile nav toggle -->
-    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
+    <!-- Menu trigger. One control at every width — the overlay below is the
+         same menu on a phone and on a desktop. -->
+    <button class="navx-trigger" id="navTrigger" aria-label="Open menu" aria-expanded="false" aria-controls="navOverlay">
+        <span class="navx-trigger__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="navx-trigger__label" data-open="MENU" data-close="CLOSE">MENU</span>
     </button>
-    <script>
-        function toggleMobileMenu() {
-            var sidebar = document.getElementById('sidebar');
-            var btn = document.getElementById('mobileNavToggle');
-            if (sidebar && btn) {
-                sidebar.classList.toggle('mobile-open');
-                btn.classList.toggle('active');
-                if (sidebar.classList.contains('mobile-open')) {
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = '';
-                }
-            }
-        }
-        // Close menu when clicking a link
-        document.querySelectorAll('.sidebar__link').forEach(link => {
-            link.addEventListener('click', () => {
-                var sidebar = document.getElementById('sidebar');
-                var btn = document.getElementById('mobileNavToggle');
-                if (sidebar && sidebar.classList.contains('mobile-open')) {
-                    sidebar.classList.remove('mobile-open');
-                    btn.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            });
-        });
 
+    <!-- Full-screen navigation -->
+    <div class="navx" id="navOverlay" role="dialog" aria-modal="true" aria-label="Site navigation" hidden>
+        <div class="navx__scrim" data-navx-close></div>
+
+        <div class="navx__panel">
+            <div class="navx__grid" aria-hidden="true"></div>
+
+            <div class="navx__bar">
+                <span class="navx__brand">
+                    <span class="navx__brand-mark">D</span>
+                    DATARIOT
+                    <em>v0.1 BETA</em>
+                </span>
+                <span class="navx__status">
+                    <i aria-hidden="true"></i>
+                    NAVIGATION
+                </span>
+            </div>
+
+            <div class="navx__body">
+                <nav class="navx__nav">
+                    <a class="navx__item" href="#hero" data-navx-link data-section="hero">
+                        <span class="navx__item-num">00</span>
+                        <span class="navx__item-text">Home</span>
+                        <span class="navx__item-arrow" aria-hidden="true"></span>
+                    </a>
+                    <a class="navx__item" href="#manifesto" data-navx-link data-section="manifesto">
+                        <span class="navx__item-num">01</span>
+                        <span class="navx__item-text">The Arena</span>
+                        <span class="navx__item-arrow" aria-hidden="true"></span>
+                    </a>
+                    <a class="navx__item" href="#features" data-navx-link data-section="features">
+                        <span class="navx__item-num">02</span>
+                        <span class="navx__item-text">How it works</span>
+                        <span class="navx__item-arrow" aria-hidden="true"></span>
+                    </a>
+                    <a class="navx__item" href="#interface" data-navx-link data-section="interface">
+                        <span class="navx__item-num">03</span>
+                        <span class="navx__item-text">The interface</span>
+                        <span class="navx__item-arrow" aria-hidden="true"></span>
+                    </a>
+                    <a class="navx__item" href="#debates" data-navx-link data-section="debates">
+                        <span class="navx__item-num">04</span>
+                        <span class="navx__item-text">Conflict live</span>
+                        <span class="navx__item-arrow" aria-hidden="true"></span>
+                    </a>
+                    <a class="navx__item" href="#ai-core" data-navx-link data-section="ai-core">
+                        <span class="navx__item-num">05</span>
+                        <span class="navx__item-text">Cognitive layer</span>
+                        <span class="navx__item-arrow" aria-hidden="true"></span>
+                    </a>
+                    <a class="navx__item" href="#global" data-navx-link data-section="global">
+                        <span class="navx__item-num">06</span>
+                        <span class="navx__item-text">Global network</span>
+                        <span class="navx__item-arrow" aria-hidden="true"></span>
+                    </a>
+                    <a class="navx__item" href="#beta" data-navx-link data-section="beta">
+                        <span class="navx__item-num">07</span>
+                        <span class="navx__item-text">Early access</span>
+                        <span class="navx__item-arrow" aria-hidden="true"></span>
+                    </a>
+                </nav>
+
+                <aside class="navx__side">
+                    <div class="navx__side-block">
+                        <span class="navx__side-tag">[ WHAT THIS IS ]</span>
+                        <p>A short-video platform for arguments worth watching. Record your take, get
+                            answered on camera, let the room decide.</p>
+                    </div>
+
+                    <div class="navx__side-block">
+                        <span class="navx__side-tag">[ APPEARANCE ]</span>
+                        <button class="navx__theme" id="navxTheme" type="button">
+                            <span class="navx__theme-icon" aria-hidden="true">
+                                <svg class="navx__theme-moon" viewBox="0 0 18 18" fill="none">
+                                    <path d="M15.5 9.5C14.5 13 11.5 15.5 8 15.5C4 15.5 1 12.5 1 8.5C1 5 3.5 2 7 1C5.5 3 5.5 6.5 7.5 9C9.5 11.5 13 12 15.5 9.5Z" stroke="currentColor" stroke-width="1.3" />
+                                </svg>
+                                <svg class="navx__theme-sun" viewBox="0 0 18 18" fill="none">
+                                    <circle cx="9" cy="9" r="4" stroke="currentColor" stroke-width="1.3" />
+                                    <path d="M9 1V3M9 15V17M1 9H3M15 9H17M3.5 3.5L5 5M13 13L14.5 14.5M14.5 3.5L13 5M5 13L3.5 14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                                </svg>
+                            </span>
+                            <span class="navx__theme-label">SWITCH THEME</span>
+                        </button>
+                    </div>
+
+                    <a class="navx__cta" href="#beta" data-navx-link>
+                        JOIN THE WAITLIST
+                        <span aria-hidden="true"></span>
+                    </a>
+
+                    <div class="navx__side-foot">
+                        <a href="privacy.html">Privacy</a>
+                        <a href="terms.html">Terms</a>
+                        <a href="cookies.html">Cookies</a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <script>
         // Force Video Autoplay on Mobile
         window.addEventListener('load', () => {
             const video = document.querySelector('.phone__full-video');
@@ -1963,9 +2033,9 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=4.0.0"></script>
+    <script defer src="3d-fx.js?v=4.1.0"></script>
 
-    <script defer src="script.js?v=4.0.0"></script>
+    <script defer src="script.js?v=4.1.0"></script>
 </body>
 
 </html>
