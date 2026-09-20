@@ -29,7 +29,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=4.1.0" />
+    <link rel="stylesheet" href="style.css?v=4.2.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -344,7 +344,7 @@
     </button>
 
     <!-- Full-screen navigation -->
-    <div class="navx" id="navOverlay" role="dialog" aria-modal="true" aria-label="Site navigation" hidden>
+    <div class="navx" id="navOverlay" role="dialog" aria-modal="true" aria-label="Site navigation">
         <div class="navx__scrim" data-navx-close></div>
 
         <div class="navx__panel">
@@ -444,6 +444,92 @@
         </div>
     </div>
     <script>
+        /* The menu binds here, inline and immediately after its own markup.
+           It used to live in script.js, which meant one blocked CDN, one
+           earlier throw or one stale cached bundle took the navigation with
+           it. Nothing below depends on anything else on the page. */
+        (function () {
+            var overlay = document.getElementById('navOverlay');
+            var trigger = document.getElementById('navTrigger');
+            if (!overlay || !trigger) return;
+
+            var root = document.documentElement;
+            var label = trigger.querySelector('.navx-trigger__label');
+            var lastFocus = null;
+
+            function isOpen() { return overlay.classList.contains('is-open'); }
+
+            function setState(open) {
+                overlay.classList.toggle('is-open', open);
+                trigger.classList.toggle('is-active', open);
+                root.classList.toggle('navx-open', open);
+                trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+                trigger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+                if (label) label.textContent = (open ? label.getAttribute('data-close') : label.getAttribute('data-open')) || 'MENU';
+                document.body.style.overflow = open ? 'hidden' : '';
+                if (window.FXBudget) { open ? window.FXBudget.pause() : window.FXBudget.resume(); }
+            }
+
+            function open() {
+                if (isOpen()) return;
+                lastFocus = document.activeElement;
+                setState(true);
+                var first = overlay.querySelector('[data-navx-link]');
+                if (first) { try { first.focus({ preventScroll: true }); } catch (e) { } }
+            }
+
+            function close() {
+                if (!isOpen()) return;
+                setState(false);
+                if (lastFocus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { } }
+            }
+
+            trigger.addEventListener('click', function (e) {
+                e.preventDefault();
+                isOpen() ? close() : open();
+            });
+
+            var closers = overlay.querySelectorAll('[data-navx-close]');
+            for (var i = 0; i < closers.length; i++) {
+                closers[i].addEventListener('click', function (e) { e.preventDefault(); close(); });
+            }
+
+            var links = overlay.querySelectorAll('[data-navx-link]');
+            for (var j = 0; j < links.length; j++) {
+                links[j].addEventListener('click', function (e) {
+                    var id = (this.getAttribute('href') || '').replace('#', '');
+                    var target = id && document.getElementById(id);
+                    close();
+                    if (target) {
+                        e.preventDefault();
+                        setTimeout(function () { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 220);
+                    }
+                });
+            }
+
+            var themeBtn = document.getElementById('navxTheme');
+            if (themeBtn) {
+                themeBtn.addEventListener('click', function () {
+                    if (typeof window.toggleTheme === 'function') window.toggleTheme();
+                });
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (!isOpen()) return;
+                if (e.key === 'Escape') { close(); return; }
+                if (e.key !== 'Tab') return;
+                var items = [trigger].concat([].slice.call(overlay.querySelectorAll('a[href], button:not([disabled])')));
+                var first = items[0];
+                var last = items[items.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            });
+
+            window.closeOverlayNav = close;
+            // one line so a failure is diagnosable from the console
+            console.log('Datariot menu: ready');
+        })();
+
         // Force Video Autoplay on Mobile
         window.addEventListener('load', () => {
             const video = document.querySelector('.phone__full-video');
@@ -1967,9 +2053,9 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=4.1.0"></script>
+    <script defer src="3d-fx.js?v=4.2.0"></script>
 
-    <script defer src="script.js?v=4.1.0"></script>
+    <script defer src="script.js?v=4.2.0"></script>
 </body>
 
 </html>

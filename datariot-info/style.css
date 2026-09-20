@@ -14205,15 +14205,13 @@ body {
     z-index: 29000;
     display: block;
     visibility: hidden;
+    pointer-events: none;
     transition: visibility 0s linear .5s;
-}
-
-.navx[hidden] {
-    display: none;
 }
 
 .navx.is-open {
     visibility: visible;
+    pointer-events: auto;
     transition-delay: 0s;
 }
 
@@ -14712,7 +14710,7 @@ body {
     }
 }
 
-html.navx-locked {
+html.navx-open {
     overflow: hidden;
 }
 
@@ -14824,7 +14822,7 @@ html.navx-locked {
 }
 
 /* the overlay carries its own brand row, so the fixed one steps aside */
-html.navx-locked .brandmark {
+html.navx-open .brandmark {
     opacity: 0;
     pointer-events: none;
 }
