@@ -82,35 +82,99 @@ function initializeScripts() {
         console.error('Supabase initialization failed:', e);
     }
 
-    // === Mobile Navigation Toggle ===
-    const mobileNavToggle = document.getElementById('mobileNavToggle');
+    // === Overlay Navigation (same control on mobile and desktop) ===
+    const navTrigger = document.getElementById('navTrigger');
+    const navOverlay = document.getElementById('navOverlay');
     const sidebar = document.getElementById('sidebar');
 
-    if (mobileNavToggle && sidebar) {
-        console.log('Datariot Script: Mobile toggle and sidebar found.');
+    if (navTrigger && navOverlay) {
+        let lastFocus = null;
 
-        const toggleMenu = (e) => {
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            sidebar.classList.toggle('mobile-open');
-            mobileNavToggle.classList.toggle('active');
-
-            // Prevent body scroll when menu is open
-            if (sidebar.classList.contains('mobile-open')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
-
-            console.log('Datariot Script: Mobile menu toggled. State:', sidebar.classList.contains('mobile-open'));
+        const closeNav = () => {
+            if (!navOverlay.classList.contains('is-open')) return;
+            navOverlay.classList.remove('is-open');
+            navTrigger.classList.remove('is-active');
+            navTrigger.setAttribute('aria-expanded', 'false');
+            navTrigger.setAttribute('aria-label', 'Open menu');
+            const lbl = navTrigger.querySelector('.navx-trigger__label');
+            if (lbl) lbl.textContent = lbl.dataset.open || 'MENU';
+            document.documentElement.classList.remove('navx-locked');
+            document.body.style.overflow = '';
+            // keep it out of the a11y tree once the exit transition has played
+            navOverlay.addEventListener('transitionend', function done(ev) {
+                if (ev.target !== navOverlay || navOverlay.classList.contains('is-open')) return;
+                navOverlay.removeEventListener('transitionend', done);
+                navOverlay.hidden = true;
+            });
+            setTimeout(() => { if (!navOverlay.classList.contains('is-open')) navOverlay.hidden = true; }, 600);
+            if (lastFocus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { } }
         };
 
-        mobileNavToggle.addEventListener('click', toggleMenu);
-    } else {
-        console.error('Datariot Script: Mobile toggle elements NOT found!', { mobileNavToggle, sidebar });
+        const openNav = () => {
+            lastFocus = document.activeElement;
+            navOverlay.hidden = false;
+            // force a reflow so the transition runs from the closed state
+            void navOverlay.offsetWidth;
+            navOverlay.classList.add('is-open');
+            navTrigger.classList.add('is-active');
+            navTrigger.setAttribute('aria-expanded', 'true');
+            navTrigger.setAttribute('aria-label', 'Close menu');
+            const lbl = navTrigger.querySelector('.navx-trigger__label');
+            if (lbl) lbl.textContent = lbl.dataset.close || 'CLOSE';
+            document.documentElement.classList.add('navx-locked');
+            document.body.style.overflow = 'hidden';
+            const first = navOverlay.querySelector('[data-navx-link]');
+            if (first) { try { first.focus({ preventScroll: true }); } catch (e) { } }
+        };
+
+        navTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (navOverlay.classList.contains('is-open')) closeNav(); else openNav();
+        });
+
+        navOverlay.querySelectorAll('[data-navx-close]').forEach(el => {
+            el.addEventListener('click', (e) => { e.preventDefault(); closeNav(); });
+        });
+
+        navOverlay.querySelectorAll('[data-navx-link]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const id = (link.getAttribute('href') || '').replace('#', '');
+                const target = id && document.getElementById(id);
+                if (target) {
+                    e.preventDefault();
+                    closeNav();
+                    setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 260);
+                } else {
+                    closeNav();
+                }
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape' || !navOverlay.classList.contains('is-open')) return;
+            closeNav();
+        });
+
+        // trap focus inside the panel while it is open
+        document.addEventListener('keydown', (e) => {
+            if (!navOverlay.classList.contains('is-open')) return;
+            if (e.key !== 'Tab') return;
+            const items = [navTrigger, ...navOverlay.querySelectorAll('a[href], button:not([disabled])')];
+            const first = items[0];
+            const last = items[items.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        });
+
+        // mirror the section highlight the rail already tracks
+        const navxTheme = document.getElementById('navxTheme');
+        if (navxTheme) {
+            navxTheme.addEventListener('click', () => {
+                if (typeof window.toggleTheme === 'function') window.toggleTheme();
+            });
+        }
+
+        window.closeOverlayNav = closeNav;
     }
 
     // === Sidebar Active Section Tracking ===
@@ -123,6 +187,9 @@ function initializeScripts() {
                     const id = entry.target.id;
                     sidebarLinks.forEach(link => {
                         link.classList.toggle('active', link.dataset.section === id);
+                    });
+                    document.querySelectorAll('.navx__item[data-section]').forEach(item => {
+                        item.classList.toggle('is-current', item.dataset.section === id);
                     });
                 }
             });
@@ -139,12 +206,6 @@ function initializeScripts() {
             console.log('Sidebar Click: Navigating to', targetId);
             if (target) {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                // Close mobile menu if open
-                if (sidebar && sidebar.classList.contains('mobile-open')) {
-                    sidebar.classList.remove('mobile-open');
-                    mobileNavToggle && mobileNavToggle.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
             }
         });
     });
@@ -155,11 +216,6 @@ function initializeScripts() {
         sidebarLogo.addEventListener('click', (e) => {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            if (sidebar && sidebar.classList.contains('mobile-open')) {
-                sidebar.classList.remove('mobile-open');
-                mobileNavToggle && mobileNavToggle.classList.remove('active');
-                document.body.style.overflow = '';
-            }
         });
     }
 
