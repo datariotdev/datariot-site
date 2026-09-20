@@ -85,7 +85,6 @@ function initializeScripts() {
     // === Overlay Navigation (same control on mobile and desktop) ===
     const navTrigger = document.getElementById('navTrigger');
     const navOverlay = document.getElementById('navOverlay');
-    const sidebar = document.getElementById('sidebar');
 
     if (navTrigger && navOverlay) {
         let lastFocus = null;
@@ -100,6 +99,7 @@ function initializeScripts() {
             if (lbl) lbl.textContent = lbl.dataset.open || 'MENU';
             document.documentElement.classList.remove('navx-locked');
             document.body.style.overflow = '';
+            if (window.FXBudget) window.FXBudget.resume();
             // keep it out of the a11y tree once the exit transition has played
             navOverlay.addEventListener('transitionend', function done(ev) {
                 if (ev.target !== navOverlay || navOverlay.classList.contains('is-open')) return;
@@ -123,6 +123,8 @@ function initializeScripts() {
             if (lbl) lbl.textContent = lbl.dataset.close || 'CLOSE';
             document.documentElement.classList.add('navx-locked');
             document.body.style.overflow = 'hidden';
+            // nothing behind an opaque full-screen panel is worth rendering
+            if (window.FXBudget) window.FXBudget.pause();
             const first = navOverlay.querySelector('[data-navx-link]');
             if (first) { try { first.focus({ preventScroll: true }); } catch (e) { } }
         };
@@ -177,46 +179,19 @@ function initializeScripts() {
         window.closeOverlayNav = closeNav;
     }
 
-    // === Sidebar Active Section Tracking ===
+    // === Active Section Tracking ===
     const sections = document.querySelectorAll('.section');
-    const sidebarLinks = document.querySelectorAll('.sidebar__link');
-    if (sections.length > 0 && sidebarLinks.length > 0) {
+    if (sections.length > 0) {
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.id;
-                    sidebarLinks.forEach(link => {
-                        link.classList.toggle('active', link.dataset.section === id);
-                    });
-                    document.querySelectorAll('.navx__item[data-section]').forEach(item => {
-                        item.classList.toggle('is-current', item.dataset.section === id);
-                    });
-                }
+                if (!entry.isIntersecting) return;
+                const id = entry.target.id;
+                document.querySelectorAll('.navx__item[data-section]').forEach(item => {
+                    item.classList.toggle('is-current', item.dataset.section === id);
+                });
             });
         }, { threshold: 0.25 });
         sections.forEach(s => sectionObserver.observe(s));
-    }
-
-    // === Sidebar Link Clicks ===
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.dataset.section;
-            const target = document.getElementById(targetId);
-            console.log('Sidebar Click: Navigating to', targetId);
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
-    });
-
-    // === Sidebar Logo Click (Scroll to Top) ===
-    const sidebarLogo = document.querySelector('.sidebar__logo');
-    if (sidebarLogo) {
-        sidebarLogo.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
     }
 
     // === Reveal Animations ===

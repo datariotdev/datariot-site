@@ -184,24 +184,6 @@
             display: none !important;
         }
 
-        /* Sidebar */
-        .sidebar {
-            background: #fcfcfc !important;
-            border-right: 1px solid #eeeeee !important;
-            z-index: 3000 !important;
-        }
-
-        /* the sidebar used to stay white in dark mode */
-        [data-theme="dark"] .sidebar {
-            background: #0C0D12 !important;
-            border-right: 1px solid rgba(216, 231, 250, 0.07) !important;
-        }
-
-        [data-theme="dark"] .sidebar__logo {
-            background: #13151D !important;
-            border-color: rgba(216, 231, 250, 0.1) !important;
-        }
-
         /* App Downloads */
         .app-downloads {
             display: flex !important;
@@ -346,61 +328,13 @@
 
 
     <!-- Left Sidebar Navigation -->
-    <nav class="sidebar" id="sidebar">
-        <a href="#hero" class="sidebar__logo" data-section="hero" title="Back to top">
-            <span
-                style="font-family: var(--font-display); font-weight: 900; color: var(--text-primary); font-size: 14px;">D</span>
-        </a>
-        <ul class="sidebar__nav">
-            <li><a href="#hero" class="sidebar__link active" data-section="hero">
-                    <span class="sidebar__link-dot"></span>
-                    <span class="sidebar__link-text">Home</span>
-                </a></li>
-            <li><a href="#manifesto" class="sidebar__link" data-section="manifesto">
-                    <span class="sidebar__link-dot"></span>
-                    <span class="sidebar__link-text">Manifesto</span>
-                </a></li>
-            <li><a href="#features" class="sidebar__link" data-section="features">
-                    <span class="sidebar__link-dot"></span>
-                    <span class="sidebar__link-text">How It Works</span>
-                </a></li>
-            <li><a href="#debates" class="sidebar__link" data-section="debates">
-                    <span class="sidebar__link-dot"></span>
-                    <span class="sidebar__link-text">Arena</span>
-                </a></li>
-            <li><a href="#ai-core" class="sidebar__link" data-section="ai-core">
-                    <span class="sidebar__link-dot"></span>
-                    <span class="sidebar__link-text">AI Core</span>
-                </a></li>
-            <li><a href="#beta" class="sidebar__link" data-section="beta">
-                    <span class="sidebar__link-dot"></span>
-                    <span class="sidebar__link-text">Join</span>
-                </a></li>
-            <li><a href="#" class="sidebar__link sidebar__link--theme" onclick="toggleTheme(); return false;"
-                    title="Toggle Theme">
-                    <span class="sidebar__link-icon"
-                        style="position: relative; width: 6px; display: flex; justify-content: center; align-items: center;">
-                        <svg class="sidebar__theme-icon sidebar__theme-icon--moon" width="14" height="14"
-                            viewBox="0 0 18 18" fill="none" style="position: absolute;">
-                            <path
-                                d="M15.5 9.5C14.5 13 11.5 15.5 8 15.5C4 15.5 1 12.5 1 8.5C1 5 3.5 2 7 1C5.5 3 5.5 6.5 7.5 9C9.5 11.5 13 12 15.5 9.5Z"
-                                stroke="currentColor" stroke-width="1.2" />
-                        </svg>
-                        <svg class="sidebar__theme-icon sidebar__theme-icon--sun" width="14" height="14"
-                            viewBox="0 0 18 18" fill="none" style="position: absolute;">
-                            <circle cx="9" cy="9" r="4" stroke="currentColor" stroke-width="1.2" />
-                            <path
-                                d="M9 1V3M9 15V17M1 9H3M15 9H17M3.5 3.5L5 5M13 13L14.5 14.5M14.5 3.5L13 5M5 13L3.5 14.5"
-                                stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
-                        </svg>
-                    </span>
-                    <span class="sidebar__link-text" style="margin-left: 8px;">Theme Toggle</span>
-                </a></li>
-        </ul>
-        <div class="sidebar__footer">
-            <span class="sidebar__version">v0.1 beta</span>
-        </div>
-    </nav>
+    <!-- The icon rail is gone: the MENU overlay above is the only navigation. -->
+
+    <!-- Fixed brand mark; balances the MENU trigger now that the icon rail is gone. -->
+    <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
+        <span class="brandmark__mark" aria-hidden="true">D</span>
+        <span class="brandmark__word">DATARIOT</span>
+    </a>
 
     <!-- Menu trigger. One control at every width — the overlay below is the
          same menu on a phone and on a desktop. -->
