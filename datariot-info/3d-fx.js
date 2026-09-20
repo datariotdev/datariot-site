@@ -28,6 +28,9 @@ window.addEventListener('load', () => {
 
         const loops = new Map();
         const armed = new Set();
+        // set while a full-screen overlay covers the page: nothing behind it
+        // can be seen, so nothing behind it should render
+        let paused = false;
 
         // A scene renders only while it is near the viewport and the tab is
         // visible. Leaving either condition stops its chain; re-entering
@@ -36,11 +39,11 @@ window.addEventListener('load', () => {
             if (armed.has(el)) return;
             const render = loops.get(el);
             if (!render) return;
-            if (document.hidden || (observer && !near.has(el))) return;
+            if (paused || document.hidden || (observer && !near.has(el))) return;
             armed.add(el);
             requestAnimationFrame(function step() {
                 armed.delete(el);
-                if (document.hidden || (observer && !near.has(el))) return;
+                if (paused || document.hidden || (observer && !near.has(el))) return;
                 const now = performance.now();
                 const prev = last.get(el) || 0;
                 if (now - prev >= MIN_FRAME_MS) { last.set(el, now); render(); }
@@ -88,9 +91,14 @@ window.addEventListener('load', () => {
             loop(el, render) {
                 loops.set(el, render);
                 pump(el);
-            }
+            },
+            // stop every scene while something opaque covers the page
+            pause() { paused = true; },
+            resume() { if (!paused) return; paused = false; loops.forEach((_, el) => pump(el)); }
         };
     })();
+
+    window.FXBudget = FX;
 
     /* =========================================================
        ANIMATION 1: THE AI CORE (Middle - Manifesto Section)

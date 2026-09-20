@@ -566,7 +566,7 @@ a {
 
 /* === MAIN CONTENT === */
 .main {
-    margin-left: var(--sidebar-width);
+    margin-left: 0;
     position: relative;
     z-index: 1;
 }
@@ -575,7 +575,7 @@ a {
 .top-branding {
     position: fixed;
     top: 28px;
-    left: calc(var(--sidebar-width) + 48px);
+    left: 48px;
     display: flex;
     align-items: center;
     gap: 32px;
@@ -586,7 +586,7 @@ a {
 
 @media (max-width: 1024px) {
     .top-branding {
-        left: calc(var(--sidebar-width) + 24px);
+        left: 24px;
         pointer-events: none;
         /* Prevent blocking elements behind it */
     }
@@ -13449,7 +13449,7 @@ body {
    band made it obvious. Restore the offset on desktop widths. */
 @media (min-width: 1025px) {
     .main {
-        margin-left: var(--sidebar-width) !important;
+        margin-left: 0 !important;
     }
 }
 
@@ -14204,9 +14204,8 @@ body {
     inset: 0;
     z-index: 29000;
     display: block;
-    opacity: 0;
     visibility: hidden;
-    transition: opacity .35s ease, visibility .35s ease;
+    transition: visibility 0s linear .5s;
 }
 
 .navx[hidden] {
@@ -14214,14 +14213,20 @@ body {
 }
 
 .navx.is-open {
-    opacity: 1;
     visibility: visible;
+    transition-delay: 0s;
 }
 
 .navx__scrim {
     position: absolute;
     inset: 0;
     background: rgba(4, 12, 24, 0.55);
+    opacity: 0;
+    transition: opacity .35s ease;
+}
+
+.navx.is-open .navx__scrim {
+    opacity: 1;
 }
 
 .navx__panel {
@@ -14232,12 +14237,13 @@ body {
     overflow: hidden;
     background: #F4F8FE;
     color: var(--brand-ink, #071B33);
-    clip-path: inset(0 0 100% 0);
-    transition: clip-path .6s var(--ease-out-expo, cubic-bezier(.16, 1, .3, 1));
+    transform: translate3d(0, -100%, 0);
+    will-change: transform;
+    transition: transform .5s var(--ease-out-expo, cubic-bezier(.16, 1, .3, 1));
 }
 
 .navx.is-open .navx__panel {
-    clip-path: inset(0 0 0 0);
+    transform: translate3d(0, 0, 0);
 }
 
 [data-theme="dark"] .navx__panel {
@@ -14711,6 +14717,8 @@ html.navx-locked {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .navx,
+    .navx__scrim,
     .navx__panel,
     .navx__item,
     .navx__item-text,
@@ -14760,5 +14768,78 @@ html.navx-locked {
     .top-nav {
         top: 72px !important;
         right: 16px !important;
+    }
+}
+
+/* === FIXED BRAND MARK === */
+.brandmark {
+    position: fixed;
+    top: 22px;
+    left: 24px;
+    z-index: 30000;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 44px;
+    padding: 0 16px 0 10px;
+    border: 1px solid rgba(47, 128, 232, 0.28);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--brand-ink, #071B33);
+    text-decoration: none;
+    font-family: var(--font-tech), monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    transition: border-color .3s ease, background .3s ease, opacity .25s ease;
+}
+
+.brandmark:hover {
+    border-color: var(--brand-500, #2F80E8);
+    background: #fff;
+}
+
+.brandmark__mark {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    background: var(--brand-500, #2F80E8);
+    color: #fff;
+    font-family: var(--font-display), sans-serif;
+    font-size: 13px;
+    letter-spacing: 0;
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+
+[data-theme="dark"] .brandmark {
+    background: rgba(7, 27, 51, 0.82);
+    color: #E8F0FB;
+    border-color: rgba(107, 165, 242, 0.3);
+}
+
+[data-theme="dark"] .brandmark:hover {
+    background: rgba(7, 27, 51, 0.96);
+    border-color: var(--brand-400, #6BA5F2);
+}
+
+/* the overlay carries its own brand row, so the fixed one steps aside */
+html.navx-locked .brandmark {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .brandmark {
+        top: 16px;
+        left: 16px;
+        height: 42px;
+        padding: 0 12px 0 8px;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+    }
+
+    .brandmark__word {
+        display: none;
     }
 }
