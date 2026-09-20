@@ -29,6 +29,37 @@ window.toggleTheme = function () {
 };
 
 /* =======================================
+   MOTION BUDGET HELPERS
+   ======================================= */
+// Honour the OS "reduce motion" switch for every decorative effect.
+const prefersReducedMotion = window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// An element that cannot paint (display:none, 0x0, detached) must not drive
+// an animation loop — several effects on this page used to do exactly that.
+function isPaintable(el) {
+    if (!el || !el.isConnected) return false;
+    if (el.getClientRects().length === 0) return false;
+    const cs = getComputedStyle(el);
+    return cs.display !== 'none' && cs.visibility !== 'hidden';
+}
+
+// Pointer handlers here write inline styles; without this they run once per
+// mousemove event and force a layout each time. Coalesce to one write a frame.
+function onPointerFrame(el, type, handler) {
+    let frame = 0;
+    let latest = null;
+    el.addEventListener(type, (e) => {
+        latest = { clientX: e.clientX, clientY: e.clientY };
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+            frame = 0;
+            if (latest) handler(latest);
+        });
+    }, { passive: true });
+}
+
+/* =======================================
    UI INTERACTIONS & NAVIGATION
    ======================================= */
 // Robust Initialization Function
@@ -107,11 +138,7 @@ function initializeScripts() {
             const target = document.getElementById(targetId);
             console.log('Sidebar Click: Navigating to', targetId);
             if (target) {
-                if (window.lenisInstance) {
-                    window.lenisInstance.scrollTo(target, { offset: 0, duration: 1.5 });
-                } else {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 // Close mobile menu if open
                 if (sidebar && sidebar.classList.contains('mobile-open')) {
                     sidebar.classList.remove('mobile-open');
@@ -152,7 +179,8 @@ function initializeScripts() {
 
     // === Holographic Fragment 3D Interaction ===
     document.querySelectorAll('.feature-fragment').forEach(fragment => {
-        fragment.addEventListener('mousemove', (e) => {
+        if (prefersReducedMotion) return;
+        onPointerFrame(fragment, 'mousemove', (e) => {
             const rect = fragment.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
             const y = (e.clientY - rect.top) / rect.height;
@@ -187,64 +215,25 @@ function initializeScripts() {
         });
     });
 
-    // === Manifesto Full-Width Card 3D Interaction ===
-    const manifestoCard = document.querySelector('.manifesto-v2__card--full');
-    if (manifestoCard) {
-        manifestoCard.addEventListener('mousemove', (e) => {
-            const rect = manifestoCard.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width;
-            const y = (e.clientY - rect.top) / rect.height;
-
-            const tiltX = (y - 0.5) * 12;
-            const tiltY = (x - 0.5) * -12;
-
-            manifestoCard.style.transform = `perspective(2000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.01)`;
-
-            // Premium dynamic spotlight reflection following cursor
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            if (isDark) {
-                manifestoCard.style.background = `radial-gradient(circle at ${x * rect.width}px ${y * rect.height}px, rgba(139, 92, 246, 0.12) 0%, rgba(10, 15, 30, 0.65) 75%)`;
-            } else {
-                manifestoCard.style.background = `radial-gradient(circle at ${x * rect.width}px ${y * rect.height}px, rgba(99, 102, 241, 0.12) 0%, rgba(255, 255, 255, 0.85) 75%)`;
-            }
-
-            const content = manifestoCard.querySelector('.manifesto-v2__card-content');
-            const visual = manifestoCard.querySelector('.manifesto-v2__card-visual-wrapper');
-
-            if (content) {
-                content.style.transform = `translateZ(40px) translateX(${(x - 0.5) * 15}px) translateY(${(y - 0.5) * 15}px)`;
-            }
-            if (visual) {
-                visual.style.transform = `translateZ(70px) translateX(${(x - 0.5) * -15}px) translateY(${(y - 0.5) * -15}px)`;
-            }
-        });
-
-        manifestoCard.addEventListener('mouseleave', () => {
-            manifestoCard.style.transform = '';
-            manifestoCard.style.background = '';
-            const content = manifestoCard.querySelector('.manifesto-v2__card-content');
-            const visual = manifestoCard.querySelector('.manifesto-v2__card-visual-wrapper');
-            if (content) content.style.transform = '';
-            if (visual) visual.style.transform = '';
-        });
+    // === Viewport gate ===
+    // Every [data-inview] block only runs its CSS animations while it is on
+    // screen. Keeps the decorative SVG loops off the compositor when the
+    // section is parked far above/below the fold.
+    const inviewTargets = document.querySelectorAll('[data-inview]');
+    if (inviewTargets.length > 0) {
+        const inviewObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                entry.target.classList.toggle('is-inview', entry.isIntersecting);
+            });
+        }, { rootMargin: '120px 0px', threshold: 0 });
+        inviewTargets.forEach(el => inviewObserver.observe(el));
     }
 
     // Section-wide Z-Parallax on Scroll
     if (typeof ScrollTrigger !== 'undefined' && typeof gsap !== 'undefined') {
-        const fragments = document.querySelectorAll('.feature-fragment');
-        fragments.forEach((f, i) => {
-            gsap.to(f, {
-                scrollTrigger: {
-                    trigger: '#features',
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: 1
-                },
-                z: i % 2 === 0 ? 100 : -100, // Disperse in Z-space correctly
-                y: i % 2 === 0 ? -50 : 50,
-                ease: 'none'
-            });
-        });
+        // The old Z-parallax pushed every other "how it works" card 50px out of
+        // line, so the row read as broken rather than dispersed — and it ran a
+        // scrub transform on all three for the whole section. Dropped.
 
         // Orbital Accelerator Rotation
         gsap.to('.orbital-ring', {
@@ -343,34 +332,11 @@ function initializeScripts() {
         });
     }
 
-    // === Lenis Smooth Scroll ===
-    if (typeof Lenis !== 'undefined') {
-        window.lenisInstance = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
-
-        if (typeof ScrollTrigger !== 'undefined' && typeof gsap !== 'undefined') {
-            window.lenisInstance.on('scroll', ScrollTrigger.update);
-            gsap.ticker.add((time) => {
-                window.lenisInstance.raf(time * 1000);
-            });
-            gsap.ticker.lagSmoothing(0);
-        } else {
-            function raf(time) {
-                window.lenisInstance.raf(time);
-                requestAnimationFrame(raf);
-            }
-            requestAnimationFrame(raf);
-        }
-    }
+    // Lenis smooth scroll was removed. It replaced native scrolling with a
+    // JS loop that wrote scrollTop every frame and pushed ScrollTrigger.update
+    // on every scroll event — a permanent rAF chain and a re-composite of a
+    // very tall page on each tick. Native scrolling is smoother and free;
+    // html { scroll-behavior: smooth } covers anchor jumps.
 
     // === GSAP & ScrollTrigger Animations ===
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
@@ -579,12 +545,12 @@ function initializeScripts() {
     if (debateGraphic) {
         const leftBeam = debateGraphic.querySelector('.spotlight-beam--left');
         const rightBeam = debateGraphic.querySelector('.spotlight-beam--right');
-
-        debateGraphic.addEventListener('mousemove', (e) => {
+        
+        onPointerFrame(debateGraphic, 'mousemove', (e) => {
             const rect = debateGraphic.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
             const dx = (x - 0.5) * 55; // Swing spotlight bottom points based on cursor
-
+            
             if (leftBeam) {
                 leftBeam.setAttribute('points', `180,30 ${100 + dx},480 ${260 + dx},480`);
             }
@@ -592,7 +558,7 @@ function initializeScripts() {
                 rightBeam.setAttribute('points', `620,30 ${540 + dx},480 ${700 + dx},480`);
             }
         });
-
+        
         debateGraphic.addEventListener('mouseleave', () => {
             if (leftBeam) {
                 leftBeam.setAttribute('points', '180,30 100,480 260,480');
@@ -609,7 +575,7 @@ function initializeScripts() {
         orvelisCard.style.transformStyle = 'preserve-3d';
         const glare = orvelisCard.querySelector('.orvelis-card-glare');
 
-        orvelisCard.addEventListener('mousemove', (e) => {
+        onPointerFrame(orvelisCard, 'mousemove', (e) => {
             const rect = orvelisCard.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
             const y = (e.clientY - rect.top) / rect.height;
@@ -640,7 +606,7 @@ function initializeScripts() {
                 const px = x * 100;
                 const py = y * 100;
                 glare.style.opacity = '1';
-                glare.style.background = isDark
+                glare.style.background = isDark 
                     ? `radial-gradient(circle at ${px}% ${py}%, rgba(56, 189, 248, 0.18) 0%, rgba(139, 92, 246, 0.05) 45%, rgba(0,0,0,0) 70%)`
                     : `radial-gradient(circle at ${px}% ${py}%, rgba(14, 165, 233, 0.12) 0%, rgba(255,255,255,0) 70%)`;
             }
@@ -711,7 +677,10 @@ window.addEventListener('load', () => {
     // Particle Canvas Animation
     (function () {
         const canvas = document.getElementById('particleCanvas');
-        if (!canvas || isMobile) return; // Skip on mobile
+        // Skipped on mobile, when motion is reduced, and — the expensive case —
+        // when the canvas is hidden by CSS: it used to run an O(n^2) link pass
+        // every frame while painting nothing at all.
+        if (!canvas || isMobile || prefersReducedMotion || !isPaintable(canvas)) return;
         const ctx = canvas.getContext('2d');
         let w, h;
         const particles = [];
@@ -760,7 +729,7 @@ window.addEventListener('load', () => {
             });
             requestAnimationFrame(draw);
         }
-        draw();
+        draw(); // rAF is already suspended by the browser while the tab is hidden
     })();
 
     // Live Feed Simulation
@@ -781,12 +750,23 @@ window.addEventListener('load', () => {
         }, 5000);
     }
 
-    // Spawn Floating 3D Video Cards to emphasize "Short Video Platform"
-    if (!isMobile) {
+    // Spawn Floating 3D Video Cards to emphasize "Short Video Platform".
+    // Built lazily the first time their section is on screen, and paused
+    // whenever it leaves, so they are not a permanent gsap ticker.
+    if (!isMobile && !prefersReducedMotion && typeof gsap !== 'undefined') {
         const targetSections = [document.querySelector('.section--screens'), document.querySelector('.section--beta')];
 
         targetSections.forEach(sec => {
             if (!sec) return;
+            const tweens = [];
+            let built = false;
+            const gate = new IntersectionObserver((entries) => {
+                const onScreen = entries[0].isIntersecting;
+                if (onScreen && !built) { built = true; build(); }
+                tweens.forEach(t => onScreen ? t.play() : t.pause());
+            }, { rootMargin: '150px 0px' });
+            gate.observe(sec);
+            function build() {
 
             for (let i = 0; i < 4; i++) {
                 const card = document.createElement('div');
@@ -810,7 +790,7 @@ window.addEventListener('load', () => {
                 });
 
                 // Continuous drifting and rotating
-                gsap.to(card, {
+                tweens.push(gsap.to(card, {
                     y: "-=200",
                     x: "+=random(-80, 80)",
                     rotationX: "+=random(-40, 40)",
@@ -820,7 +800,8 @@ window.addEventListener('load', () => {
                     repeat: -1,
                     yoyo: true,
                     ease: "sine.inOut"
-                });
+                }));
+            }
             }
         });
     }
