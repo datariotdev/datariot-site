@@ -29,7 +29,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=4.2.0" />
+    <link rel="stylesheet" href="style.css?v=4.3.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -1063,53 +1063,130 @@
                 </div>
                 <div class="features__fragments step-grid">
 
+                    <!-- Shared art defs: one stylized bust, reused wherever a
+                         person appears, plus the screen gradients. -->
+                    <svg class="step-defs" width="0" height="0" aria-hidden="true" focusable="false">
+                        <defs>
+                            <linearGradient id="stScreen" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#0E1A30" /><stop offset="100%" stop-color="#04080F" />
+                            </linearGradient>
+                            <radialGradient id="stKey" cx="50%" cy="38%" r="58%">
+                                <stop offset="0%" stop-color="#2F80E8" stop-opacity=".34" />
+                                <stop offset="100%" stop-color="#2F80E8" stop-opacity="0" />
+                            </radialGradient>
+                            <linearGradient id="stBody" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#3F588A" /><stop offset="100%" stop-color="#1B2942" />
+                            </linearGradient>
+                            <linearGradient id="stProBar" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#1166D4" /><stop offset="100%" stop-color="#6BA5F2" />
+                            </linearGradient>
+                            <linearGradient id="stConBar" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#5B4BD1" /><stop offset="100%" stop-color="#9A8CF5" />
+                            </linearGradient>
+
+                            <!-- a person, drawn once. The light falls from the
+                                 right, so the lit side is a shape inside the
+                                 head rather than a stroke around it. -->
+                            <symbol id="stBustSym" viewBox="0 0 40 40">
+                                <path class="st-por-neck" d="M16.2 16.8h7.6v8.6h-7.6z" />
+                                <path class="st-por-body" d="M2.5 40v-6.4C2.5 25.9 10.3 21.6 20 21.6s17.5 4.3 17.5 12V40z" />
+                                <path class="st-por-head" d="M20 3.6c5.3 0 9.4 4.2 9.4 9.8 0 5.9-4.2 10.4-9.4 10.4s-9.4-4.5-9.4-10.4c0-5.6 4.1-9.8 9.4-9.8z" />
+                                <path class="st-por-lit" d="M23.4 4.7a9.6 9.6 0 0 1 6 8.7 10.3 10.3 0 0 1-6 9.5 12.4 12.4 0 0 0 3-9.5 11.8 11.8 0 0 0-3-8.7z" />
+                                <path class="st-por-hair" d="M10.6 13.4C10.6 7.8 14.7 3.6 20 3.6s9.4 4.2 9.4 9.8c0 .9-.1 1.7-.3 2.5-1-2.6-3-4.1-5.9-4.5-4-.6-7.9.5-11.6 3.2-.4.3-.7.7-.9 1.1-.1-.7-.2-1.5-.2-2.3z" />
+                            </symbol>
+
+                            <!-- compact avatar for the voter row -->
+                            <symbol id="stAvaSym" viewBox="0 0 16 16">
+                                <circle class="st-ava-bg" cx="8" cy="8" r="8" />
+                                <circle class="st-ava-head" cx="8" cy="6.2" r="3" />
+                                <path class="st-ava-body" d="M2.2 16c0-3.3 2.6-5.4 5.8-5.4s5.8 2.1 5.8 5.4z" />
+                            </symbol>
+
+                            <!-- play glyph for clip thumbnails -->
+                            <symbol id="stPlaySym" viewBox="0 0 20 20">
+                                <circle class="st-play-ring" cx="10" cy="10" r="8.4" />
+                                <path class="st-play-tri" d="M8 6.2 14 10l-6 3.8z" />
+                            </symbol>
+                        </defs>
+                    </svg>
+
                     <!-- STEP 01 — RECORD -->
                     <article class="step-card" data-inview>
                         <div class="step-card__frame">
                             <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
-                                <defs>
-                                    <linearGradient id="st1-screen" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#101A2E" /><stop offset="100%" stop-color="#050912" />
-                                    </linearGradient>
-                                </defs>
-                                <path class="st-grid" d="M0 40h300M0 80h300M0 120h300M0 160h300M60 0v200M120 0v200M180 0v200M240 0v200" />
+                                <rect width="300" height="200" fill="url(#stScreen)" />
+                                <rect width="300" height="148" fill="url(#stKey)" />
 
-                                <!-- phone, recording -->
-                                <rect class="st-shell" x="108" y="18" width="84" height="164" rx="12" />
-                                <rect x="114" y="24" width="72" height="152" rx="8" fill="url(#st1-screen)" />
-                                <circle class="st-halo" cx="150" cy="82" r="40" />
-                                <path class="st-fig" d="M128 150v-14c0-12 10-22 22-22s22 10 22 22v14z" />
-                                <circle class="st-fig" cx="150" cy="98" r="14" />
-                                <path class="st-framing" d="M122 40V32h8M178 40V32h-8M122 160v8h8M178 160v8h-8" />
+                                <!-- rule of thirds, in the picture area only -->
+                                <path class="st-thirds" d="M100 8v140M200 8v140M20 57h260M20 106h260" />
 
-                                <!-- rec chip + running timer -->
-                                <g class="st-rec">
-                                    <rect x="118" y="28" width="32" height="14" rx="2" />
-                                    <circle class="st-rec-dot" cx="126" cy="35" r="3" />
-                                    <text x="133" y="38">REC</text>
-                                </g>
-                                <text class="st-time" x="183" y="38" text-anchor="end">24:06</text>
-
-                                <!-- no-limit meter: bar that never fills -->
-                                <g class="st-meter">
-                                    <rect x="118" y="160" width="64" height="4" rx="2" />
-                                    <rect class="st-meter-fill" x="118" y="160" width="40" height="4" rx="2" />
+                                <!-- the subject, framed as a medium shot -->
+                                <g class="st-subject">
+                                    <use href="#stBustSym" x="102" y="48" width="96" height="96" />
                                 </g>
 
-                                <!-- waveform spilling outside the phone -->
+                                <!-- face lock -->
+                                <g class="st-lock">
+                                    <path d="M120 64v-10h10M180 64v-10h-10M120 104v10h10M180 104v10h-10" />
+                                    <text x="120" y="47">FACE LOCK</text>
+                                </g>
+
+                                <!-- top bar -->
+                                <g class="st-hud-top">
+                                    <rect class="st-rec-pill" x="14" y="12" width="46" height="15" rx="1" />
+                                    <circle class="st-rec-dot" cx="22" cy="19.5" r="3.2" />
+                                    <text class="st-rec-text" x="29" y="22.5">REC</text>
+                                    <text class="st-take" x="68" y="22.5">TAKE 01</text>
+                                    <text class="st-time" x="286" y="23" text-anchor="end">00:24:06</text>
+                                </g>
+
+                                <!-- audio ladder, right edge -->
+                                <g class="st-levels">
+                                    <rect x="278" y="48" width="8" height="5" /><rect x="278" y="57" width="8" height="5" />
+                                    <rect x="278" y="66" width="8" height="5" /><rect x="278" y="75" width="8" height="5" />
+                                    <rect x="278" y="84" width="8" height="5" /><rect x="278" y="93" width="8" height="5" />
+                                    <rect x="278" y="102" width="8" height="5" /><rect x="278" y="111" width="8" height="5" />
+                                    <text x="282" y="126" text-anchor="middle">dB</text>
+                                </g>
+
+                                <!-- exposure scale, left edge -->
+                                <g class="st-scale">
+                                    <path d="M18 48v68M18 48h5M18 61h3M18 74h5M18 87h3M18 100h5M18 113h3" />
+                                    <circle class="st-scale-dot" cx="18" cy="74" r="2.6" />
+                                    <text x="24" y="126">EV</text>
+                                </g>
+
+                                <!-- the instrument band: everything that is UI,
+                                     not picture, lives below this line -->
+                                <rect class="st-band" x="0" y="148" width="300" height="52" />
+                                <path class="st-band-rule" d="M0 148h300" />
+
+                                <g class="st-runbar">
+                                    <rect x="20" y="154" width="260" height="2" rx="1" />
+                                    <rect class="st-runbar-fill" x="20" y="154" width="80" height="2" rx="1" />
+                                </g>
+
                                 <g class="st-wave">
-                                    <rect x="28" y="92" width="3" height="16" rx="1.5" /><rect x="36" y="86" width="3" height="28" rx="1.5" />
-                                    <rect x="44" y="78" width="3" height="44" rx="1.5" /><rect x="52" y="88" width="3" height="24" rx="1.5" />
-                                    <rect x="60" y="72" width="3" height="56" rx="1.5" /><rect x="68" y="84" width="3" height="32" rx="1.5" />
-                                    <rect x="76" y="94" width="3" height="12" rx="1.5" /><rect x="84" y="80" width="3" height="40" rx="1.5" />
-                                    <rect x="213" y="80" width="3" height="40" rx="1.5" /><rect x="221" y="94" width="3" height="12" rx="1.5" />
-                                    <rect x="229" y="84" width="3" height="32" rx="1.5" /><rect x="237" y="72" width="3" height="56" rx="1.5" />
-                                    <rect x="245" y="88" width="3" height="24" rx="1.5" /><rect x="253" y="78" width="3" height="44" rx="1.5" />
-                                    <rect x="261" y="86" width="3" height="28" rx="1.5" /><rect x="269" y="92" width="3" height="16" rx="1.5" />
+                                    <rect x="20" y="166.3" width="3" height="7.4" rx="1.5" /><rect x="28" y="164.4" width="3" height="11.2" rx="1.5" />
+                                    <rect x="36" y="162.6" width="3" height="14.9" rx="1.5" /><rect x="44" y="165.7" width="3" height="8.7" rx="1.5" />
+                                    <rect x="52" y="161.3" width="3" height="17.4" rx="1.5" /><rect x="60" y="165" width="3" height="9.9" rx="1.5" />
+                                    <rect x="68" y="167.5" width="3" height="5" rx="1.5" /><rect x="76" y="163.2" width="3" height="13.6" rx="1.5" />
+                                    <rect x="84" y="161.9" width="3" height="16.1" rx="1.5" /><rect x="92" y="165.7" width="3" height="8.7" rx="1.5" />
+                                    <rect x="100" y="160.7" width="3" height="18.6" rx="1.5" /><rect x="108" y="165" width="3" height="9.9" rx="1.5" />
+                                    <rect x="116" y="166.3" width="3" height="7.4" rx="1.5" /><rect x="124" y="162.6" width="3" height="14.9" rx="1.5" />
+                                    <rect x="132" y="164.4" width="3" height="11.2" rx="1.5" /><rect x="140" y="161.3" width="3" height="17.4" rx="1.5" />
+                                    <rect x="148" y="165.7" width="3" height="8.7" rx="1.5" /><rect x="156" y="163.2" width="3" height="13.6" rx="1.5" />
+                                    <rect x="164" y="167.5" width="3" height="5" rx="1.5" /><rect x="172" y="161.9" width="3" height="16.1" rx="1.5" />
+                                    <rect x="180" y="165" width="3" height="9.9" rx="1.5" /><rect x="188" y="160.7" width="3" height="18.6" rx="1.5" />
+                                    <rect x="196" y="165.7" width="3" height="8.7" rx="1.5" /><rect x="204" y="162.6" width="3" height="14.9" rx="1.5" />
+                                    <rect x="212" y="166.3" width="3" height="7.4" rx="1.5" /><rect x="220" y="164.4" width="3" height="11.2" rx="1.5" />
+                                    <rect x="228" y="161.3" width="3" height="17.4" rx="1.5" /><rect x="236" y="165" width="3" height="9.9" rx="1.5" />
+                                    <rect x="244" y="167.5" width="3" height="5" rx="1.5" /><rect x="252" y="163.2" width="3" height="13.6" rx="1.5" />
+                                    <rect x="260" y="165.7" width="3" height="8.7" rx="1.5" /><rect x="268" y="162.6" width="3" height="14.9" rx="1.5" />
                                 </g>
 
-                                <g class="st-note"><text x="12" y="188">CAM_01 // RAW</text></g>
-                                <g class="st-note"><text x="288" y="188" text-anchor="end">NO CUTS</text></g>
+                                <g class="st-note"><text x="26" y="194">CAM_01 // RAW 4K</text></g>
+                                <g class="st-note"><text x="286" y="194" text-anchor="end">NO CUTS</text></g>
                             </svg>
                         </div>
                         <div class="step-card__body">
@@ -1125,49 +1202,73 @@
                     <article class="step-card" data-inview>
                         <div class="step-card__frame">
                             <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
-                                <path class="st-grid" d="M0 40h300M0 80h300M0 120h300M0 160h300M60 0v200M120 0v200M180 0v200M240 0v200" />
+                                <rect width="300" height="200" fill="url(#stScreen)" />
+                                <path class="st-thirds" d="M0 42h300M0 158h300M110 0v200M212 0v200" />
 
-                                <!-- the original clip -->
+                                <!-- the opening clip -->
                                 <g class="st-clip st-clip--root">
-                                    <rect x="16" y="66" width="86" height="60" rx="3" />
-                                    <circle class="st-clip-face" cx="42" cy="90" r="9" />
-                                    <path class="st-clip-face" d="M30 116v-6c0-7 5-12 12-12s12 5 12 12v6z" />
-                                    <rect class="st-clip-bar" x="60" y="82" width="32" height="4" rx="2" />
-                                    <rect class="st-clip-bar" x="60" y="92" width="22" height="4" rx="2" />
-                                    <text x="20" y="136">@pro_logic_22</text>
+                                    <rect class="st-clip-plate" x="12" y="48" width="86" height="102" rx="2" />
+                                    <clipPath id="stRootClip"><rect x="13" y="49" width="84" height="70" rx="1" /></clipPath>
+                                    <g clip-path="url(#stRootClip)">
+                                        <rect x="13" y="49" width="84" height="70" fill="#0A1526" />
+                                        <use href="#stBustSym" x="31" y="54" width="48" height="70" />
+                                    </g>
+                                    <rect class="st-clip-inner" x="13" y="49" width="84" height="70" rx="1" />
+                                    <use class="st-play" href="#stPlaySym" x="47" y="76" width="16" height="16" />
+                                    <rect class="st-badge st-badge--op" x="17" y="53" width="17" height="10" rx="1" />
+                                    <text class="st-badge-text" x="25.5" y="60.5" text-anchor="middle">OP</text>
+                                    <text class="st-clip-handle" x="17" y="132">@pro_logic_22</text>
+                                    <text class="st-clip-meta" x="17" y="143">03:42 · OPENING</text>
                                 </g>
 
-                                <!-- branch lines -->
-                                <path class="st-branch" d="M102 96h24M126 96V44h34M126 96v52h34" />
-                                <circle class="st-branch-dot" cx="126" cy="96" r="3.5" />
+                                <!-- branches out to the answers -->
+                                <path class="st-branch" d="M98 99h14c6 0 8-4 8-9V50c0-5 3-8 8-8h14M98 99h14c6 0 8 4 8 9v40c0 5 3 8 8 8h14" />
+                                <circle class="st-branch-dot" cx="112" cy="99" r="3.4" />
 
-                                <!-- two video replies -->
+                                <!-- answer 01 -->
                                 <g class="st-clip st-clip--reply">
-                                    <rect x="162" y="20" width="76" height="48" rx="3" />
-                                    <circle class="st-clip-face" cx="182" cy="38" r="7" />
-                                    <path class="st-clip-face" d="M172 60v-5c0-6 4-10 10-10s10 4 10 10v5z" />
-                                    <rect class="st-clip-bar" x="196" y="32" width="30" height="3.5" rx="1.75" />
-                                    <rect class="st-clip-bar" x="196" y="40" width="20" height="3.5" rx="1.75" />
-                                    <text x="166" y="78">REPLY // 00:48</text>
-                                </g>
-                                <g class="st-clip st-clip--reply">
-                                    <rect x="162" y="124" width="76" height="48" rx="3" />
-                                    <circle class="st-clip-face" cx="182" cy="142" r="7" />
-                                    <path class="st-clip-face" d="M172 164v-5c0-6 4-10 10-10s10 4 10 10v5z" />
-                                    <rect class="st-clip-bar" x="196" y="136" width="30" height="3.5" rx="1.75" />
-                                    <rect class="st-clip-bar" x="196" y="144" width="20" height="3.5" rx="1.75" />
-                                    <text x="166" y="182">REPLY // 02:11</text>
+                                    <rect class="st-clip-plate" x="142" y="18" width="114" height="50" rx="2" />
+                                    <clipPath id="stR1"><rect x="143" y="19" width="40" height="48" rx="1" /></clipPath>
+                                    <g clip-path="url(#stR1)">
+                                        <rect x="143" y="19" width="40" height="48" fill="#0A1526" />
+                                        <use href="#stBustSym" x="148" y="22" width="30" height="48" />
+                                    </g>
+                                    <use class="st-play st-play--sm" href="#stPlaySym" x="157" y="37" width="12" height="12" />
+                                    <text class="st-clip-handle" x="190" y="33">@nova_k</text>
+                                    <text class="st-clip-meta" x="190" y="44">REPLY · 00:48</text>
+                                    <rect class="st-minibar" x="190" y="52" width="58" height="3" rx="1.5" />
+                                    <rect class="st-minibar st-minibar--fill" x="190" y="52" width="34" height="3" rx="1.5" />
                                 </g>
 
-                                <!-- queue of further replies -->
+                                <!-- answer 02, being filmed right now -->
+                                <g class="st-clip st-clip--reply st-clip--live">
+                                    <rect class="st-clip-plate" x="142" y="132" width="114" height="50" rx="2" />
+                                    <clipPath id="stR2"><rect x="143" y="133" width="40" height="48" rx="1" /></clipPath>
+                                    <g clip-path="url(#stR2)">
+                                        <rect x="143" y="133" width="40" height="48" fill="#0A1526" />
+                                        <use href="#stBustSym" x="148" y="136" width="30" height="48" />
+                                    </g>
+                                    <circle class="st-live-dot" cx="176" cy="140" r="3" />
+                                    <text class="st-clip-handle" x="190" y="147">@d_marek</text>
+                                    <text class="st-clip-meta st-clip-meta--live" x="190" y="158">RECORDING</text>
+                                    <g class="st-mini-wave">
+                                        <rect x="190" y="164" width="2.5" height="10" rx="1.25" /><rect x="196" y="164" width="2.5" height="10" rx="1.25" />
+                                        <rect x="202" y="164" width="2.5" height="10" rx="1.25" /><rect x="208" y="164" width="2.5" height="10" rx="1.25" />
+                                        <rect x="214" y="164" width="2.5" height="10" rx="1.25" /><rect x="220" y="164" width="2.5" height="10" rx="1.25" />
+                                        <rect x="226" y="164" width="2.5" height="10" rx="1.25" /><rect x="232" y="164" width="2.5" height="10" rx="1.25" />
+                                    </g>
+                                </g>
+
+                                <!-- everyone else in the queue -->
                                 <g class="st-queue">
-                                    <rect x="250" y="34" width="34" height="20" rx="2" />
-                                    <rect x="254" y="60" width="26" height="16" rx="2" />
-                                    <rect x="250" y="138" width="34" height="20" rx="2" />
-                                    <text x="267" y="98" text-anchor="middle">+12</text>
+                                    <rect x="266" y="74" width="22" height="13" rx="1" />
+                                    <rect x="269" y="91" width="19" height="11" rx="1" />
+                                    <rect x="272" y="106" width="16" height="9" rx="1" />
+                                    <text x="278" y="130" text-anchor="middle">+12</text>
                                 </g>
 
-                                <g class="st-note"><text x="12" y="188">THREAD // FACE-FIRST</text></g>
+                                <g class="st-note"><text x="26" y="192">THREAD // FACE-FIRST</text></g>
+                                <g class="st-note"><text x="286" y="192" text-anchor="end">NO ANON MOBS</text></g>
                             </svg>
                         </div>
                         <div class="step-card__body">
@@ -1183,37 +1284,60 @@
                     <article class="step-card" data-inview>
                         <div class="step-card__frame">
                             <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
-                                <path class="st-grid" d="M0 40h300M0 80h300M0 120h300M0 160h300M60 0v200M120 0v200M180 0v200M240 0v200" />
+                                <rect width="300" height="200" fill="url(#stScreen)" />
+
+                                <g class="st-head">
+                                    <circle class="st-live-dot" cx="23" cy="20" r="3.2" />
+                                    <text x="33" y="23.5">LIVE TALLY</text>
+                                    <text class="st-head-meta" x="280" y="23.5" text-anchor="end">ROUND 04 // OPEN</text>
+                                    <path class="st-rule" d="M20 32h260" />
+                                </g>
 
                                 <!-- the ballot -->
                                 <g class="st-vote">
-                                    <text x="24" y="44">PRO</text>
-                                    <rect class="st-vote-track" x="24" y="52" width="252" height="10" rx="1" />
-                                    <rect class="st-vote-fill st-vote-fill--pro" x="24" y="52" height="10" rx="1" />
-                                    <text class="st-vote-pct" x="276" y="44" text-anchor="end">72%</text>
+                                    <text x="20" y="52">PRO</text>
+                                    <text class="st-vote-pct" x="280" y="53" text-anchor="end">72%</text>
+                                    <rect class="st-vote-track" x="20" y="58" width="260" height="11" rx="1" />
+                                    <rect class="st-vote-fill st-vote-fill--pro" x="20" y="58" height="11" rx="1" />
+                                    <path class="st-vote-ticks" d="M72 58v11M124 58v11M176 58v11M228 58v11" />
 
-                                    <text x="24" y="84">CON</text>
-                                    <rect class="st-vote-track" x="24" y="92" width="252" height="10" rx="1" />
-                                    <rect class="st-vote-fill st-vote-fill--con" x="24" y="92" height="10" rx="1" />
-                                    <text class="st-vote-pct" x="276" y="84" text-anchor="end">28%</text>
+                                    <text x="20" y="90">CON</text>
+                                    <text class="st-vote-pct" x="280" y="91" text-anchor="end">28%</text>
+                                    <rect class="st-vote-track" x="20" y="96" width="260" height="11" rx="1" />
+                                    <rect class="st-vote-fill st-vote-fill--con" x="20" y="96" height="11" rx="1" />
+                                    <path class="st-vote-ticks" d="M72 96v11M124 96v11M176 96v11M228 96v11" />
                                 </g>
 
-                                <!-- who voted -->
+                                <!-- who actually voted -->
                                 <g class="st-voters">
-                                    <circle cx="30" cy="126" r="7" /><circle cx="44" cy="126" r="7" /><circle cx="58" cy="126" r="7" />
-                                    <circle cx="72" cy="126" r="7" /><circle cx="86" cy="126" r="7" /><circle cx="100" cy="126" r="7" />
-                                    <text x="116" y="130">4,812 VERIFIED VOTERS</text>
+                                    <use href="#stAvaSym" x="20" y="119" width="15" height="15" />
+                                    <use href="#stAvaSym" x="33" y="119" width="15" height="15" />
+                                    <use href="#stAvaSym" x="46" y="119" width="15" height="15" />
+                                    <use href="#stAvaSym" x="59" y="119" width="15" height="15" />
+                                    <use href="#stAvaSym" x="72" y="119" width="15" height="15" />
+                                    <path class="st-check" d="M94 126.5l2.8 2.8 5.4-6" />
+                                    <text x="108" y="129.5">4,812 VERIFIED VOTERS</text>
                                 </g>
 
-                                <!-- the verdict strip -->
+                                <!-- what Orvelis made of it -->
                                 <g class="st-verdict">
-                                    <rect x="24" y="148" width="252" height="34" rx="2" />
-                                    <circle class="st-verdict-dot" cx="42" cy="165" r="6" />
-                                    <text class="st-verdict-label" x="58" y="162">ORVELIS VERDICT</text>
-                                    <text class="st-verdict-value" x="58" y="175">LOGIC 9.4 / EVIDENCE 8.1 / NO FALLACY</text>
-                                </g>
+                                    <rect x="20" y="142" width="260" height="44" rx="2" />
+                                    <text class="st-verdict-label" x="30" y="156">ORVELIS VERDICT</text>
+                                    <text class="st-verdict-stamp" x="270" y="156" text-anchor="end">SIGNED</text>
 
-                                <g class="st-note"><text x="24" y="192">[ CONSENSUS // LIVE ]</text></g>
+                                    <text class="st-score-key" x="30" y="174">LOGIC</text>
+                                    <rect class="st-score-track" x="57" y="169" width="34" height="5" rx="1" />
+                                    <rect class="st-score-fill" x="57" y="169" width="32" height="5" rx="1" />
+                                    <text class="st-score-val" x="95" y="174.5">9.4</text>
+
+                                    <text class="st-score-key" x="118" y="174">EVID</text>
+                                    <rect class="st-score-track" x="142" y="169" width="34" height="5" rx="1" />
+                                    <rect class="st-score-fill" x="142" y="169" width="28" height="5" rx="1" />
+                                    <text class="st-score-val" x="180" y="174.5">8.1</text>
+
+                                    <text class="st-score-key" x="200" y="174">FALLACY</text>
+                                    <text class="st-score-val--good" x="270" y="174" text-anchor="end">NONE</text>
+                                </g>
                             </svg>
                         </div>
                         <div class="step-card__body">
@@ -2053,9 +2177,9 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=4.2.0"></script>
+    <script defer src="3d-fx.js?v=4.3.0"></script>
 
-    <script defer src="script.js?v=4.2.0"></script>
+    <script defer src="script.js?v=4.3.0"></script>
 </body>
 
 </html>

@@ -12492,6 +12492,42 @@ body {
     clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
     aspect-ratio: 3 / 2;
     overflow: hidden;
+    transition: box-shadow .4s var(--ease-out-expo);
+}
+
+/* a display, not a flat plate: scanlines over the art and a glass sheen */
+.step-card__frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(115deg, rgba(216, 231, 250, 0.07) 0%, rgba(216, 231, 250, 0) 42%),
+        repeating-linear-gradient(0deg, rgba(4, 9, 18, 0.32) 0 1px, rgba(4, 9, 18, 0) 1px 3px);
+    mix-blend-mode: soft-light;
+    opacity: .85;
+}
+
+/* corner ticks, the same instrument language as the rest of the page */
+.step-card__frame::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    pointer-events: none;
+    z-index: 2;
+    border: 1px solid rgba(157, 192, 247, 0.16);
+    -webkit-mask-image:
+        linear-gradient(to right, #000 0 14px, transparent 14px calc(100% - 14px), #000 calc(100% - 14px) 100%),
+        linear-gradient(to bottom, #000 0 14px, transparent 14px calc(100% - 14px), #000 calc(100% - 14px) 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        linear-gradient(to right, #000 0 14px, transparent 14px calc(100% - 14px), #000 calc(100% - 14px) 100%),
+        linear-gradient(to bottom, #000 0 14px, transparent 14px calc(100% - 14px), #000 calc(100% - 14px) 100%);
+    mask-composite: intersect;
+}
+
+.step-card:hover .step-card__frame {
+    box-shadow: inset 0 0 0 1px rgba(107, 165, 242, 0.55), 0 18px 40px rgba(7, 27, 51, 0.18);
 }
 
 .step-art {
@@ -12511,31 +12547,32 @@ body {
 
 [data-theme="dark"] .step-card__index { color: var(--brand-300); }
 
-/* --- shared art primitives --- */
-.st-grid {
+/* --- shared art primitives -------------------------------------------------
+   The three panels are app screens, not icons: a viewfinder, a reply thread
+   and a tally board. Everything below is the interface inside them.
+   ------------------------------------------------------------------------- */
+.step-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* the person that appears in every panel */
+.st-por-body { fill: url(#stBody); }
+.st-por-neck { fill: #2C3E62; }
+.st-por-head { fill: #4C6693; }
+.st-por-lit { fill: #6D8CBF; }
+.st-por-hair { fill: #1F2C46; }
+
+.st-ava-bg { fill: #16233C; stroke: rgba(4, 9, 18, 0.9); stroke-width: 1.2; }
+.st-ava-head { fill: #6A88B8; }
+.st-ava-body { fill: #46608F; }
+
+.st-thirds {
     fill: none;
-    stroke: rgba(107, 165, 242, 0.12);
+    stroke: rgba(107, 165, 242, 0.13);
     stroke-width: 1;
-}
-
-.st-shell {
-    fill: #16213A;
-    stroke: rgba(157, 192, 247, 0.4);
-    stroke-width: 1.4;
-}
-
-.st-halo { fill: var(--brand-500); opacity: .2; }
-
-.st-fig {
-    fill: #293A5C;
-    stroke: rgba(157, 192, 247, 0.32);
-    stroke-width: 1.2;
-}
-
-.st-framing {
-    fill: none;
-    stroke: rgba(157, 192, 247, 0.45);
-    stroke-width: 1.4;
 }
 
 .st-note text {
@@ -12543,102 +12580,278 @@ body {
     font-size: 7.5px;
     font-weight: 600;
     letter-spacing: 0.16em;
-    fill: rgba(157, 192, 247, 0.55);
+    fill: rgba(157, 192, 247, 0.5);
 }
 
-/* --- 01 record --- */
-.st-rec rect { fill: rgba(8, 13, 24, 0.85); stroke: rgba(244, 63, 94, 0.5); stroke-width: 1; }
-.st-rec text { font-family: var(--font-tech); font-size: 7.5px; font-weight: 700; letter-spacing: 0.14em; fill: #F8A3AE; }
+@keyframes st-blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+
+/* --- 01 the viewfinder --- */
+.st-subject { opacity: .95; }
+
+.st-lock path {
+    fill: none;
+    stroke: var(--brand-400);
+    stroke-width: 1.6;
+    stroke-linecap: square;
+}
+
+.st-lock text {
+    font-family: var(--font-tech);
+    font-size: 6.5px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    fill: var(--brand-300);
+}
+
+/* the picture stops at this line; everything under it is instrumentation */
+.st-band { fill: rgba(3, 7, 14, 0.9); }
+
+.st-band-rule {
+    fill: none;
+    stroke: rgba(107, 165, 242, 0.28);
+    stroke-width: 1;
+}
+
+.st-rec-pill {
+    fill: rgba(8, 13, 24, 0.9);
+    stroke: rgba(244, 63, 94, 0.55);
+    stroke-width: 1;
+}
+
+.st-rec-text {
+    font-family: var(--font-tech);
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    fill: #F8A3AE;
+}
 
 .st-rec-dot {
     fill: #F43F5E;
-    animation: st-blink 1.5s ease-in-out infinite;
+    animation: st-blink 1.4s ease-in-out infinite;
     animation-play-state: paused;
+}
+
+.st-take {
+    font-family: var(--font-tech);
+    font-size: 7.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    fill: rgba(157, 192, 247, 0.6);
 }
 
 .st-time {
     font-family: var(--font-lcd);
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 700;
-    fill: #CFE0FB;
+    letter-spacing: 0.04em;
+    fill: #D7E6FB;
 }
 
-.st-meter rect { fill: rgba(157, 192, 247, 0.2); }
+.st-levels rect { fill: rgba(157, 192, 247, 0.18); }
 
-.st-meter-fill {
-    fill: var(--brand-400) !important;
-    animation: st-fill 5s ease-in-out infinite;
+.st-levels rect:nth-child(n + 4) { fill: var(--brand-400); opacity: .9; }
+
+.st-levels rect:nth-child(-n + 2) {
+    fill: #F43F5E;
+    opacity: .85;
+    animation: st-peak 1.7s ease-in-out infinite;
     animation-play-state: paused;
 }
 
-@keyframes st-fill { 0%, 100% { width: 20px; } 50% { width: 58px; } }
-@keyframes st-blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+@keyframes st-peak { 0%, 100% { opacity: .15; } 55% { opacity: .9; } }
+
+.st-levels text {
+    font-family: var(--font-tech);
+    font-size: 6px;
+    letter-spacing: 0.1em;
+    fill: rgba(157, 192, 247, 0.5);
+}
+
+.st-scale path {
+    fill: none;
+    stroke: rgba(157, 192, 247, 0.35);
+    stroke-width: 1;
+}
+
+.st-scale-dot { fill: var(--brand-400); }
+
+.st-scale text {
+    font-family: var(--font-tech);
+    font-size: 6px;
+    letter-spacing: 0.1em;
+    fill: rgba(157, 192, 247, 0.5);
+}
 
 .st-wave rect {
     fill: var(--brand-400);
-    opacity: .8;
+    opacity: .75;
     transform-box: fill-box;
     transform-origin: center;
-    animation: st-bar 1.2s ease-in-out infinite;
+    animation: st-bar 1.25s ease-in-out infinite;
     animation-play-state: paused;
 }
 
 .st-wave rect:nth-child(2n) { animation-delay: .14s; }
 .st-wave rect:nth-child(3n) { animation-delay: .3s; }
 .st-wave rect:nth-child(5n) { animation-delay: .46s; }
+.st-wave rect:nth-child(7n) { animation-delay: .62s; }
 
-@keyframes st-bar { 0%, 100% { transform: scaleY(.4); } 50% { transform: scaleY(1.15); } }
+@keyframes st-bar { 0%, 100% { transform: scaleY(.38); } 50% { transform: scaleY(1.1); } }
 
-/* --- 02 respond --- */
-.st-clip rect:first-of-type {
-    fill: #16213A;
-    stroke: rgba(157, 192, 247, 0.34);
-    stroke-width: 1.3;
+.st-runbar rect { fill: rgba(157, 192, 247, 0.18); }
+
+.st-runbar-fill {
+    fill: var(--brand-400) !important;
+    animation: st-run 6s ease-in-out infinite;
+    animation-play-state: paused;
 }
 
-.st-clip--root rect:first-of-type { stroke: var(--brand-400); stroke-width: 1.6; }
+@keyframes st-run { 0%, 100% { width: 40px; } 50% { width: 220px; } }
 
-.st-clip-face { fill: #33456B; }
-.st-clip-bar { fill: rgba(157, 192, 247, 0.4); }
+/* --- 02 the thread --- */
+.st-clip-plate {
+    fill: rgba(16, 27, 48, 0.9);
+    stroke: rgba(157, 192, 247, 0.28);
+    stroke-width: 1.2;
+}
 
-.st-clip text {
+.st-clip--root .st-clip-plate { stroke: var(--brand-400); stroke-width: 1.6; }
+.st-clip--live .st-clip-plate { stroke: rgba(244, 63, 94, 0.5); }
+
+.st-clip-inner {
+    fill: none;
+    stroke: rgba(157, 192, 247, 0.22);
+    stroke-width: 1;
+}
+
+.st-play-ring {
+    fill: rgba(7, 18, 34, 0.55);
+    stroke: rgba(216, 231, 250, 0.85);
+    stroke-width: 1.2;
+}
+
+.st-play-tri { fill: #E8F1FD; }
+.st-play--sm .st-play-ring { stroke-width: 1.6; }
+
+.st-badge--op { fill: var(--brand-500); }
+
+.st-badge-text {
     font-family: var(--font-tech);
-    font-size: 7px;
-    font-weight: 600;
-    letter-spacing: 0.13em;
-    fill: rgba(157, 192, 247, 0.65);
+    font-size: 6.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    fill: #fff;
 }
+
+.st-clip-handle {
+    font-family: var(--font-tech);
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    fill: #CBDDF8;
+}
+
+.st-clip-meta {
+    font-family: var(--font-tech);
+    font-size: 6.8px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    fill: rgba(157, 192, 247, 0.6);
+}
+
+.st-clip-meta--live { fill: #F8A3AE; }
 
 .st-branch {
     fill: none;
     stroke: var(--brand-400);
     stroke-width: 1.4;
-    stroke-dasharray: 3 4;
-    opacity: .75;
+    stroke-dasharray: 4 5;
+    opacity: .8;
+    animation: st-flow 2.4s linear infinite;
+    animation-play-state: paused;
 }
+
+@keyframes st-flow { to { stroke-dashoffset: -18; } }
 
 .st-branch-dot { fill: var(--brand-400); }
 
-.st-queue rect { fill: rgba(157, 192, 247, 0.12); }
+.st-minibar { fill: rgba(157, 192, 247, 0.22); }
+.st-minibar--fill { fill: var(--brand-400); }
+
+.st-live-dot {
+    fill: #F43F5E;
+    animation: st-blink 1.2s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.st-mini-wave rect {
+    fill: #F8A3AE;
+    opacity: .8;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: st-bar 1s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.st-mini-wave rect:nth-child(2n) { animation-delay: .12s; }
+.st-mini-wave rect:nth-child(3n) { animation-delay: .26s; }
+
+.st-queue rect {
+    fill: rgba(157, 192, 247, 0.1);
+    stroke: rgba(157, 192, 247, 0.2);
+    stroke-width: 1;
+}
 
 .st-queue text {
     font-family: var(--font-lcd);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-    fill: rgba(157, 192, 247, 0.7);
+    fill: rgba(157, 192, 247, 0.75);
 }
 
-/* --- 03 vote --- */
+/* --- 03 the tally --- */
+.st-head text {
+    font-family: var(--font-tech);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    fill: #CBDDF8;
+}
+
+.st-head-meta {
+    font-size: 7px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.16em !important;
+    fill: rgba(157, 192, 247, 0.55) !important;
+}
+
+.st-rule {
+    fill: none;
+    stroke: rgba(107, 165, 242, 0.25);
+    stroke-width: 1;
+}
+
 .st-vote text {
     font-family: var(--font-tech);
     font-size: 8px;
     font-weight: 700;
-    letter-spacing: 0.17em;
-    fill: rgba(157, 192, 247, 0.7);
+    letter-spacing: 0.18em;
+    fill: rgba(157, 192, 247, 0.72);
 }
 
-.st-vote-pct { font-family: var(--font-lcd) !important; font-size: 11px !important; fill: #DCE8FB !important; }
-.st-vote-track { fill: rgba(157, 192, 247, 0.16); }
+.st-vote-pct {
+    font-family: var(--font-lcd) !important;
+    font-size: 13px !important;
+    fill: #E3EDFC !important;
+    letter-spacing: 0.02em !important;
+}
+
+.st-vote-track {
+    fill: rgba(157, 192, 247, 0.14);
+    stroke: rgba(157, 192, 247, 0.18);
+    stroke-width: 1;
+}
 
 .st-vote-fill {
     animation: st-vote 3.4s var(--ease-out-expo) forwards;
@@ -12646,12 +12859,16 @@ body {
     width: 0;
 }
 
-.st-vote-fill--pro { fill: var(--brand-400); --st-w: 181px; }
-.st-vote-fill--con { fill: var(--brand-alt); --st-w: 71px; animation-delay: .2s; }
+.st-vote-fill--pro { fill: url(#stProBar); --st-w: 187px; }
+.st-vote-fill--con { fill: url(#stConBar); --st-w: 73px; animation-delay: .2s; }
 
 @keyframes st-vote { from { width: 0; } to { width: var(--st-w); } }
 
-.st-voters circle { fill: #33456B; stroke: rgba(157, 192, 247, 0.3); stroke-width: 1; }
+.st-vote-ticks {
+    fill: none;
+    stroke: rgba(4, 9, 18, 0.55);
+    stroke-width: 1;
+}
 
 .st-voters text {
     font-family: var(--font-tech);
@@ -12661,30 +12878,73 @@ body {
     fill: rgba(157, 192, 247, 0.6);
 }
 
-.st-verdict rect { fill: rgba(47, 128, 232, 0.12); stroke: rgba(107, 165, 242, 0.32); stroke-width: 1; }
-.st-verdict-dot { fill: #10B981; animation: st-blink 2.2s ease-in-out infinite; animation-play-state: paused; }
+.st-check {
+    fill: none;
+    stroke: #34D399;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.st-voters use { opacity: .95; }
+
+.st-verdict rect {
+    fill: rgba(47, 128, 232, 0.1);
+    stroke: rgba(107, 165, 242, 0.3);
+    stroke-width: 1;
+}
 
 .st-verdict-label {
     font-family: var(--font-tech);
     font-size: 7.5px;
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.2em;
     fill: var(--brand-300);
 }
 
-.st-verdict-value {
+.st-verdict-stamp {
     font-family: var(--font-tech);
-    font-size: 7.5px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    fill: rgba(157, 192, 247, 0.75);
+    font-size: 6.5px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    fill: #34D399;
+}
+
+.st-score-key {
+    font-family: var(--font-tech);
+    font-size: 6.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    fill: rgba(157, 192, 247, 0.6);
+}
+
+.st-score-track { fill: rgba(157, 192, 247, 0.16) !important; stroke: none !important; }
+.st-score-fill { fill: var(--brand-400) !important; stroke: none !important; }
+
+.st-score-val {
+    font-family: var(--font-lcd);
+    font-size: 9px;
+    font-weight: 700;
+    fill: #DCE8FB;
+}
+
+.st-score-val--good {
+    font-family: var(--font-tech);
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    fill: #34D399;
 }
 
 .step-card.is-inview .st-rec-dot,
-.step-card.is-inview .st-meter-fill,
+.step-card.is-inview .st-runbar-fill,
 .step-card.is-inview .st-wave rect,
-.step-card.is-inview .st-vote-fill,
-.step-card.is-inview .st-verdict-dot {
+.step-card.is-inview .st-levels rect,
+.step-card.is-inview .st-reticle circle,
+.step-card.is-inview .st-branch,
+.step-card.is-inview .st-live-dot,
+.step-card.is-inview .st-mini-wave rect,
+.step-card.is-inview .st-vote-fill {
     animation-play-state: running;
 }
 
@@ -12752,8 +13012,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
     .step-art * { animation: none !important; }
-    .st-vote-fill--pro { width: 181px; }
-    .st-vote-fill--con { width: 71px; }
+    .st-vote-fill--pro { width: 187px; }
+    .st-vote-fill--con { width: 73px; }
 }
 
 /* ==========================================================================
