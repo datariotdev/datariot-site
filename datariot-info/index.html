@@ -29,8 +29,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=3.8.0" />
-    <!-- Cache-Bust-Hash: cae0f14c-148f-4a26-99e3-f084f357cc28 -->
+    <link rel="stylesheet" href="style.css?v=4.0.0" />
+    <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
             --bg-main: #F1F5FC;
@@ -1230,7 +1230,7 @@
         </section>
 
         <!-- DEBATE ARENA MOCKUP SECTION -->
-        <section class="section section--debates band-ink" id="debates" data-inview>
+        <section class="section section--debates" id="debates" data-inview>
             <div id="canvas-3d-end"></div>
             <div class="section__container">
                 <div class="section__header">
@@ -1261,76 +1261,113 @@
                                     <svg class="clip-card__figure" viewBox="0 0 320 200" aria-hidden="true">
                                         <defs>
                                             <linearGradient id="cc-back-for" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".30" />
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".32" />
                                                 <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
                                             </linearGradient>
-                                            <radialGradient id="cc-key-for" cx="50%" cy="40%" r="60%">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".42" />
+                                            <radialGradient id="cc-key-for" cx="50%" cy="38%" r="62%">
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".45" />
                                                 <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
                                             </radialGradient>
+                                            <linearGradient id="an-coat-for" x1="0.2" y1="0" x2="0.8" y2="1">
+                                                <stop offset="0%" stop-color="#4C6188" />
+                                                <stop offset="45%" stop-color="#2B3A57" />
+                                                <stop offset="100%" stop-color="#151E32" />
+                                            </linearGradient>
+                                            <linearGradient id="an-chest-for" x1="0.3" y1="0" x2="0.7" y2="1">
+                                                <stop offset="0%" stop-color="#8FA6C9" />
+                                                <stop offset="100%" stop-color="#4A5C7E" />
+                                            </linearGradient>
+                                            <radialGradient id="an-face-for" cx="42%" cy="34%" r="70%">
+                                                <stop offset="0%" stop-color="#9DB4D6" />
+                                                <stop offset="60%" stop-color="#5A6D92" />
+                                                <stop offset="100%" stop-color="#2A3852" />
+                                            </radialGradient>
+                                            <radialGradient id="an-eye-for" cx="38%" cy="32%" r="70%">
+                                                <stop offset="0%" stop-color="#FFFFFF" />
+                                                <stop offset="40%" stop-color="var(--clip-accent)" />
+                                                <stop offset="100%" stop-color="#0B1220" />
+                                            </radialGradient>
+                                            <linearGradient id="an-rim-for" x1="0" y1="0" x2="1" y2="0.4">
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".9" />
+                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
+                                            </linearGradient>
                                             <clipPath id="cc-crop-for"><rect width="320" height="200" /></clipPath>
                                         </defs>
 
                                         <g clip-path="url(#cc-crop-for)">
-                                            <!-- set: backdrop wash, key light, floor line -->
                                             <rect width="320" height="200" fill="url(#cc-back-for)" />
-                                            <ellipse cx="186" cy="84" rx="112" ry="92" fill="url(#cc-key-for)" />
-                                            <path class="cc-line" d="M0 150h320" />
-                                            <path class="cc-line cc-line--soft" d="M0 168h320M0 132h320" />
+                                            <ellipse cx="178" cy="80" rx="116" ry="96" fill="url(#cc-key-for)" />
+                                            <path class="cc-line" d="M0 152h320" />
+                                            <path class="cc-line cc-line--soft" d="M0 170h320M0 134h320" />
 
-                                            <!-- softbox rig, left -->
                                             <g class="cc-rig">
-                                                <rect x="16" y="26" width="38" height="52" rx="4" />
-                                                <path d="M35 78v62M18 140h34" />
-                                                <path class="cc-rig-beam" d="M54 34 118 58 118 96 54 74z" />
+                                                <rect x="14" y="24" width="36" height="50" rx="4" />
+                                                <path d="M32 74v64M16 138h32" />
+                                                <path class="cc-rig-beam" d="M50 32 112 56 112 96 50 72z" />
                                             </g>
 
-                                            <!-- plant, right, for depth -->
                                             <g class="cc-plant">
-                                                <path d="M288 150v-30" />
-                                                <path d="M288 128c-12-4-16-16-13-26 10 2 16 13 13 26z" />
-                                                <path d="M288 134c11-6 13-19 9-28-10 4-14 16-9 28z" />
-                                                <rect x="279" y="150" width="19" height="16" rx="3" />
+                                                <path d="M292 152v-28" />
+                                                <path d="M292 132c-11-4-15-15-12-24 9 2 15 12 12 24z" />
+                                                <path d="M292 138c10-6 12-18 8-26-9 4-13 15-8 26z" />
+                                                <rect x="283" y="152" width="18" height="15" rx="3" />
                                             </g>
 
-                                            <!-- the person -->
-                                            <g class="cc-person">
+                                            <!-- contact shadow under the sitter -->
+                                            <ellipse class="an-shadow" cx="168" cy="196" rx="62" ry="10" />
+
+                                            <g class="an an--owl">
                                                 <!-- torso -->
-                                                <path class="cc-body" d="M112 200v-24c0-25 20-45 45-45h20c25 0 45 20 45 45v24z" />
-                                                <path class="cc-body-lit" d="M177 131h0c25 0 45 20 45 45v24h-30v-24c0-19-6-34-15-45z" />
-                                                <!-- collar -->
-                                                <path class="cc-detail" d="M152 134l15 16 15-16" />
-                                                <!-- neck -->
-                                                <path class="cc-skin" d="M155 118h24v20c0 6-24 6-24 0z" />
+                                                <path class="an-coat" d="M112 200c0-46 25-76 56-76s56 30 56 76z" fill="url(#an-coat-for)" />
+                                                <path class="an-chest" d="M140 200c0-30 12-50 28-50s28 20 28 50z" fill="url(#an-chest-for)" />
+                                                <!-- folded wings -->
+                                                <path class="an-wing" d="M118 200c-2-34 6-56 20-64 4 22 2 46-6 64z" />
+                                                <path class="an-wing" d="M218 200c2-34-6-56-20-64-4 22-2 46 6 64z" />
+                                                <!-- perched talons -->
+                                                <path class="an-talon" d="M150 200v-7M158 200v-9M166 200v-7M178 200v-7M186 200v-9M194 200v-7" />
+
                                                 <!-- head -->
-                                                <path class="cc-skin" d="M141 84c0-16 11-28 26-28s26 12 26 28v10c0 16-11 28-26 28s-26-12-26-28z" />
-                                                <!-- hair -->
-                                                <path class="cc-hair" d="M139 86c-2-22 10-36 28-36s30 13 28 34c-4-10-12-14-12-14-8 7-25 9-34 4-2 5-6 9-10 12z" />
-                                                <!-- brow + eyes, turned toward camera -->
-                                                <path class="cc-detail" d="M152 84h9M175 84h9" />
-                                                <circle class="cc-eye" cx="156" cy="90" r="2.4" />
-                                                <circle class="cc-eye" cx="179" cy="90" r="2.4" />
-                                                <!-- mouth, mid-sentence -->
-                                                <path class="cc-detail" d="M162 104c4 4 10 4 14 0" />
-                                                <!-- headphones -->
-                                                <path class="cc-gear" d="M137 88V78c0-17 13-30 30-30s30 13 30 30v10" />
-                                                <rect class="cc-gear-solid" x="130" y="84" width="12" height="22" rx="6" />
-                                                <rect class="cc-gear-solid" x="192" y="84" width="12" height="22" rx="6" />
+                                                <path class="an-ear" d="M124 62c-10-20-9-36-2-42 11 6 20 22 22 40z" />
+                                                <path class="an-ear" d="M212 62c10-20 9-36 2-42-11 6-20 22-22 40z" />
+                                                <path class="an-coat" d="M124 88c0-27 20-48 44-48s44 21 44 48c0 25-20 44-44 44s-44-19-44-44z" fill="url(#an-coat-for)" />
+                                                <!-- facial disc -->
+                                                <path class="an-face" d="M132 86c0-19 16-32 36-32s36 13 36 32c0 20-16 36-36 36s-36-16-36-36z" fill="url(#an-face-for)" />
+                                                <circle class="an-disc" cx="151" cy="85" r="23" />
+                                                <circle class="an-disc" cx="185" cy="85" r="23" />
+                                                <path class="an-brow" d="M136 66c9-9 20-12 29-9M200 66c-9-9-20-12-29-9" />
+
+                                                <!-- eyes -->
+                                                <circle class="an-eye" cx="151" cy="85" r="15" fill="url(#an-eye-for)" />
+                                                <circle class="an-eye" cx="185" cy="85" r="15" fill="url(#an-eye-for)" />
+                                                <circle class="an-pupil" cx="151" cy="85" r="6.5" />
+                                                <circle class="an-pupil" cx="185" cy="85" r="6.5" />
+                                                <circle class="an-spec" cx="147" cy="80" r="3.4" />
+                                                <circle class="an-spec" cx="181" cy="80" r="3.4" />
+
+                                                <!-- beak -->
+                                                <path class="an-beak" d="M168 92l8 14c0 6-16 6-16 0z" />
+                                                <path class="an-beak-lit" d="M168 92l5 9-5 3-5-3z" />
+
+                                                <!-- rim light down the camera side -->
+                                                <path class="an-rim" d="M205 58c9 10 12 22 10 34" stroke="url(#an-rim-for)" />
+                                                <path class="an-rim" d="M214 148c8 14 11 32 10 52" stroke="url(#an-rim-for)" />
+
+                                                <!-- headset, because it is still a recording -->
+                                                <path class="an-gear" d="M120 84V72c0-26 21-47 48-47s48 21 48 47v12" />
+                                                <rect class="an-gear-solid" x="110" y="80" width="14" height="26" rx="7" />
+                                                <rect class="an-gear-solid" x="212" y="80" width="14" height="26" rx="7" />
+
+                                                <!-- raised wing, beating with the point -->
+                                                <g class="an-gesture">
+                                                    <path class="an-coat" d="M104 168c-10-10-10-27 0-35 7-5 14-1 18 6l10 18c4 7 2 15-5 19-10 6-16 0-23-8z" fill="url(#an-coat-for)" />
+                                                    <path class="an-feather" d="M112 146l-6-13M120 143l-4-14M128 144l-1-13" />
+                                                </g>
                                             </g>
 
-                                            <!-- boom mic, angled in from the right -->
                                             <g class="cc-mic">
-                                                <path d="M262 62 214 100" />
-                                                <rect x="198" y="94" width="22" height="13" rx="6.5" transform="rotate(-38 209 100)" />
-                                                <path class="cc-mic-grille" d="M203 95l10 8M206 91l10 8" />
-                                            </g>
-
-                                            <!-- forearm and hand, beating along with the point -->
-                                            <g class="cc-hand">
-                                                <path class="cc-arm-edge" d="M142 198 124 170 112 154" />
-                                                <path class="cc-arm" d="M142 198 124 170 112 154" />
-                                                <path class="cc-skin" d="M99 156c-7-7-6-18 2-23 5-3 10-1 13 3l8 11c3 4 2 10-2 13-7 5-14 2-21-4z" />
-                                                <path class="cc-detail" d="M106 139l-3-11M113 137l-1-12" />
+                                                <path d="M266 58 232 92" />
+                                                <rect x="216" y="86" width="21" height="13" rx="6.5" transform="rotate(-42 226 92)" />
+                                                <path class="cc-mic-grille" d="M221 87l9 8M224 83l9 8" />
                                             </g>
                                         </g>
                                     </svg>
@@ -1392,76 +1429,112 @@
                                     <svg class="clip-card__figure" viewBox="0 0 320 200" aria-hidden="true">
                                         <defs>
                                             <linearGradient id="cc-back-against" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".30" />
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".32" />
                                                 <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
                                             </linearGradient>
-                                            <radialGradient id="cc-key-against" cx="50%" cy="40%" r="60%">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".42" />
+                                            <radialGradient id="cc-key-against" cx="50%" cy="38%" r="62%">
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".45" />
                                                 <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
                                             </radialGradient>
+                                            <linearGradient id="an-coat-against" x1="0.2" y1="0" x2="0.8" y2="1">
+                                                <stop offset="0%" stop-color="#4C6188" />
+                                                <stop offset="45%" stop-color="#2B3A57" />
+                                                <stop offset="100%" stop-color="#151E32" />
+                                            </linearGradient>
+                                            <linearGradient id="an-chest-against" x1="0.3" y1="0" x2="0.7" y2="1">
+                                                <stop offset="0%" stop-color="#8FA6C9" />
+                                                <stop offset="100%" stop-color="#4A5C7E" />
+                                            </linearGradient>
+                                            <radialGradient id="an-face-against" cx="42%" cy="34%" r="70%">
+                                                <stop offset="0%" stop-color="#9DB4D6" />
+                                                <stop offset="60%" stop-color="#5A6D92" />
+                                                <stop offset="100%" stop-color="#2A3852" />
+                                            </radialGradient>
+                                            <radialGradient id="an-eye-against" cx="38%" cy="32%" r="70%">
+                                                <stop offset="0%" stop-color="#FFFFFF" />
+                                                <stop offset="40%" stop-color="var(--clip-accent)" />
+                                                <stop offset="100%" stop-color="#0B1220" />
+                                            </radialGradient>
+                                            <linearGradient id="an-rim-against" x1="0" y1="0" x2="1" y2="0.4">
+                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".9" />
+                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
+                                            </linearGradient>
                                             <clipPath id="cc-crop-against"><rect width="320" height="200" /></clipPath>
                                         </defs>
 
                                         <g clip-path="url(#cc-crop-against)" transform="scale(-1,1) translate(-320,0)">
-                                            <!-- set: backdrop wash, key light, floor line -->
                                             <rect width="320" height="200" fill="url(#cc-back-against)" />
-                                            <ellipse cx="186" cy="84" rx="112" ry="92" fill="url(#cc-key-against)" />
-                                            <path class="cc-line" d="M0 150h320" />
-                                            <path class="cc-line cc-line--soft" d="M0 168h320M0 132h320" />
+                                            <ellipse cx="178" cy="80" rx="116" ry="96" fill="url(#cc-key-against)" />
+                                            <path class="cc-line" d="M0 152h320" />
+                                            <path class="cc-line cc-line--soft" d="M0 170h320M0 134h320" />
 
-                                            <!-- softbox rig, left -->
                                             <g class="cc-rig">
-                                                <rect x="16" y="26" width="38" height="52" rx="4" />
-                                                <path d="M35 78v62M18 140h34" />
-                                                <path class="cc-rig-beam" d="M54 34 118 58 118 96 54 74z" />
+                                                <rect x="14" y="24" width="36" height="50" rx="4" />
+                                                <path d="M32 74v64M16 138h32" />
+                                                <path class="cc-rig-beam" d="M50 32 112 56 112 96 50 72z" />
                                             </g>
 
-                                            <!-- plant, right, for depth -->
                                             <g class="cc-plant">
-                                                <path d="M288 150v-30" />
-                                                <path d="M288 128c-12-4-16-16-13-26 10 2 16 13 13 26z" />
-                                                <path d="M288 134c11-6 13-19 9-28-10 4-14 16-9 28z" />
-                                                <rect x="279" y="150" width="19" height="16" rx="3" />
+                                                <path d="M292 152v-28" />
+                                                <path d="M292 132c-11-4-15-15-12-24 9 2 15 12 12 24z" />
+                                                <path d="M292 138c10-6 12-18 8-26-9 4-13 15-8 26z" />
+                                                <rect x="283" y="152" width="18" height="15" rx="3" />
                                             </g>
 
-                                            <!-- the person -->
-                                            <g class="cc-person">
-                                                <!-- torso -->
-                                                <path class="cc-body" d="M112 200v-24c0-25 20-45 45-45h20c25 0 45 20 45 45v24z" />
-                                                <path class="cc-body-lit" d="M177 131h0c25 0 45 20 45 45v24h-30v-24c0-19-6-34-15-45z" />
-                                                <!-- collar -->
-                                                <path class="cc-detail" d="M152 134l15 16 15-16" />
-                                                <!-- neck -->
-                                                <path class="cc-skin" d="M155 118h24v20c0 6-24 6-24 0z" />
+                                            <!-- contact shadow under the sitter -->
+                                            <ellipse class="an-shadow" cx="168" cy="196" rx="62" ry="10" />
+
+                                            <g class="an an--fox">
+                                                <path class="an-coat" d="M112 200c0-46 25-76 56-76s56 30 56 76z" fill="url(#an-coat-against)" />
+                                                <path class="an-chest" d="M142 200c0-32 10-52 26-52s26 20 26 52z" fill="url(#an-chest-against)" />
+                                                <!-- brush tail curling in from the side -->
+                                                <path class="an-tail" d="M224 200c22-8 34-28 30-50-16 2-30 16-36 34z" />
+                                                <path class="an-tail-tip" d="M250 154c-8 2-15 8-19 16 9 1 17-4 19-16z" />
+
+                                                <!-- ears -->
+                                                <path class="an-coat" d="M128 62 118 18l34 22z" fill="url(#an-coat-against)" />
+                                                <path class="an-coat" d="M208 62 218 18l-34 22z" fill="url(#an-coat-against)" />
+                                                <path class="an-ear-in" d="M131 56 126 31l19 13z" />
+                                                <path class="an-ear-in" d="M205 56l5-25-19 13z" />
+
                                                 <!-- head -->
-                                                <path class="cc-skin" d="M141 84c0-16 11-28 26-28s26 12 26 28v10c0 16-11 28-26 28s-26-12-26-28z" />
-                                                <!-- hair -->
-                                                <path class="cc-hair" d="M139 86c-2-22 10-36 28-36s30 13 28 34c-4-10-12-14-12-14-8 7-25 9-34 4-2 5-6 9-10 12z" />
-                                                <!-- brow + eyes, turned toward camera -->
-                                                <path class="cc-detail" d="M152 84h9M175 84h9" />
-                                                <circle class="cc-eye" cx="156" cy="90" r="2.4" />
-                                                <circle class="cc-eye" cx="179" cy="90" r="2.4" />
-                                                <!-- mouth, mid-sentence -->
-                                                <path class="cc-detail" d="M162 104c4 4 10 4 14 0" />
-                                                <!-- headphones -->
-                                                <path class="cc-gear" d="M137 88V78c0-17 13-30 30-30s30 13 30 30v10" />
-                                                <rect class="cc-gear-solid" x="130" y="84" width="12" height="22" rx="6" />
-                                                <rect class="cc-gear-solid" x="192" y="84" width="12" height="22" rx="6" />
+                                                <path class="an-coat" d="M124 84c0-26 20-44 44-44s44 18 44 44c0 20-12 34-28 40l-16 14-16-14c-16-6-28-20-28-40z" fill="url(#an-coat-against)" />
+                                                <!-- cheek ruffs -->
+                                                <path class="an-ruff" d="M126 92c-6 10-8 22-6 32 10-4 17-13 20-24zM210 92c6 10 8 22 6 32-10-4-17-13-20-24z" />
+                                                <!-- muzzle -->
+                                                <path class="an-face" d="M148 104c0-9 9-15 20-15s20 6 20 15c0 12-9 24-20 32-11-8-20-20-20-32z" fill="url(#an-face-against)" />
+                                                <path class="an-brow" d="M136 70c8-6 17-8 25-6M200 70c-8-6-17-8-25-6" />
+
+                                                <!-- eyes: narrower than the owl's, same build -->
+                                                <ellipse class="an-eye" cx="150" cy="82" rx="13" ry="10" fill="url(#an-eye-against)" />
+                                                <ellipse class="an-eye" cx="186" cy="82" rx="13" ry="10" fill="url(#an-eye-against)" />
+                                                <ellipse class="an-pupil" cx="150" cy="82" rx="4.5" ry="7" />
+                                                <ellipse class="an-pupil" cx="186" cy="82" rx="4.5" ry="7" />
+                                                <circle class="an-spec" cx="146" cy="78" r="3" />
+                                                <circle class="an-spec" cx="182" cy="78" r="3" />
+
+                                                <!-- nose -->
+                                                <path class="an-nose" d="M168 106c6 0 9 3 9 6s-4 6-9 6-9-3-9-6 3-6 9-6z" />
+                                                <path class="an-spec" d="M164 108c2-1 4-1 6 0" />
+
+                                                <path class="an-rim" d="M206 54c9 11 12 23 9 35" stroke="url(#an-rim-against)" />
+                                                <path class="an-rim" d="M214 148c8 14 11 32 10 52" stroke="url(#an-rim-against)" />
+
+                                                <path class="an-gear" d="M122 82V70c0-25 21-45 46-45s46 20 46 45v12" />
+                                                <rect class="an-gear-solid" x="112" y="78" width="14" height="26" rx="7" />
+                                                <rect class="an-gear-solid" x="210" y="78" width="14" height="26" rx="7" />
+
+                                                <!-- raised paw -->
+                                                <g class="an-gesture">
+                                                    <path class="an-coat" d="M104 170c-10-10-10-27 0-35 7-5 14-1 18 6l10 18c4 7 2 15-5 19-10 6-16 0-23-8z" fill="url(#an-coat-against)" />
+                                                    <path class="an-feather" d="M110 148l-5-12M118 145l-3-13M126 146l-1-12" />
+                                                </g>
                                             </g>
 
-                                            <!-- boom mic, angled in from the right -->
                                             <g class="cc-mic">
-                                                <path d="M262 62 214 100" />
-                                                <rect x="198" y="94" width="22" height="13" rx="6.5" transform="rotate(-38 209 100)" />
-                                                <path class="cc-mic-grille" d="M203 95l10 8M206 91l10 8" />
-                                            </g>
-
-                                            <!-- forearm and hand, beating along with the point -->
-                                            <g class="cc-hand">
-                                                <path class="cc-arm-edge" d="M142 198 124 170 112 154" />
-                                                <path class="cc-arm" d="M142 198 124 170 112 154" />
-                                                <path class="cc-skin" d="M99 156c-7-7-6-18 2-23 5-3 10-1 13 3l8 11c3 4 2 10-2 13-7 5-14 2-21-4z" />
-                                                <path class="cc-detail" d="M106 139l-3-11M113 137l-1-12" />
+                                                <path d="M266 58 232 92" />
+                                                <rect x="216" y="86" width="21" height="13" rx="6.5" transform="rotate(-42 226 92)" />
+                                                <path class="cc-mic-grille" d="M221 87l9 8M224 83l9 8" />
                                             </g>
                                         </g>
                                     </svg>
@@ -1659,44 +1732,109 @@
         </section>
 
 
-        <!-- GLOBAL NETWORK SECTION (Restored to main flow) -->
-        <section class="section section--global band-ink" id="global" data-inview>
+        <!-- GLOBAL NETWORK SECTION -->
+        <section class="section section--global gnet" id="global" data-inview>
             <div class="section__container">
-                <div class="section__header">
-                    <span class="section__label">[ 06 — GLOBAL NETWORK ]</span>
-                    <h2 class="section__title">LOGIC HAS NO BORDERS.<br />CONNECTING THE WORLD.</h2>
+
+                <div class="gnet__eyebrow">
+                    <span class="gnet__eyebrow-tag">[ 06 — GLOBAL NETWORK ]</span>
+                    <span class="gnet__eyebrow-rule"></span>
+                    <span class="gnet__eyebrow-meta">
+                        <span class="gnet__pulse"></span>
+                        NETWORK LIVE
+                    </span>
                 </div>
-                <div class="global__layout">
-                    <div class="global__visual">
-                        <div class="global__map-wrap">
-                            <div id="canvas-3d-globe"></div>
+
+                <div class="gnet__head">
+                    <h2 class="section__title">Logic has no borders.</h2>
+                    <p class="gnet__lede">
+                        An argument made in Lagos gets answered from Warsaw before the clip finishes
+                        buffering. Topics cluster by meaning, not by map.
+                    </p>
+                </div>
+
+                <div class="gnet__grid">
+
+                    <!-- the map -->
+                    <div class="gnet__map">
+                        <div class="gnet__map-frame">
+                            <span class="gnet__corner gnet__corner--tl" aria-hidden="true"></span>
+                            <span class="gnet__corner gnet__corner--br" aria-hidden="true"></span>
+                            <div class="orvelis-canvas-container gnet__canvas" id="canvas-3d-globe"></div>
+
+                            <div class="gnet__map-hud">
+                                <span class="gnet__map-tag">[ TOPOLOGY // LIVE ]</span>
+                                <span class="gnet__map-coord">LAT 51.50 / LON -0.12</span>
+                            </div>
+
+                            <!-- clusters called out on the sphere -->
+                            <span class="gnet__pin gnet__pin--1"><i></i>EU-WEST</span>
+                            <span class="gnet__pin gnet__pin--2"><i></i>SA-EAST</span>
+                            <span class="gnet__pin gnet__pin--3"><i></i>APAC</span>
                         </div>
-                        <div class="globe-overlay-stats">
-                            <div class="stat-box">
-                                <span class="stat-box__label">Active Nodes</span>
-                                <span class="stat-box__value">1,247</span>
-                            </div>
-                            <div class="stat-box">
-                                <span class="stat-box__label">Live Clusters</span>
-                                <span class="stat-box__value">384</span>
-                            </div>
+
+                        <div class="gnet__readout">
+                            <span class="gnet__readout-item"><b>1,247</b><i>ACTIVE NODES</i></span>
+                            <span class="gnet__readout-item"><b>384</b><i>LIVE CLUSTERS</i></span>
+                            <span class="gnet__readout-item"><b>62</b><i>COUNTRIES</i></span>
+                            <span class="gnet__readout-item"><b>34</b><i>MS MEDIAN HOP</i></span>
                         </div>
                     </div>
-                    <div class="global__content">
-                        <div class="cluster-boxes">
-                            <div class="cluster-box">
-                                <span class="cluster-box__tag">[ NODE // CLUSTERS ]</span>
-                                <h4>Global Clusters</h4>
-                                <p>Topics are organized into "Boxes" (semantic clusters) that transcend geographical
-                                    boundaries.</p>
-                            </div>
-                            <div class="cluster-box">
-                                <span class="cluster-box__tag">[ MAP // TOPOLOGY ]</span>
-                                <h4>World Map of Reason</h4>
-                                <p>Track the pulse of global discourse in real-time. Logic-driven debates at a planetary
-                                    scale.</p>
-                            </div>
+
+                    <!-- the regions board -->
+                    <div class="gnet__board">
+                        <div class="gnet__board-head">
+                            <span class="gnet__board-title">REGIONS BY LIVE DEBATE</span>
+                            <span class="gnet__board-now">NOW</span>
                         </div>
+
+                        <ol class="gnet__regions">
+                            <li class="gnet__region">
+                                <span class="gnet__region-rank">01</span>
+                                <span class="gnet__region-name">EU&nbsp;WEST</span>
+                                <span class="gnet__region-bar"><i style="width: 92%"></i></span>
+                                <span class="gnet__region-val">418</span>
+                            </li>
+                            <li class="gnet__region">
+                                <span class="gnet__region-rank">02</span>
+                                <span class="gnet__region-name">NA&nbsp;EAST</span>
+                                <span class="gnet__region-bar"><i style="width: 78%"></i></span>
+                                <span class="gnet__region-val">356</span>
+                            </li>
+                            <li class="gnet__region">
+                                <span class="gnet__region-rank">03</span>
+                                <span class="gnet__region-name">APAC</span>
+                                <span class="gnet__region-bar"><i style="width: 61%"></i></span>
+                                <span class="gnet__region-val">277</span>
+                            </li>
+                            <li class="gnet__region">
+                                <span class="gnet__region-rank">04</span>
+                                <span class="gnet__region-name">SA&nbsp;EAST</span>
+                                <span class="gnet__region-bar"><i style="width: 44%"></i></span>
+                                <span class="gnet__region-val">201</span>
+                            </li>
+                            <li class="gnet__region">
+                                <span class="gnet__region-rank">05</span>
+                                <span class="gnet__region-name">AFRICA</span>
+                                <span class="gnet__region-bar"><i style="width: 33%"></i></span>
+                                <span class="gnet__region-val">149</span>
+                            </li>
+                        </ol>
+
+                        <div class="gnet__feed">
+                            <span class="gnet__feed-title">[ CROSS-BORDER REPLIES ]</span>
+                            <ul class="gnet__feed-list">
+                                <li><em>LAGOS</em><span class="gnet__arrow" aria-hidden="true"></span><em>WARSAW</em><i>0:41</i></li>
+                                <li><em>SÃO PAULO</em><span class="gnet__arrow" aria-hidden="true"></span><em>LISBON</em><i>1:12</i></li>
+                                <li><em>JAKARTA</em><span class="gnet__arrow" aria-hidden="true"></span><em>BERLIN</em><i>0:58</i></li>
+                                <li><em>TORONTO</em><span class="gnet__arrow" aria-hidden="true"></span><em>SEOUL</em><i>2:04</i></li>
+                            </ul>
+                        </div>
+
+                        <p class="gnet__note">
+                            Topics are grouped into semantic clusters, so a debate finds the people who
+                            care about it — not the people who happen to share a timezone.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -1820,15 +1958,14 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Premium Animation Libraries -->
-    <script defer src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=3.8.0"></script>
+    <script defer src="3d-fx.js?v=4.0.0"></script>
 
-    <script defer src="script.js?v=3.8.0"></script>
+    <script defer src="script.js?v=4.0.0"></script>
 </body>
 
 </html>

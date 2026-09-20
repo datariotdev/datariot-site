@@ -12342,20 +12342,6 @@ body {
     }
 }
 
-/* ==========================================================================
-   CLIP CARD — the on-camera scene
-   Replaces the circle-head-on-a-dome silhouette: a lit set with a softbox,
-   boom mic, plant for depth, and a person with hair, headphones and a hand
-   caught mid-gesture. Mirrored for the opposing side.
-   ========================================================================== */
-.cc-line {
-    fill: none;
-    stroke: rgba(150, 180, 232, 0.16);
-    stroke-width: 1;
-}
-
-.cc-line--soft { stroke: rgba(150, 180, 232, 0.07); }
-
 /* --- lighting rig --- */
 .cc-rig path,
 .cc-rig rect {
@@ -12478,24 +12464,6 @@ body {
     .cc-person, .cc-hand { animation: none !important; }
 }
 
-/* forearm: a wide dark sleeve stroke with a hairline edge behind it */
-.cc-arm-edge {
-    fill: none;
-    stroke: rgba(157, 192, 247, 0.3);
-    stroke-width: 19;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.cc-arm {
-    fill: none;
-    stroke: #1B2942;
-    stroke-width: 16;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.cc-hand { transform-origin: 88% 96% !important; }
 
 /* ==========================================================================
    SLIDE 02 — HOW IT WORKS
@@ -12871,8 +12839,10 @@ body {
     .aic-foot-item b { font-size: 19px; }
     .aic-foot-item i { font-size: 7.5px; letter-spacing: 0.08em; white-space: nowrap; }
 
-    /* the WebGL core sits behind an opaque panel here — never build it */
-    .orvelis-canvas-container,
+    /* the WebGL core sits behind an opaque panel here — never build it.
+       Scoped to the AI Core: the globe reuses the same class name and is the
+       whole point of its own section. */
+    .ai-showcase__visual .orvelis-canvas-container,
     .ai-showcase__visual::before {
         display: none !important;
     }
@@ -13361,9 +13331,16 @@ body {
    the content edges, and a grain tile. All static — no filters, no animation,
    one paint.
    ========================================================================== */
+/* Absolute, not fixed: the backdrop is as tall as the document, so its light
+   drifts as you scroll instead of sitting still behind everything. That is
+   where the page gets its variety — the surface itself never changes tone, so
+   there is no band, no seam, no light-to-dark step anywhere. */
 .page-fx {
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
     z-index: -1;
     pointer-events: none;
     overflow: hidden;
@@ -13378,18 +13355,28 @@ body {
 /* --- light --- */
 .page-fx__glow {
     background:
-        radial-gradient(1200px 700px at 84% -8%, rgba(47, 128, 232, 0.20), transparent 62%),
-        radial-gradient(900px 620px at -10% 26%, rgba(124, 107, 234, 0.14), transparent 64%),
-        radial-gradient(1000px 640px at 30% 108%, rgba(47, 128, 232, 0.16), transparent 64%),
-        linear-gradient(180deg, #FAFCFF 0%, #E8EFFA 52%, #F3F7FD 100%);
+        radial-gradient(1100px 620px at 88% 2%, rgba(47, 128, 232, 0.22), transparent 58%),
+        radial-gradient(900px 560px at -6% 15%, rgba(124, 107, 234, 0.13), transparent 60%),
+        radial-gradient(1000px 600px at 78% 30%, rgba(47, 128, 232, 0.16), transparent 60%),
+        radial-gradient(950px 580px at 6% 45%, rgba(124, 107, 234, 0.15), transparent 60%),
+        radial-gradient(1100px 620px at 82% 58%, rgba(47, 128, 232, 0.20), transparent 58%),
+        radial-gradient(900px 560px at 10% 72%, rgba(124, 107, 234, 0.13), transparent 60%),
+        radial-gradient(1050px 600px at 74% 86%, rgba(47, 128, 232, 0.18), transparent 58%),
+        radial-gradient(900px 540px at 20% 99%, rgba(124, 107, 234, 0.12), transparent 60%),
+        linear-gradient(180deg, #FAFCFF 0%, #EAF1FB 30%, #F4F8FD 55%, #E9F0FB 80%, #F6F9FE 100%);
 }
 
 [data-theme="dark"] .page-fx__glow {
     background:
-        radial-gradient(1200px 700px at 84% -8%, rgba(107, 165, 242, 0.16), transparent 62%),
-        radial-gradient(900px 620px at -10% 26%, rgba(124, 107, 234, 0.12), transparent 64%),
-        radial-gradient(1000px 640px at 30% 108%, rgba(107, 165, 242, 0.11), transparent 64%),
-        linear-gradient(180deg, #0A0C12 0%, #070A11 52%, #0B0E16 100%);
+        radial-gradient(1100px 620px at 88% 2%, rgba(107, 165, 242, 0.17), transparent 58%),
+        radial-gradient(900px 560px at -6% 15%, rgba(124, 107, 234, 0.12), transparent 60%),
+        radial-gradient(1000px 600px at 78% 30%, rgba(107, 165, 242, 0.13), transparent 60%),
+        radial-gradient(950px 580px at 6% 45%, rgba(124, 107, 234, 0.13), transparent 60%),
+        radial-gradient(1100px 620px at 82% 58%, rgba(107, 165, 242, 0.16), transparent 58%),
+        radial-gradient(900px 560px at 10% 72%, rgba(124, 107, 234, 0.11), transparent 60%),
+        radial-gradient(1050px 600px at 74% 86%, rgba(107, 165, 242, 0.14), transparent 58%),
+        radial-gradient(900px 540px at 20% 99%, rgba(124, 107, 234, 0.10), transparent 60%),
+        linear-gradient(180deg, #0A0C12 0%, #080B12 30%, #0B0E16 55%, #080A11 80%, #0A0D14 100%);
 }
 
 /* --- blueprint grid: fine cells with a heavier every-fifth line --- */
@@ -13400,8 +13387,9 @@ body {
         linear-gradient(rgba(47, 128, 232, 0.07) 1px, transparent 1px),
         linear-gradient(90deg, rgba(47, 128, 232, 0.07) 1px, transparent 1px);
     background-size: 320px 320px, 320px 320px, 64px 64px, 64px 64px;
-    -webkit-mask-image: radial-gradient(ellipse 92% 80% at 50% 42%, #000 4%, rgba(0, 0, 0, 0.45) 46%, transparent 84%);
-    mask-image: radial-gradient(ellipse 92% 80% at 50% 42%, #000 4%, rgba(0, 0, 0, 0.45) 46%, transparent 84%);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    opacity: .85;
 }
 
 [data-theme="dark"] .page-fx__grid {
@@ -13429,15 +13417,17 @@ body {
     background-position:
         calc(50% - var(--rail)) 0, calc(50% - var(--rail) + 1px) 0,
         calc(50% + var(--rail)) 0, calc(50% + var(--rail) - 7px) 0;
-    -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-    mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-    opacity: .55;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 3%, #000 97%, transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 3%, #000 97%, transparent);
+    opacity: .5;
 }
 
 [data-theme="dark"] .page-fx__rails { opacity: .4; }
 
 /* --- grain: a 160px noise tile, kills the plastic flatness --- */
 .page-fx__grain {
+    position: fixed;
+    inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
     background-size: 160px 160px;
     opacity: .05;
@@ -13453,69 +13443,6 @@ body {
     .page-fx__rails { display: none; }
     .page-fx__grid { background-size: 200px 200px, 200px 200px, 48px 48px, 48px 48px; }
 }
-
-/* ==========================================================================
-   INK BAND
-   One long light page has no rhythm. The arena runs as a full-bleed dark band
-   in both themes — in light it is the cinema the dark clip cards belong in,
-   in dark it lifts slightly so the seam still reads. Local token overrides
-   flip the section's own text instead of restyling every child.
-   ========================================================================== */
-.section.band-ink {
-    --text-primary: #EEF1F7;
-    --text-secondary: #9AA3B8;
-    --text-tertiary: #6A7488;
-    --border: rgba(216, 231, 250, 0.10);
-    --border-hover: rgba(216, 231, 250, 0.18);
-    --bg-elevated: #10151F;
-    --surface: #0E121B;
-    --surface-2: #151A25;
-    --brand-600: #9DC0F7;
-    --brand-500: #6BA5F2;
-
-    position: relative;
-    background: #070B14 !important;
-    color: var(--text-primary) !important;
-    isolation: isolate;
-}
-
-[data-theme="dark"] .section.band-ink {
-    background: #0C111C !important;
-}
-
-/* the band carries its own light and structure, sitting over the page grid */
-.band-ink::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-        radial-gradient(900px 520px at 20% 0%, rgba(47, 128, 232, 0.20), transparent 62%),
-        radial-gradient(760px 480px at 88% 100%, rgba(124, 107, 234, 0.16), transparent 64%);
-}
-
-/* hairline seams so the band reads as a deliberate plate, not a gap */
-.band-ink::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 1px;
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(90deg, transparent, rgba(107, 165, 242, 0.55) 22%, rgba(107, 165, 242, 0.55) 78%, transparent);
-}
-
-.band-ink .section__title,
-.band-ink h2,
-.band-ink h3,
-.band-ink h4 {
-    color: var(--text-primary) !important;
-}
-
-.band-ink .section__label { color: var(--brand-600) !important; }
 
 /* The blanket `margin: 0` in the page's inline reset wiped .main's left
    offset, so below ~1400px the content ran under the fixed sidebar. The dark
@@ -13533,75 +13460,13 @@ body {
     background: transparent;
 }
 
-/* second ink band closes the page's rhythm: light → ink → light → ink → light */
-.section.section--global.band-ink {
-    background: #070B14 !important;
-}
-
-[data-theme="dark"] .section.section--global.band-ink {
-    background: #0C111C !important;
-}
-
-/* --- pieces inside the ink bands that were drawn for a white page --- */
-.band-ink .cluster-box {
-    background: rgba(216, 231, 250, 0.05) !important;
-    border-color: rgba(216, 231, 250, 0.12) !important;
-}
-
-.band-ink .cluster-box h4 { color: #EEF1F7 !important; }
-.band-ink .cluster-box p { color: #9AA3B8 !important; }
-.band-ink .cluster-box__tag { color: var(--brand-300) !important; }
-
-.band-ink .stat-box {
-    background: rgba(216, 231, 250, 0.05) !important;
-    border-color: rgba(216, 231, 250, 0.12) !important;
-}
-
-.band-ink .stat-box__label { color: #8B93A8 !important; }
-.band-ink .stat-box__value { color: var(--brand-300) !important; }
-
-.band-ink .arena-showcase,
-.band-ink .arena-topic-alt {
-    background: transparent !important;
-}
-
-.band-ink .vote-btn {
-    background: rgba(216, 231, 250, 0.05) !important;
-    border-color: rgba(216, 231, 250, 0.14) !important;
-    color: #CBD4E6 !important;
-}
-
-.band-ink .vote-btn:hover {
-    background: rgba(107, 165, 242, 0.14) !important;
-    border-color: rgba(107, 165, 242, 0.4) !important;
-    color: #EEF1F7 !important;
-}
-
-.band-ink .topic-content { color: #DDE3EF !important; }
-.band-ink .handle,
-.band-ink .timer-label { color: #8B93A8 !important; }
-
-@media (max-width: 760px) {
-    /* side tag and handle collided with no gap */
-    .panel-header {
-        display: flex !important;
-        flex-wrap: wrap;
-        align-items: baseline;
-        gap: 6px 12px;
-        margin-bottom: 12px !important;
-    }
-
-    .panel-header .handle { font-size: 12px; }
-}
-
 /* ==========================================================================
-   NO SECTION PAINTS OVER THE BACKDROP
-   .section--features (and friends) still filled themselves with a flat --bg,
-   so the page glow and grid stopped dead at the section edge and the eye saw
-   a hard horizontal seam from tinted blue to flat white. Only the deliberate
-   ink bands own a background now.
+   NO SECTION PAINTS ITS OWN BACKGROUND
+   Sections used to fill themselves with a flat --bg, so the page glow and grid
+   stopped dead at each section edge. The page is one continuous surface: only
+   the backdrop paints it.
    ========================================================================== */
-.section:not(.band-ink),
+.section,
 .section--features,
 .section--advantages,
 .section--screens,
@@ -13635,78 +13500,606 @@ body {
     mask-image: radial-gradient(circle, #000 30%, transparent 72%);
 }
 
+
+
 /* ==========================================================================
-   INK BANDS FADE IN AND OUT
-   A flat #070B14 fill met the light page along a ruler-straight line at both
-   ends of each band. The ink now lives on a masked layer that dissolves over
-   --band-fade at the top and bottom, so the page eases into the band and back
-   out. The fade zone is shorter than the section's top padding, so no light
-   text ever lands on a light background.
+   ONE CONTINUOUS SURFACE
+   [data-theme="light"] .section--manifesto, .section--features, … had
+   `background: #ffffff !important` — specificity (0,2,0), which outranked the
+   plain .section reset. Half the page was painted flat white over the
+   backdrop no matter what the backdrop did. That is what read as boring, and
+   it is why the seams appeared where a painted section met an unpainted one.
+   Nothing but the backdrop paints the page surface now.
    ========================================================================== */
-.section.band-ink,
-.section.section--global.band-ink,
-[data-theme="dark"] .section.band-ink,
-[data-theme="dark"] .section.section--global.band-ink {
-    --band-fade: 190px;
-    --band-ink: #070B14;
+[data-theme="light"] .section,
+[data-theme="light"] .footer,
+[data-theme="dark"] .section,
+[data-theme="dark"] .footer {
     background: transparent !important;
 }
 
-[data-theme="dark"] .section.band-ink,
-[data-theme="dark"] .section.section--global.band-ink {
-    --band-ink: #0C111C;
+/* ==========================================================================
+   SLIDE 04 — THE ANIMAL DEBATERS
+   An owl argues the affirmative, a fox the negative. Volume is built from
+   layered gradients, a rim light, a contact shadow and a specular dot in each
+   eye — it reads as a rendered character without a WebGL context, which
+   matters because the brief was less lag, not more.
+   ========================================================================== */
+.cc-line {
+    fill: none;
+    stroke: rgba(150, 180, 232, 0.16);
+    stroke-width: 1;
 }
 
-.band-ink::before {
+.cc-line--soft { stroke: rgba(150, 180, 232, 0.07); }
+
+.cc-rig path,
+.cc-rig rect {
+    fill: none;
+    stroke: rgba(150, 180, 232, 0.3);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+}
+
+.cc-rig rect { fill: rgba(150, 180, 232, 0.07); }
+
+.cc-rig-beam {
+    fill: var(--clip-accent);
+    opacity: .10;
+    stroke: none !important;
+}
+
+.cc-plant path,
+.cc-plant rect {
+    fill: none;
+    stroke: rgba(150, 180, 232, 0.26);
+    stroke-width: 1.4;
+    stroke-linejoin: round;
+}
+
+.cc-plant rect { fill: rgba(150, 180, 232, 0.08); }
+
+.cc-mic path,
+.cc-mic rect {
+    fill: none;
+    stroke: rgba(180, 208, 250, 0.45);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+.cc-mic rect { fill: #1B2942; }
+.cc-mic-grille { stroke-width: 1.1 !important; opacity: .7; }
+
+/* --- the creature --- */
+.an-shadow { fill: #05080F; opacity: .45; }
+
+.an-coat { stroke: rgba(157, 192, 247, 0.22); stroke-width: 1.2; }
+.an-chest { opacity: .9; }
+
+.an-wing {
+    fill: #1B2743;
+    stroke: rgba(157, 192, 247, 0.18);
+    stroke-width: 1.1;
+}
+
+.an-talon {
+    fill: none;
+    stroke: rgba(200, 216, 245, 0.5);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+}
+
+.an-ear {
+    fill: #22304C;
+    stroke: rgba(157, 192, 247, 0.2);
+    stroke-width: 1.1;
+}
+
+.an-ear-in { fill: var(--clip-accent); opacity: .32; }
+.an-ruff { fill: #35456A; opacity: .75; }
+.an-tail { fill: #26324F; stroke: rgba(157, 192, 247, 0.16); stroke-width: 1.1; }
+.an-tail-tip { fill: #A9BEDF; opacity: .55; }
+
+.an-brow {
+    fill: none;
+    stroke: rgba(196, 214, 245, 0.45);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+}
+
+.an-pupil { fill: #05080F; }
+.an-spec { fill: #FFFFFF; opacity: .92; }
+
+.an-beak { fill: #C9D7EE; }
+.an-beak-lit { fill: #F2F6FC; opacity: .7; }
+.an-nose { fill: #0B1220; }
+
+.an-rim {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: .75;
+}
+
+.an-gear {
+    fill: none;
+    stroke: var(--clip-accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+}
+
+.an-gear-solid { fill: var(--clip-accent); }
+
+.an-feather {
+    fill: none;
+    stroke: rgba(196, 214, 245, 0.4);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+}
+
+/* the speaker leans into the point; the wing or paw beats along with it */
+.an {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: an-lean 7s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.an-gesture {
+    transform-box: fill-box;
+    transform-origin: 82% 96%;
+    animation: an-beat 2.6s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.an-eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: an-blink 6.2s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.is-inview .an,
+.is-inview .an-gesture,
+.is-inview .an-eye { animation-play-state: running; }
+
+@keyframes an-lean {
+    0%, 100% { transform: rotate(-0.9deg) translateY(0); }
+    50% { transform: rotate(0.9deg) translateY(-2px); }
+}
+
+@keyframes an-beat {
+    0%, 100% { transform: rotate(-8deg) translateY(2px); }
+    50% { transform: rotate(7deg) translateY(-5px); }
+}
+
+@keyframes an-blink {
+    0%, 93%, 100% { transform: scaleY(1); }
+    96% { transform: scaleY(.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .an, .an-gesture, .an-eye { animation: none !important; }
+}
+
+/* the owl's facial disc: two rings, the feature that names the bird */
+.an-disc {
+    fill: none;
+    stroke: rgba(196, 214, 245, 0.28);
+    stroke-width: 2;
+}
+
+/* ==========================================================================
+   SLIDE 06 — GLOBAL NETWORK
+   Was a canvas globe with two stat pills and two generic prose boxes. Now an
+   operations board: the globe framed as an instrument with called-out
+   clusters, a live readout strip, a ranked region chart and a cross-border
+   reply feed.
+   ========================================================================== */
+.gnet__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: clamp(24px, 3vw, 38px);
+}
+
+.gnet__eyebrow-tag,
+.gnet__eyebrow-meta {
+    font-family: var(--font-tech);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+}
+
+.gnet__eyebrow-tag { color: var(--brand-600); }
+[data-theme="dark"] .gnet__eyebrow-tag { color: var(--brand-300); }
+
+.gnet__eyebrow-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-tertiary);
+}
+
+.gnet__pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10B981;
+    animation: gnet-pulse 2s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.gnet.is-inview .gnet__pulse,
+.gnet.is-inview .gnet__pin i,
+.gnet.is-inview .gnet__region-bar i { animation-play-state: running; }
+
+@keyframes gnet-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .3; transform: scale(.7); }
+}
+
+.gnet__eyebrow-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent 85%);
+}
+
+.gnet__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: end;
+    margin-bottom: clamp(36px, 4vw, 56px);
+}
+
+.gnet .section__title { margin: 0 !important; text-align: left !important; }
+
+.gnet__lede {
+    font-family: var(--font-sans);
+    font-size: clamp(14px, 1.15vw, 16px);
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 46ch;
+}
+
+/* ---------- layout ---------- */
+.gnet__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(22px, 3vw, 46px);
+    align-items: start;
+}
+
+/* ---------- the map ---------- */
+.gnet__map-frame {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    max-height: 460px;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(47, 128, 232, 0.12), transparent 62%),
+        rgba(47, 128, 232, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(47, 128, 232, 0.22);
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    overflow: hidden;
+}
+
+[data-theme="dark"] .gnet__map-frame {
+    background:
+        radial-gradient(circle at 50% 45%, rgba(107, 165, 242, 0.14), transparent 62%),
+        rgba(216, 231, 250, 0.03);
+    box-shadow: inset 0 0 0 1px rgba(216, 231, 250, 0.14);
+}
+
+/* the existing globe canvas, re-seated inside the frame */
+.gnet__canvas {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%);
+    width: 96% !important;
+    height: 96% !important;
+    opacity: 1 !important;
+    z-index: 0 !important;
+}
+
+.gnet__corner {
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    z-index: 3;
+    border-color: var(--brand-500);
+    opacity: .8;
+    pointer-events: none;
+}
+
+.gnet__corner--tl { top: 9px; left: 9px; border-top: 2px solid; border-left: 2px solid; }
+.gnet__corner--br { bottom: 9px; right: 9px; border-bottom: 2px solid; border-right: 2px solid; }
+
+.gnet__map-hud {
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    right: 30px;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--font-tech);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    pointer-events: none;
+}
+
+.gnet__map-tag { color: var(--brand-600); }
+[data-theme="dark"] .gnet__map-tag { color: var(--brand-300); }
+.gnet__map-coord { color: var(--text-tertiary); }
+
+/* cluster pins */
+.gnet__pin {
+    position: absolute;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 9px 4px 7px;
+    clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+    background: var(--bg-elevated);
+    box-shadow: inset 0 0 0 1px rgba(47, 128, 232, 0.35);
+    font-family: var(--font-tech);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--brand-600);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+[data-theme="dark"] .gnet__pin {
+    background: #0E131D;
+    box-shadow: inset 0 0 0 1px rgba(107, 165, 242, 0.32);
+    color: var(--brand-300);
+}
+
+.gnet__pin i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brand-500);
+    animation: gnet-pulse 2.4s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.gnet__pin--2 i { animation-delay: .5s; }
+.gnet__pin--3 i { animation-delay: 1s; }
+
+.gnet__pin--1 { top: 26%; left: 12%; }
+.gnet__pin--2 { bottom: 28%; left: 20%; }
+.gnet__pin--3 { top: 40%; right: 10%; }
+
+/* readout strip under the map */
+.gnet__readout {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.gnet__readout-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 13px 12px;
+}
+
+.gnet__readout-item + .gnet__readout-item { border-left: 1px solid var(--border); }
+
+.gnet__readout-item b {
+    font-family: var(--font-lcd);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-primary);
+}
+
+.gnet__readout-item i {
+    font-style: normal;
+    font-family: var(--font-tech);
+    font-size: 7.5px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    color: var(--text-tertiary);
+}
+
+/* ---------- the board ---------- */
+.gnet__board {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.gnet__board-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.gnet__board-title,
+.gnet__board-now {
+    font-family: var(--font-tech);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.19em;
+}
+
+.gnet__board-title { color: var(--text-secondary); }
+.gnet__board-now { color: var(--brand-600); }
+[data-theme="dark"] .gnet__board-now { color: var(--brand-300); }
+
+.gnet__regions { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+
+.gnet__region {
+    display: grid;
+    grid-template-columns: 26px 78px 1fr 40px;
+    align-items: center;
+    gap: 12px;
+}
+
+.gnet__region-rank {
+    font-family: var(--font-lcd);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand-500);
+    opacity: .5;
+}
+
+.gnet__region-name,
+.gnet__region-val {
+    font-family: var(--font-tech);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+}
+
+.gnet__region-val { text-align: right; color: var(--text-primary); }
+
+.gnet__region-bar {
+    display: block;
+    height: 7px;
+    background: var(--border);
+    overflow: hidden;
+}
+
+.gnet__region-bar i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-500), var(--brand-alt));
+    transform-origin: left;
+    animation: gnet-grow 1.6s var(--ease-out-expo) both;
+    animation-play-state: paused;
+}
+
+.gnet__region:nth-child(2) .gnet__region-bar i { animation-delay: .08s; }
+.gnet__region:nth-child(3) .gnet__region-bar i { animation-delay: .16s; }
+.gnet__region:nth-child(4) .gnet__region-bar i { animation-delay: .24s; }
+.gnet__region:nth-child(5) .gnet__region-bar i { animation-delay: .32s; }
+
+@keyframes gnet-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* cross-border feed */
+.gnet__feed {
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+}
+
+.gnet__feed-title {
+    display: block;
+    margin-bottom: 12px;
+    font-family: var(--font-tech);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--brand-600);
+}
+
+[data-theme="dark"] .gnet__feed-title { color: var(--brand-300); }
+
+.gnet__feed-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+
+.gnet__feed-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-tech);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+}
+
+.gnet__feed-list em { font-style: normal; }
+.gnet__feed-list i { font-style: normal; margin-left: auto; color: var(--text-tertiary); }
+
+.gnet__arrow {
+    flex: none;
+    width: 26px;
+    height: 1px;
+    position: relative;
+    background: var(--brand-500);
+    opacity: .6;
+}
+
+.gnet__arrow::after {
     content: '';
     position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-        radial-gradient(900px 520px at 20% 12%, rgba(47, 128, 232, 0.20), transparent 62%),
-        radial-gradient(760px 480px at 88% 88%, rgba(124, 107, 234, 0.16), transparent 64%),
-        var(--band-ink);
-    -webkit-mask-image: linear-gradient(180deg,
-        transparent 0,
-        #000 var(--band-fade),
-        #000 calc(100% - var(--band-fade)),
-        transparent 100%);
-    mask-image: linear-gradient(180deg,
-        transparent 0,
-        #000 var(--band-fade),
-        #000 calc(100% - var(--band-fade)),
-        transparent 100%);
+    right: 0;
+    top: -2.5px;
+    border-left: 5px solid var(--brand-500);
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
 }
 
-/* the fade is the transition now — no hairline seam */
-.band-ink::after {
-    display: none !important;
+.gnet__note {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-tertiary);
+    margin: 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
 }
 
-/* keep content clear of the fade zone */
-.band-ink {
-    padding-top: max(220px, 160px) !important;
-    padding-bottom: 220px !important;
+@media (max-width: 1080px) {
+    .gnet__head,
+    .gnet__grid { grid-template-columns: minmax(0, 1fr); }
+    .gnet__head { align-items: start; gap: 18px; }
+    .gnet__map-frame { max-height: 400px; margin: 0 auto; width: 100%; }
 }
 
 @media (max-width: 760px) {
-    .section.band-ink,
-    .section.section--global.band-ink,
-    [data-theme="dark"] .section.band-ink,
-    [data-theme="dark"] .section.section--global.band-ink {
-        --band-fade: 80px;
-    }
-
-    .band-ink {
-        padding-top: 120px !important;
-        padding-bottom: 110px !important;
-    }
+    .gnet__eyebrow-meta { display: none; }
+    .gnet__readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gnet__readout-item:nth-child(3) { border-left: 0; }
+    .gnet__readout-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+    .gnet__pin--1, .gnet__pin--2, .gnet__pin--3 { display: none; }
+    .gnet__region { grid-template-columns: 22px 66px 1fr 34px; gap: 9px; }
 }
 
-/* A legacy rule — [data-theme="light"] .section--debates::before { opacity: .08 }
-   — outranked .band-ink::before and rendered the arena's ink layer at 8%, so
-   that band never darkened while the global one did. */
-.section.band-ink::before {
-    opacity: 1 !important;
+@media (prefers-reduced-motion: reduce) {
+    .gnet__pulse, .gnet__pin i, .gnet__region-bar i { animation: none !important; }
+}
+
+/* ==========================================================================
+   NO BACKDROP FILTERS
+   Five were live. All five sit on elements whose own background is opaque or
+   near-opaque, so the blur was invisible — but two of them (the sidebar and
+   the header CTA) are position:fixed, which makes the compositor re-snapshot
+   what is behind them on every scrolled frame. That is paid on every wheel
+   tick for no pixels.
+   ========================================================================== */
+.sidebar,
+.header__link--cta,
+.app-dl-btn,
+.beta__card-inner,
+.orvelis-card-container {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+
+/* the waitlist card relied on the blur for legibility; make it solid instead */
+.beta__card-inner {
+    background: var(--bg-elevated) !important;
+    box-shadow: inset 0 0 0 1px var(--border), 0 24px 60px rgba(11, 18, 32, 0.10) !important;
+}
+
+[data-theme="dark"] .beta__card-inner {
+    background: #0E131D !important;
+    box-shadow: inset 0 0 0 1px rgba(216, 231, 250, 0.10), 0 24px 60px rgba(0, 0, 0, 0.5) !important;
 }

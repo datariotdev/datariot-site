@@ -26,14 +26,42 @@ window.addEventListener('load', () => {
         // background scenes do not need 60fps — 32 is plenty for slow drifts
         const MIN_FRAME_MS = 1000 / 32;
 
+        const loops = new Map();
+        const armed = new Set();
+
+        // A scene renders only while it is near the viewport and the tab is
+        // visible. Leaving either condition stops its chain; re-entering
+        // starts a fresh one.
+        function pump(el) {
+            if (armed.has(el)) return;
+            const render = loops.get(el);
+            if (!render) return;
+            if (document.hidden || (observer && !near.has(el))) return;
+            armed.add(el);
+            requestAnimationFrame(function step() {
+                armed.delete(el);
+                if (document.hidden || (observer && !near.has(el))) return;
+                const now = performance.now();
+                const prev = last.get(el) || 0;
+                if (now - prev >= MIN_FRAME_MS) { last.set(el, now); render(); }
+                armed.add(el);
+                requestAnimationFrame(step);
+            });
+        }
+
         let observer = null;
         if ('IntersectionObserver' in window) {
             observer = new IntersectionObserver((entries) => {
                 entries.forEach(e => {
-                    if (e.isIntersecting) near.add(e.target); else near.delete(e.target);
+                    if (e.isIntersecting) { near.add(e.target); pump(e.target); }
+                    else near.delete(e.target);
                 });
             }, { rootMargin: '200px 0px' });
         }
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) loops.forEach((_, el) => pump(el));
+        });
 
         // true when the element can never produce pixels (display:none, 0x0, detached)
         function dead(el) {
@@ -53,15 +81,13 @@ window.addEventListener('load', () => {
                 if (observer) { near.add(el); observer.observe(el); }
                 return true;
             },
-            // call at the top of every rAF loop; true means "skip this frame"
-            idle(el) {
-                if (document.hidden) return true;
-                if (observer && !near.has(el)) return true;
-                const now = performance.now();
-                const prev = last.get(el) || 0;
-                if (now - prev < MIN_FRAME_MS) return true;
-                last.set(el, now);
-                return false;
+            // Drive a scene's render loop. Parked scenes hold no rAF chain —
+            // skipping work inside a live chain still cost one callback per
+            // scene per frame, which added up to ~200 idle callbacks a second
+            // with nothing on screen.
+            loop(el, render) {
+                loops.set(el, render);
+                pump(el);
             }
         };
     })();
@@ -164,8 +190,6 @@ window.addEventListener('load', () => {
         // Animation Loop
         const clock = new THREE.Clock();
         function animate() {
-            requestAnimationFrame(animate);
-            if (FX.idle(container)) return;
 
             // Rotate core
             sphereCore.rotation.y += 0.005;
@@ -186,7 +210,7 @@ window.addEventListener('load', () => {
 
             renderer.render(scene, camera);
         }
-        animate();
+        FX.loop(container, animate);
 
         // Handle Resize
         window.addEventListener('resize', () => {
@@ -287,8 +311,6 @@ window.addEventListener('load', () => {
 
         // Animation Loop
         function animate() {
-            requestAnimationFrame(animate);
-            if (FX.idle(container)) return;
 
             // Default slow rotation
             torusKnot.rotation.z += 0.001;
@@ -304,7 +326,7 @@ window.addEventListener('load', () => {
 
             renderer.render(scene, camera);
         }
-        animate();
+        FX.loop(container, animate);
 
         // Handle Resize
         window.addEventListener('resize', () => {
@@ -422,8 +444,6 @@ window.addEventListener('load', () => {
         const clock = new THREE.Clock();
 
         function animate() {
-            requestAnimationFrame(animate);
-            if (FX.idle(container)) return;
 
             // Move screens up, mimicking vertical scroll feed
             screens.forEach(screen => {
@@ -446,7 +466,7 @@ window.addEventListener('load', () => {
 
             renderer.render(scene, camera);
         }
-        animate();
+        FX.loop(container, animate);
 
         window.addEventListener('resize', () => {
             if (!container) return;
@@ -577,8 +597,6 @@ window.addEventListener('load', () => {
         });
 
         function animate() {
-            requestAnimationFrame(animate);
-            if (FX.idle(container)) return;
 
             // Subtle base rotation
             group.rotation.y += 0.002;
@@ -641,7 +659,7 @@ window.addEventListener('load', () => {
 
             renderer.render(scene, camera);
         }
-        animate();
+        FX.loop(container, animate);
 
         window.addEventListener('resize', () => {
             if (!container) return;
@@ -830,8 +848,6 @@ window.addEventListener('load', () => {
         const clock = new THREE.Clock();
 
         function animate() {
-            requestAnimationFrame(animate);
-            if (FX.idle(container)) return;
 
             const elapsed = clock.getElapsedTime();
 
@@ -938,7 +954,7 @@ window.addEventListener('load', () => {
 
             renderer.render(scene, camera);
         }
-        animate();
+        FX.loop(container, animate);
 
         window.addEventListener('resize', () => {
             if (!container) return;
@@ -1017,8 +1033,6 @@ window.addEventListener('load', () => {
             });
 
             function animate() {
-                requestAnimationFrame(animate);
-                if (FX.idle(container)) return;
                 globe.rotation.y += 0.003;
                 cityGroup.children.forEach(c => {
                     c.userData.pulse += 0.05;
@@ -1026,7 +1040,7 @@ window.addEventListener('load', () => {
                 });
                 renderer.render(scene, camera);
             }
-            animate();
+            FX.loop(container, animate);
 
             window.addEventListener('resize', () => {
                 const nW = container.clientWidth;
@@ -1067,14 +1081,10 @@ window.addEventListener('load', () => {
         resize();
         window.addEventListener('resize', resize);
 
-        function draw(now) {
-            if (FX.idle(container)) { requestAnimationFrame(draw); return; }
+        function draw() {
             const W = container.clientWidth;
             const H = container.clientHeight;
-            if (W === 0 || H === 0) {
-                requestAnimationFrame(draw);
-                return;
-            }
+            if (W === 0 || H === 0) return;
 
             ctx.clearRect(0, 0, W, H);
 
@@ -1154,9 +1164,8 @@ window.addEventListener('load', () => {
                 }
             });
 
-            requestAnimationFrame(draw);
         }
-        requestAnimationFrame(draw);
+        FX.loop(container, draw);
     }
 
     /* =========================================================
@@ -1553,8 +1562,6 @@ window.addEventListener('load', () => {
         const clock = new THREE.Clock();
 
         function animate() {
-            requestAnimationFrame(animate);
-            if (FX.idle(container)) return;
 
             const elapsed = clock.getElapsedTime();
 
@@ -1604,7 +1611,7 @@ window.addEventListener('load', () => {
             renderer.render(scene, camera);
         }
 
-        animate();
+        FX.loop(container, animate);
 
         // Handle Resize
         window.addEventListener('resize', () => {

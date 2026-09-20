@@ -138,11 +138,7 @@ function initializeScripts() {
             const target = document.getElementById(targetId);
             console.log('Sidebar Click: Navigating to', targetId);
             if (target) {
-                if (window.lenisInstance) {
-                    window.lenisInstance.scrollTo(target, { offset: 0, duration: 1.5 });
-                } else {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 // Close mobile menu if open
                 if (sidebar && sidebar.classList.contains('mobile-open')) {
                     sidebar.classList.remove('mobile-open');
@@ -336,34 +332,11 @@ function initializeScripts() {
         });
     }
 
-    // === Lenis Smooth Scroll ===
-    if (typeof Lenis !== 'undefined') {
-        window.lenisInstance = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
-
-        if (typeof ScrollTrigger !== 'undefined' && typeof gsap !== 'undefined') {
-            window.lenisInstance.on('scroll', ScrollTrigger.update);
-            gsap.ticker.add((time) => {
-                window.lenisInstance.raf(time * 1000);
-            });
-            gsap.ticker.lagSmoothing(0);
-        } else {
-            function raf(time) {
-                window.lenisInstance.raf(time);
-                requestAnimationFrame(raf);
-            }
-            requestAnimationFrame(raf);
-        }
-    }
+    // Lenis smooth scroll was removed. It replaced native scrolling with a
+    // JS loop that wrote scrollTop every frame and pushed ScrollTrigger.update
+    // on every scroll event — a permanent rAF chain and a re-composite of a
+    // very tall page on each tick. Native scrolling is smoother and free;
+    // html { scroll-behavior: smooth } covers anchor jumps.
 
     // === GSAP & ScrollTrigger Animations ===
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
@@ -777,12 +750,23 @@ window.addEventListener('load', () => {
         }, 5000);
     }
 
-    // Spawn Floating 3D Video Cards to emphasize "Short Video Platform"
+    // Spawn Floating 3D Video Cards to emphasize "Short Video Platform".
+    // Built lazily the first time their section is on screen, and paused
+    // whenever it leaves, so they are not a permanent gsap ticker.
     if (!isMobile && !prefersReducedMotion && typeof gsap !== 'undefined') {
         const targetSections = [document.querySelector('.section--screens'), document.querySelector('.section--beta')];
 
         targetSections.forEach(sec => {
             if (!sec) return;
+            const tweens = [];
+            let built = false;
+            const gate = new IntersectionObserver((entries) => {
+                const onScreen = entries[0].isIntersecting;
+                if (onScreen && !built) { built = true; build(); }
+                tweens.forEach(t => onScreen ? t.play() : t.pause());
+            }, { rootMargin: '150px 0px' });
+            gate.observe(sec);
+            function build() {
 
             for (let i = 0; i < 4; i++) {
                 const card = document.createElement('div');
@@ -806,7 +790,7 @@ window.addEventListener('load', () => {
                 });
 
                 // Continuous drifting and rotating
-                gsap.to(card, {
+                tweens.push(gsap.to(card, {
                     y: "-=200",
                     x: "+=random(-80, 80)",
                     rotationX: "+=random(-40, 40)",
@@ -816,7 +800,8 @@ window.addEventListener('load', () => {
                     repeat: -1,
                     yoyo: true,
                     ease: "sine.inOut"
-                });
+                }));
+            }
             }
         });
     }
