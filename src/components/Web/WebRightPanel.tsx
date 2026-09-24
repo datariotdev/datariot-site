@@ -1,52 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme } from '../Theme/ThemeProvider';
+import { useAuth } from '../../lib/supabase/hooks/useAuth';
+import { DockModule, MONO, useDockSurface } from './Dock/DockModule';
+import { PilotStatus, Objective } from './Dock/PilotStatus';
+import { SignalTile } from './Dock/SignalTile';
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+/* ------------------------------------------------------------------------- *
+ * PLACEHOLDER DATA
+ * Everything below is display-only and needs wiring to real sources:
+ *   pilot stats  -> profiles / ratings table
+ *   objectives   -> daily quest state
+ *   signal series-> hourly view or event counts for the last 24h
+ *   trending     -> an aggregate query, same one /discover should use
+ * Each is a plain value so swapping in a hook is a one-line change.
+ * ------------------------------------------------------------------------- */
 
-/** A dock module: bracketed title, hairline rule, optional right-hand status. */
-const Module = ({
-    title,
-    right,
-    children,
-}: {
-    title: string;
-    right?: React.ReactNode;
-    children: React.ReactNode;
-}) => {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+const PILOT_TIER = 'Silver';
+const PILOT_ELO = 1000;
+const PILOT_ELO_TO_NEXT = 100;
+const PILOT_TIER_SPAN = 400;
+const PILOT_STREAK_DAYS = 8;
 
-    return (
-        <View style={styles.module}>
-            <View style={styles.moduleHeader}>
-                <Text style={[styles.moduleTitle, { color: theme.colors.text.secondary, fontFamily: MONO }]}>
-                    {title}
-                </Text>
-                <View style={[styles.moduleRule, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(0,0,0,0.09)' }]} />
-                {right}
-            </View>
-            {children}
-        </View>
-    );
-};
+const OBJECTIVES: Objective[] = [
+    { id: 'vote', label: 'Vote in 3 debates', done: 1, total: 3 },
+    { id: 'argue', label: 'Post 1 argument', done: 1, total: 1 },
+    { id: 'streak', label: 'Keep the streak alive', done: 0, total: 1 },
+];
+
+/** 24 hourly buckets, oldest first. */
+const SIGNAL_SERIES = [
+    380, 410, 340, 300, 270, 250, 290, 360,
+    520, 640, 700, 660, 720, 810, 780, 690,
+    740, 880, 960, 1040, 1180, 1120, 1260, 1340,
+];
+const SIGNAL_TOTAL = SIGNAL_SERIES.reduce((a, b) => a + b, 0);
+const SIGNAL_DELTA_PCT = 18;
+
+const TRENDING = [
+    { icon: 'music' as const, title: 'Music of the Week', views: '2.3M', delta: 14 },
+    { icon: 'smile' as const, title: 'Best Memes', views: '1.8M', delta: 8 },
+    { icon: 'zap' as const, title: 'Aesthetic Design', views: '945K', delta: -3 },
+];
 
 export const WebRightPanel = () => {
     const router = useRouter();
+    const { user } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
-    const accent = theme.colors.primary.DEFAULT;
+    const inputRef = useRef<TextInput>(null);
+    const { theme, isDark, accent, cardBg, cardBorder } = useDockSurface();
 
     const handleSearch = () => {
         if (searchQuery.trim()) {
             router.push(`/discover?q=${encodeURIComponent(searchQuery.trim())}`);
         }
     };
+
+    // Make the "/" hint real — it's a shortcut, not decoration.
+    useEffect(() => {
+        if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+            const el = document.activeElement as HTMLElement | null;
+            const tag = el?.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || el?.isContentEditable) return;
+            e.preventDefault();
+            inputRef.current?.focus();
+        };
+
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, []);
+
+    const callsign = user ? (user.user_metadata?.username || user.email?.split('@')[0] || 'pilot') : null;
+
+    const bucketLabel = useMemo(
+        () => (i: number, total: number) => {
+            const hoursAgo = total - 1 - i;
+            return hoursAgo === 0 ? 'NOW' : `-${hoursAgo}H`;
+        },
+        []
+    );
 
     return (
         <View style={styles.container}>
@@ -56,9 +94,7 @@ export const WebRightPanel = () => {
                     styles.searchContainer,
                     {
                         backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.025)',
-                        borderColor: isSearchFocused
-                            ? accent
-                            : (isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'),
+                        borderColor: isSearchFocused ? accent : cardBorder,
                     },
                     isSearchFocused && {
                         shadowColor: isDark ? '#D9E4FF' : '#4C6EF5',
@@ -72,12 +108,10 @@ export const WebRightPanel = () => {
                     &gt;
                 </Text>
                 <TextInput
+                    ref={inputRef}
                     style={[
                         styles.searchInput,
-                        {
-                            color: theme.colors.text.primary,
-                            fontFamily: MONO,
-                        },
+                        { color: theme.colors.text.primary, fontFamily: MONO },
                         // web-only: kill the browser focus ring, we draw our own
                         { outlineStyle: 'none' } as any,
                     ]}
@@ -90,13 +124,57 @@ export const WebRightPanel = () => {
                     onBlur={() => setIsSearchFocused(false)}
                     returnKeyType="search"
                 />
-                <View style={[styles.keyHint, { borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)' }]}>
-                    <Text style={[styles.keyHintText, { color: theme.colors.text.muted, fontFamily: MONO }]}>/</Text>
-                </View>
+                {!isSearchFocused && (
+                    <View style={[styles.keyHint, { borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)' }]}>
+                        <Text style={[styles.keyHintText, { color: theme.colors.text.muted, fontFamily: MONO }]}>/</Text>
+                    </View>
+                )}
             </View>
 
+            {/* Pilot */}
+            <DockModule
+                title="PILOT"
+                right={
+                    user ? (
+                        <Pressable onPress={() => router.push('/profile')} style={styles.seeAllWrapper}>
+                            <Text style={[styles.seeAll, { color: accent, fontFamily: MONO }]}>PROFILE</Text>
+                            <Feather name="arrow-up-right" size={11} color={accent} />
+                        </Pressable>
+                    ) : undefined
+                }
+            >
+                <PilotStatus
+                    callsign={callsign}
+                    tier={PILOT_TIER}
+                    elo={PILOT_ELO}
+                    eloToNext={PILOT_ELO_TO_NEXT}
+                    tierSpan={PILOT_TIER_SPAN}
+                    streakDays={PILOT_STREAK_DAYS}
+                    objectives={OBJECTIVES}
+                />
+            </DockModule>
+
+            {/* Platform activity */}
+            <DockModule
+                title="SIGNAL"
+                right={
+                    <Text style={[styles.moduleMeta, { color: theme.colors.text.muted, fontFamily: MONO }]}>24H</Text>
+                }
+            >
+                <SignalTile
+                    label="Arena activity"
+                    value={SIGNAL_TOTAL}
+                    deltaPct={SIGNAL_DELTA_PCT}
+                    deltaPeriod="vs yesterday"
+                    series={SIGNAL_SERIES}
+                    startLabel="-24H"
+                    endLabel="NOW"
+                    bucketLabel={bucketLabel}
+                />
+            </DockModule>
+
             {/* Trending */}
-            <Module
+            <DockModule
                 title="TRENDING"
                 right={
                     <Pressable onPress={() => router.push('/discover')} style={styles.seeAllWrapper}>
@@ -106,14 +184,21 @@ export const WebRightPanel = () => {
                 }
             >
                 <View style={styles.collectionsList}>
-                    <CollectionItem index={1} iconName="music" title="Music of the Week" views="2.3M" delta="+14%" />
-                    <CollectionItem index={2} iconName="smile" title="Best Memes" views="1.8M" delta="+8%" />
-                    <CollectionItem index={3} iconName="zap" title="Aesthetic Design" views="945K" delta="-3%" />
+                    {TRENDING.map((t, i) => (
+                        <CollectionItem
+                            key={t.title}
+                            index={i + 1}
+                            iconName={t.icon}
+                            title={t.title}
+                            views={t.views}
+                            delta={t.delta}
+                        />
+                    ))}
                 </View>
-            </Module>
+            </DockModule>
 
             {/* Weekly mission */}
-            <Module
+            <DockModule
                 title="MISSION"
                 right={
                     <View style={styles.liveIndicatorContainer}>
@@ -137,23 +222,12 @@ export const WebRightPanel = () => {
                     </View>
                 }
             >
-                <View
-                    style={[
-                        styles.challengeCard,
-                        {
-                            borderColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.2)',
-                            backgroundColor: isDark ? 'rgba(13, 15, 22, 0.75)' : 'rgba(255, 255, 255, 0.8)',
-                        },
-                    ]}
-                >
-                    {/* Corner brackets */}
+                <View style={[styles.challengeCard, { borderColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.2)', backgroundColor: cardBg }]}>
                     <View style={[styles.cardBracket, styles.cbTL, { borderColor: accent }]} pointerEvents="none" />
                     <View style={[styles.cardBracket, styles.cbBR, { borderColor: accent }]} pointerEvents="none" />
 
                     <LinearGradient
-                        colors={isDark
-                            ? ['rgba(217, 228, 255, 0.09)', 'transparent']
-                            : ['rgba(76, 110, 245, 0.07)', 'transparent']}
+                        colors={isDark ? ['rgba(217, 228, 255, 0.09)', 'transparent'] : ['rgba(76, 110, 245, 0.07)', 'transparent']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={StyleSheet.absoluteFillObject}
@@ -178,9 +252,8 @@ export const WebRightPanel = () => {
                         Capture movement deconstructed. Render a high-fidelity slow-motion sequence and claim showcase status on the deck.
                     </Text>
 
-                    {/* Enrolment meter */}
                     <View style={styles.meterRow}>
-                        <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)' }]}>
+                        <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.14)' }]}>
                             <LinearGradient
                                 colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
                                 start={{ x: 0, y: 0 }}
@@ -211,7 +284,7 @@ export const WebRightPanel = () => {
                         <Feather name="arrow-right" size={13} color={accent} />
                     </Pressable>
                 </View>
-            </Module>
+            </DockModule>
 
             {/* Footer */}
             <View style={[styles.footer, { borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)' }]}>
@@ -241,14 +314,12 @@ const CollectionItem = ({
     index: number;
     title: string;
     views: string;
-    delta: string;
+    delta: number;
     iconName: any;
 }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
-    const accent = theme.colors.primary.DEFAULT;
-    const up = delta.startsWith('+');
+    const { theme, isDark, accent } = useDockSurface();
+    const up = delta >= 0;
 
     return (
         <Pressable
@@ -283,7 +354,10 @@ const CollectionItem = ({
                 </Text>
             </View>
 
-            <Text style={[styles.delta, { color: up ? '#34D399' : '#F87171', fontFamily: MONO }]}>{delta}</Text>
+            {/* Sign carries direction as well as the colour */}
+            <Text style={[styles.delta, { color: up ? '#34D399' : '#F87171', fontFamily: MONO }]}>
+                {up ? '+' : '−'}{Math.abs(delta)}%
+            </Text>
         </Pressable>
     );
 };
@@ -325,28 +399,16 @@ const styles = StyleSheet.create({
     keyHintText: {
         fontSize: 9,
     },
-    module: {
-        marginBottom: 32,
-    },
-    moduleHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: 14,
-    },
-    moduleTitle: {
-        fontSize: 9.5,
-        letterSpacing: 2.4,
-        fontWeight: '700',
-    },
-    moduleRule: {
-        flex: 1,
-        height: 1,
+    moduleMeta: {
+        fontSize: 8.5,
+        letterSpacing: 1.6,
+        flexShrink: 0,
     },
     seeAllWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 3,
+        flexShrink: 0,
     },
     seeAll: {
         fontSize: 9.5,
@@ -399,6 +461,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5,
+        flexShrink: 0,
     },
     liveDotWrapper: {
         width: 6,
@@ -473,7 +536,7 @@ const styles = StyleSheet.create({
     },
     meterTrack: {
         flex: 1,
-        height: 3,
+        height: 4,
         borderRadius: 2,
         overflow: 'hidden',
     },
