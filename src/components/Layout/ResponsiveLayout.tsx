@@ -197,10 +197,11 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'center',
         paddingTop: 0,
-        maxWidth: 1700,
-        alignSelf: 'center',
+        // The left sidebar is position:fixed at x=0, so this row has to start
+        // at x=0 too. Capping it at 1700 and centring it left the reserved
+        // left column ~120px to the right of the sidebar actually painted
+        // there, which is where the dead band next to the menu came from.
         width: '100%',
         zIndex: 1,
     },
@@ -217,7 +218,12 @@ const styles = StyleSheet.create({
     },
     centerColumn: {
         flex: 1,
-        maxWidth: 780,
+        // 780 wasted roughly 400px of a 1850px screen and chopped every
+        // horizontal row — pills, carousels and the live ticker — at its
+        // edge. The vertical feed items cap themselves at 700 and centre,
+        // so a wider column only benefits the rows that scroll sideways.
+        maxWidth: 1200,
+        minWidth: 0,
         position: 'relative',
         // @ts-ignore — web-only
         overflowY: 'auto',
@@ -252,6 +258,9 @@ const styles = StyleSheet.create({
         display: 'flex',
         paddingTop: 32,
         paddingLeft: 32,
+        // keeps the panel against the right edge once the centre column
+        // stops growing on very wide screens
+        marginLeft: 'auto',
     },
     columnDivider: {
         width: 1,

@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
 import { Video } from '../../lib/supabase/hooks/useVideos';
+import { EdgeFade } from './EdgeFade';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -68,6 +69,7 @@ export const DiscoveryCarousel: React.FC<DiscoveryCarouselProps> = ({
                 decelerationRate="fast"
                 contentContainerStyle={styles.contentContainer}
             />
+            <EdgeFade />
         </View>
     );
 };
@@ -75,6 +77,7 @@ export const DiscoveryCarousel: React.FC<DiscoveryCarouselProps> = ({
 const styles = StyleSheet.create({
     container: {
         height: CARD_HEIGHT + 20,
+        position: 'relative',
     },
     contentContainer: {
         paddingHorizontal: 16,
