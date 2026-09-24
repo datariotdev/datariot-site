@@ -453,16 +453,21 @@ const styles = StyleSheet.create({
     },
     mediaSection: {
         marginBottom: 20,
-        height: 140,
+        // label (10px + 20 top + 12 bottom) plus one card row; 140 left a
+        // dead strip under the thumbnails
+        height: 116,
     },
     mediaScroll: {
         paddingHorizontal: 16,
         gap: 12,
     },
     mediaCard: {
-        width: 120,
-        height: 70,
-        borderRadius: 14,
+        // the column is 260 wide with 24 of padding and 16 either side of
+        // this row, so two cards have to fit inside 204 — at 120 the second
+        // one was sliced in half by the sidebar edge
+        width: 96,
+        height: 62,
+        borderRadius: 12,
         overflow: 'hidden',
         // @ts-ignore
         transition: 'transform 0.2s ease',
@@ -470,8 +475,8 @@ const styles = StyleSheet.create({
     mediaGradientOuter: {
         flex: 1,
         justifyContent: 'space-between',
-        padding: 10,
-        borderRadius: 14,
+        padding: 8,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.04)',
         overflow: 'hidden',

@@ -3,6 +3,7 @@ import { ScrollView, Text, StyleSheet, Pressable, View, Platform } from 'react-n
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme as baseTheme } from '../../design-system/theme';
 import { useTheme } from '../Theme/ThemeProvider';
+import { EdgeFade } from './EdgeFade';
 
 interface CategoryPillsProps {
     categories: string[];
@@ -15,27 +16,31 @@ export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: C
     const isDark = mode === 'dark';
 
     return (
-        <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.scrollStyle}
-            contentContainerStyle={styles.container}
-        >
-            {categories.map((category) => {
-                const isActive = activeCategory === category;
+        <View style={styles.wrapper}>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.scrollStyle}
+                contentContainerStyle={styles.container}
+            >
+                {categories.map((category) => {
+                    const isActive = activeCategory === category;
 
-                return (
-                    <PillButton
-                        key={category}
-                        category={category}
-                        isActive={isActive}
-                        isDark={isDark}
-                        theme={theme}
-                        onPress={() => onCategoryPress(category)}
-                    />
-                );
-            })}
-        </ScrollView>
+                    return (
+                        <PillButton
+                            key={category}
+                            category={category}
+                            isActive={isActive}
+                            isDark={isDark}
+                            theme={theme}
+                            onPress={() => onCategoryPress(category)}
+                        />
+                    );
+                })}
+            </ScrollView>
+
+            <EdgeFade width={36} />
+        </View>
     );
 };
 
@@ -105,6 +110,10 @@ const PillButton = ({ category, isActive, isDark, theme, onPress }: { category: 
 };
 
 const styles = StyleSheet.create({
+    wrapper: {
+        position: 'relative',
+        width: '100%',
+    },
     scrollStyle: {
         flex: 1,
         width: '100%',
