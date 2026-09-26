@@ -4,7 +4,10 @@
 console.log('Datariot Script: Initiating...');
 
 // Initialize Supabase (Global)
-let supabase = null;
+// Not `supabase`: the supabase-js UMD build declares a global `var supabase`,
+// and a second top-level `let supabase` is a SyntaxError that stops this
+// whole file from running.
+let supabaseClient = null;
 
 // Immediate Theme Initialization to prevent flash — checks localStorage
 (function () {
@@ -73,7 +76,7 @@ function initializeScripts() {
         const supabaseUrl = 'https://uycrtobdewnscwazshcu.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5Y3J0b2JkZXduc2N3YXpzaGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NzU1NjYsImV4cCI6MjA3NTI1MTU2Nn0.EsZQOIE879QwU_FKk0Agh-yJBdRJcLTmYi-DCMjYaxU';
         if (typeof window.supabase !== 'undefined') {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             console.log('Datariot Script: Supabase client created.');
         } else {
             console.warn('Datariot Script: Supabase not found on window.');
@@ -251,23 +254,12 @@ function initializeScripts() {
     }
 
     // === Beta Form Submission ===
-    const betaForm = document.getElementById('betaForm');
-    if (betaForm) {
-        betaForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const emailInput = document.getElementById('betaEmail');
-            const submitBtn = betaForm.querySelector('button[type="submit"]');
-            if (emailInput && emailInput.value) {
-                submitBtn.disabled = true;
-                submitBtn.style.opacity = '0.5';
-                console.log('Beta registration for:', emailInput.value);
-                setTimeout(() => {
-                    document.getElementById('betaCard').style.display = 'none';
-                    document.getElementById('betaSuccess').style.display = 'flex';
-                }, 1000);
-            }
-        });
-    }
+    // Deliberately not handled. The waitlist has no backend: no table, and
+    // nothing is sent anywhere. The handler that lived here waited a second and
+    // then showed "You're on the list! We'll reach out with access details
+    // soon." — a promise nothing keeps. While this file failed to load it never
+    // ran; now that it loads, it would have gone live. Wire the form to storage
+    // first, then show #betaSuccess only after the save succeeds.
 
     // Lenis smooth scroll was removed. It replaced native scrolling with a
     // JS loop that wrote scrollTop every frame and pushed ScrollTrigger.update
