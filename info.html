@@ -29,7 +29,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=4.3.0" />
+    <link rel="stylesheet" href="style.css?v=4.4.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -303,12 +303,15 @@
 
 <body>
 
-    <!-- Page backdrop: one fixed stack of light, structure and grain so the
-         page is not a single flat sheet from top to bottom. -->
+    <!-- Page backdrop: brand light down the page, aurora along the edges of
+         the viewport and a grain tile, so the page is not a single flat sheet
+         from top to bottom. No lines, no cells. -->
     <div class="page-fx" aria-hidden="true">
         <span class="page-fx__glow"></span>
-        <span class="page-fx__grid"></span>
-        <span class="page-fx__rails"></span>
+        <span class="page-fx__aurora">
+            <span class="page-fx__ribbon page-fx__ribbon--l"></span>
+            <span class="page-fx__ribbon page-fx__ribbon--r"></span>
+        </span>
         <span class="page-fx__grain"></span>
     </div>
 
@@ -348,7 +351,7 @@
         <div class="navx__scrim" data-navx-close></div>
 
         <div class="navx__panel">
-            <div class="navx__grid" aria-hidden="true"></div>
+            <div class="navx__light" aria-hidden="true"></div>
 
             <div class="navx__bar">
                 <span class="navx__brand">
@@ -2177,9 +2180,9 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=4.3.0"></script>
+    <script defer src="3d-fx.js?v=4.4.0"></script>
 
-    <script defer src="script.js?v=4.3.0"></script>
+    <script defer src="script.js?v=4.4.0"></script>
 </body>
 
 </html>

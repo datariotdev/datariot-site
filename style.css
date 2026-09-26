@@ -13586,10 +13586,12 @@ body {
 
 /* ==========================================================================
    PAGE BACKDROP
-   The page used to be one flat white sheet end to end. This is a single fixed
-   stack behind everything: brand light, a blueprint grid, measure rails down
-   the content edges, and a grain tile. All static — no filters, no animation,
-   one paint.
+   The page used to be one flat white sheet end to end. This is a single stack
+   behind everything: brand light down the length of the page, two aurora
+   ribbons along the edges of the viewport, and a grain tile. No lines and no
+   cells anywhere — every layer is a soft gradient, so nothing reads as a
+   pattern. The ribbons are the only thing that moves, and only by transform,
+   which the compositor handles without repainting.
    ========================================================================== */
 /* Absolute, not fixed: the backdrop is as tall as the document, so its light
    drifts as you scroll instead of sitting still behind everything. That is
@@ -13639,50 +13641,58 @@ body {
         linear-gradient(180deg, #0A0C12 0%, #080B12 30%, #0B0E16 55%, #080A11 80%, #0A0D14 100%);
 }
 
-/* --- blueprint grid: fine cells with a heavier every-fifth line --- */
-.page-fx__grid {
-    background-image:
-        linear-gradient(rgba(47, 128, 232, 0.16) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(47, 128, 232, 0.16) 1px, transparent 1px),
-        linear-gradient(rgba(47, 128, 232, 0.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(47, 128, 232, 0.07) 1px, transparent 1px);
-    background-size: 320px 320px, 320px 320px, 64px 64px, 64px 64px;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
-    opacity: .85;
+/* --- aurora: soft light along both edges of the viewport ---
+   Fixed, so the edges stay lit while the page scrolls past. It frames the
+   content the way the old measure rails did, with light instead of ticks. */
+.page-fx > .page-fx__aurora {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
 }
 
-[data-theme="dark"] .page-fx__grid {
-    background-image:
-        linear-gradient(rgba(157, 192, 247, 0.12) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(157, 192, 247, 0.12) 1px, transparent 1px),
-        linear-gradient(rgba(157, 192, 247, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(157, 192, 247, 0.055) 1px, transparent 1px);
+.page-fx__ribbon {
+    position: absolute;
+    top: -16vh;
+    width: 46vw;
+    height: 132vh;
+    border-radius: 50%;
+    will-change: transform;
 }
 
-/* --- measure rails: hairlines with tick marks down the content edges --- */
-.page-fx__rails {
-    --rail: min(640px, 46vw);
-    background-image:
-        /* left rail: solid line + ticks */
-        linear-gradient(rgba(47, 128, 232, 0.28), rgba(47, 128, 232, 0.28)),
-        repeating-linear-gradient(to bottom, rgba(47, 128, 232, 0.4) 0 9px, transparent 9px 46px),
-        /* right rail */
-        linear-gradient(rgba(47, 128, 232, 0.28), rgba(47, 128, 232, 0.28)),
-        repeating-linear-gradient(to bottom, rgba(47, 128, 232, 0.4) 0 9px, transparent 9px 46px);
-    background-repeat: no-repeat;
-    background-size:
-        1px 100%, 7px 100%,
-        1px 100%, 7px 100%;
-    background-position:
-        calc(50% - var(--rail)) 0, calc(50% - var(--rail) + 1px) 0,
-        calc(50% + var(--rail)) 0, calc(50% + var(--rail) - 7px) 0;
-    -webkit-mask-image: linear-gradient(180deg, transparent, #000 3%, #000 97%, transparent);
-    mask-image: linear-gradient(180deg, transparent, #000 3%, #000 97%, transparent);
-    opacity: .5;
+.page-fx__ribbon--l {
+    left: -20vw;
+    background: radial-gradient(closest-side, rgba(47, 128, 232, 0.24), rgba(64, 176, 236, 0.10) 52%, transparent);
+    animation: page-fx-sway-l 28s ease-in-out infinite alternate;
 }
 
-[data-theme="dark"] .page-fx__rails { opacity: .4; }
+.page-fx__ribbon--r {
+    right: -20vw;
+    top: -8vh;
+    background: radial-gradient(closest-side, rgba(124, 107, 234, 0.22), rgba(124, 107, 234, 0.09) 52%, transparent);
+    animation: page-fx-sway-r 36s ease-in-out infinite alternate;
+}
+
+[data-theme="dark"] .page-fx__ribbon--l {
+    background: radial-gradient(closest-side, rgba(107, 165, 242, 0.16), rgba(80, 180, 240, 0.06) 52%, transparent);
+}
+
+[data-theme="dark"] .page-fx__ribbon--r {
+    background: radial-gradient(closest-side, rgba(124, 107, 234, 0.18), rgba(124, 107, 234, 0.06) 52%, transparent);
+}
+
+@keyframes page-fx-sway-l {
+    from { transform: translate3d(0, 0, 0) rotate(-8deg); }
+    to   { transform: translate3d(4vw, 6vh, 0) rotate(5deg); }
+}
+
+@keyframes page-fx-sway-r {
+    from { transform: translate3d(0, 0, 0) rotate(9deg); }
+    to   { transform: translate3d(-4vw, -5vh, 0) rotate(-4deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-fx__ribbon { animation: none; }
+}
 
 /* --- grain: a 160px noise tile, kills the plastic flatness --- */
 .page-fx__grain {
@@ -13700,8 +13710,8 @@ body {
 }
 
 @media (max-width: 760px) {
-    .page-fx__rails { display: none; }
-    .page-fx__grid { background-size: 200px 200px, 200px 200px, 48px 48px, 48px 48px; }
+    /* a phone is mostly edge; keep the light but let it recede */
+    .page-fx__ribbon { opacity: .7; }
 }
 
 /* The blanket `margin: 0` in the page's inline reset wiped .main's left
@@ -13734,14 +13744,13 @@ body {
     background: transparent !important;
 }
 
-/* the page already draws a blueprint grid; this rotated 60px one doubled it
-   and moiréd against it */
+/* a rotated 60px grid; the page carries no cells anywhere */
 .section--features::before {
     display: none !important;
 }
 
-/* The arena's own bleed duplicated the page grid and its glow was cut off at
-   the section edge. Keep a soft local lift, fade it out top and bottom. */
+/* The arena's own bleed drew a 92px grid and its glow was cut off at the
+   section edge. Keep a soft local lift, fade it out top and bottom. */
 .arena-v3__bleed::after {
     display: none !important;
 }
@@ -13752,6 +13761,18 @@ body {
         radial-gradient(700px 480px at 12% 78%, rgba(124, 107, 234, 0.07), transparent 70%);
     -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
     mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+}
+
+/* The waitlist section clips its own two glow blobs (overflow: hidden), which
+   cut them off in a straight line at its top and bottom edges — a visible
+   seam above the footer. The page backdrop already lights this stretch. */
+.beta-bg-glows {
+    display: none;
+}
+
+/* the waitlist card's 20px grid, the last cells on the page */
+.card-tech-grid {
+    display: none;
 }
 
 /* same treatment for the AI core's local glow */
@@ -14509,22 +14530,20 @@ body {
     color: #EAF2FD;
 }
 
-.navx__grid {
+/* the menu keeps the page's light, falling from the same corner */
+.navx__light {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image:
-        linear-gradient(to right, rgba(47, 128, 232, 0.09) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(47, 128, 232, 0.09) 1px, transparent 1px);
-    background-size: 72px 72px;
-    -webkit-mask-image: radial-gradient(120% 90% at 20% 0%, #000 0%, transparent 78%);
-    mask-image: radial-gradient(120% 90% at 20% 0%, #000 0%, transparent 78%);
+    background:
+        radial-gradient(62% 58% at 14% 0%, rgba(47, 128, 232, 0.18), transparent 72%),
+        radial-gradient(48% 52% at 94% 100%, rgba(124, 107, 234, 0.13), transparent 72%);
 }
 
-[data-theme="dark"] .navx__grid {
-    background-image:
-        linear-gradient(to right, rgba(107, 165, 242, 0.12) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(107, 165, 242, 0.12) 1px, transparent 1px);
+[data-theme="dark"] .navx__light {
+    background:
+        radial-gradient(62% 58% at 14% 0%, rgba(107, 165, 242, 0.18), transparent 72%),
+        radial-gradient(48% 52% at 94% 100%, rgba(124, 107, 234, 0.15), transparent 72%);
 }
 
 .navx__bar {
