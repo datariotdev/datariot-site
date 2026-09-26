@@ -6,6 +6,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '@design-system/theme';
 import { encodeVideoUrl } from '@lib/utils/url';
 import { Video, ResizeMode } from 'expo-av';
+import { EdgeFade } from './EdgeFade';
 
 interface FeaturedVideo {
     id: string;
@@ -192,6 +193,8 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
                 ))}
             </ScrollView>
 
+            {isWeb && <EdgeFade />}
+
             {/* Pagination Dots - Square */}
             {!isWeb && featuredVideos.length > 1 && (
                 <View style={styles.pagination}>
@@ -219,6 +222,7 @@ const formatNumber = (num: number): string => {
 const styles = StyleSheet.create({
     container: {
         marginBottom: theme.spacing.xl,
+        position: 'relative',
     },
     heroContainer: {
         height: 400, // Slightly shorter

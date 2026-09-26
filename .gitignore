@@ -15,6 +15,12 @@ expo-env.d.ts
 .metro-health-check*
 *.mobileprovision
 node_modules/
+# ...except the web export's own assets. `expo export` mirrors the source path
+# of every bundled font and icon, so they land under assets/node_modules/ and
+# the rule above silently dropped them from the deploy — which is why the
+# bundle's 79 font requests have been 404ing on datariot.xyz.
+!datariot-xyz/assets/node_modules/
+!datariot-xyz/assets/node_modules/**
 npm-debug.*
 *.orig.*
 *.p12

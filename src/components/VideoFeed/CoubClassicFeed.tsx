@@ -205,9 +205,13 @@ export function CoubClassicFeed({
                 }}
                 contentContainerStyle={{
                     paddingBottom: paddingBottom + 80,
-                    alignSelf: 'center',
                     width: '100%',
-                    maxWidth: 720,
+                    // No max width here. This container holds the section
+                    // headers and the horizontal rows as well as the video
+                    // items, so capping it at 720 inside a wider column inset
+                    // every row from the headings above it and cut the
+                    // carousels short. CoubClassicItem caps itself at 700 and
+                    // centres, so the vertical feed keeps its reading width.
                     paddingHorizontal: 0,
                 }}
             />
