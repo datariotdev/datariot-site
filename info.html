@@ -27,9 +27,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=4.5.0" />
+    <link rel="stylesheet" href="style.css?v=4.6.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -1862,33 +1862,24 @@
 
         <!-- ORVELIS AI CORE SECTION -->
         <section class="section section--ai" id="ai-core" data-inview>
+            <!-- the dithered wave behind the slide: pixel-field.js draws it,
+                 the CSS navy fill stands in when there is no WebGL -->
+            <div class="px-field" aria-hidden="true">
+                <canvas class="px-field__canvas"></canvas>
+            </div>
+
             <div class="section__container">
                 <div class="ai-core-layout">
                     <div class="ai-showcase__visual">
-                        <div class="orvelis-canvas-container" id="canvas-3d-orvelis"></div>
-
-                        <div class="orvelis-card-container aic-card">
-                            <div class="orvelis-card-glare"></div>
-                            <span class="aic-corner aic-corner--tl" aria-hidden="true"></span>
-                            <span class="aic-corner aic-corner--tr" aria-hidden="true"></span>
-                            <span class="aic-corner aic-corner--bl" aria-hidden="true"></span>
-                            <span class="aic-corner aic-corner--br" aria-hidden="true"></span>
-                            <span class="aic-scan" aria-hidden="true"></span>
-
+                        <div class="aic-card">
                             <div class="aic-strip">
                                 <span class="aic-strip-ticks" aria-hidden="true"></span>
                                 <span class="aic-strip-id">ORV / 3.0.1 / ARENA-LINK</span>
                             </div>
 
-                            <div class="orvelis-header aic-head">
+                            <div class="aic-head">
                                 <span class="aic-avatar" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                                        <rect x="3.2" y="10.5" width="17.6" height="10" rx="3" />
-                                        <path d="M12 2.4v3.2M9 5.6h6" stroke-linecap="round" />
-                                        <rect x="7.4" y="14" width="3" height="3.4" rx="1.5" fill="currentColor" stroke="none" />
-                                        <rect x="13.6" y="14" width="3" height="3.4" rx="1.5" fill="currentColor" stroke="none" />
-                                        <path d="M1.6 13.4v4.2M22.4 13.4v4.2" stroke-linecap="round" />
-                                    </svg>
+                                    <svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v2h-2zM2 2h8v1h-8zM1 3h2v1h-2zM9 3h2v1h-2zM1 4h1v1h-1zM10 4h1v1h-1zM0 5h2v2h-2zM3 5h2v2h-2zM7 5h2v2h-2zM10 5h2v2h-2zM1 7h1v2h-1zM10 7h1v2h-1zM4 8h4v1h-4zM1 9h2v1h-2zM9 9h2v1h-2zM2 10h8v1h-8z"/></svg>
                                 </span>
                                 <span class="aic-head-text">
                                     <b>ORVELIS</b>
@@ -1899,20 +1890,18 @@
 
                             <div class="aic-now">
                                 <span class="aic-now-thumb" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none">
-                                        <path d="M9.5 7.5 17 12l-7.5 4.5z" fill="currentColor" />
-                                    </svg>
+                                    <svg viewBox="0 0 5 7" shape-rendering="crispEdges"><path fill="currentColor" d="M0 0h1v7h-1zM1 1h1v5h-1zM2 2h1v3h-1zM3 3h1v1h-1z"/></svg>
                                 </span>
                                 <span class="aic-now-body">
                                     <b>NOW SCANNING</b>
                                     <i>@pro_logic_22 &mdash; 04:12 on camera</i>
                                 </span>
                                 <span class="aic-now-wave" aria-hidden="true">
-                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                                 </span>
                             </div>
 
-                            <div class="orvelis-subcard aic-block">
+                            <div class="aic-block">
                                 <div class="aic-block-head">
                                     <span class="aic-tag">DAILY INSIGHT</span>
                                     <span class="aic-block-id">01</span>
@@ -1921,7 +1910,7 @@
                                     <span class="aic-score-num">92</span>
                                     <span class="aic-score-unit">LQI</span>
                                     <span class="aic-score-delta">
-                                        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.2 10.4 9H1.6z" fill="currentColor"/></svg>
+                                        <svg viewBox="0 0 5 3" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 0h1v1h-1zM1 1h3v1h-3zM0 2h5v1h-5z"/></svg>
                                         15%
                                     </span>
                                 </div>
@@ -1933,7 +1922,7 @@
                                 <p class="aic-copy">Your logical pathways are primed for high-complexity analysis today. Ready for debate.</p>
                             </div>
 
-                            <div class="orvelis-subcard aic-block">
+                            <div class="aic-block">
                                 <div class="aic-block-head">
                                     <span class="aic-tag">TRUTH ANALYSIS</span>
                                     <span class="aic-block-id">02</span>
@@ -1954,16 +1943,25 @@
                                 <span class="aic-foot-item"><b>96</b><i>% CONFIDENCE</i></span>
                             </div>
                         </div>
+
+                        <p class="aic-formula">
+                            <span>1 clip</span>
+                            <svg viewBox="0 0 9 6" shape-rendering="crispEdges" role="img" aria-label="becomes"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
+                            <span>1 truth analysis</span>
+                        </p>
                     </div>
 
                     <div class="ai-showcase__content">
-                        <span class="section__label">[ 05 — COGNITIVE LAYER ]</span>
-                        <h2 class="section__title" style="margin-bottom: 24px;">COGNITIVE POWER.<br><span class="text-gradient">EMPIRICALLY VERIFIED.</span></h2>
-                        <p class="manifesto-v2__card-desc">
-                            Meet <strong>Orvelis</strong> — the neural backbone of the Arena. Operating at sub-second speeds, it reads every camera debate for logical flow, structural bias and fallacious statements.
-                        </p>
-                        <div class="cluster-boxes aic-stack">
-                            <div class="cluster-box aic-mod">
+                        <div class="aic-intro">
+                            <span class="section__label">[ 05 — COGNITIVE LAYER ]</span>
+                            <h2 class="section__title">COGNITIVE POWER.<br><span class="aic-title-accent">EMPIRICALLY VERIFIED.</span></h2>
+                            <p class="aic-lede">
+                                Meet <strong>Orvelis</strong> — the neural backbone of the Arena. Operating at sub-second speeds, it reads every camera debate for logical flow, structural bias and fallacious statements.
+                            </p>
+                        </div>
+
+                        <div class="aic-stack">
+                            <div class="aic-mod">
                                 <span class="aic-mod-index">01</span>
                                 <span class="aic-mod-tag">[ ENGINE // TRUTH_DETECTOR ]</span>
                                 <h4>Logic &amp; fallacy detection</h4>
@@ -1972,7 +1970,7 @@
                                     <em>14 FALLACY CLASSES</em><em>REAL-TIME</em>
                                 </span>
                             </div>
-                            <div class="cluster-box aic-mod">
+                            <div class="aic-mod">
                                 <span class="aic-mod-index">02</span>
                                 <span class="aic-mod-tag">[ BIO_ANALYTICS // INSIGHTS ]</span>
                                 <h4>Cognitive flow insights</h4>
@@ -1981,7 +1979,7 @@
                                     <em>DAILY LQI</em><em>PRIVATE BY DEFAULT</em>
                                 </span>
                             </div>
-                            <div class="cluster-box aic-mod">
+                            <div class="aic-mod">
                                 <span class="aic-mod-index">03</span>
                                 <span class="aic-mod-tag">[ SIGNAL // IDENTITY ]</span>
                                 <h4>One face, one voice</h4>
@@ -2228,9 +2226,11 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=4.5.0"></script>
+    <script defer src="3d-fx.js?v=4.6.0"></script>
+    <!-- slide 05's dithered wave: plain WebGL, no three.js -->
+    <script defer src="pixel-field.js?v=4.6.0"></script>
 
-    <script defer src="script.js?v=4.5.0"></script>
+    <script defer src="script.js?v=4.6.0"></script>
 </body>
 
 </html>
