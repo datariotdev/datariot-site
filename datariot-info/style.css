@@ -11111,20 +11111,21 @@ body {
    The glowing WebGL sphere is gone. The slide is a dark screen in both
    themes now: a dithered wave field (pixel-field.js) behind flat navy
    panels with stepped pixel corners, Pixelify Sans for headings and
-   numbers, pale periwinkle type and one bright blue accent. Pixelify Sans
+   numbers, pale blue type and the brand blue as the accent. Pixelify Sans
    is drawn on a 0.1em grid, so its sizes here are multiples of 10px (a
    whole number of screen pixels per font pixel) wherever it is big enough
    to matter.
    ========================================================================== */
 #ai-core {
-    --px-void: #061437;       /* darkest tone of the field */
-    --px-panel: #070F29;      /* panels sit darker than the field */
-    --px-raise: #0D1940;      /* rows raised inside a panel */
-    --px-line: #1E2D61;       /* dotted rules */
-    --px-ink: #B8C8EC;        /* type */
-    --px-ink-2: #8E9CC7;      /* body copy */
-    --px-ink-3: #6071A6;      /* captions */
-    --px-accent: #7098E8;     /* the arrow blue */
+    /* the brand blue: saturated cobalt, not the design reference's steel blue */
+    --px-void: #040E2C;       /* darkest tone of the field */
+    --px-panel: #050B21;      /* panels sit darker than the field */
+    --px-raise: #0A1A42;      /* rows raised inside a panel */
+    --px-line: #16306F;       /* dotted rules */
+    --px-ink: #C5D8F6;        /* type */
+    --px-ink-2: #8FA8D4;      /* body copy */
+    --px-ink-3: #5B78B0;      /* captions */
+    --px-accent: var(--brand-500);
     --px-warn: #F09AAE;
     --px-font: 'Pixelify Sans', 'JetBrains Mono', ui-monospace, monospace;
     --px-rule: linear-gradient(90deg, var(--px-line) 50%, transparent 0) 0 0 / 6px 2px repeat-x;
