@@ -17,7 +17,21 @@ interface FeaturedVideo {
     thumbnailUrl?: string; // Added thumbnail support
     views: number;
     likes: number;
+    /** Real tally from the debate's replies, when the room has voted. */
+    logicStats?: { forScore: number; againstScore: number; forPercentage: number };
 }
+
+const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+
+/** Stable per-debate hue so a card without artwork still has an identity. */
+const washFor = (id: string) => {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+    return {
+        hue: 196 + (h % 48),            // cyan through to the brand blue
+        light: 22 + ((h >> 5) % 12),    // keeps neighbouring cards from matching
+    };
+};
 
 interface FeaturedHeroProps {
     featuredVideos: FeaturedVideo[];
@@ -53,106 +67,126 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
     const scrollInterval = isWeb ? cardWidth + 16 : cardWidth;
 
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [hoveredId, setHoveredId] = useState<string | null>(null);
 
     const renderFeaturedItem = (item: FeaturedVideo, index: number) => {
         const isCurrent = index === currentIndex;
+        const isHovered = hoveredId === item.id;
 
-        // Scale down fonts and padding for smaller web cards
-        const cardPadding = isWeb ? 12 : 24;
-        const titleSize = isWeb ? 14 : 24;
-        const titleLineHeight = isWeb ? 18 : 30;
-        const authorSize = isWeb ? 11 : 14;
-        const badgeTopLeft = isWeb ? 10 : 20;
-        const badgePadX = isWeb ? 8 : 10;
-        const badgePadY = isWeb ? 4 : 6;
-        const badgeFontSize = isWeb ? 8 : 9;
-        const vsSize = isWeb ? 36 : 60;
+        const cardPadding = isWeb ? 14 : 24;
+        const titleSize = isWeb ? 15 : 24;
+        const titleLineHeight = isWeb ? 19 : 30;
+
+        const { hue, light } = washFor(item.id);
+        const tally = item.logicStats;
+        const pro = tally ? Math.round(tally.forPercentage) : null;
 
         return (
             <Pressable
                 onPress={() => onVideoPress(item.id)}
+                onHoverIn={() => setHoveredId(item.id)}
+                onHoverOut={() => setHoveredId(null)}
                 style={[
                     styles.heroContainer,
                     {
                         width: cardWidth,
                         height: cardHeight,
                         marginRight: isWeb ? 16 : 0,
+                        borderColor: isHovered ? `hsla(${hue}, 90%, 72%, 0.55)` : 'rgba(255,255,255,0.09)',
+                        transform: [{ translateY: isHovered && isWeb ? -4 : 0 }],
                     }
                 ]}
             >
                 <View style={styles.videoContainer}>
-                    <Image
-                        source={{ uri: item.thumbnailUrl || item.avatarUrl }} // Fallback to avatar if no thumbnail
-                        style={styles.video}
-                        resizeMode="cover"
-                        // @ts-ignore
-                        crossOrigin="anonymous"
+                    {/* Identity wash. Most debates have no artwork yet, and a
+                        bare <Image> left the card a black rectangle. */}
+                    <LinearGradient
+                        colors={[`hsl(${hue}, 64%, ${light + 8}%)`, `hsl(${hue + 18}, 56%, ${light - 8}%)`, '#05070C']}
+                        locations={[0, 0.55, 1]}
+                        start={{ x: 0.1, y: 0 }}
+                        end={{ x: 0.9, y: 1 }}
+                        style={StyleSheet.absoluteFill}
                     />
+                    <LinearGradient
+                        colors={[`hsla(${hue}, 95%, 70%, 0.22)`, 'transparent']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 0.7, y: 0.7 }}
+                        style={StyleSheet.absoluteFill}
+                    />
+
+                    {item.thumbnailUrl ? (
+                        <Image
+                            source={{ uri: item.thumbnailUrl }}
+                            style={styles.video}
+                            resizeMode="cover"
+                            // @ts-ignore
+                            crossOrigin="anonymous"
+                        />
+                    ) : null}
 
                     {item.videoUrl ? (
                         <FeaturedVideoPlayer videoUrl={item.videoUrl} isCurrent={isCurrent} />
                     ) : null}
 
-                    {/* Simple Overlay */}
                     <View style={styles.overlay}>
                         <LinearGradient
-                            colors={['transparent', 'rgba(0,0,0,0.8)', '#000']}
-                            locations={[0, 0.6, 1]}
+                            colors={['rgba(3,5,10,0.55)', 'transparent', 'rgba(3,5,10,0.86)', '#03050A']}
+                            locations={[0, 0.34, 0.74, 1]}
                             style={StyleSheet.absoluteFill}
                         />
 
-                        {/* Info Card */}
+                        {/* instrument bar */}
+                        <View style={styles.topBar}>
+                            <View style={styles.liveTag}>
+                                <View style={[styles.liveDot, { backgroundColor: '#F43F5E' }]} />
+                                <Text style={styles.liveText}>LIVE_DEBATE</Text>
+                            </View>
+                            {!(isWeb && isHovered) && (
+                                <Text style={styles.watching}>{formatNumber(item.views)} WATCHING</Text>
+                            )}
+                        </View>
+
                         <View style={[styles.infoCard, { padding: cardPadding }]}>
                             <View style={styles.infoContent}>
-                                <Text style={[styles.authorName, { fontSize: authorSize }]}>
+                                <Text style={[styles.authorName, { fontSize: isWeb ? 11 : 14 }]}>
                                     {item.author ? `> @${item.author.toUpperCase()}` : ''}
                                 </Text>
                                 <Text style={[styles.title, { fontSize: titleSize, lineHeight: titleLineHeight }]} numberOfLines={2}>
                                     {item.title ? item.title.toUpperCase() : ''}
                                 </Text>
 
-                                <View style={[styles.statsRow, isWeb && { gap: 6 }]}>
-                                    <View style={styles.statItem}>
-                                        <Text style={[styles.statLabel, isWeb && { fontSize: 8 }]}>SPECTATORS</Text>
-                                        <Text style={[styles.statText, isWeb && { fontSize: 10 }]}>{formatNumber(item.views)}</Text>
+                                {/* The tally is what makes this a debate and not
+                                    a video. Shown only when the room has voted. */}
+                                {pro !== null ? (
+                                    <View style={styles.tally}>
+                                        <View style={styles.tallyLabels}>
+                                            <Text style={[styles.tallySide, { color: '#7DD3FC' }]}>PRO {pro}%</Text>
+                                            <Text style={[styles.tallySide, { color: '#C4B5FD' }]}>{100 - pro}% CON</Text>
+                                        </View>
+                                        <View style={styles.tallyTrack}>
+                                            <View style={[styles.tallyFill, { width: `${pro}%`, backgroundColor: '#38BDF8' }]} />
+                                            <View style={[styles.tallyFill, { width: `${100 - pro}%`, backgroundColor: '#8B7BF0' }]} />
+                                        </View>
+                                        <Text style={styles.tallyMeta}>{formatNumber(item.likes)} VOTES CAST</Text>
                                     </View>
-                                    <View style={styles.statItem}>
-                                        <Text style={[styles.statLabel, isWeb && { fontSize: 8 }]}>VOTES</Text>
-                                        <Text style={[styles.statText, isWeb && { fontSize: 10 }]}>{formatNumber(item.likes)}</Text>
+                                ) : (
+                                    <View style={styles.tally}>
+                                        <View style={styles.tallyTrackEmpty} />
+                                        <Text style={styles.tallyMeta}>NO VERDICT YET — FLOOR IS OPEN</Text>
                                     </View>
-                                </View>
+                                )}
                             </View>
-
-                            {item.title.toLowerCase().includes('vs') && (
-                                <View style={[
-                                    styles.vsContainer,
-                                    isWeb && {
-                                        width: vsSize,
-                                        height: vsSize,
-                                        borderRadius: vsSize / 2,
-                                        marginLeft: -vsSize / 2,
-                                        top: '40%',
-                                    }
-                                ]}>
-                                    <BlurView intensity={30} tint="light" style={StyleSheet.absoluteFill} />
-                                    <Text style={[styles.vsText, isWeb && { fontSize: 12 }]}>VS</Text>
-                                </View>
-                            )}
-
                         </View>
 
-                        {/* Popular Badge */}
-                        <View style={[
-                            styles.trendingBadge,
-                            isWeb && {
-                                top: badgeTopLeft,
-                                left: badgeTopLeft,
-                                paddingHorizontal: badgePadX,
-                                paddingVertical: badgePadY,
-                            }
-                        ]}>
-                            <Text style={[styles.badgeText, isWeb && { fontSize: badgeFontSize }]}>[ LIVE_DEBATE ]</Text>
-                        </View>
+                        {/* corner ticks, the instrument language used across the deck */}
+                        <View style={[styles.tick, styles.tickTL]} />
+                        <View style={[styles.tick, styles.tickBR]} />
+
+                        {isWeb && isHovered && (
+                            <View style={styles.enterChip}>
+                                <Text style={styles.enterText}>[ ENTER ]</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
             </Pressable>
@@ -226,10 +260,14 @@ const styles = StyleSheet.create({
     },
     heroContainer: {
         height: 400, // Slightly shorter
+        borderWidth: 1,
+        overflow: 'hidden',
+        // @ts-ignore — web only
+        transition: 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease',
     },
     videoContainer: {
         flex: 1,
-        backgroundColor: '#000',
+        backgroundColor: '#05070C',
     },
     video: {
         width: '100%',
@@ -239,6 +277,116 @@ const styles = StyleSheet.create({
     overlay: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'space-between',
+    },
+    topBar: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 12,
+        paddingTop: 11,
+    },
+    liveTag: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        backgroundColor: 'rgba(5, 8, 15, 0.72)',
+        borderWidth: 1,
+        borderColor: 'rgba(244, 63, 94, 0.45)',
+    },
+    liveDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+    },
+    liveText: {
+        fontSize: 8,
+        fontWeight: '700',
+        letterSpacing: 1.6,
+        color: '#FDA4AF',
+        fontFamily: MONO,
+    },
+    watching: {
+        fontSize: 8,
+        fontWeight: '600',
+        letterSpacing: 1.4,
+        color: 'rgba(226, 238, 255, 0.72)',
+        fontFamily: MONO,
+    },
+    tally: {
+        marginTop: 8,
+        gap: 5,
+    },
+    tallyLabels: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    tallySide: {
+        fontSize: 9,
+        fontWeight: '700',
+        letterSpacing: 1.2,
+        fontFamily: MONO,
+    },
+    tallyTrack: {
+        flexDirection: 'row',
+        height: 5,
+        backgroundColor: 'rgba(226, 238, 255, 0.14)',
+        overflow: 'hidden',
+    },
+    tallyTrackEmpty: {
+        height: 5,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: 'rgba(226, 238, 255, 0.24)',
+    },
+    tallyFill: {
+        height: '100%',
+    },
+    tallyMeta: {
+        fontSize: 8,
+        letterSpacing: 1.3,
+        color: 'rgba(226, 238, 255, 0.55)',
+        fontFamily: MONO,
+    },
+    tick: {
+        position: 'absolute',
+        width: 12,
+        height: 12,
+        borderColor: 'rgba(226, 238, 255, 0.5)',
+    },
+    tickTL: {
+        top: 6,
+        left: 6,
+        borderLeftWidth: 1,
+        borderTopWidth: 1,
+    },
+    tickBR: {
+        bottom: 6,
+        right: 6,
+        borderRightWidth: 1,
+        borderBottomWidth: 1,
+    },
+    enterChip: {
+        position: 'absolute',
+        top: 11,
+        right: 12,
+        paddingHorizontal: 9,
+        paddingVertical: 4,
+        backgroundColor: 'rgba(56, 189, 248, 0.16)',
+        borderWidth: 1,
+        borderColor: 'rgba(56, 189, 248, 0.6)',
+    },
+    enterText: {
+        fontSize: 8,
+        fontWeight: '700',
+        letterSpacing: 1.6,
+        color: '#BAE6FD',
+        fontFamily: MONO,
     },
     infoCard: {
         position: 'absolute',
