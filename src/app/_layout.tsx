@@ -105,7 +105,7 @@ export default function RootLayout() {
         <ThemeProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <SafeAreaProvider>
-                    <Stack>
+                    <Stack screenOptions={{ contentStyle: { backgroundColor: '#08090D' } }}>
                         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                         <Stack.Screen name="auth" options={{ headerShown: false }} />
                         <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'fullScreenModal' }} />

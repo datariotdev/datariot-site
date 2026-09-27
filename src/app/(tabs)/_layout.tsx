@@ -34,6 +34,9 @@ const TabLayout = () => {
             <Tabs
                 screenOptions={{
                     headerShown: false,
+                    // Let the layout's HUD backdrop show through instead of the
+                    // navigator's default light scene background.
+                    sceneStyle: { backgroundColor: 'transparent' },
                     tabBarActiveTintColor: theme.colors.primary.DEFAULT,
                     tabBarInactiveTintColor: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0,0,0,0.4)',
                     tabBarStyle: {

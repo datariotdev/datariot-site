@@ -1,9 +1,8 @@
 import React from 'react';
 import { ScrollView, Text, StyleSheet, Pressable, View, Platform } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { theme as baseTheme } from '../../design-system/theme';
 import { useTheme } from '../Theme/ThemeProvider';
-import { EdgeFade } from './EdgeFade';
+
+const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
 
 interface CategoryPillsProps {
     categories: string[];
@@ -16,138 +15,138 @@ export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: C
     const isDark = mode === 'dark';
 
     return (
-        <View style={styles.wrapper}>
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.scrollStyle}
-                contentContainerStyle={styles.container}
-            >
-                {categories.map((category) => {
-                    const isActive = activeCategory === category;
-
-                    return (
-                        <PillButton
-                            key={category}
-                            category={category}
-                            isActive={isActive}
-                            isDark={isDark}
-                            theme={theme}
-                            onPress={() => onCategoryPress(category)}
-                        />
-                    );
-                })}
-            </ScrollView>
-
-            <EdgeFade width={36} />
-        </View>
+        <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.scrollStyle}
+            contentContainerStyle={styles.container}
+        >
+            <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>
+            {categories.map((category) => (
+                <Chip
+                    key={category}
+                    category={category}
+                    isActive={activeCategory === category}
+                    isDark={isDark}
+                    theme={theme}
+                    onPress={() => onCategoryPress(category)}
+                />
+            ))}
+        </ScrollView>
     );
 };
 
-const PillButton = ({ category, isActive, isDark, theme, onPress }: { category: string, isActive: boolean, isDark: boolean, theme: any, onPress: () => void }) => {
+const Chip = ({
+    category,
+    isActive,
+    isDark,
+    theme,
+    onPress,
+}: {
+    category: string;
+    isActive: boolean;
+    isDark: boolean;
+    theme: any;
+    onPress: () => void;
+}) => {
     const [isHovered, setIsHovered] = React.useState(false);
+    const accent = theme.colors.primary.DEFAULT;
 
     return (
         <Pressable
             onHoverIn={() => setIsHovered(true)}
             onHoverOut={() => setIsHovered(false)}
+            onPress={onPress}
             style={[
-                styles.pill,
+                styles.chip,
                 {
                     borderColor: isActive
-                        ? 'transparent'
-                        : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-                    borderWidth: 1,
-                    backgroundColor: isActive 
-                        ? 'transparent' 
-                        : (isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.65)'),
+                        ? accent
+                        : isHovered
+                            ? (isDark ? 'rgba(217, 228, 255, 0.3)' : 'rgba(76, 110, 245, 0.35)')
+                            : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.09)'),
+                    backgroundColor: isActive
+                        ? (isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(76, 110, 245, 0.10)')
+                        : isHovered
+                            ? (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.035)')
+                            : 'transparent',
                 },
-                isActive && isDark && {
-                    shadowColor: '#D9E4FF',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 8,
+                isActive && {
+                    shadowColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: isDark ? 0.3 : 0.15,
+                    shadowRadius: 12,
                 },
-                isActive && !isDark && {
-                    shadowColor: '#6B7FCC',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.12,
-                    shadowRadius: 8,
-                },
-                isHovered && !isActive && {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.95)',
-                    borderColor: isDark ? 'rgba(217, 228, 255, 0.25)' : 'rgba(107, 127, 204, 0.25)',
-                    transform: [{ scale: 1.03 }],
-                }
             ]}
-            onPress={onPress}
         >
-            {isActive && (
-                <LinearGradient
-                    colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.activeGradient}
-                />
-            )}
+            {/* Corner tick — active chips get a machined notch */}
+            {isActive && <View style={[styles.chipTick, { borderColor: accent }]} pointerEvents="none" />}
+
             <Text
                 allowFontScaling={false}
                 style={[
                     styles.text,
                     {
                         color: isActive
-                            ? (isDark ? '#000000' : '#FFFFFF')
-                            : (isDark ? '#38BDF8' : '#4C6EF5'),
-                        fontWeight: isActive ? '800' : '700',
-                        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-                    }
+                            ? accent
+                            : isHovered
+                                ? theme.colors.text.primary
+                                : theme.colors.text.secondary,
+                        fontFamily: MONO,
+                    },
                 ]}
             >
-                {`[ ${category.toUpperCase()} ]`}
+                {category.toUpperCase()}
             </Text>
         </Pressable>
     );
 };
 
 const styles = StyleSheet.create({
-    wrapper: {
-        position: 'relative',
-        width: '100%',
-    },
     scrollStyle: {
         flex: 1,
         width: '100%',
     },
     container: {
-        paddingHorizontal: baseTheme.spacing.md,
-        gap: 10,
+        paddingHorizontal: 16,
+        gap: 8,
         paddingTop: 8,
         paddingBottom: 8,
         flexDirection: 'row',
+        alignItems: 'center',
     },
-    pill: {
-        height: 34,
-        paddingHorizontal: 18,
-        borderRadius: 100,
-        overflow: 'hidden',
+    gutterLabel: {
+        fontSize: 9,
+        letterSpacing: 1.8,
+        marginRight: 4,
+        opacity: 0.8,
+    },
+    chip: {
+        height: 30,
+        paddingHorizontal: 14,
+        borderRadius: 6,
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        position: 'relative',
         // @ts-ignore
-        transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+        transition: 'all 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
     },
-    activeGradient: {
+    chipTick: {
         position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        borderRadius: 100,
+        top: -1,
+        left: -1,
+        width: 7,
+        height: 7,
+        borderWidth: 1.5,
+        borderRightWidth: 0,
+        borderBottomWidth: 0,
+        borderTopLeftRadius: 6,
     },
     text: {
-        fontSize: 10,
-        fontWeight: '800',
-        letterSpacing: 1.5,
+        fontSize: 9.5,
+        fontWeight: '700',
+        letterSpacing: 1.4,
         includeFontPadding: false,
         textAlignVertical: 'center',
     },

@@ -43,9 +43,13 @@ const FeaturedVideoPlayer = ({ videoUrl, isCurrent }: { videoUrl: string, isCurr
 export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps) => {
     const { width: screenWidth } = useWindowDimensions();
     const isWeb = Platform.OS === 'web' && screenWidth > 768;
-    const containerWidth = isWeb ? Math.min(900, screenWidth - 620) : screenWidth;
-    const visibleWidth = isWeb ? containerWidth - 32 : containerWidth;
-    const cardWidth = isWeb ? (visibleWidth - 32) / 3 : containerWidth;
+
+    // Measure the real column instead of guessing from the viewport — the deck
+    // width now depends on whether the instrument dock is mounted.
+    const [measuredWidth, setMeasuredWidth] = useState(0);
+    const containerWidth = isWeb ? (measuredWidth || screenWidth - 460) : screenWidth;
+    const cardWidth = isWeb ? Math.max(200, (containerWidth - 32) / 3) : containerWidth;
+    const cardHeight = isWeb ? cardWidth * 0.78 : cardWidth;
     const scrollInterval = isWeb ? cardWidth + 16 : cardWidth;
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -71,7 +75,7 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
                     styles.heroContainer,
                     {
                         width: cardWidth,
-                        height: cardWidth,
+                        height: cardHeight,
                         marginRight: isWeb ? 16 : 0,
                     }
                 ]}
@@ -164,7 +168,13 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
     }, [scrollInterval, currentIndex]);
 
     return (
-        <View style={[styles.container, { paddingHorizontal: isWeb ? 16 : 0 }]}>
+        <View
+            style={[styles.container, { paddingHorizontal: 0 }]}
+            onLayout={(e) => {
+                const w = e.nativeEvent.layout.width;
+                if (w && Math.abs(w - measuredWidth) > 1) setMeasuredWidth(w);
+            }}
+        >
             <ScrollView
                 horizontal
                 pagingEnabled={!isWeb}

@@ -1,11 +1,11 @@
 import React, { useRef, useState, useCallback, useMemo } from 'react';
-import { View, StyleSheet, FlatList, ViewToken } from 'react-native';
+import { View, StyleSheet, FlatList, ViewToken, Platform, useWindowDimensions } from 'react-native';
 import { CoubClassicItem } from './CoubClassicItem';
-import { FullScreenVideoModal } from './FullScreenVideoModal';
 import { useTheme } from '../Theme/ThemeProvider';
 import { SectionHeader } from '../Discovery/SectionHeader';
 import { DiscoveryCarousel } from '../Discovery/DiscoveryCarousel';
 import { FeaturedHero } from '../Discovery/FeaturedHero';
+import { DeckGrid } from './DeckFeed/DeckGrid';
 import { Video } from '../../lib/supabase/hooks/useVideos';
 
 interface CoubClassicFeedProps {
@@ -40,6 +40,8 @@ export function CoubClassicFeed({
     const [activeVideoIndex, setActiveVideoIndex] = useState(initialScrollIndex);
     const flatListRef = useRef<FlatList>(null);
     const { theme } = useTheme();
+    const { width } = useWindowDimensions();
+    const isDesktopWeb = Platform.OS === 'web' && width > 768;
 
     const ensureMinCount = useCallback(<T,>(list: T[], min: number): T[] => {
         if (list.length === 0) return [];
@@ -83,7 +85,7 @@ export function CoubClassicFeed({
 
     const scrollVideos = useMemo(() => {
         let base;
-        // Define which videos go to the main vertical scroll 
+        // Define which videos go to the main vertical scroll
         // This ensures no single video dominates all UI sections too much
         if (allSynergy.length <= 3) {
             base = videos;
@@ -109,30 +111,57 @@ export function CoubClassicFeed({
         itemVisiblePercentThreshold: 60,
     }), []);
 
-    const renderHeader = () => (
-        <View style={{ marginBottom: 24, marginTop: paddingTop + 10 }}>
+    const header = (
+        <View style={{ marginBottom: 8, marginTop: paddingTop + 10 }}>
             {featuredVideos.length > 0 && (
-                <FeaturedHero
-                    featuredVideos={featuredVideos}
-                    onVideoPress={onSelect}
-                />
+                <>
+                    <SectionHeader
+                        title="Live Arena"
+                        subtitle="Debates running right now"
+                        index="01"
+                        meta={`${featuredVideos.length} OPEN`}
+                        containerStyle={isDesktopWeb ? { paddingHorizontal: 0, paddingTop: 20 } : undefined}
+                    />
+                    <FeaturedHero featuredVideos={featuredVideos} onVideoPress={onSelect} />
+                </>
             )}
 
             <SectionHeader
                 title="Datariot Originals"
-                subtitle="Curated high-quality video content"
+                subtitle="Curated high-signal video"
+                index="02"
+                meta={`${synergyVideos.length} PICKS`}
+                containerStyle={isDesktopWeb ? { paddingHorizontal: 0 } : undefined}
             />
-            <DiscoveryCarousel
-                videos={synergyVideos}
-                onSelect={onSelect}
-            />
+            <DiscoveryCarousel videos={synergyVideos} onSelect={onSelect} />
 
             <SectionHeader
-                title="Trending Now"
-                subtitle="High engagement across the platform"
+                title="The Deck"
+                subtitle="Everything moving across the platform"
+                index="03"
+                meta={`${scrollVideos.length} SIGNALS`}
+                containerStyle={isDesktopWeb ? { paddingHorizontal: 0 } : undefined}
             />
         </View>
     );
+
+    /* Desktop web gets the asymmetric deck grid instead of a single column. */
+    if (isDesktopWeb) {
+        return (
+            <View style={styles.container}>
+                <DeckGrid
+                    videos={scrollVideos}
+                    onSelect={onSelect}
+                    onLike={onLike}
+                    onComment={onComment}
+                    onMore={onMore}
+                    onEndReached={onEndReached}
+                    ListHeaderComponent={header}
+                    contentPaddingBottom={paddingBottom + 80}
+                />
+            </View>
+        );
+    }
 
     const renderItem = ({ item, index }: { item: Video; index: number }) => {
         const isActive = index === activeVideoIndex && isScreenFocused;
@@ -158,7 +187,7 @@ export function CoubClassicFeed({
                 renderItem={renderItem}
                 keyExtractor={(item, index) => `${item.id}-${index}`}
                 showsVerticalScrollIndicator={false}
-                ListHeaderComponent={renderHeader}
+                ListHeaderComponent={header}
                 onViewableItemsChanged={onViewableItemsChanged}
                 viewabilityConfig={viewabilityConfig}
                 onEndReached={onEndReached}

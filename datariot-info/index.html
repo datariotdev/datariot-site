@@ -27,9 +27,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=4.3.0" />
+    <link rel="stylesheet" href="style.css?v=4.7.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -303,12 +303,15 @@
 
 <body>
 
-    <!-- Page backdrop: one fixed stack of light, structure and grain so the
-         page is not a single flat sheet from top to bottom. -->
+    <!-- Page backdrop: brand light down the page, aurora along the edges of
+         the viewport and a grain tile, so the page is not a single flat sheet
+         from top to bottom. No lines, no cells. -->
     <div class="page-fx" aria-hidden="true">
         <span class="page-fx__glow"></span>
-        <span class="page-fx__grid"></span>
-        <span class="page-fx__rails"></span>
+        <span class="page-fx__aurora">
+            <span class="page-fx__ribbon page-fx__ribbon--l"></span>
+            <span class="page-fx__ribbon page-fx__ribbon--r"></span>
+        </span>
         <span class="page-fx__grain"></span>
     </div>
 
@@ -348,7 +351,7 @@
         <div class="navx__scrim" data-navx-close></div>
 
         <div class="navx__panel">
-            <div class="navx__grid" aria-hidden="true"></div>
+            <div class="navx__light" aria-hidden="true"></div>
 
             <div class="navx__bar">
                 <span class="navx__brand">
@@ -1051,15 +1054,12 @@
 
         <!-- HOW IT WORKS SECTION -->
         <section class="section section--features section--3d-features" id="features">
-            <div id="canvas-3d-features"></div>
-            <div class="feature-section-glow"></div>
+            <!-- the logo's black, dissolving into the page at both edges -->
+            <div class="px-screen" aria-hidden="true"></div>
             <div class="section__container">
                 <div class="section__header section__header--stack">
                     <span class="section__label">[ 02 — HOW IT WORKS ]</span>
-                    <h2 class="section__title feature__title--3d">
-                        <span class="text-layer">SIMPLE RULES.</span>
-                        <span class="text-layer text-layer--accent">REAL STAKES.</span>
-                    </h2>
+                    <h2 class="section__title">SIMPLE RULES. <span class="st-title-accent">REAL STAKES.</span></h2>
                 </div>
                 <div class="features__fragments step-grid">
 
@@ -1068,20 +1068,20 @@
                     <svg class="step-defs" width="0" height="0" aria-hidden="true" focusable="false">
                         <defs>
                             <linearGradient id="stScreen" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#0E1A30" /><stop offset="100%" stop-color="#04080F" />
+                                <stop offset="0%" stop-color="#07080C" /><stop offset="100%" stop-color="#07080C" />
                             </linearGradient>
                             <radialGradient id="stKey" cx="50%" cy="38%" r="58%">
-                                <stop offset="0%" stop-color="#2F80E8" stop-opacity=".34" />
-                                <stop offset="100%" stop-color="#2F80E8" stop-opacity="0" />
+                                <stop offset="0%" stop-color="#DAE6F7" stop-opacity=".12" />
+                                <stop offset="100%" stop-color="#DAE6F7" stop-opacity="0" />
                             </radialGradient>
                             <linearGradient id="stBody" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#3F588A" /><stop offset="100%" stop-color="#1B2942" />
+                                <stop offset="0%" stop-color="#DAE6F7" /><stop offset="100%" stop-color="#A9B6CC" />
                             </linearGradient>
                             <linearGradient id="stProBar" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stop-color="#1166D4" /><stop offset="100%" stop-color="#6BA5F2" />
+                                <stop offset="0%" stop-color="#DAE6F7" /><stop offset="100%" stop-color="#DAE6F7" />
                             </linearGradient>
                             <linearGradient id="stConBar" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stop-color="#5B4BD1" /><stop offset="100%" stop-color="#9A8CF5" />
+                                <stop offset="0%" stop-color="#DAE6F7" stop-opacity=".4" /><stop offset="100%" stop-color="#DAE6F7" stop-opacity=".4" />
                             </linearGradient>
 
                             <!-- a person, drawn once. The light falls from the
@@ -1210,7 +1210,7 @@
                                     <rect class="st-clip-plate" x="12" y="48" width="86" height="102" rx="2" />
                                     <clipPath id="stRootClip"><rect x="13" y="49" width="84" height="70" rx="1" /></clipPath>
                                     <g clip-path="url(#stRootClip)">
-                                        <rect x="13" y="49" width="84" height="70" fill="#0A1526" />
+                                        <rect x="13" y="49" width="84" height="70" fill="#0E1016" />
                                         <use href="#stBustSym" x="31" y="54" width="48" height="70" />
                                     </g>
                                     <rect class="st-clip-inner" x="13" y="49" width="84" height="70" rx="1" />
@@ -1230,7 +1230,7 @@
                                     <rect class="st-clip-plate" x="142" y="18" width="114" height="50" rx="2" />
                                     <clipPath id="stR1"><rect x="143" y="19" width="40" height="48" rx="1" /></clipPath>
                                     <g clip-path="url(#stR1)">
-                                        <rect x="143" y="19" width="40" height="48" fill="#0A1526" />
+                                        <rect x="143" y="19" width="40" height="48" fill="#0E1016" />
                                         <use href="#stBustSym" x="148" y="22" width="30" height="48" />
                                     </g>
                                     <use class="st-play st-play--sm" href="#stPlaySym" x="157" y="37" width="12" height="12" />
@@ -1245,7 +1245,7 @@
                                     <rect class="st-clip-plate" x="142" y="132" width="114" height="50" rx="2" />
                                     <clipPath id="stR2"><rect x="143" y="133" width="40" height="48" rx="1" /></clipPath>
                                     <g clip-path="url(#stR2)">
-                                        <rect x="143" y="133" width="40" height="48" fill="#0A1526" />
+                                        <rect x="143" y="133" width="40" height="48" fill="#0E1016" />
                                         <use href="#stBustSym" x="148" y="136" width="30" height="48" />
                                     </g>
                                     <circle class="st-live-dot" cx="176" cy="140" r="3" />
@@ -1445,399 +1445,245 @@
 
         <!-- DEBATE ARENA MOCKUP SECTION -->
         <section class="section section--debates" id="debates" data-inview>
-            <div id="canvas-3d-end"></div>
+            <!-- black like the logo; the backdrop runs on under slide 05's
+                 dithered top edge so the two screens meet without a gap -->
+            <div class="px-screen px-screen--into-next" aria-hidden="true"></div>
             <div class="section__container">
                 <div class="section__header">
                     <span class="section__label">[ 04 — THE ARENA ]</span>
                     <h2 class="section__title">CONFLICT IN REAL-TIME.</h2>
                 </div>
 
-                <div class="arena-showcase">
-                    <div class="arena-showcase__header">
-                        <div class="arena-status">
-                            <span class="arena-status__dot"></span>
-                            <span class="arena-status__text">LIVE ARENA // SESSION_0942</span>
-                        </div>
-                        <div class="arena-timer">
-                            <span class="timer-label">DURATION</span>
-                            <span class="timer-val">00:42:15</span>
-                        </div>
-                    </div>
-
-                    <div class="arena-grid">
-                        <div class="arena-panel arena-panel--for">
-                            <div class="panel-header">
-                                <span class="side-tag side-tag--for">[ SIDE // AFFIRMATIVE ]</span>
-                                <span class="handle">@pro_logic_22</span>
+                <div class="va">
+                    <!-- the fighting-game bar: the vote is the health meter -->
+                    <div class="va-hud">
+                        <div class="va-side va-side--pro">
+                            <div class="va-name"><b>P1</b><span>@pro_logic_22</span><em>AFFIRMATIVE</em></div>
+                            <div class="va-meter" role="img" aria-label="Affirmative has 72% of the vote">
+                                <span class="va-bar"><i style="--v: 72%"></i></span>
+                                <strong>72%</strong>
                             </div>
-                            <div class="clip-card clip-card--for">
-                                <div class="clip-card__frame">
-                                    <svg class="clip-card__figure" viewBox="0 0 320 200" aria-hidden="true">
-                                        <defs>
-                                            <linearGradient id="cc-back-for" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".32" />
-                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
-                                            </linearGradient>
-                                            <radialGradient id="cc-key-for" cx="50%" cy="38%" r="62%">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".45" />
-                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
-                                            </radialGradient>
-                                            <linearGradient id="an-coat-for" x1="0.2" y1="0" x2="0.8" y2="1">
-                                                <stop offset="0%" stop-color="#4C6188" />
-                                                <stop offset="45%" stop-color="#2B3A57" />
-                                                <stop offset="100%" stop-color="#151E32" />
-                                            </linearGradient>
-                                            <linearGradient id="an-chest-for" x1="0.3" y1="0" x2="0.7" y2="1">
-                                                <stop offset="0%" stop-color="#8FA6C9" />
-                                                <stop offset="100%" stop-color="#4A5C7E" />
-                                            </linearGradient>
-                                            <radialGradient id="an-face-for" cx="42%" cy="34%" r="70%">
-                                                <stop offset="0%" stop-color="#9DB4D6" />
-                                                <stop offset="60%" stop-color="#5A6D92" />
-                                                <stop offset="100%" stop-color="#2A3852" />
-                                            </radialGradient>
-                                            <radialGradient id="an-eye-for" cx="38%" cy="32%" r="70%">
-                                                <stop offset="0%" stop-color="#FFFFFF" />
-                                                <stop offset="40%" stop-color="var(--clip-accent)" />
-                                                <stop offset="100%" stop-color="#0B1220" />
-                                            </radialGradient>
-                                            <linearGradient id="an-rim-for" x1="0" y1="0" x2="1" y2="0.4">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".9" />
-                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
-                                            </linearGradient>
-                                            <clipPath id="cc-crop-for"><rect width="320" height="200" /></clipPath>
-                                        </defs>
-
-                                        <g clip-path="url(#cc-crop-for)">
-                                            <rect width="320" height="200" fill="url(#cc-back-for)" />
-                                            <ellipse cx="178" cy="80" rx="116" ry="96" fill="url(#cc-key-for)" />
-                                            <path class="cc-line" d="M0 152h320" />
-                                            <path class="cc-line cc-line--soft" d="M0 170h320M0 134h320" />
-
-                                            <g class="cc-rig">
-                                                <rect x="14" y="24" width="36" height="50" rx="4" />
-                                                <path d="M32 74v64M16 138h32" />
-                                                <path class="cc-rig-beam" d="M50 32 112 56 112 96 50 72z" />
-                                            </g>
-
-                                            <g class="cc-plant">
-                                                <path d="M292 152v-28" />
-                                                <path d="M292 132c-11-4-15-15-12-24 9 2 15 12 12 24z" />
-                                                <path d="M292 138c10-6 12-18 8-26-9 4-13 15-8 26z" />
-                                                <rect x="283" y="152" width="18" height="15" rx="3" />
-                                            </g>
-
-                                            <!-- contact shadow under the sitter -->
-                                            <ellipse class="an-shadow" cx="168" cy="196" rx="62" ry="10" />
-
-                                            <g class="an an--owl">
-                                                <!-- torso -->
-                                                <path class="an-coat" d="M112 200c0-46 25-76 56-76s56 30 56 76z" fill="url(#an-coat-for)" />
-                                                <path class="an-chest" d="M140 200c0-30 12-50 28-50s28 20 28 50z" fill="url(#an-chest-for)" />
-                                                <!-- folded wings -->
-                                                <path class="an-wing" d="M118 200c-2-34 6-56 20-64 4 22 2 46-6 64z" />
-                                                <path class="an-wing" d="M218 200c2-34-6-56-20-64-4 22-2 46 6 64z" />
-                                                <!-- perched talons -->
-                                                <path class="an-talon" d="M150 200v-7M158 200v-9M166 200v-7M178 200v-7M186 200v-9M194 200v-7" />
-
-                                                <!-- head -->
-                                                <path class="an-ear" d="M124 62c-10-20-9-36-2-42 11 6 20 22 22 40z" />
-                                                <path class="an-ear" d="M212 62c10-20 9-36 2-42-11 6-20 22-22 40z" />
-                                                <path class="an-coat" d="M124 88c0-27 20-48 44-48s44 21 44 48c0 25-20 44-44 44s-44-19-44-44z" fill="url(#an-coat-for)" />
-                                                <!-- facial disc -->
-                                                <path class="an-face" d="M132 86c0-19 16-32 36-32s36 13 36 32c0 20-16 36-36 36s-36-16-36-36z" fill="url(#an-face-for)" />
-                                                <circle class="an-disc" cx="151" cy="85" r="23" />
-                                                <circle class="an-disc" cx="185" cy="85" r="23" />
-                                                <path class="an-brow" d="M136 66c9-9 20-12 29-9M200 66c-9-9-20-12-29-9" />
-
-                                                <!-- eyes -->
-                                                <circle class="an-eye" cx="151" cy="85" r="15" fill="url(#an-eye-for)" />
-                                                <circle class="an-eye" cx="185" cy="85" r="15" fill="url(#an-eye-for)" />
-                                                <circle class="an-pupil" cx="151" cy="85" r="6.5" />
-                                                <circle class="an-pupil" cx="185" cy="85" r="6.5" />
-                                                <circle class="an-spec" cx="147" cy="80" r="3.4" />
-                                                <circle class="an-spec" cx="181" cy="80" r="3.4" />
-
-                                                <!-- beak -->
-                                                <path class="an-beak" d="M168 92l8 14c0 6-16 6-16 0z" />
-                                                <path class="an-beak-lit" d="M168 92l5 9-5 3-5-3z" />
-
-                                                <!-- rim light down the camera side -->
-                                                <path class="an-rim" d="M205 58c9 10 12 22 10 34" stroke="url(#an-rim-for)" />
-                                                <path class="an-rim" d="M214 148c8 14 11 32 10 52" stroke="url(#an-rim-for)" />
-
-                                                <!-- headset, because it is still a recording -->
-                                                <path class="an-gear" d="M120 84V72c0-26 21-47 48-47s48 21 48 47v12" />
-                                                <rect class="an-gear-solid" x="110" y="80" width="14" height="26" rx="7" />
-                                                <rect class="an-gear-solid" x="212" y="80" width="14" height="26" rx="7" />
-
-                                                <!-- raised wing, beating with the point -->
-                                                <g class="an-gesture">
-                                                    <path class="an-coat" d="M104 168c-10-10-10-27 0-35 7-5 14-1 18 6l10 18c4 7 2 15-5 19-10 6-16 0-23-8z" fill="url(#an-coat-for)" />
-                                                    <path class="an-feather" d="M112 146l-6-13M120 143l-4-14M128 144l-1-13" />
-                                                </g>
-                                            </g>
-
-                                            <g class="cc-mic">
-                                                <path d="M266 58 232 92" />
-                                                <rect x="216" y="86" width="21" height="13" rx="6.5" transform="rotate(-42 226 92)" />
-                                                <path class="cc-mic-grille" d="M221 87l9 8M224 83l9 8" />
-                                            </g>
-                                        </g>
-                                    </svg>
-
-                                    <div class="clip-card__badge">
-                                        <span class="clip-card__badge-dot"></span>
-                                        ON CAMERA
-                                    </div>
-                                    <div class="clip-card__time">04:12</div>
-
-                                    <div class="clip-card__wave" aria-hidden="true">
-                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                    </div>
-
-                                    <p class="clip-card__caption">“Show me the mechanism, not the slogan.”</p>
-
-                                    <div class="clip-card__scrub"><span></span></div>
-                                </div>
-
-                                <div class="clip-card__meta">
-                                    <span class="clip-card__meta-item">
-                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M8 6.5 18 12 8 17.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
-                                        </svg>
-                                        1.2M
-                                    </span>
-                                    <span class="clip-card__meta-item">
-                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M9 7 4 11.5 9 16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-                                            <path d="M4.4 11.5H14a6 6 0 0 1 6 6V19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
-                                        </svg>
-                                        842
-                                    </span>
-                                    <span class="clip-card__meta-item clip-card__meta-item--a">UNCUT</span>
-                                </div>
-                            </div>
-                            <div class="panel-stats">
-                                <div class="stat-bar">
-                                    <div class="stat-bar__fill" style="width: 72%;"></div>
-                                </div>
-                                <span class="stat-val">72%</span>
-                            </div>
+                            <div class="va-meta"><span class="va-rec">ON CAMERA</span><span>04:12</span><span>1.2M VIEWS</span><span>842 REPLIES</span></div>
                         </div>
 
-                        <div class="arena-separator">
-                            <div class="vs-badge">VS</div>
-                            <div class="data-line"></div>
+                        <div class="va-clock">
+                            <span class="va-live"><i aria-hidden="true"></i>LIVE</span>
+                            <b>42:15</b>
+                            <span>SESSION_0942</span>
                         </div>
 
-                        <div class="arena-panel arena-panel--against">
-                            <div class="panel-header">
-                                <span class="side-tag side-tag--against">[ SIDE // NEGATIVE ]</span>
-                                <span class="handle">@critique_master</span>
+                        <div class="va-side va-side--con">
+                            <div class="va-name"><em>NEGATIVE</em><span>@critique_master</span><b>P2</b></div>
+                            <div class="va-meter" role="img" aria-label="Negative has 28% of the vote">
+                                <strong>28%</strong>
+                                <span class="va-bar"><i style="--v: 28%"></i></span>
                             </div>
-                            <div class="clip-card clip-card--against">
-                                <div class="clip-card__frame">
-                                    <svg class="clip-card__figure" viewBox="0 0 320 200" aria-hidden="true">
-                                        <defs>
-                                            <linearGradient id="cc-back-against" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".32" />
-                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
-                                            </linearGradient>
-                                            <radialGradient id="cc-key-against" cx="50%" cy="38%" r="62%">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".45" />
-                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
-                                            </radialGradient>
-                                            <linearGradient id="an-coat-against" x1="0.2" y1="0" x2="0.8" y2="1">
-                                                <stop offset="0%" stop-color="#4C6188" />
-                                                <stop offset="45%" stop-color="#2B3A57" />
-                                                <stop offset="100%" stop-color="#151E32" />
-                                            </linearGradient>
-                                            <linearGradient id="an-chest-against" x1="0.3" y1="0" x2="0.7" y2="1">
-                                                <stop offset="0%" stop-color="#8FA6C9" />
-                                                <stop offset="100%" stop-color="#4A5C7E" />
-                                            </linearGradient>
-                                            <radialGradient id="an-face-against" cx="42%" cy="34%" r="70%">
-                                                <stop offset="0%" stop-color="#9DB4D6" />
-                                                <stop offset="60%" stop-color="#5A6D92" />
-                                                <stop offset="100%" stop-color="#2A3852" />
-                                            </radialGradient>
-                                            <radialGradient id="an-eye-against" cx="38%" cy="32%" r="70%">
-                                                <stop offset="0%" stop-color="#FFFFFF" />
-                                                <stop offset="40%" stop-color="var(--clip-accent)" />
-                                                <stop offset="100%" stop-color="#0B1220" />
-                                            </radialGradient>
-                                            <linearGradient id="an-rim-against" x1="0" y1="0" x2="1" y2="0.4">
-                                                <stop offset="0%" stop-color="var(--clip-accent)" stop-opacity=".9" />
-                                                <stop offset="100%" stop-color="var(--clip-accent)" stop-opacity="0" />
-                                            </linearGradient>
-                                            <clipPath id="cc-crop-against"><rect width="320" height="200" /></clipPath>
-                                        </defs>
-
-                                        <g clip-path="url(#cc-crop-against)" transform="scale(-1,1) translate(-320,0)">
-                                            <rect width="320" height="200" fill="url(#cc-back-against)" />
-                                            <ellipse cx="178" cy="80" rx="116" ry="96" fill="url(#cc-key-against)" />
-                                            <path class="cc-line" d="M0 152h320" />
-                                            <path class="cc-line cc-line--soft" d="M0 170h320M0 134h320" />
-
-                                            <g class="cc-rig">
-                                                <rect x="14" y="24" width="36" height="50" rx="4" />
-                                                <path d="M32 74v64M16 138h32" />
-                                                <path class="cc-rig-beam" d="M50 32 112 56 112 96 50 72z" />
-                                            </g>
-
-                                            <g class="cc-plant">
-                                                <path d="M292 152v-28" />
-                                                <path d="M292 132c-11-4-15-15-12-24 9 2 15 12 12 24z" />
-                                                <path d="M292 138c10-6 12-18 8-26-9 4-13 15-8 26z" />
-                                                <rect x="283" y="152" width="18" height="15" rx="3" />
-                                            </g>
-
-                                            <!-- contact shadow under the sitter -->
-                                            <ellipse class="an-shadow" cx="168" cy="196" rx="62" ry="10" />
-
-                                            <g class="an an--fox">
-                                                <path class="an-coat" d="M112 200c0-46 25-76 56-76s56 30 56 76z" fill="url(#an-coat-against)" />
-                                                <path class="an-chest" d="M142 200c0-32 10-52 26-52s26 20 26 52z" fill="url(#an-chest-against)" />
-                                                <!-- brush tail curling in from the side -->
-                                                <path class="an-tail" d="M224 200c22-8 34-28 30-50-16 2-30 16-36 34z" />
-                                                <path class="an-tail-tip" d="M250 154c-8 2-15 8-19 16 9 1 17-4 19-16z" />
-
-                                                <!-- ears -->
-                                                <path class="an-coat" d="M128 62 118 18l34 22z" fill="url(#an-coat-against)" />
-                                                <path class="an-coat" d="M208 62 218 18l-34 22z" fill="url(#an-coat-against)" />
-                                                <path class="an-ear-in" d="M131 56 126 31l19 13z" />
-                                                <path class="an-ear-in" d="M205 56l5-25-19 13z" />
-
-                                                <!-- head -->
-                                                <path class="an-coat" d="M124 84c0-26 20-44 44-44s44 18 44 44c0 20-12 34-28 40l-16 14-16-14c-16-6-28-20-28-40z" fill="url(#an-coat-against)" />
-                                                <!-- cheek ruffs -->
-                                                <path class="an-ruff" d="M126 92c-6 10-8 22-6 32 10-4 17-13 20-24zM210 92c6 10 8 22 6 32-10-4-17-13-20-24z" />
-                                                <!-- muzzle -->
-                                                <path class="an-face" d="M148 104c0-9 9-15 20-15s20 6 20 15c0 12-9 24-20 32-11-8-20-20-20-32z" fill="url(#an-face-against)" />
-                                                <path class="an-brow" d="M136 70c8-6 17-8 25-6M200 70c-8-6-17-8-25-6" />
-
-                                                <!-- eyes: narrower than the owl's, same build -->
-                                                <ellipse class="an-eye" cx="150" cy="82" rx="13" ry="10" fill="url(#an-eye-against)" />
-                                                <ellipse class="an-eye" cx="186" cy="82" rx="13" ry="10" fill="url(#an-eye-against)" />
-                                                <ellipse class="an-pupil" cx="150" cy="82" rx="4.5" ry="7" />
-                                                <ellipse class="an-pupil" cx="186" cy="82" rx="4.5" ry="7" />
-                                                <circle class="an-spec" cx="146" cy="78" r="3" />
-                                                <circle class="an-spec" cx="182" cy="78" r="3" />
-
-                                                <!-- nose -->
-                                                <path class="an-nose" d="M168 106c6 0 9 3 9 6s-4 6-9 6-9-3-9-6 3-6 9-6z" />
-                                                <path class="an-spec" d="M164 108c2-1 4-1 6 0" />
-
-                                                <path class="an-rim" d="M206 54c9 11 12 23 9 35" stroke="url(#an-rim-against)" />
-                                                <path class="an-rim" d="M214 148c8 14 11 32 10 52" stroke="url(#an-rim-against)" />
-
-                                                <path class="an-gear" d="M122 82V70c0-25 21-45 46-45s46 20 46 45v12" />
-                                                <rect class="an-gear-solid" x="112" y="78" width="14" height="26" rx="7" />
-                                                <rect class="an-gear-solid" x="210" y="78" width="14" height="26" rx="7" />
-
-                                                <!-- raised paw -->
-                                                <g class="an-gesture">
-                                                    <path class="an-coat" d="M104 170c-10-10-10-27 0-35 7-5 14-1 18 6l10 18c4 7 2 15-5 19-10 6-16 0-23-8z" fill="url(#an-coat-against)" />
-                                                    <path class="an-feather" d="M110 148l-5-12M118 145l-3-13M126 146l-1-12" />
-                                                </g>
-                                            </g>
-
-                                            <g class="cc-mic">
-                                                <path d="M266 58 232 92" />
-                                                <rect x="216" y="86" width="21" height="13" rx="6.5" transform="rotate(-42 226 92)" />
-                                                <path class="cc-mic-grille" d="M221 87l9 8M224 83l9 8" />
-                                            </g>
-                                        </g>
-                                    </svg>
-
-                                    <div class="clip-card__badge">
-                                        <span class="clip-card__badge-dot"></span>
-                                        RECORDING REPLY
-                                    </div>
-                                    <div class="clip-card__time">02:38</div>
-
-                                    <div class="clip-card__wave" aria-hidden="true">
-                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                    </div>
-
-                                    <p class="clip-card__caption">“That mechanism has never shipped anywhere.”</p>
-
-                                    <div class="clip-card__scrub"><span></span></div>
-                                </div>
-
-                                <div class="clip-card__meta">
-                                    <span class="clip-card__meta-item">
-                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M8 6.5 18 12 8 17.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
-                                        </svg>
-                                        910k
-                                    </span>
-                                    <span class="clip-card__meta-item">
-                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M9 7 4 11.5 9 16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-                                            <path d="M4.4 11.5H14a6 6 0 0 1 6 6V19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
-                                        </svg>
-                                        506
-                                    </span>
-                                    <span class="clip-card__meta-item clip-card__meta-item--b">UNCUT</span>
-                                </div>
-                            </div>
-                            <div class="panel-stats">
-                                <div class="stat-bar">
-                                    <div class="stat-bar__fill stat-bar__fill--against" style="width: 28%;"></div>
-                                </div>
-                                <span class="stat-val">28%</span>
-                            </div>
+                            <div class="va-meta"><span class="va-rec">RECORDING REPLY</span><span>02:38</span><span>910K VIEWS</span><span>506 REPLIES</span></div>
                         </div>
                     </div>
 
-                    <div class="arena-topic-alt">
-                        <div class="topic-meta">[ MOTION // DEBATE ]</div>
-                        <p class="topic-content">"Decentralized governance is the only viable path for global consensus."</p>
+                    <!-- two cameras from the logo, lenses on each other -->
+                    <div class="va-ring">
+                        <p class="va-say va-say--pro"><span>P1</span>“Show me the mechanism, not the slogan.”</p>
+                        <p class="va-say va-say--con"><span>P2</span>“That mechanism has never shipped anywhere.”</p>
+                        <svg class="va-stage" viewBox="0 40 1200 400" aria-hidden="true" focusable="false">
+                        <defs>
+                        <pattern id="va-pro-d1" width="16" height="16" patternUnits="userSpaceOnUse">
+                        <g fill="#2F80E8">
+                        <rect x="0" y="0" width="4" height="4"/>
+                        <rect x="8" y="8" width="4" height="4"/>
+                        </g>
+                        </pattern>
+                        <pattern id="va-pro-d2" width="16" height="16" patternUnits="userSpaceOnUse">
+                        <g fill="#2F80E8">
+                        <rect x="0" y="0" width="4" height="4"/>
+                        <rect x="8" y="0" width="4" height="4"/>
+                        <rect x="0" y="8" width="4" height="4"/>
+                        <rect x="8" y="8" width="4" height="4"/>
+                        </g>
+                        </pattern>
+                        <pattern id="va-pro-d3" width="16" height="16" patternUnits="userSpaceOnUse">
+                        <g fill="#2F80E8">
+                        <rect x="0" y="0" width="4" height="4"/>
+                        <rect x="8" y="0" width="4" height="4"/>
+                        <rect x="4" y="4" width="4" height="4"/>
+                        <rect x="12" y="4" width="4" height="4"/>
+                        <rect x="0" y="8" width="4" height="4"/>
+                        <rect x="8" y="8" width="4" height="4"/>
+                        <rect x="4" y="12" width="4" height="4"/>
+                        <rect x="12" y="12" width="4" height="4"/>
+                        </g>
+                        </pattern>
+                        <pattern id="va-con-d1" width="16" height="16" patternUnits="userSpaceOnUse">
+                        <g fill="#8E7CF0">
+                        <rect x="0" y="0" width="4" height="4"/>
+                        <rect x="8" y="8" width="4" height="4"/>
+                        </g>
+                        </pattern>
+                        <pattern id="va-con-d2" width="16" height="16" patternUnits="userSpaceOnUse">
+                        <g fill="#8E7CF0">
+                        <rect x="0" y="0" width="4" height="4"/>
+                        <rect x="8" y="0" width="4" height="4"/>
+                        <rect x="0" y="8" width="4" height="4"/>
+                        <rect x="8" y="8" width="4" height="4"/>
+                        </g>
+                        </pattern>
+                        <pattern id="va-con-d3" width="16" height="16" patternUnits="userSpaceOnUse">
+                        <g fill="#8E7CF0">
+                        <rect x="0" y="0" width="4" height="4"/>
+                        <rect x="8" y="0" width="4" height="4"/>
+                        <rect x="4" y="4" width="4" height="4"/>
+                        <rect x="12" y="4" width="4" height="4"/>
+                        <rect x="0" y="8" width="4" height="4"/>
+                        <rect x="8" y="8" width="4" height="4"/>
+                        <rect x="4" y="12" width="4" height="4"/>
+                        <rect x="12" y="12" width="4" height="4"/>
+                        </g>
+                        </pattern>
+                        <g id="va-cam" class="va-cam" stroke-linejoin="round" stroke-linecap="round">
+                        <path class="va-cam-base" d="M47.1 -96.6 L32.1 -102.3 L15.8 -106.7 L-1.5 -109.7 L-19.4 -111.4 L-37.5 -111.6 L-55.5 -110.3 L-73 -107.7 L-89.6 -103.7 L-105 -98.4 L-119 -91.9 L-131.1 -84.4 L-141.2 -76 L-149.1 -66.8 L-154.5 -57.2 L-157.5 -47.2 L-157.9 -37.1 L-155.6 -27 L-150.9 -17.2 L-143.7 -7.9 L-134.2 0.7 L-122.7 8.5 L-109.2 15.3 L-94.2 20.9 L-77.9 25.3 L-60.6 28.4 L-42.7 30 L-24.6 30.2 L-6.6 29 L10.8 26.4 L27.5 22.3 L42.9 17 L56.8 10.6 L69 3 L79.1 -5.4 L87 -14.5 L92.4 -24.1 L95.4 -34.1 L95.7 -44.3 L93.5 -54.3 L88.8 -64.1 L81.6 -73.4 L72.1 -82 L60.5 -89.8 Z" fill="#DAE6F7"/>
+                        <path class="va-cam-base-gap" d="M40.3 -91.7 L26.6 -96.9 L11.7 -100.9 L-4.1 -103.7 L-20.4 -105.2 L-36.9 -105.4 L-53.4 -104.3 L-69.3 -101.8 L-84.5 -98.2 L-98.6 -93.3 L-111.3 -87.4 L-122.4 -80.6 L-131.6 -72.9 L-138.8 -64.6 L-143.8 -55.7 L-146.5 -46.6 L-146.8 -37.4 L-144.8 -28.2 L-140.5 -19.3 L-133.9 -10.8 L-125.3 -2.9 L-114.7 4.2 L-102.4 10.4 L-88.7 15.6 L-73.8 19.6 L-58 22.4 L-41.7 23.9 L-25.2 24.1 L-8.8 23 L7.2 20.5 L22.4 16.9 L36.5 12 L49.2 6.1 L60.3 -0.8 L69.5 -8.4 L76.7 -16.8 L81.7 -25.6 L84.4 -34.7 L84.7 -43.9 L82.7 -53.1 L78.4 -62.1 L71.8 -70.5 L63.2 -78.4 L52.6 -85.5 Z" fill="#07080C"/>
+                        <path class="va-cam-base-in" d="M32.7 -86.3 L20.4 -90.9 L7.1 -94.5 L-7 -96.9 L-21.5 -98.3 L-36.3 -98.5 L-51 -97.5 L-65.2 -95.3 L-78.8 -92 L-91.4 -87.7 L-102.7 -82.4 L-112.6 -76.3 L-120.9 -69.4 L-127.3 -62 L-131.7 -54.1 L-134.1 -46 L-134.4 -37.7 L-132.6 -29.5 L-128.8 -21.6 L-122.9 -14 L-115.2 -6.9 L-105.7 -0.6 L-94.8 4.9 L-82.5 9.6 L-69.2 13.1 L-55.1 15.6 L-40.6 17 L-25.8 17.1 L-11.1 16.1 L3.1 14 L16.7 10.7 L29.2 6.4 L40.6 1.1 L50.5 -5 L58.7 -11.9 L65.1 -19.3 L69.6 -27.2 L72 -35.3 L72.3 -43.6 L70.5 -51.8 L66.6 -59.8 L60.8 -67.3 L53.1 -74.4 L43.6 -80.7 Z" fill="#DAE6F7"/>
+                        <path class="va-cam-base-gap" d="M26.7 -82 L15.6 -86.2 L3.5 -89.4 L-9.2 -91.7 L-22.4 -92.9 L-35.8 -93.1 L-49.1 -92.2 L-62 -90.2 L-74.3 -87.2 L-85.7 -83.3 L-96 -78.5 L-105 -73 L-112.5 -66.8 L-118.3 -60 L-122.3 -52.9 L-124.5 -45.5 L-124.8 -38 L-123.1 -30.6 L-119.6 -23.3 L-114.3 -16.5 L-107.3 -10.1 L-98.8 -4.3 L-88.8 0.7 L-77.7 4.9 L-65.7 8.1 L-52.9 10.4 L-39.7 11.6 L-26.3 11.7 L-13 10.8 L-0.1 8.9 L12.2 5.9 L23.6 2 L33.9 -2.8 L42.9 -8.4 L50.4 -14.6 L56.2 -21.3 L60.2 -28.5 L62.4 -35.8 L62.7 -43.3 L61 -50.8 L57.5 -58 L52.2 -64.9 L45.2 -71.2 L36.7 -77 Z" fill="#07080C"/>
+                        <path class="va-cam-face va-cam-x0" d="M-96.6 -55.5 L-12.1 -18.6 L-12.1 -106.5 L-96.6 -143.4 Z" fill="#DAE6F7" stroke="#DAE6F7" stroke-width="16.7" stroke-linejoin="round"/>
+                        <path class="va-cam-face va-cam-y0" d="M12.1 -23.6 L72.8 -67.1 L72.8 -151.6 L12.1 -108.2 Z" fill="#DAE6F7" stroke="#DAE6F7" stroke-width="16.7" stroke-linejoin="round"/>
+                        <path class="va-cam-face va-cam-top" d="M-1.5 -128.3 L60.5 -172.6 L-22.3 -208.8 L-84.3 -164.5 Z" fill="#DAE6F7" stroke="#DAE6F7" stroke-width="16.7" stroke-linejoin="round"/>
+                        <path class="va-cam-screen" d="M-3.5 -133.5 L51 -172.5 L-20.3 -203.7 L-74.8 -164.6 Z" fill="#07080C" stroke="#07080C" stroke-width="10.6" stroke-linejoin="round"/>
+                        <path class="va-cam-barrel" d="M-104.5 -65 L-104.2 -69.9 L-103.1 -74.4 L-101.5 -78.4 L-99.2 -81.8 L-96.3 -84.6 L-92.9 -86.7 L-68.2 -100.2 L-64.6 -101.4 L-60.7 -102 L-56.6 -101.8 L-52.3 -100.9 L-47.9 -99.3 L-43.4 -97 L-39.1 -94.2 L-35 -90.7 L-31.1 -86.8 L-27.5 -82.5 L-24.4 -77.8 L-21.8 -72.9 L-19.6 -67.9 L-18.1 -62.9 L-17.1 -57.9 L-16.8 -53.1 L-17.1 -48.6 L-18.1 -44.5 L-19.6 -40.8 L-21.8 -37.6 L-24.4 -35.1 L-45.3 -15.9 L-48.7 -13.8 L-52.6 -12.4 L-56.8 -11.9 L-61.3 -12.1 L-66 -13.1 L-70.8 -14.8 L-75.6 -17.2 L-80.3 -20.4 L-84.8 -24.1 L-89 -28.4 L-92.9 -33.1 L-96.3 -38.1 L-99.2 -43.5 L-101.5 -48.9 L-103.1 -54.4 L-104.2 -59.8 Z" fill="#DAE6F7" stroke="#07080C" stroke-width="7.6"/>
+                        <path class="va-cam-lens" d="M-104.5 -65 L-104.2 -69.9 L-103.1 -74.4 L-101.5 -78.4 L-99.1 -81.8 L-96.3 -84.6 L-92.9 -86.7 L-89 -88 L-84.8 -88.6 L-80.3 -88.4 L-75.6 -87.4 L-70.8 -85.7 L-66 -83.3 L-61.3 -80.1 L-56.8 -76.4 L-52.6 -72.1 L-48.7 -67.4 L-45.3 -62.3 L-42.4 -57 L-40.1 -51.6 L-38.4 -46.1 L-37.4 -40.7 L-37.1 -35.5 L-37.4 -30.6 L-38.4 -26.1 L-40.1 -22.1 L-42.4 -18.7 L-45.3 -15.9 L-48.7 -13.8 L-52.6 -12.4 L-56.8 -11.9 L-61.3 -12.1 L-66 -13 L-70.8 -14.8 L-75.6 -17.2 L-80.3 -20.4 L-84.8 -24.1 L-89 -28.4 L-92.9 -33.1 L-96.3 -38.2 L-99.1 -43.5 L-101.5 -48.9 L-103.1 -54.4 L-104.2 -59.8 Z" fill="#DAE6F7" stroke="#07080C" stroke-width="7.6"/>
+                        <path class="va-cam-lens-gap" d="M-95.7 -61.1 L-95.5 -64.8 L-94.7 -68.1 L-93.5 -71.1 L-91.8 -73.6 L-89.6 -75.7 L-87.1 -77.2 L-84.3 -78.2 L-81.2 -78.6 L-77.8 -78.5 L-74.3 -77.8 L-70.8 -76.5 L-67.2 -74.7 L-63.8 -72.4 L-60.4 -69.6 L-57.3 -66.4 L-54.5 -62.9 L-51.9 -59.2 L-49.8 -55.3 L-48.1 -51.2 L-46.9 -47.2 L-46.1 -43.2 L-45.8 -39.3 L-46.1 -35.7 L-46.9 -32.4 L-48.1 -29.4 L-49.8 -26.9 L-51.9 -24.8 L-54.5 -23.3 L-57.3 -22.3 L-60.4 -21.8 L-63.8 -22 L-67.2 -22.7 L-70.8 -24 L-74.3 -25.8 L-77.8 -28.1 L-81.2 -30.9 L-84.3 -34.1 L-87.1 -37.6 L-89.6 -41.3 L-91.8 -45.2 L-93.5 -49.3 L-94.7 -53.3 L-95.5 -57.3 Z" fill="#07080C"/>
+                        <path class="va-cam-lens-ring" d="M-91 -59.1 L-90.8 -62 L-90.2 -64.7 L-89.2 -67.1 L-87.8 -69.2 L-86.1 -70.9 L-84 -72.1 L-81.7 -72.9 L-79.2 -73.3 L-76.5 -73.2 L-73.7 -72.6 L-70.8 -71.5 L-67.9 -70.1 L-65.1 -68.2 L-62.4 -65.9 L-59.9 -63.4 L-57.5 -60.5 L-55.5 -57.5 L-53.8 -54.3 L-52.4 -51.1 L-51.4 -47.8 L-50.8 -44.5 L-50.6 -41.4 L-50.8 -38.5 L-51.4 -35.8 L-52.4 -33.4 L-53.8 -31.3 L-55.5 -29.6 L-57.5 -28.4 L-59.9 -27.6 L-62.4 -27.2 L-65.1 -27.3 L-67.9 -27.9 L-70.8 -29 L-73.7 -30.4 L-76.5 -32.3 L-79.2 -34.6 L-81.7 -37.1 L-84 -40 L-86.1 -43 L-87.8 -46.2 L-89.2 -49.4 L-90.2 -52.7 L-90.8 -56 Z" fill="#DAE6F7"/>
+                        <path class="va-cam-lens-glass" d="M-86 -56.9 L-85.8 -59.1 L-85.3 -61.1 L-84.6 -62.9 L-83.5 -64.5 L-82.3 -65.7 L-80.7 -66.7 L-79 -67.3 L-77.1 -67.5 L-75.1 -67.4 L-72.9 -67 L-70.8 -66.2 L-68.6 -65.1 L-66.5 -63.7 L-64.5 -62 L-62.6 -60.1 L-60.9 -58 L-59.3 -55.7 L-58 -53.3 L-57 -50.8 L-56.2 -48.4 L-55.8 -46 L-55.6 -43.6 L-55.8 -41.4 L-56.2 -39.4 L-57 -37.6 L-58 -36 L-59.3 -34.8 L-60.9 -33.8 L-62.6 -33.2 L-64.5 -33 L-66.5 -33.1 L-68.6 -33.5 L-70.8 -34.3 L-72.9 -35.4 L-75.1 -36.8 L-77.1 -38.5 L-79 -40.4 L-80.7 -42.5 L-82.3 -44.8 L-83.5 -47.2 L-84.6 -49.6 L-85.3 -52.1 L-85.8 -54.5 Z" fill="#07080C"/>
+                        </g>
+                        </defs>
+                        <g class="va-glow va-glow--pro">
+                        <ellipse cx="383" cy="357" rx="230" ry="50" fill="url(#va-pro-d1)"/>
+                        <ellipse cx="383" cy="357" rx="161" ry="35" fill="url(#va-pro-d2)"/>
+                        <ellipse cx="383" cy="357" rx="97" ry="21" fill="url(#va-pro-d3)"/>
+                        </g>
+                        <g class="va-glow va-glow--con">
+                        <ellipse cx="817" cy="357" rx="230" ry="50" fill="url(#va-con-d1)"/>
+                        <ellipse cx="817" cy="357" rx="161" ry="35" fill="url(#va-con-d2)"/>
+                        <ellipse cx="817" cy="357" rx="97" ry="21" fill="url(#va-con-d3)"/>
+                        </g>
+                        <g transform="translate(352 392) scale(-1 1)">
+                        <g class="va-bob va-bob--pro">
+                        <use href="#va-cam"/>
+                        <path class="va-px va-px--pro" d="M-4 -132.4 L0.2 -135.4 L-5.1 -137.8 L-9.3 -134.8 Z M6.6 -139.9 L10.8 -142.9 L5.4 -145.3 L1.2 -142.3 Z M17.1 -147.4 L21.3 -150.5 L15.9 -152.8 L11.7 -149.8 Z M27.6 -155 L31.8 -158 L26.4 -160.3 L22.2 -157.3 Z M38.1 -162.5 L42.3 -165.5 L36.9 -167.8 L32.7 -164.8 Z M48.6 -170 L52.8 -173 L47.4 -175.4 L43.2 -172.3 Z M-17.4 -138.3 L-13.2 -141.3 L-18.6 -143.6 L-22.8 -140.6 Z M3.6 -153.3 L7.8 -156.3 L2.4 -158.7 L-1.8 -155.7 Z M8.9 -157.1 L13.1 -160.1 L7.7 -162.4 L3.5 -159.4 Z M14.1 -160.8 L18.3 -163.8 L12.9 -166.2 L8.7 -163.2 Z M35.1 -175.9 L39.3 -178.9 L33.9 -181.2 L29.7 -178.2 Z M-3.1 -156.3 L1.1 -159.3 L-4.3 -161.6 L-8.5 -158.6 Z M2.1 -160 L6.3 -163 L1 -165.4 L-3.2 -162.4 Z M7.4 -163.8 L11.6 -166.8 L6.2 -169.1 L2 -166.1 Z M-30.8 -144.2 L-26.6 -147.2 L-32 -149.5 L-36.2 -146.5 Z M-20.3 -151.7 L-16.1 -154.7 L-21.5 -157 L-25.7 -154 Z M-15.1 -155.4 L-10.9 -158.4 L-16.3 -160.8 L-20.5 -157.8 Z M-9.8 -159.2 L-5.6 -162.2 L-11 -164.5 L-15.2 -161.5 Z M-4.6 -163 L-0.4 -166 L-5.8 -168.3 L-10 -165.3 Z M0.7 -166.7 L4.9 -169.7 L-0.5 -172.1 L-4.7 -169.1 Z M5.9 -170.5 L10.1 -173.5 L4.7 -175.8 L0.5 -172.8 Z M11.2 -174.2 L15.4 -177.2 L10 -179.6 L5.8 -176.6 Z M21.7 -181.7 L25.9 -184.8 L20.5 -187.1 L16.3 -184.1 Z M-27.1 -154.6 L-22.9 -157.6 L-28.2 -160 L-32.4 -157 Z M-21.8 -158.4 L-17.6 -161.4 L-23 -163.7 L-27.2 -160.7 Z M-16.6 -162.1 L-12.4 -165.1 L-17.7 -167.5 L-21.9 -164.5 Z M-11.3 -165.9 L-7.1 -168.9 L-12.5 -171.2 L-16.7 -168.2 Z M-6.1 -169.6 L-1.9 -172.7 L-7.2 -175 L-11.4 -172 Z M-0.8 -173.4 L3.4 -176.4 L-2 -178.8 L-6.2 -175.8 Z M4.5 -177.2 L8.7 -180.2 L3.3 -182.5 L-0.9 -179.5 Z M-44.3 -150 L-40.1 -153 L-45.5 -155.4 L-49.7 -152.4 Z M-33.8 -157.5 L-29.6 -160.6 L-35 -162.9 L-39.2 -159.9 Z M-28.5 -161.3 L-24.3 -164.3 L-29.7 -166.7 L-33.9 -163.7 Z M-23.3 -165.1 L-19.1 -168.1 L-24.5 -170.4 L-28.7 -167.4 Z M-18 -168.8 L-13.8 -171.8 L-19.2 -174.2 L-23.4 -171.2 Z M-12.8 -172.6 L-8.6 -175.6 L-14 -177.9 L-18.2 -174.9 Z M-7.5 -176.3 L-3.3 -179.4 L-8.7 -181.7 L-12.9 -178.7 Z M-2.3 -180.1 L1.9 -183.1 L-3.4 -185.5 L-7.6 -182.5 Z M8.2 -187.6 L12.4 -190.6 L7.1 -193 L2.9 -190 Z M-30 -168 L-25.8 -171 L-31.2 -173.4 L-35.4 -170.4 Z M-24.7 -171.8 L-20.5 -174.8 L-25.9 -177.1 L-30.1 -174.1 Z M-19.5 -175.5 L-15.3 -178.5 L-20.7 -180.9 L-24.9 -177.9 Z M-57.7 -155.9 L-53.5 -158.9 L-58.9 -161.3 L-63.1 -158.3 Z M-36.7 -170.9 L-32.5 -173.9 L-37.9 -176.3 L-42.1 -173.3 Z M-31.5 -174.7 L-27.3 -177.7 L-32.6 -180.1 L-36.8 -177 Z M-26.2 -178.5 L-22 -181.5 L-27.4 -183.8 L-31.6 -180.8 Z M-5.2 -193.5 L-1 -196.5 L-6.4 -198.9 L-10.6 -195.8 Z M-71.2 -161.8 L-67 -164.8 L-72.4 -167.1 L-76.6 -164.1 Z M-60.7 -169.3 L-56.5 -172.3 L-61.8 -174.7 L-66.1 -171.6 Z M-50.2 -176.8 L-46 -179.8 L-51.3 -182.2 L-55.5 -179.2 Z M-39.7 -184.3 L-35.5 -187.3 L-40.8 -189.7 L-45 -186.7 Z M-29.2 -191.9 L-25 -194.9 L-30.3 -197.2 L-34.5 -194.2 Z M-18.7 -199.4 L-14.5 -202.4 L-19.8 -204.7 L-24 -201.7 Z"/>
+                        </g>
+                        </g>
+                        <g transform="translate(848 392)">
+                        <g class="va-bob va-bob--con">
+                        <use href="#va-cam"/>
+                        <path class="va-px va-px--con" d="M-4 -132.4 L0.2 -135.4 L-5.1 -137.8 L-9.3 -134.8 Z M6.6 -139.9 L10.8 -142.9 L5.4 -145.3 L1.2 -142.3 Z M17.1 -147.4 L21.3 -150.5 L15.9 -152.8 L11.7 -149.8 Z M27.6 -155 L31.8 -158 L26.4 -160.3 L22.2 -157.3 Z M38.1 -162.5 L42.3 -165.5 L36.9 -167.8 L32.7 -164.8 Z M48.6 -170 L52.8 -173 L47.4 -175.4 L43.2 -172.3 Z M-17.4 -138.3 L-13.2 -141.3 L-18.6 -143.6 L-22.8 -140.6 Z M35.1 -175.9 L39.3 -178.9 L33.9 -181.2 L29.7 -178.2 Z M-30.8 -144.2 L-26.6 -147.2 L-32 -149.5 L-36.2 -146.5 Z M-20.3 -151.7 L-16.1 -154.7 L-21.5 -157 L-25.7 -154 Z M-15.1 -155.4 L-10.9 -158.4 L-16.3 -160.8 L-20.5 -157.8 Z M-9.8 -159.2 L-5.6 -162.2 L-11 -164.5 L-15.2 -161.5 Z M-4.6 -163 L-0.4 -166 L-5.8 -168.3 L-10 -165.3 Z M0.7 -166.7 L4.9 -169.7 L-0.5 -172.1 L-4.7 -169.1 Z M5.9 -170.5 L10.1 -173.5 L4.7 -175.8 L0.5 -172.8 Z M11.2 -174.2 L15.4 -177.2 L10 -179.6 L5.8 -176.6 Z M21.7 -181.7 L25.9 -184.8 L20.5 -187.1 L16.3 -184.1 Z M-27.1 -154.6 L-22.9 -157.6 L-28.2 -160 L-32.4 -157 Z M-21.8 -158.4 L-17.6 -161.4 L-23 -163.7 L-27.2 -160.7 Z M-16.6 -162.1 L-12.4 -165.1 L-17.7 -167.5 L-21.9 -164.5 Z M-11.3 -165.9 L-7.1 -168.9 L-12.5 -171.2 L-16.7 -168.2 Z M-6.1 -169.6 L-1.9 -172.7 L-7.2 -175 L-11.4 -172 Z M-0.8 -173.4 L3.4 -176.4 L-2 -178.8 L-6.2 -175.8 Z M4.5 -177.2 L8.7 -180.2 L3.3 -182.5 L-0.9 -179.5 Z M-44.3 -150 L-40.1 -153 L-45.5 -155.4 L-49.7 -152.4 Z M-33.8 -157.5 L-29.6 -160.6 L-35 -162.9 L-39.2 -159.9 Z M-28.5 -161.3 L-24.3 -164.3 L-29.7 -166.7 L-33.9 -163.7 Z M-23.3 -165.1 L-19.1 -168.1 L-24.5 -170.4 L-28.7 -167.4 Z M-18 -168.8 L-13.8 -171.8 L-19.2 -174.2 L-23.4 -171.2 Z M-12.8 -172.6 L-8.6 -175.6 L-14 -177.9 L-18.2 -174.9 Z M-7.5 -176.3 L-3.3 -179.4 L-8.7 -181.7 L-12.9 -178.7 Z M-2.3 -180.1 L1.9 -183.1 L-3.4 -185.5 L-7.6 -182.5 Z M8.2 -187.6 L12.4 -190.6 L7.1 -193 L2.9 -190 Z M-57.7 -155.9 L-53.5 -158.9 L-58.9 -161.3 L-63.1 -158.3 Z M-5.2 -193.5 L-1 -196.5 L-6.4 -198.9 L-10.6 -195.8 Z M-71.2 -161.8 L-67 -164.8 L-72.4 -167.1 L-76.6 -164.1 Z M-60.7 -169.3 L-56.5 -172.3 L-61.8 -174.7 L-66.1 -171.6 Z M-50.2 -176.8 L-46 -179.8 L-51.3 -182.2 L-55.5 -179.2 Z M-39.7 -184.3 L-35.5 -187.3 L-40.8 -189.7 L-45 -186.7 Z M-29.2 -191.9 L-25 -194.9 L-30.3 -197.2 L-34.5 -194.2 Z M-18.7 -199.4 L-14.5 -202.4 L-19.8 -204.7 L-24 -201.7 Z"/>
+                        </g>
+                        </g>
+                        <g class="va-arcs">
+                        <g class="va-arc va-arc--a">
+                        <path class="va-arc-pro" d="M516 328h4v4h-4zM508 332h24v4h-24zM500 336h16v4h-16zM520 336h20v4h-20zM448 340h60v4h-60zM532 340h12v4h-12zM448 344h52v4h-52zM540 344h16v4h-16zM544 348h20v4h-20zM568 348h4v4h-4zM548 352h24v4h-24zM556 356h12v4h-12zM560 360h4v4h-4zM556 364h12v4h-12zM556 368h4v4h-4zM564 368h4v4h-4zM552 372h8v4h-8zM564 372h4v4h-4zM548 376h8v4h-8zM544 380h8v4h-8zM544 384h8v4h-8z"/>
+                        <path class="va-arc-con" d="M724 312h4v4h-4zM720 316h8v4h-8zM716 320h8v4h-8zM716 324h4v4h-4zM716 328h4v4h-4zM732 328h4v4h-4zM712 332h8v4h-8zM728 332h12v4h-12zM708 336h24v4h-24zM736 336h4v4h-4zM704 340h24v4h-24zM736 340h20v4h-20zM700 344h8v4h-8zM740 344h16v4h-16zM696 348h8v4h-8zM652 352h8v4h-8zM688 352h12v4h-12zM644 356h52v4h-52zM632 360h20v4h-20zM660 360h28v4h-28zM632 364h16v4h-16zM632 368h8v4h-8zM632 372h4v4h-4z"/>
+                        <path class="va-arc-hot" d="M596 332h8v4h-8zM580 336h28v4h-28zM576 340h20v4h-20zM604 340h4v4h-4zM576 344h4v4h-4zM604 344h8v4h-8zM572 348h8v4h-8zM608 348h4v4h-4zM572 352h4v4h-4zM608 352h12v4h-12zM612 356h20v4h-20zM620 360h12v4h-12zM628 372h4v4h-4zM624 376h8v4h-8zM624 380h4v4h-4z"/>
+                        </g>
+                        <g class="va-arc va-arc--b">
+                        <path class="va-arc-pro" d="M448 340h8v4h-8zM448 344h16v4h-16zM456 348h12v4h-12zM464 352h8v4h-8zM468 356h8v4h-8zM532 356h12v4h-12zM472 360h8v4h-8zM532 360h12v4h-12zM476 364h8v4h-8zM524 364h12v4h-12zM568 364h4v4h-4zM480 368h4v4h-4zM520 368h12v4h-12zM548 368h12v4h-12zM568 368h4v4h-4zM480 372h8v4h-8zM520 372h4v4h-4zM532 372h40v4h-40zM484 376h4v4h-4zM512 376h36v4h-36zM560 376h8v4h-8zM484 380h48v4h-48zM488 384h28v4h-28zM512 388h4v4h-4zM512 392h4v4h-4zM512 396h4v4h-4zM512 400h4v4h-4z"/>
+                        <path class="va-arc-con" d="M644 320h4v4h-4zM676 320h4v4h-4zM644 324h4v4h-4zM672 324h12v4h-12zM720 324h4v4h-4zM644 328h8v4h-8zM668 328h8v4h-8zM680 328h4v4h-4zM716 328h8v4h-8zM648 332h4v4h-4zM664 332h8v4h-8zM680 332h8v4h-8zM716 332h4v4h-4zM648 336h8v4h-8zM660 336h8v4h-8zM684 336h8v4h-8zM708 336h12v4h-12zM732 336h4v4h-4zM652 340h12v4h-12zM688 340h8v4h-8zM704 340h12v4h-12zM728 340h12v4h-12zM748 340h8v4h-8zM652 344h8v4h-8zM692 344h16v4h-16zM724 344h8v4h-8zM736 344h20v4h-20zM632 348h24v4h-24zM696 348h12v4h-12zM716 348h12v4h-12zM740 348h8v4h-8zM632 352h20v4h-20zM700 352h24v4h-24zM708 356h8v4h-8z"/>
+                        <path class="va-arc-hot" d="M600 332h4v4h-4zM596 336h12v4h-12zM596 340h4v4h-4zM604 340h4v4h-4zM592 344h8v4h-8zM604 344h12v4h-12zM584 348h12v4h-12zM608 348h24v4h-24zM576 352h16v4h-16zM616 352h16v4h-16zM572 356h12v4h-12zM572 360h4v4h-4zM572 364h4v4h-4z"/>
+                        </g>
+                        <g class="va-arc va-arc--c">
+                        <path class="va-arc-pro" d="M448 340h4v4h-4zM448 344h12v4h-12zM568 344h4v4h-4zM452 348h12v4h-12zM524 348h16v4h-16zM568 348h4v4h-4zM460 352h8v4h-8zM520 352h24v4h-24zM560 352h12v4h-12zM464 356h4v4h-4zM488 356h4v4h-4zM500 356h24v4h-24zM540 356h4v4h-4zM548 356h20v4h-20zM464 360h8v4h-8zM480 360h40v4h-40zM540 360h28v4h-28zM468 364h20v4h-20zM492 364h8v4h-8zM544 364h4v4h-4zM560 364h4v4h-4zM472 368h8v4h-8zM556 368h8v4h-8zM556 372h4v4h-4zM552 376h8v4h-8zM552 380h4v4h-4zM548 384h8v4h-8zM548 388h4v4h-4z"/>
+                        <path class="va-arc-con" d="M664 296h4v4h-4zM664 300h4v4h-4zM664 304h4v4h-4zM660 308h8v4h-8zM676 308h16v4h-16zM660 312h4v4h-4zM668 312h32v4h-32zM652 316h24v4h-24zM692 316h24v4h-24zM648 320h20v4h-20zM700 320h20v4h-20zM640 324h12v4h-12zM700 324h4v4h-4zM716 324h8v4h-8zM632 328h16v4h-16zM700 328h8v4h-8zM720 328h16v4h-16zM632 332h8v4h-8zM704 332h4v4h-4zM724 332h16v4h-16zM704 336h4v4h-4zM736 336h4v4h-4zM704 340h16v4h-16zM736 340h20v4h-20zM708 344h12v4h-12zM740 344h16v4h-16z"/>
+                        <path class="va-arc-hot" d="M596 308h4v4h-4zM588 312h12v4h-12zM584 316h12v4h-12zM584 320h4v4h-4zM580 324h8v4h-8zM616 324h16v4h-16zM580 328h4v4h-4zM604 328h28v4h-28zM576 332h40v4h-40zM576 336h28v4h-28zM572 340h8v4h-8zM572 344h4v4h-4z"/>
+                        </g>
+                        </g>
+                        <g class="va-spark" fill="#DAE6F7">
+                        <rect x="558" y="330" width="4" height="4"/>
+                        <rect x="566" y="330" width="4" height="4"/>
+                        <rect x="574" y="306" width="4" height="4"/>
+                        <rect x="574" y="330" width="4" height="4"/>
+                        <rect x="574" y="354" width="4" height="4"/>
+                        <rect x="582" y="314" width="4" height="4"/>
+                        <rect x="582" y="330" width="4" height="4"/>
+                        <rect x="582" y="346" width="4" height="4"/>
+                        <rect x="586" y="330" width="4" height="4"/>
+                        <rect x="590" y="322" width="4" height="4"/>
+                        <rect x="590" y="326" width="4" height="4"/>
+                        <rect x="590" y="330" width="4" height="4"/>
+                        <rect x="590" y="334" width="4" height="4"/>
+                        <rect x="590" y="338" width="4" height="4"/>
+                        <rect x="594" y="322" width="4" height="4"/>
+                        <rect x="594" y="326" width="4" height="4"/>
+                        <rect x="594" y="330" width="4" height="4"/>
+                        <rect x="594" y="334" width="4" height="4"/>
+                        <rect x="594" y="338" width="4" height="4"/>
+                        <rect x="598" y="298" width="4" height="4"/>
+                        <rect x="598" y="306" width="4" height="4"/>
+                        <rect x="598" y="314" width="4" height="4"/>
+                        <rect x="598" y="318" width="4" height="4"/>
+                        <rect x="598" y="322" width="4" height="4"/>
+                        <rect x="598" y="326" width="4" height="4"/>
+                        <rect x="598" y="330" width="4" height="4"/>
+                        <rect x="598" y="334" width="4" height="4"/>
+                        <rect x="598" y="338" width="4" height="4"/>
+                        <rect x="598" y="342" width="4" height="4"/>
+                        <rect x="598" y="346" width="4" height="4"/>
+                        <rect x="598" y="354" width="4" height="4"/>
+                        <rect x="598" y="362" width="4" height="4"/>
+                        <rect x="602" y="322" width="4" height="4"/>
+                        <rect x="602" y="326" width="4" height="4"/>
+                        <rect x="602" y="330" width="4" height="4"/>
+                        <rect x="602" y="334" width="4" height="4"/>
+                        <rect x="602" y="338" width="4" height="4"/>
+                        <rect x="606" y="322" width="4" height="4"/>
+                        <rect x="606" y="326" width="4" height="4"/>
+                        <rect x="606" y="330" width="4" height="4"/>
+                        <rect x="606" y="334" width="4" height="4"/>
+                        <rect x="606" y="338" width="4" height="4"/>
+                        <rect x="610" y="330" width="4" height="4"/>
+                        <rect x="614" y="314" width="4" height="4"/>
+                        <rect x="614" y="330" width="4" height="4"/>
+                        <rect x="614" y="346" width="4" height="4"/>
+                        <rect x="622" y="306" width="4" height="4"/>
+                        <rect x="622" y="330" width="4" height="4"/>
+                        <rect x="622" y="354" width="4" height="4"/>
+                        <rect x="630" y="330" width="4" height="4"/>
+                        <rect x="638" y="330" width="4" height="4"/>
+                        </g>
+                        <text class="va-vs" x="600" y="268" text-anchor="middle">VS</text>
+                        </svg>
                     </div>
 
-                    <div class="arena-cta">
-                        <button class="vote-btn vote-btn--for">[ CAST VOTE // AFFIRMATIVE ]</button>
-                        <button class="vote-btn vote-btn--against">[ CAST VOTE // NEGATIVE ]</button>
+                    <div class="va-motion">
+                        <span class="va-motion__tag">[ MOTION // DEBATE ]</span>
+                        <p>“Decentralized governance is the only viable path for global consensus.”</p>
+                    </div>
+
+                    <div class="va-vote">
+                        <button class="va-btn va-btn--pro" type="button"><i aria-hidden="true">◀</i>CAST VOTE // AFFIRMATIVE</button>
+                        <button class="va-btn va-btn--con" type="button">CAST VOTE // NEGATIVE<i aria-hidden="true">▶</i></button>
                     </div>
                 </div>
             </div>
         </section>
-
         <!-- ORVELIS AI CORE SECTION -->
         <section class="section section--ai" id="ai-core" data-inview>
+            <!-- the dithered wave behind the slide: pixel-field.js draws it,
+                 the CSS navy fill stands in when there is no WebGL -->
+            <div class="px-field" aria-hidden="true">
+                <canvas class="px-field__canvas"></canvas>
+            </div>
+
             <div class="section__container">
                 <div class="ai-core-layout">
                     <div class="ai-showcase__visual">
-                        <div class="orvelis-canvas-container" id="canvas-3d-orvelis"></div>
-
-                        <div class="orvelis-card-container aic-card">
-                            <div class="orvelis-card-glare"></div>
-                            <span class="aic-corner aic-corner--tl" aria-hidden="true"></span>
-                            <span class="aic-corner aic-corner--tr" aria-hidden="true"></span>
-                            <span class="aic-corner aic-corner--bl" aria-hidden="true"></span>
-                            <span class="aic-corner aic-corner--br" aria-hidden="true"></span>
-                            <span class="aic-scan" aria-hidden="true"></span>
-
+                        <div class="aic-card">
                             <div class="aic-strip">
                                 <span class="aic-strip-ticks" aria-hidden="true"></span>
                                 <span class="aic-strip-id">ORV / 3.0.1 / ARENA-LINK</span>
                             </div>
 
-                            <div class="orvelis-header aic-head">
+                            <div class="aic-head">
                                 <span class="aic-avatar" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                                        <rect x="3.2" y="10.5" width="17.6" height="10" rx="3" />
-                                        <path d="M12 2.4v3.2M9 5.6h6" stroke-linecap="round" />
-                                        <rect x="7.4" y="14" width="3" height="3.4" rx="1.5" fill="currentColor" stroke="none" />
-                                        <rect x="13.6" y="14" width="3" height="3.4" rx="1.5" fill="currentColor" stroke="none" />
-                                        <path d="M1.6 13.4v4.2M22.4 13.4v4.2" stroke-linecap="round" />
-                                    </svg>
+                                    <svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v2h-2zM2 2h8v1h-8zM1 3h2v1h-2zM9 3h2v1h-2zM1 4h1v1h-1zM10 4h1v1h-1zM0 5h2v2h-2zM3 5h2v2h-2zM7 5h2v2h-2zM10 5h2v2h-2zM1 7h1v2h-1zM10 7h1v2h-1zM4 8h4v1h-4zM1 9h2v1h-2zM9 9h2v1h-2zM2 10h8v1h-8z"/></svg>
                                 </span>
                                 <span class="aic-head-text">
                                     <b>ORVELIS</b>
@@ -1848,20 +1694,18 @@
 
                             <div class="aic-now">
                                 <span class="aic-now-thumb" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none">
-                                        <path d="M9.5 7.5 17 12l-7.5 4.5z" fill="currentColor" />
-                                    </svg>
+                                    <svg viewBox="0 0 5 7" shape-rendering="crispEdges"><path fill="currentColor" d="M0 0h1v7h-1zM1 1h1v5h-1zM2 2h1v3h-1zM3 3h1v1h-1z"/></svg>
                                 </span>
                                 <span class="aic-now-body">
                                     <b>NOW SCANNING</b>
                                     <i>@pro_logic_22 &mdash; 04:12 on camera</i>
                                 </span>
                                 <span class="aic-now-wave" aria-hidden="true">
-                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                                 </span>
                             </div>
 
-                            <div class="orvelis-subcard aic-block">
+                            <div class="aic-block">
                                 <div class="aic-block-head">
                                     <span class="aic-tag">DAILY INSIGHT</span>
                                     <span class="aic-block-id">01</span>
@@ -1870,7 +1714,7 @@
                                     <span class="aic-score-num">92</span>
                                     <span class="aic-score-unit">LQI</span>
                                     <span class="aic-score-delta">
-                                        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.2 10.4 9H1.6z" fill="currentColor"/></svg>
+                                        <svg viewBox="0 0 5 3" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 0h1v1h-1zM1 1h3v1h-3zM0 2h5v1h-5z"/></svg>
                                         15%
                                     </span>
                                 </div>
@@ -1882,7 +1726,7 @@
                                 <p class="aic-copy">Your logical pathways are primed for high-complexity analysis today. Ready for debate.</p>
                             </div>
 
-                            <div class="orvelis-subcard aic-block">
+                            <div class="aic-block">
                                 <div class="aic-block-head">
                                     <span class="aic-tag">TRUTH ANALYSIS</span>
                                     <span class="aic-block-id">02</span>
@@ -1903,16 +1747,25 @@
                                 <span class="aic-foot-item"><b>96</b><i>% CONFIDENCE</i></span>
                             </div>
                         </div>
+
+                        <p class="aic-formula">
+                            <span>1 clip</span>
+                            <svg viewBox="0 0 9 6" shape-rendering="crispEdges" role="img" aria-label="becomes"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
+                            <span>1 truth analysis</span>
+                        </p>
                     </div>
 
                     <div class="ai-showcase__content">
-                        <span class="section__label">[ 05 — COGNITIVE LAYER ]</span>
-                        <h2 class="section__title" style="margin-bottom: 24px;">COGNITIVE POWER.<br><span class="text-gradient">EMPIRICALLY VERIFIED.</span></h2>
-                        <p class="manifesto-v2__card-desc">
-                            Meet <strong>Orvelis</strong> — the neural backbone of the Arena. Operating at sub-second speeds, it reads every camera debate for logical flow, structural bias and fallacious statements.
-                        </p>
-                        <div class="cluster-boxes aic-stack">
-                            <div class="cluster-box aic-mod">
+                        <div class="aic-intro">
+                            <span class="section__label">[ 05 — COGNITIVE LAYER ]</span>
+                            <h2 class="section__title">COGNITIVE POWER.<br><span class="aic-title-accent">EMPIRICALLY VERIFIED.</span></h2>
+                            <p class="aic-lede">
+                                Meet <strong>Orvelis</strong> — the neural backbone of the Arena. Operating at sub-second speeds, it reads every camera debate for logical flow, structural bias and fallacious statements.
+                            </p>
+                        </div>
+
+                        <div class="aic-stack">
+                            <div class="aic-mod">
                                 <span class="aic-mod-index">01</span>
                                 <span class="aic-mod-tag">[ ENGINE // TRUTH_DETECTOR ]</span>
                                 <h4>Logic &amp; fallacy detection</h4>
@@ -1921,7 +1774,7 @@
                                     <em>14 FALLACY CLASSES</em><em>REAL-TIME</em>
                                 </span>
                             </div>
-                            <div class="cluster-box aic-mod">
+                            <div class="aic-mod">
                                 <span class="aic-mod-index">02</span>
                                 <span class="aic-mod-tag">[ BIO_ANALYTICS // INSIGHTS ]</span>
                                 <h4>Cognitive flow insights</h4>
@@ -1930,7 +1783,7 @@
                                     <em>DAILY LQI</em><em>PRIVATE BY DEFAULT</em>
                                 </span>
                             </div>
-                            <div class="cluster-box aic-mod">
+                            <div class="aic-mod">
                                 <span class="aic-mod-index">03</span>
                                 <span class="aic-mod-tag">[ SIGNAL // IDENTITY ]</span>
                                 <h4>One face, one voice</h4>
@@ -2177,9 +2030,11 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=4.3.0"></script>
+    <script defer src="3d-fx.js?v=4.7.0"></script>
+    <!-- slide 05's dithered wave: plain WebGL, no three.js -->
+    <script defer src="pixel-field.js?v=4.7.0"></script>
 
-    <script defer src="script.js?v=4.3.0"></script>
+    <script defer src="script.js?v=4.7.0"></script>
 </body>
 
 </html>

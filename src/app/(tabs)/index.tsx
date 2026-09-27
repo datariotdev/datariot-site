@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, Pressable, StatusBar, useWindowDimensions, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-// Premium style upgrade — gradient tabs, glass nav
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
 import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
 import { useRouter } from 'expo-router';
@@ -19,36 +18,46 @@ import { MosaicFeed } from '../../components/VideoFeed/MosaicFeed/MosaicFeed';
 import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideoModal';
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
+import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
+const TABS: CommandTab[] = [
+    { key: 'ai', label: 'ARENA', hint: 'BETA' },
+    { key: 'trending', label: 'FEED' },
+    { key: 'following', label: 'CIRCLE' },
+];
+
+const TICKER_ITEMS = [
+    'ARENA OPEN — CHALLENGE ANY USER TO A LIVE DEBATE',
+    'WEEKLY MISSION: SLOW MOTION — 5,000 XP POOL',
+    'NEW: DNA MATCHING NOW RANKS YOUR FEED',
+    '1,248 PILOTS ENROLLED THIS CYCLE',
+];
+
 const HomeScreen = () => {
-    // Auth state managed by components that need it
     const router = useRouter();
     const isFocused = useIsFocused();
     const insets = useSafeAreaInsets();
     const [activeTab, setActiveTab] = useState<FeedType>('trending');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
-    const [activeIndex, setActiveIndex] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [viewMode, setViewMode] = useState<ViewMode>(Platform.OS === 'web' ? 'classic' : 'mosaic');
     const { theme, mode, toggleTheme } = useTheme();
     const isDark = mode === 'dark';
 
-    const { width, height } = useWindowDimensions();
+    const { width } = useWindowDimensions();
     const isWeb = Platform.OS === 'web' && width > 768; // Web Desktop Mode
-
-    // web container height handled elsewhere
 
     const {
         videos,
         loading,
         loadMore,
         toggleLike,
-        toggleFollow
+        toggleFollow,
     } = useVideos({
         type: activeTab,
-        category: activeCategory || undefined
+        category: activeCategory || undefined,
     });
 
     const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
@@ -56,268 +65,104 @@ const HomeScreen = () => {
     const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
     const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
 
-    const handleSelectVideo = (videoId: string) => {
-        setSelectedVideoId(videoId);
-    };
-
-    const handleComment = (videoId: string) => {
-        setCommentsVideoId(videoId);
-    };
-
-    const handleSave = (videoId: string) => {
-        console.log('Save:', videoId);
-    };
+    const handleSelectVideo = (videoId: string) => setSelectedVideoId(videoId);
+    const handleComment = (videoId: string) => setCommentsVideoId(videoId);
+    const handleSave = (videoId: string) => console.log('Save:', videoId);
 
     const handleMore = (videoId: string) => {
         const vid = videos.find(v => v.id === videoId);
-        if (vid) {
-            setMoreOptionsVideo(vid);
-        }
+        if (vid) setMoreOptionsVideo(vid);
     };
 
     if (loading && videos.length === 0) {
         return (
-            <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background.primary }]}>
+            <View style={[styles.loadingContainer, { backgroundColor: 'transparent' }]}>
                 <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
             </View>
         );
     }
 
-    const feedPaddingTop = isWeb
-        ? (activeTab === 'trending' ? 120 : 70)
-        : (activeTab === 'trending' ? insets.top + 120 : insets.top + 64);
+    const isFeedActive =
+        isFocused &&
+        selectedVideoId === null &&
+        commentsVideoId === null &&
+        deepDiveVideo === null &&
+        moreOptionsVideo === null;
 
-    const isFeedActive = isFocused && selectedVideoId === null && commentsVideoId === null && deepDiveVideo === null && moreOptionsVideo === null;
+    const feedPaddingTop = isWeb ? 8 : (activeTab === 'trending' ? insets.top + 120 : insets.top + 64);
 
-    return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
-
-            {/* Top Navigation Tabs */}
-            <View style={[styles.topNav, { paddingTop: isWeb ? 20 : insets.top + 10 }]} pointerEvents="box-none">
-                <View style={styles.topNavContent} pointerEvents="box-none">
-                    {/* Left Actions Container */}
-                    <View style={styles.leftActionsContainer}>
-                        {!isWeb && (
-                            <Pressable
-                                style={[
-                                    styles.profileButton,
-                                    {
-                                        backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
-                                        borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-                                        borderWidth: 1,
-                                    }
-                                ]}
-                                onPress={() => setIsMenuOpen(true)}
-                            >
-                                <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-                                <Feather name="menu" size={22} color={theme.colors.text.primary} />
-                            </Pressable>
-                        )}
-                    </View>
-
-                    {/* Center Tabs Container */}
-                    <View style={styles.pillContainer}>
-                        <BlurView intensity={70} tint={isDark ? 'dark' : 'light'} style={[
-                            styles.pillBlur,
-                            {
-                                backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-                                borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
-                                alignSelf: 'stretch',
-                            }
-                        ]}>
-                            {isDark && (
-                                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.03)' }]} />
-                            )}
-
-                            <TabButton
-                                theme={theme}
-                                label="ARENA (BETA)"
-                                isActive={activeTab === 'ai'}
-                                onPress={() => setActiveTab('ai')}
-                                isDark={isDark}
-                            />
-
-                            <TabButton
-                                theme={theme}
-                                label="FEED"
-                                isActive={activeTab === 'trending'}
-                                onPress={() => setActiveTab('trending')}
-                                isDark={isDark}
-                            />
-
-                            <TabButton
-                                theme={theme}
-                                label="MY CIRCLE"
-                                isActive={activeTab === 'following'}
-                                onPress={() => setActiveTab('following')}
-                                isDark={isDark}
-                            />
-                        </BlurView>
-                    </View>
-
-
-                    {/* Right Actions Container */}
-                    <View style={[styles.rightActionsContainer, { width: isWeb ? 96 : 148 }]}>
-                        <Pressable
-                            style={[
-                                styles.pulseToggle,
-                                {
-                                    backgroundColor: viewMode === 'mosaic' ? theme.colors.primary.DEFAULT : (isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)'),
-                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-                                    borderWidth: 1,
-                                },
-                                viewMode === 'mosaic' && isDark && {
-                                    shadowColor: '#D9E4FF',
-                                    shadowOffset: { width: 0, height: 0 },
-                                    shadowOpacity: 0.2,
-                                    shadowRadius: 10,
-                                },
-                            ]}
-                            onPress={() => setViewMode(viewMode === 'mosaic' ? 'classic' : 'mosaic')}
-                        >
-                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-                            <Ionicons
-                                name={viewMode === 'mosaic' ? "grid" : "apps"}
-                                size={22}
-                                color={viewMode === 'mosaic' ? "#000" : theme.colors.text.primary}
-                            />
-                        </Pressable>
-
-                        <Pressable
-                            style={[
-                                styles.pulseToggle,
-                                {
-                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
-                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-                                    borderWidth: 1,
-                                }
-                            ]}
-                            onPress={toggleTheme}
-                        >
-                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-                            <Feather name={isDark ? "sun" : "moon"} size={22} color={theme.colors.text.primary} />
-                        </Pressable>
-
-                        {!isWeb && (
-                            <Pressable
-                                style={[
-                                    styles.profileButton,
-                                    {
-                                        backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
-                                        borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-                                        borderWidth: 1,
-                                    }
-                                ]}
-                                onPress={() => router.push('/profile')}
-                            >
-                                <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-                                <Feather name="user" size={22} color={theme.colors.text.primary} />
-                            </Pressable>
-                        )}
-                    </View>
-
-                    {/* Category Filters. The row bleeds 16px past the nav
-                        padding on both sides; it used to take the window width,
-                        which overflowed the feed column by ~650px on a wide
-                        screen and put a horizontal scrollbar on the page. */}
-                    {activeTab === 'trending' && (
-                        <View style={[styles.categoryFiltersContainer, { left: -16, right: -16 }]}>
-                            <CategoryPills
-                                categories={['All', ...VIDEO_CATEGORIES]}
-                                activeCategory={activeCategory || 'All'}
-                                onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
-                            />
-                        </View>
-                    )}
+    const feed = videos.length > 0 ? (
+        viewMode === 'mosaic' ? (
+            <MosaicFeed
+                videos={videos}
+                isFocused={isFeedActive}
+                onEndReached={loadMore}
+                onSelect={handleSelectVideo}
+                paddingTop={feedPaddingTop}
+            />
+        ) : viewMode === 'pulse' ? (
+            <PulseFeed
+                videos={videos}
+                isFocused={isFeedActive}
+                onLike={toggleLike}
+                onComment={handleComment}
+                onSave={handleSave}
+                onMore={handleMore}
+                onFollow={toggleFollow}
+            />
+        ) : (
+            <CoubClassicFeed
+                videos={videos}
+                isScreenFocused={isFeedActive}
+                onEndReached={loadMore}
+                onLike={toggleLike}
+                onComment={handleComment}
+                onSave={handleSave}
+                onMore={handleMore}
+                onFollow={toggleFollow}
+                onSelect={handleSelectVideo}
+                paddingTop={feedPaddingTop}
+            />
+        )
+    ) : !loading ? (
+        <View style={styles.emptyContainer}>
+            <BlurView
+                intensity={isDark ? 30 : 50}
+                tint={isDark ? 'dark' : 'light'}
+                style={[styles.emptyCard, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}
+            >
+                {isDark && (
+                    <LinearGradient
+                        colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)']}
+                        style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
+                    />
+                )}
+                <View style={[styles.emptyIconContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }]}>
+                    <Feather name="radio" size={30} color={theme.colors.primary.DEFAULT} />
                 </View>
-            </View>
+                <Text style={[styles.emptyTitle, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}>
+                    NO SIGNAL
+                </Text>
+                <Text style={[styles.emptySubtitle, { color: theme.colors.text.secondary, fontFamily: MONO }]}>
+                    NOTHING IS BROADCASTING ON THIS CHANNEL. CLEAR YOUR FILTERS OR CHECK BACK LATER.
+                </Text>
+                <Pressable style={[styles.retryButton, { borderColor: theme.colors.primary.DEFAULT }]} onPress={loadMore}>
+                    <Text style={[styles.retryText, { color: theme.colors.primary.DEFAULT, fontFamily: MONO }]}>
+                        [ RESCAN ]
+                    </Text>
+                </Pressable>
+            </BlurView>
+        </View>
+    ) : null;
 
-            {/* Video Feed */}
-            {videos.length > 0 ? (
-                viewMode === 'mosaic' ? (
-                    <MosaicFeed
-                        videos={videos}
-                        isFocused={isFeedActive}
-                        onEndReached={loadMore}
-                        onSelect={(id) => {
-                            // Find the video and open modal
-                            // For now, it opens the existing FullScreenVideoModal pattern
-                            // We can use a router push or a modal state
-                            console.log('Selected video:', id);
-                            // We need a way to open the modal from here. 
-                            // CoubClassicFeed uses local state selectedVideoId.
-                            // I'll add handleSelectVideo to HomeScreen.
-                            handleSelectVideo(id);
-                        }}
-                        paddingTop={feedPaddingTop}
-                    />
-                ) : viewMode === 'pulse' ? (
-                    <PulseFeed
-                        videos={videos}
-                        isFocused={isFeedActive}
-                        onLike={toggleLike}
-                        onComment={handleComment}
-                        onSave={handleSave}
-                        onMore={handleMore}
-                        onFollow={toggleFollow}
-                    />
-                ) : (
-                    <CoubClassicFeed
-                        videos={videos}
-                        isScreenFocused={isFeedActive}
-                        onEndReached={loadMore}
-                        onLike={toggleLike}
-                        onComment={handleComment}
-                        onSave={handleSave}
-                        onMore={handleMore}
-                        onFollow={toggleFollow}
-                        onSelect={handleSelectVideo}
-                        paddingTop={feedPaddingTop}
-                    />
-                )
-            ) : !loading && (
-                <View style={[styles.emptyContainer, { backgroundColor: theme.colors.background.primary }]}>
-                    <BlurView intensity={isDark ? 30 : 50} tint={isDark ? "dark" : "light"} style={[styles.emptyCard, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}>
-                        {isDark && (
-                            <LinearGradient
-                                colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)']}
-                                style={[StyleSheet.absoluteFill, { borderRadius: 24 }]}
-                            />
-                        )}
-                        <View style={[styles.emptyIconContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}>
-                            <Feather name="video-off" size={36} color={isDark ? '#fff' : '#000'} />
-                        </View>
-                        <Text style={[styles.emptyTitle, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}>No Videos Found</Text>
-                        <Text style={[styles.emptySubtitle, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.regular }]}>
-                            There doesn&apos;t seem to be anything here right now. Check back later or clear your filters.
-                        </Text>
-                        <Pressable style={[styles.retryButtonModern, { backgroundColor: theme.colors.primary.DEFAULT }]} onPress={loadMore}>
-                            <Text style={[styles.retryTextModern, { fontFamily: theme.typography.fontFamilies.bold }]}>Refresh Feed</Text>
-                        </Pressable>
-                    </BlurView>
-                </View>
-            )
-            }
-
-            {/* Side Menu Overlay */}
-            {
-                !isWeb && (
-                    <SideMenu
-                        isOpen={isMenuOpen}
-                        onClose={() => setIsMenuOpen(false)}
-                    />
-                )
-            }
-
-            {/* Comments Modal */}
+    const modals = (
+        <>
             <CommentsModal
                 visible={!!commentsVideoId}
                 videoId={commentsVideoId}
                 onClose={() => setCommentsVideoId(null)}
             />
 
-            {/* Shared Full Screen Video Modal (for Mosaic/Pulse) */}
             <FullScreenVideoModal
                 visible={selectedVideoId !== null}
                 videos={videos}
@@ -333,21 +178,199 @@ const HomeScreen = () => {
             <MoreOptionsModal
                 visible={moreOptionsVideo !== null}
                 onClose={() => setMoreOptionsVideo(null)}
-                onDeepDive={() => {
-                    setDeepDiveVideo(moreOptionsVideo);
-                }}
+                onDeepDive={() => setDeepDiveVideo(moreOptionsVideo)}
             />
             <DeepDiveModal
                 visible={deepDiveVideo !== null}
                 video={deepDiveVideo}
                 onClose={() => setDeepDiveVideo(null)}
             />
+        </>
+    );
+
+    /* ---------------- Desktop web: docked command deck ---------------- */
+    if (isWeb) {
+        return (
+            <View style={styles.container}>
+                <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+
+                <CommandBar
+                    tabs={TABS}
+                    activeKey={activeTab}
+                    onTabPress={(key) => setActiveTab(key as FeedType)}
+                    readout={['SIGNAL NOMINAL', '2.4K ONLINE', 'LAT 12MS']}
+                    actions={
+                        <>
+                            <HudButton
+                                label="Toggle grid layout"
+                                active={viewMode === 'mosaic'}
+                                onPress={() => setViewMode(viewMode === 'mosaic' ? 'classic' : 'mosaic')}
+                                icon={
+                                    <Ionicons
+                                        name={viewMode === 'mosaic' ? 'grid' : 'apps-outline'}
+                                        size={17}
+                                        color={viewMode === 'mosaic' ? theme.colors.primary.DEFAULT : theme.colors.text.secondary}
+                                    />
+                                }
+                            />
+                            <HudButton
+                                label="Toggle theme"
+                                onPress={toggleTheme}
+                                icon={<Feather name={isDark ? 'sun' : 'moon'} size={16} color={theme.colors.text.secondary} />}
+                            />
+                        </>
+                    }
+                />
+
+                <LiveTicker items={TICKER_ITEMS} />
+
+                {activeTab === 'trending' && (
+                    <View
+                        style={[
+                            styles.filterRow,
+                            {
+                                backgroundColor: isDark ? '#0A0B11' : '#FBFBFD',
+                                borderBottomColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(0,0,0,0.06)',
+                            },
+                        ]}
+                    >
+                        <CategoryPills
+                            categories={['All', ...VIDEO_CATEGORIES]}
+                            activeCategory={activeCategory || 'All'}
+                            onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
+                        />
+                    </View>
+                )}
+
+                <View style={styles.deckBody}>{feed}</View>
+
+                {modals}
+            </View>
+        );
+    }
+
+    /* ---------------- Mobile: original floating chrome ---------------- */
+    return (
+        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+            <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+
+            <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+                <View style={styles.topNavContent} pointerEvents="box-none">
+                    <View style={styles.leftActionsContainer}>
+                        <Pressable
+                            style={[
+                                styles.roundButton,
+                                {
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
+                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                },
+                            ]}
+                            onPress={() => setIsMenuOpen(true)}
+                        >
+                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <Feather name="menu" size={22} color={theme.colors.text.primary} />
+                        </Pressable>
+                    </View>
+
+                    <View style={styles.pillContainer}>
+                        <BlurView
+                            intensity={70}
+                            tint={isDark ? 'dark' : 'light'}
+                            style={[
+                                styles.pillBlur,
+                                {
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : 'rgba(255, 255, 255, 0.8)',
+                                    borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
+                                },
+                            ]}
+                        >
+                            {TABS.map((tab) => (
+                                <TabButton
+                                    key={tab.key}
+                                    theme={theme}
+                                    label={tab.label}
+                                    isActive={activeTab === tab.key}
+                                    onPress={() => setActiveTab(tab.key as FeedType)}
+                                    isDark={isDark}
+                                />
+                            ))}
+                        </BlurView>
+                    </View>
+
+                    <View style={styles.rightActionsContainer}>
+                        <Pressable
+                            style={[
+                                styles.roundButton,
+                                {
+                                    backgroundColor: viewMode === 'mosaic'
+                                        ? theme.colors.primary.DEFAULT
+                                        : (isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)'),
+                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                    marginRight: 8,
+                                },
+                            ]}
+                            onPress={() => setViewMode(viewMode === 'mosaic' ? 'classic' : 'mosaic')}
+                        >
+                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <Ionicons
+                                name={viewMode === 'mosaic' ? 'grid' : 'apps'}
+                                size={22}
+                                color={viewMode === 'mosaic' ? '#000' : theme.colors.text.primary}
+                            />
+                        </Pressable>
+
+                        <Pressable
+                            style={[
+                                styles.roundButton,
+                                {
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
+                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                },
+                            ]}
+                            onPress={() => router.push('/profile')}
+                        >
+                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <Feather name="user" size={22} color={theme.colors.text.primary} />
+                        </Pressable>
+                    </View>
+
+                    {/* The row bleeds 16px past the nav padding on both sides.
+                        Sizing it from the window width overflowed the column
+                        and put a horizontal scrollbar on the page (#9). */}
+                    {activeTab === 'trending' && (
+                        <View style={[styles.categoryFiltersContainer, { left: -16, right: -16 }]}>
+                            <CategoryPills
+                                categories={['All', ...VIDEO_CATEGORIES]}
+                                activeCategory={activeCategory || 'All'}
+                                onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
+                            />
+                        </View>
+                    )}
+                </View>
+            </View>
+
+            {feed}
+
+            <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+
+            {modals}
         </View>
     );
 };
 
+const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+    },
+    filterRow: {
+        height: 46,
+        justifyContent: 'center',
+        borderBottomWidth: 1,
+        zIndex: 18,
+    },
+    deckBody: {
         flex: 1,
     },
     topNav: {
@@ -364,20 +387,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 16,
     },
-    headerRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        height: 44,
-        marginBottom: 10,
-    },
-    profileButton: {
+    roundButton: {
         width: 44,
         height: 44,
         borderRadius: 22,
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
+        borderWidth: 1,
     },
     leftActionsContainer: {
         width: 44,
@@ -391,15 +408,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
     },
-    pulseToggle: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
-        marginRight: 8,
-    },
     pillContainer: {
         flex: 1,
         marginHorizontal: 8,
@@ -412,12 +420,10 @@ const styles = StyleSheet.create({
     pillBlur: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(8, 9, 13, 0.5)',
         borderRadius: 30,
         padding: 4,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.05)',
         alignSelf: 'stretch',
     },
     tabButton: {
@@ -429,9 +435,6 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         overflow: 'hidden',
     },
-    tabButtonActive: {
-        // Active styles handled by children
-    },
     tabIndicatorBackground: {
         position: 'absolute',
         top: 2,
@@ -440,20 +443,11 @@ const styles = StyleSheet.create({
         right: 2,
         borderRadius: 16,
     },
-    tabButtonInner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     tabText: {
         fontSize: 10,
         fontWeight: '700',
         letterSpacing: 0.5,
     },
-    tabTextActive: {
-        fontWeight: '800',
-    },
-
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -467,47 +461,44 @@ const styles = StyleSheet.create({
     },
     emptyCard: {
         width: '100%',
-        maxWidth: 340,
+        maxWidth: 360,
         padding: 32,
-        borderRadius: 24,
+        borderRadius: 20,
         alignItems: 'center',
         borderWidth: 1,
         overflow: 'hidden',
     },
     emptyIconContainer: {
-        width: 72,
-        height: 72,
-        borderRadius: 36,
+        width: 64,
+        height: 64,
+        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 24,
+        marginBottom: 22,
     },
     emptyTitle: {
-        fontSize: 20,
-        fontWeight: '700',
-        marginBottom: 8,
+        fontSize: 18,
+        letterSpacing: 2,
+        marginBottom: 10,
         textAlign: 'center',
     },
     emptySubtitle: {
-        fontSize: 14,
+        fontSize: 10.5,
         textAlign: 'center',
-        marginBottom: 32,
-        lineHeight: 20,
+        marginBottom: 28,
+        lineHeight: 18,
+        letterSpacing: 1,
     },
-    retryButtonModern: {
-        paddingHorizontal: 32,
-        paddingVertical: 14,
-        borderRadius: 100,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 4,
+    retryButton: {
+        paddingHorizontal: 26,
+        paddingVertical: 11,
+        borderRadius: 8,
+        borderWidth: 1,
     },
-    retryTextModern: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
+    retryText: {
+        fontSize: 11,
+        letterSpacing: 1.6,
+        fontWeight: '700',
     },
 });
 
@@ -520,10 +511,9 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
             onHoverOut={() => setIsHovered(false)}
             style={[
                 styles.tabButton,
-                isActive && styles.tabButtonActive,
                 isHovered && !isActive && {
                     backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
-                }
+                },
             ]}
         >
             {isActive && (
@@ -532,34 +522,25 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
                         colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
-                        style={[styles.tabIndicatorBackground, isDark && {
-                            shadowColor: '#D9E4FF',
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.25,
-                            shadowRadius: 8,
-                        }]}
+                        style={styles.tabIndicatorBackground}
                     />
                 </View>
             )}
-            <View style={styles.tabButtonInner}>
-                <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={[
-                        styles.tabText,
-                        { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium },
-                        isActive && [
-                            styles.tabTextActive,
-                            {
-                                color: isDark ? '#000000' : '#FFFFFF',
-                                fontFamily: theme.typography.fontFamilies.bold
-                            }
-                        ]
-                    ]}
-                >
-                    {label}
-                </Text>
-            </View>
+            <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={[
+                    styles.tabText,
+                    { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium },
+                    isActive && {
+                        color: isDark ? '#000000' : '#FFFFFF',
+                        fontFamily: theme.typography.fontFamilies.bold,
+                        fontWeight: '800',
+                    },
+                ]}
+            >
+                {label}
+            </Text>
         </Pressable>
     );
 };
