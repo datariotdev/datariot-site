@@ -65,7 +65,8 @@ export function CoubClassicFeed({
             videoUrl: v.videoUrl,
             thumbnailUrl: v.thumbnailUrl,
             views: v.views,
-            likes: v.likes
+            likes: v.likes,
+            logicStats: v.logicStats
         }));
         return ensureMinCount(base, 5);
     }, [allSynergy, ensureMinCount]);

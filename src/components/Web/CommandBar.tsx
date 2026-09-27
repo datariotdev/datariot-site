@@ -274,6 +274,22 @@ export const LiveTicker = ({ items }: { items: string[] }) => {
                     {run(0)}
                     {run(1)}
                 </div>
+                {/* A marquee cut dead at both ends reads as broken text rather
+                    than as something in motion. */}
+                <LinearGradient
+                    pointerEvents="none"
+                    colors={[isDark ? '#0C0D14' : '#F6F6FA', 'transparent']}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={[styles.tickerFade, { left: 0 }]}
+                />
+                <LinearGradient
+                    pointerEvents="none"
+                    colors={['transparent', isDark ? '#0C0D14' : '#F6F6FA']}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={[styles.tickerFade, { right: 0 }]}
+                />
             </View>
         </View>
     );
@@ -390,6 +406,14 @@ const styles = StyleSheet.create({
     tickerViewport: {
         flex: 1,
         overflow: 'hidden',
+        position: 'relative',
+    },
+    tickerFade: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        width: 34,
+        zIndex: 2,
     },
     tickerStatic: {
         flexDirection: 'row',
