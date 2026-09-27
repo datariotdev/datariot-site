@@ -1,7 +1,7 @@
 /* =========================================================================
    SLIDE 05 — THE PIXEL FIELD
    The backdrop of the cognitive-layer slide: a slow wave surface drawn one
-   pixel per 3px cell and quantised to seven navy tones with an ordered
+   pixel per 3px cell and quantised to seven brand-blue tones with an ordered
    (Bayer) dither — chunky pixels, no smoothing. Every pixel of the buffer
    is a whole cell, so a 1920x1080 screen is a 640x360 render.
 
@@ -82,14 +82,16 @@
         float bayer2(vec2 a) { a = floor(a); return fract(a.x * 0.5 + a.y * a.y * 0.75); }
         float bayer4(vec2 a) { return bayer2(0.5 * a) * 0.25 + bayer2(a); }
 
+        // the brand blue: deep navy, through saturated cobalt, to azure
+        // where the light catches a fold
         vec3 tone(float i) {
-            vec3 c = vec3(0.024, 0.078, 0.216);                    // #061437
-            c = mix(c, vec3(0.039, 0.122, 0.298), step(0.5, i));   // #0A1F4C
-            c = mix(c, vec3(0.063, 0.173, 0.388), step(1.5, i));   // #102C63
-            c = mix(c, vec3(0.110, 0.243, 0.471), step(2.5, i));   // #1C3E78
-            c = mix(c, vec3(0.176, 0.314, 0.529), step(3.5, i));   // #2D5087
-            c = mix(c, vec3(0.243, 0.384, 0.580), step(4.5, i));   // #3E6294
-            c = mix(c, vec3(0.353, 0.490, 0.690), step(5.5, i));   // #5A7DB0
+            vec3 c = vec3(0.016, 0.055, 0.173);                    // #040E2C
+            c = mix(c, vec3(0.024, 0.106, 0.290), step(0.5, i));   // #061B4A
+            c = mix(c, vec3(0.039, 0.165, 0.431), step(1.5, i));   // #0A2A6E
+            c = mix(c, vec3(0.055, 0.235, 0.569), step(2.5, i));   // #0E3C91
+            c = mix(c, vec3(0.071, 0.314, 0.675), step(3.5, i));   // #1250AC
+            c = mix(c, vec3(0.078, 0.400, 0.776), step(4.5, i));   // #1466C6
+            c = mix(c, vec3(0.118, 0.525, 0.855), step(5.5, i));   // #1E86DA
             return c;
         }
 
@@ -179,7 +181,7 @@
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, index, gl.STATIC_DRAW);
 
     gl.enable(gl.DEPTH_TEST);
-    gl.clearColor(0.024, 0.078, 0.216, 1);
+    gl.clearColor(0.016, 0.055, 0.173, 1);
 
     // ---- camera -----------------------------------------------------------
     function perspective(fovy, aspect, near, far) {
