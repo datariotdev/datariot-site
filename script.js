@@ -526,7 +526,7 @@ window.addEventListener('load', () => {
         let w, h;
         const particles = [];
         const PARTICLE_COUNT = 60; // Reduced for performance
-        const colors = ['rgba(14,165,233,', 'rgba(168,85,247,', 'rgba(20,184,166,'];
+        const colors = ['rgba(218,230,247,', 'rgba(154,167,189,', 'rgba(107,119,140,'];
 
         function resize() {
             w = canvas.width = window.innerWidth;

@@ -124,7 +124,7 @@ window.addEventListener('load', () => {
         }
 
         // Lights
-        const light = new THREE.DirectionalLight(0x2F80E8, 1);
+        const light = new THREE.DirectionalLight(0xDAE6F7, 1);
         light.position.set(1, 1, 2);
         scene.add(light);
         const ambient = new THREE.AmbientLight(0x404040); // Soft white light
@@ -135,8 +135,8 @@ window.addEventListener('load', () => {
 
         // We will create a dual-material setup to make it look premium
         const materialCore = new THREE.MeshPhongMaterial({
-            color: 0x2F80E8,
-            emissive: 0x2F80E8,
+            color: 0xDAE6F7,
+            emissive: 0xDAE6F7,
             emissiveIntensity: 0.2,
             wireframe: true,
             transparent: true,
@@ -156,7 +156,7 @@ window.addEventListener('load', () => {
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
         const particleMaterial = new THREE.PointsMaterial({
             size: 0.05,
-            color: 0x9DC0F7,
+            color: 0xDAE6F7,
             transparent: true,
             opacity: 0.6
         });
@@ -259,7 +259,7 @@ window.addEventListener('load', () => {
         const ambient = new THREE.AmbientLight(0xffffff, isLight ? 0.8 : 0.5);
         scene.add(ambient);
 
-        const pointLight = new THREE.PointLight(0x2F80E8, isLight ? 1.5 : 2, 50);
+        const pointLight = new THREE.PointLight(0xDAE6F7, isLight ? 1.5 : 2, 50);
         pointLight.position.set(0, 5, 5);
         scene.add(pointLight);
 
@@ -270,14 +270,14 @@ window.addEventListener('load', () => {
 
         // A glassmorphic wireframe material or slightly opaque panel
         const material = new THREE.MeshBasicMaterial({
-            color: 0x2F80E8,
+            color: 0xDAE6F7,
             transparent: true,
             opacity: 0.15,
             side: THREE.DoubleSide,
             wireframe: false
         });
 
-        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x6BA5F2, transparent: true, opacity: 0.8 });
+        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xDAE6F7, transparent: true, opacity: 0.8 });
 
         const screens = [];
         const numScreens = window.innerWidth < 768 ? 15 : 22;
@@ -399,7 +399,7 @@ window.addEventListener('load', () => {
             camera.position.z = isMobile ? 11 : 12; // Adjust zoom on mobile
 
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const globeColor = isDark ? 0x2F80E8 : 0x1166D4;
+            const globeColor = isDark ? 0xDAE6F7 : 0x07080C;   // the logo's ice / black
 
             const radius = isMobile ? 2.8 : 4.5;
             const globe = new THREE.Points(
@@ -429,7 +429,7 @@ window.addEventListener('load', () => {
                 const theta = (city.lon + 180) * (Math.PI / 180);
                 const dot = new THREE.Mesh(
                     new THREE.SphereGeometry(0.12, 12, 12),
-                    new THREE.MeshBasicMaterial({ color: isDark ? 0x6BA5F2 : 0x0B4FA8 })
+                    new THREE.MeshBasicMaterial({ color: isDark ? 0xFFFFFF : 0x07080C })
                 );
                 dot.position.set(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.sin(theta));
                 cityGroup.add(dot);
@@ -493,7 +493,7 @@ window.addEventListener('load', () => {
             ctx.clearRect(0, 0, W, H);
 
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const accentBase = isDark ? '14, 165, 233' : '2, 132, 199';
+            const accentBase = isDark ? '218, 230, 247' : '7, 8, 12';
             const rotation = now * 0.0003; // Slightly faster rotation
             const isMobile = window.innerWidth < 768;
             const radius = Math.min(W, H) * (isMobile ? 0.48 : 0.55);
@@ -752,11 +752,11 @@ window.addEventListener('load', () => {
         const ambient = new THREE.AmbientLight(0xffffff, 0.45);
         scene.add(ambient);
 
-        const proLight = new THREE.PointLight(0xD8E7FA, 3.5, 15);
+        const proLight = new THREE.PointLight(0xDAE6F7, 3.5, 15);
         proLight.position.set(-3, 0, 2);
         scene.add(proLight);
 
-        const conLight = new THREE.PointLight(0x7C6BEA, 3.5, 15);
+        const conLight = new THREE.PointLight(0x9AA7BD, 3.5, 15);
         conLight.position.set(3, 0, 2);
         scene.add(conLight);
 
@@ -764,7 +764,7 @@ window.addEventListener('load', () => {
         scene.add(connectionGroup);
 
         // Cyber Grid Background
-        const gridHelper = new THREE.GridHelper(30, 24, 0x1E293B, 0x111318);
+        const gridHelper = new THREE.GridHelper(30, 24, 0x252A35, 0x111318);
         gridHelper.position.y = -3.8;
         gridHelper.position.z = -1;
         gridHelper.rotation.x = Math.PI / 10;
@@ -778,13 +778,13 @@ window.addEventListener('load', () => {
         connectionGroup.add(proGroup);
 
         const proCoreGeo = new THREE.SphereGeometry(0.18, 16, 16);
-        const proCoreMat = new THREE.MeshBasicMaterial({ color: 0xD8E7FA });
+        const proCoreMat = new THREE.MeshBasicMaterial({ color: 0xDAE6F7 });
         const proCore = new THREE.Mesh(proCoreGeo, proCoreMat);
         proGroup.add(proCore);
 
         const proInnerGeo = new THREE.IcosahedronGeometry(0.55, 1);
         const proInnerMat = new THREE.MeshBasicMaterial({
-            color: 0x6BA5F2,
+            color: 0xDAE6F7,
             wireframe: true,
             transparent: true,
             opacity: 0.8
@@ -794,7 +794,7 @@ window.addEventListener('load', () => {
 
         const proOuterGeo = new THREE.DodecahedronGeometry(0.8, 0);
         const proOuterMat = new THREE.MeshBasicMaterial({
-            color: 0xD8E7FA,
+            color: 0xDAE6F7,
             wireframe: true,
             transparent: true,
             opacity: 0.35
@@ -803,12 +803,12 @@ window.addEventListener('load', () => {
         proGroup.add(proOuter);
 
         const proRingGeo1 = new THREE.RingGeometry(1.05, 1.07, 64);
-        const proRingMat1 = new THREE.MeshBasicMaterial({ color: 0x6BA5F2, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+        const proRingMat1 = new THREE.MeshBasicMaterial({ color: 0xDAE6F7, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
         const proRing1 = new THREE.Mesh(proRingGeo1, proRingMat1);
         proGroup.add(proRing1);
 
         const proRingGeo2 = new THREE.RingGeometry(1.15, 1.17, 64);
-        const proRingMat2 = new THREE.MeshBasicMaterial({ color: 0xD8E7FA, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
+        const proRingMat2 = new THREE.MeshBasicMaterial({ color: 0xDAE6F7, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
         const proRing2 = new THREE.Mesh(proRingGeo2, proRingMat2);
         proRing2.rotation.x = Math.PI / 4;
         proRing2.rotation.y = Math.PI / 4;
@@ -820,13 +820,13 @@ window.addEventListener('load', () => {
         connectionGroup.add(conGroup);
 
         const conCoreGeo = new THREE.SphereGeometry(0.18, 16, 16);
-        const conCoreMat = new THREE.MeshBasicMaterial({ color: 0x7C6BEA });
+        const conCoreMat = new THREE.MeshBasicMaterial({ color: 0x9AA7BD });
         const conCore = new THREE.Mesh(conCoreGeo, conCoreMat);
         conGroup.add(conCore);
 
         const conInnerGeo = new THREE.IcosahedronGeometry(0.55, 1);
         const conInnerMat = new THREE.MeshBasicMaterial({
-            color: 0x7C6BEA,
+            color: 0x9AA7BD,
             wireframe: true,
             transparent: true,
             opacity: 0.8
@@ -836,7 +836,7 @@ window.addEventListener('load', () => {
 
         const conOuterGeo = new THREE.DodecahedronGeometry(0.8, 0);
         const conOuterMat = new THREE.MeshBasicMaterial({
-            color: 0x5D6BE6,
+            color: 0x9AA7BD,
             wireframe: true,
             transparent: true,
             opacity: 0.35
@@ -845,12 +845,12 @@ window.addEventListener('load', () => {
         conGroup.add(conOuter);
 
         const conRingGeo1 = new THREE.RingGeometry(1.05, 1.07, 64);
-        const conRingMat1 = new THREE.MeshBasicMaterial({ color: 0x7C6BEA, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+        const conRingMat1 = new THREE.MeshBasicMaterial({ color: 0x9AA7BD, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
         const conRing1 = new THREE.Mesh(conRingGeo1, conRingMat1);
         conGroup.add(conRing1);
 
         const conRingGeo2 = new THREE.RingGeometry(1.15, 1.17, 64);
-        const conRingMat2 = new THREE.MeshBasicMaterial({ color: 0x5D6BE6, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
+        const conRingMat2 = new THREE.MeshBasicMaterial({ color: 0x9AA7BD, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
         const conRing2 = new THREE.Mesh(conRingGeo2, conRingMat2);
         conRing2.rotation.x = -Math.PI / 4;
         conRing2.rotation.y = Math.PI / 4;
@@ -879,7 +879,7 @@ window.addEventListener('load', () => {
             const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
             
             const lineMat = new THREE.LineBasicMaterial({
-                color: idx % 2 === 0 ? 0x6BA5F2 : 0x7C6BEA,
+                color: idx % 2 === 0 ? 0xDAE6F7 : 0x9AA7BD,
                 transparent: true,
                 opacity: 0.35
             });
@@ -890,7 +890,7 @@ window.addEventListener('load', () => {
             const offsetPoints = points.map(p => new THREE.Vector3(p.x, p.y + (Math.sin(p.x * 2) * 0.05), p.z + (Math.cos(p.x * 2) * 0.05)));
             const offsetGeo = new THREE.BufferGeometry().setFromPoints(offsetPoints);
             const offsetMat = new THREE.LineBasicMaterial({
-                color: idx % 2 === 0 ? 0xD8E7FA : 0x5D6BE6,
+                color: idx % 2 === 0 ? 0xDAE6F7 : 0x9AA7BD,
                 transparent: true,
                 opacity: 0.15
             });
@@ -905,7 +905,7 @@ window.addEventListener('load', () => {
 
         for (let i = 0; i < packetCount; i++) {
             const curveIdx = i % curves.length;
-            const color = curveIdx % 2 === 0 ? 0xD8E7FA : 0x7C6BEA;
+            const color = curveIdx % 2 === 0 ? 0xDAE6F7 : 0x9AA7BD;
             
             const packetMat = new THREE.MeshBasicMaterial({
                 color: color,
@@ -944,7 +944,7 @@ window.addEventListener('load', () => {
         starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
         const starMat = new THREE.PointsMaterial({
             size: 0.05,
-            color: 0xD8E7FA,
+            color: 0xDAE6F7,
             transparent: true,
             opacity: 0.5
         });
