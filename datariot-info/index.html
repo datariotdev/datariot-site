@@ -16,18 +16,18 @@
     <meta name="twitter:site" content="@datariot_xyz">
     <meta name="twitter:title" content="Datariot — short videos with a point">
     <meta name="twitter:description" content="A short-video app where every clip leaves you with something useful. Learn it in a minute, go deeper with a Deep Dive, answer back on camera.">
-    <meta name="twitter:image" content="https://info.datariot.xyz/assets/twitter-card-v300.png">
-    <meta name="twitter:image:alt" content="Datariot: short videos with a point. A pixel phone plays a clip about why the sky is blue, with the point written underneath.">
+    <meta name="twitter:image" content="https://info.datariot.xyz/assets/twitter-card-v301.png">
+    <meta name="twitter:image:alt" content="Datariot: short videos with a point. A phone plays a clip in the Datariot app, with real app screens fanned out behind it.">
 
     <!-- Open Graph data -->
     <meta property="og:site_name" content="Datariot">
     <meta property="og:title" content="Datariot — short videos with a point">
     <meta property="og:description" content="A short-video app where every clip leaves you with something useful. Learn it in a minute, go deeper with a Deep Dive, answer back on camera.">
-    <meta property="og:image" content="https://info.datariot.xyz/assets/twitter-card-v300.png">
+    <meta property="og:image" content="https://info.datariot.xyz/assets/twitter-card-v301.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Datariot: short videos with a point. A pixel phone plays a clip about why the sky is blue, with the point written underneath.">
+    <meta property="og:image:alt" content="Datariot: short videos with a point. A phone plays a clip in the Datariot app, with real app screens fanned out behind it.">
     <meta property="og:url" content="https://info.datariot.xyz/">
     <meta property="og:type" content="website">
 
@@ -36,7 +36,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=5.0.0" />
+    <link rel="stylesheet" href="style.css?v=5.1.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -660,9 +660,13 @@
                 </div>
 
                 <div class="hero__phone-showcase" id="heroPhone" data-inview>
+                    <span class="hero__phone-glow" aria-hidden="true"></span>
+
+                    <!-- real screens from the app, fanned out behind the phone -->
                     <div class="hero__clip-stack" aria-hidden="true">
-                        <span class="hero__clip-stack-card hero__clip-stack-card--1"></span>
-                        <span class="hero__clip-stack-card hero__clip-stack-card--2"></span>
+                        <span class="hero__clip-stack-card hero__clip-stack-card--1"><img src="assets/smart-feed-real.jpg" alt="" loading="lazy" decoding="async"></span>
+                        <span class="hero__clip-stack-card hero__clip-stack-card--2"><img src="assets/debate-threads-real.jpg" alt="" loading="lazy" decoding="async"></span>
+                        <span class="hero__clip-stack-card hero__clip-stack-card--3"><img src="assets/creator-dna-real.jpg" alt="" loading="lazy" decoding="async"></span>
                     </div>
 
                     <div class="hero__swipe" aria-hidden="true">
@@ -675,26 +679,56 @@
 
                     <div class="hero__float hero__float--live" aria-hidden="true">
                         <span class="hero__float-dot"></span>
-                        <b data-feed="topic">EDUCATION · 0:38</b>
+                        LIVE
+                        <b data-live>00:47</b>
                     </div>
 
                     <div class="hero__float hero__float--reply" aria-hidden="true">
-                        <span class="hero__float-face" data-feed="face"></span>
+                        <span class="hero__float-avatar"></span>
                         <span class="hero__float-body">
-                            <b data-feed="replies">214 video replies</b>
+                            <b>Video reply</b>
                             <i>answered on camera</i>
                         </span>
+                    </div>
+
+                    <div class="hero__float hero__float--verdict" aria-hidden="true">
+                        <span class="hero__float-body">
+                            <b>Orvelis AI</b>
+                            <i>logic scan · <span data-scan>92</span>%</i>
+                        </span>
+                        <span class="hero__float-meter"><span></span></span>
                     </div>
 
                     <div class="hero__phone-frame">
                         <div class="phone__notch"></div>
                         <div class="phone__screen">
-                            <div class="feedx" id="heroFeed" role="img"
-                                aria-label="The Datariot feed: short clips in which people explain one useful thing each, like why the sky is blue, and every clip ends on its point.">
-                                <div class="feedx__track"></div>
-                                <div class="feedx__top" aria-hidden="true">
-                                    <div class="feedx__status"><b>9:41</b><i></i></div>
-                                    <div class="feedx__tabs"><span>ARENA</span><span class="is-on">FEED</span><span>CIRCLE</span></div>
+                            <!-- the clip is cut from the app's own screen recording; clips.js
+                                 keeps the counters, the reactions and the ambient light going -->
+                            <div class="hx-app" id="heroApp" role="img"
+                                aria-label="The Datariot app playing a short video by @Fronda: Should we prioritize logic over emotion in the discussion?">
+                                <div class="hx-app__amb-img" style="background-image: url('assets/hero-clip.jpg')"></div>
+                                <canvas class="hx-app__amb" width="24" height="46"></canvas>
+                                <div class="hx-app__top">
+                                    <div class="hx-app__status"><b>9:41</b><i></i></div>
+                                    <div class="hx-app__tabs"><span>ARENA</span><span class="is-on">FEED</span><span>CIRCLE</span></div>
+                                </div>
+                                <div class="hx-app__clip">
+                                    <video class="hx-app__video" autoplay loop muted playsinline preload="auto" poster="assets/hero-clip.jpg">
+                                        <source src="assets/hero-clip.webm" type="video/webm">
+                                        <source src="assets/hero-clip.mp4" type="video/mp4">
+                                    </video>
+                                    <span class="hx-app__who"><i></i>@Fronda</span>
+                                    <span class="hx-app__pop"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg></span>
+                                </div>
+                                <div class="hx-app__under">
+                                    <p class="hx-app__cap">Should we prioritize logic over emotion in the dis… <b>more</b></p>
+                                    <div class="hx-app__row">
+                                        <span class="hx-app__act hx-app__act--like"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><i>Like</i><b data-count="like">3,128</b></span>
+                                        <span class="hx-app__act"><svg viewBox="0 0 24 24"><path d="M12 3.2c5 0 9 3.4 9 7.7s-4 7.7-9 7.7c-1 0-2-.1-2.9-.4L4.6 20.4l1.2-3.9C4 15.1 3 13.1 3 10.9c0-4.3 4-7.7 9-7.7z"/></svg><i>Comment</i><b data-count="comment">842</b></span>
+                                        <span class="hx-app__act"><svg viewBox="0 0 24 24"><path d="M6.2 3.2h11.6v17.6L12 16.8l-5.8 4z"/></svg><i>Save</i><b>219</b></span>
+                                        <span class="hx-app__input"><em data-typing>Add a comment...</em><span class="hx-app__send"><svg viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5 12 6l5.5 5.5"/></svg></span></span>
+                                    </div>
+                                    <div class="hx-app__time"><span class="hx-app__bar"><i></i></span><b data-time>0:00 / 0:14</b></div>
                                 </div>
                             </div>
                         </div>
@@ -1750,13 +1784,13 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=5.0.0"></script>
+    <script defer src="3d-fx.js?v=5.1.0"></script>
     <!-- slide 05's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=5.0.0"></script>
+    <script defer src="pixel-field.js?v=5.1.0"></script>
 
     <!-- the feed: the hero phone and the reel in 01 -->
-    <script defer src="clips.js?v=5.0.0"></script>
-    <script defer src="script.js?v=5.0.0"></script>
+    <script defer src="clips.js?v=5.1.0"></script>
+    <script defer src="script.js?v=5.1.0"></script>
 </body>
 
 </html>

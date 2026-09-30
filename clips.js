@@ -1,9 +1,10 @@
 /* ==========================================================================
    Datariot — the feed
-   Short clips that each make one point. The hero phone plays them one after
-   another (captions, a talking creator, then the point); section 01 lays the
-   same clips out as a reel. The art is pixel PNGs with a few SVG frames on
-   top, generated offline; everything else is DOM and CSS.
+   The hero phone plays a real clip from the app and keeps the screen around
+   it alive: progress, counters, reactions, a comment being typed, the light
+   of the clip spilling into the screen. Section 01 lays out a reel of short
+   clips that each make one point; their art is pixel PNGs with a few SVG
+   frames on top, generated offline. Everything else is DOM and CSS.
    ========================================================================== */
 (function () {
     'use strict';
@@ -72,7 +73,6 @@
         }
     };
 
-    var HERO_ORDER = ['sky', 'money', 'corr', 'ai', 'eyes', 'bridge', 'rest'];
     var REEL_ORDER = ['corr', 'reply', 'eyes', 'ai', 'money', 'bridge', 'sky', 'rest'];
 
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -97,173 +97,163 @@
     }
 
     var ICON = {
-        like: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.6 13.2a4.6 4.6 0 0 1 6.5-6.6l.9.9.9-.9a4.6 4.6 0 0 1 6.5 6.6z"/></svg>',
-        reply: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg>',
-        save: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 3.6h11.6v17.2L12 16.9l-5.8 3.9z"/></svg>',
-        dive: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6c.6 4.6 2.8 6.8 7.4 7.4-4.6.6-6.8 2.8-7.4 7.4-.6-4.6-2.8-6.8-7.4-7.4 4.6-.6 6.8-2.8 7.4-7.4z"/><path d="M18.6 15.4c.3 2 1.2 2.9 3.2 3.2-2 .3-2.9 1.2-3.2 3.2-.3-2-1.2-2.9-3.2-3.2 2-.3 2.9-1.2 3.2-3.2z"/></svg>'
+        reply: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg>'
     };
 
-    // ---------- the hero phone: a feed that plays ----------
-    function clipSlide(id) {
-        var c = CLIPS[id];
-        return '<article class="clipx" data-clip="' + id + '">' +
-            '<div class="clipx__art">' + sceneSVG(c.scene || id) +
-            '<div class="clipx__who">' + personSVG(c.who) + '</div></div>' +
-            '<div class="clipx__shade"></div>' +
-            '<p class="clipx__cap"></p>' +
-            '<div class="clipx__rail">' +
-            '<span class="clipx__ava">' + personSVG(c.who, 'pp--face', true) + '<i>+</i></span>' +
-            '<span class="clipx__btn clipx__btn--like">' + ICON.like + '<b>' + c.likes + '</b></span>' +
-            '<span class="clipx__btn clipx__btn--reply">' + ICON.reply + '<b>' + c.replies + '</b></span>' +
-            '<span class="clipx__btn clipx__btn--save">' + ICON.save + '<b>Save</b></span>' +
-            '<span class="clipx__btn clipx__btn--dive">' + ICON.dive + '<b>Dive</b></span>' +
-            '</div>' +
-            '<div class="clipx__meta"><b>' + esc(c.handle) + '</b><p>' + esc(c.title) + '</p>' +
-            '<span>' + esc(c.topic.toUpperCase()) + ' · ' + c.len + '</span></div>' +
-            '<div class="clipx__point"><span>THE POINT</span><p>' + esc(c.point) + '</p>' +
-            '<em>' + ICON.dive + 'Deep dive: summary · key terms · sources</em></div>' +
-            '<div class="clipx__prog"><i></i></div>' +
-            '</article>';
-    }
+    // ---------- the hero phone: a real clip from the app ----------
+    function initPhone() {
+        var app = document.getElementById('heroApp');
+        if (!app) return;
+        var show = document.getElementById('heroPhone') || app;
+        var video = app.querySelector('video');
+        var canvas = app.querySelector('.hx-app__amb');
+        var ctx = canvas && canvas.getContext('2d');
+        var bar = app.querySelector('.hx-app__bar i');
+        var time = app.querySelector('[data-time]');
+        var like = app.querySelector('.hx-app__act--like');
+        var likeN = app.querySelector('[data-count="like"]');
+        var comN = app.querySelector('[data-count="comment"]');
+        var pop = app.querySelector('.hx-app__pop');
+        var input = app.querySelector('.hx-app__input');
+        var typed = app.querySelector('[data-typing]');
+        var clock = show.querySelector('[data-live]');
+        var reply = show.querySelector('.hero__float--reply');
+        var verdict = show.querySelector('.hero__float--verdict');
+        var scanN = show.querySelector('[data-scan]');
+        if (!video) return;
 
-    function initHero() {
-        var root = document.getElementById('heroFeed');
-        if (!root || !ART) return;
-        var track = root.querySelector('.feedx__track');
-        var ids = HERO_ORDER.slice();
-        track.innerHTML = ids.map(clipSlide).join('') + clipSlide(ids[0]);   // a copy of the first closes the loop
-        var slides = track.querySelectorAll('.clipx');
-        slides.forEach(function (s, i) { s.style.top = (i * 100) + '%'; });
+        var likes = 3128, comments = 842, live = 47, scan = 0, scanTo = 92;
+        var COMMENTS = ['Both. Logic first.', 'Depends on the stakes', 'Feelings are data too'];
+        var pass = 0, lastT = 0, raf = 0, lastAmb = 0, running = false, visible = false, tick = 0, typing = 0;
+        var lastLabel = '', lastScan = -1;
 
-        var binds = document.querySelectorAll('[data-feed]');
-        document.querySelectorAll('[data-feed="face"]').forEach(function (el) {
-            el.innerHTML = personSVG(CLIPS.reply.who, 'pp--face', true);
-        });
-        function bind(c) {
-            binds.forEach(function (el) {
-                var k = el.getAttribute('data-feed');
-                if (k === 'topic') el.textContent = c.topic.toUpperCase() + ' · ' + c.len;
-                else if (k === 'replies') el.textContent = c.replies + ' video replies';
-            });
+        function fmt(t) { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ':' + (t % 60 < 10 ? '0' : '') + (t % 60); }
+        function two(n) { return (n < 10 ? '0' : '') + n; }
+        function num(n) { return n.toLocaleString('en-US'); }
+        function restart(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+        function on(el, yes) { if (el) el.classList.toggle('is-on', yes); }
+
+        function react() {
+            likes += 1 + Math.floor(Math.random() * 3);
+            if (likeN) likeN.textContent = num(likes);
+            restart(like, 'is-pop');
+            restart(pop, 'is-pop');
         }
 
-        var idx = 0, timers = [], talkTimer = null, blinkTimer = null, running = false, visible = true;
-
-        function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
-        function clear() {
-            timers.forEach(clearTimeout); timers = [];
-            clearInterval(talkTimer); talkTimer = null;
+        function comment() {
+            if (!input || !typed) return;
+            var text = COMMENTS[pass % COMMENTS.length], k = 0;
+            clearInterval(typing); clearTimeout(typing);
+            input.classList.remove('is-sent');
+            input.classList.add('is-typing');
+            typed.textContent = '';
+            typing = setInterval(function () {
+                typed.textContent = text.slice(0, ++k);
+                if (k < text.length) return;
+                clearInterval(typing);
+                typing = setTimeout(function () {
+                    input.classList.add('is-sent');
+                    comments++;
+                    if (comN) comN.textContent = num(comments);
+                    typing = setTimeout(function () {
+                        input.classList.remove('is-typing', 'is-sent');
+                        typed.textContent = 'Add a comment...';
+                    }, 520);
+                }, 700);
+            }, 70);
         }
 
-        function talk(svg, on) {
-            clearInterval(talkTimer); talkTimer = null;
-            if (!svg) return;
-            if (!on) { svg.setAttribute('data-mouth', '0'); return; }
-            var seq = [1, 2, 1, 0, 2, 1, 2, 0], k = 0;
-            talkTimer = setInterval(function () { svg.setAttribute('data-mouth', String(seq[k++ % seq.length])); }, 115);
-        }
+        // what happens on every pass of the clip, on the clip's own clock
+        var CUES = [
+            [0.8, function () { on(reply, true); }],
+            [2.2, function () { scanTo = 86 + Math.floor(Math.random() * 10); on(verdict, true); show.style.setProperty('--scan', scanTo); }],
+            [4.1, react],
+            [6.0, comment],
+            [10.2, react],
+            [12.8, function () { on(reply, false); on(verdict, false); show.style.setProperty('--scan', 0); }]
+        ];
 
-        function blinkLoop() {
-            clearTimeout(blinkTimer);
-            blinkTimer = setTimeout(function () {
-                var s = slides[idx] && slides[idx].querySelector('.clipx__who .pp');
-                if (s && running) {
-                    s.setAttribute('data-eyes', 'shut');
-                    setTimeout(function () { s.removeAttribute('data-eyes'); }, 140);
-                }
-                blinkLoop();
-            }, 2200 + Math.random() * 2400);
-        }
-
-        function caption(el, text, word) {
-            var words = text.split(' ');
-            el.innerHTML = words.map(function (w, i) {
-                return '<span' + (i === word ? ' class="is-now"' : '') + '>' + esc(w) + '</span>';
-            }).join(' ');
-        }
-
-        var LINE = 1150, POINT = 2600, SWIPE = 650;
-
-        function play(i) {
-            clear();
-            var c = CLIPS[ids[i % ids.length]];
-            var slide = slides[i];
-            var cap = slide.querySelector('.clipx__cap');
-            var who = slide.querySelector('.clipx__who .pp');
-            var prog = slide.querySelector('.clipx__prog i');
-            slide.classList.remove('is-point', 'is-saved');
-            bind(c);
-            var total = c.lines.length * LINE + POINT;
-            prog.style.transition = 'none';
-            prog.style.width = '0%';
-            prog.getBoundingClientRect();
-            prog.style.transition = 'width ' + total + 'ms linear';
-            prog.style.width = '100%';
-
-            talk(who, true);
-            c.lines.forEach(function (line, n) {
-                var words = line.split(' ');
-                words.forEach(function (w, k) {
-                    later(function () { caption(cap, line, k); }, n * LINE + k * (LINE - 150) / words.length);
-                });
-            });
-            later(function () {
-                talk(who, false);
-                cap.innerHTML = '';
-                slide.classList.add('is-point');
-                root.classList.add('is-point');
-            }, c.lines.length * LINE);
-            later(function () { slide.classList.add('is-saved'); }, c.lines.length * LINE + 700);
-            later(function () { next(); }, total);
-        }
-
-        function next() {
-            root.classList.remove('is-point');
-            idx++;
-            track.style.transition = '';
-            track.style.transform = 'translateY(' + (-idx * 100) + '%)';
-            later(function () {
-                if (idx >= ids.length) {                       // on the copy: jump back to the real first slide
-                    idx = 0;
-                    track.style.transition = 'none';
-                    track.style.transform = 'translateY(0)';
-                    track.getBoundingClientRect();
-                    track.style.transition = '';
-                }
-                if (running) play(idx);
-            }, SWIPE);
+        function frame(now) {
+            raf = requestAnimationFrame(frame);
+            var d = video.duration || 14.37, t = video.currentTime || 0;
+            if (t + 0.25 < lastT) { lastT = 0; pass++; }          // the clip looped
+            for (var i = 0; i < CUES.length; i++) {
+                if (lastT < CUES[i][0] && t >= CUES[i][0]) CUES[i][1]();
+            }
+            lastT = t;
+            if (bar) bar.style.transform = 'scaleX(' + Math.min(1, t / d).toFixed(4) + ')';
+            var label = fmt(t) + ' / ' + fmt(d);
+            if (time && label !== lastLabel) time.textContent = lastLabel = label;
+            if (scanN) {
+                scan += ((verdict && verdict.classList.contains('is-on') ? scanTo : 0) - scan) * 0.07;
+                var shown = Math.round(scan);
+                if (shown !== lastScan) scanN.textContent = lastScan = shown;
+            }
+            // the clip's light, a few times a second, into a tiny blurred canvas
+            if (ctx && now - lastAmb > 90 && video.readyState >= 2) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                lastAmb = now;
+                if (!app.classList.contains('is-live')) app.classList.add('is-live');
+            }
         }
 
         function start() {
             if (running) return;
             running = true;
-            play(idx);
-            blinkLoop();
+            var p = video.play();
+            if (p && p.catch) p.catch(function () { });
+            raf = requestAnimationFrame(frame);
+            tick = setInterval(function () {
+                live++;
+                if (clock) clock.textContent = two(Math.floor(live / 60)) + ':' + two(live % 60);
+            }, 1000);
         }
+
         function stop() {
             running = false;
-            clear();
-            clearTimeout(blinkTimer);
+            video.pause();
+            cancelAnimationFrame(raf);
+            clearInterval(tick);
         }
 
         if (reduced) {
-            // no motion: the first clip, caption and point on screen at once
-            var s0 = slides[0], c0 = CLIPS[ids[0]];
-            caption(s0.querySelector('.clipx__cap'), c0.lines[1], -1);
-            s0.classList.add('is-point', 'is-saved');
-            bind(c0);
+            // hold still on the first frame, with the floats in place
+            video.removeAttribute('autoplay');
+            video.pause();
+            on(reply, true);
+            on(verdict, true);
+            show.style.setProperty('--scan', 92);
             return;
         }
 
-        // only play while someone can see it
-        var io = new IntersectionObserver(function (entries) {
+        new IntersectionObserver(function (entries) {
             visible = entries[0].isIntersecting;
             if (visible && !document.hidden) start(); else stop();
-        }, { threshold: 0.25 });
-        io.observe(root);
+        }, { threshold: 0.2 }).observe(app);
         document.addEventListener('visibilitychange', function () {
             if (document.hidden) stop(); else if (visible) start();
         });
+
+        // the phone leans toward the cursor; the cards behind lean away
+        if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            var hero = document.getElementById('hero') || show, queued = false, px = 0, py = 0;
+            hero.addEventListener('pointermove', function (e) {
+                var r = show.getBoundingClientRect();
+                px = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width / 2 + 260)));
+                py = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (r.height / 2 + 180)));
+                if (queued) return;
+                queued = true;
+                requestAnimationFrame(function () {
+                    queued = false;
+                    show.style.setProperty('--tx', px.toFixed(3));
+                    show.style.setProperty('--ty', py.toFixed(3));
+                });
+            });
+            hero.addEventListener('pointerleave', function () {
+                show.style.setProperty('--tx', '0');
+                show.style.setProperty('--ty', '0');
+            });
+        }
     }
 
     // ---------- section 01: the reel ----------
@@ -290,11 +280,11 @@
         track.innerHTML = '<div class="reel__set">' + html + '</div><div class="reel__set" aria-hidden="true">' + html + '</div>';
     }
 
-    // the share card and the promo film draw the same clips
-    window.DatariotFeed = { slide: clipSlide, card: reelCard };
+    // the share card draws the same clips
+    window.DatariotFeed = { card: reelCard };
 
     function boot() {
-        try { initHero(); } catch (e) { console.warn('feed: hero', e); }
+        try { initPhone(); } catch (e) { console.warn('feed: phone', e); }
         try { initReel(); } catch (e) { console.warn('feed: reel', e); }
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
