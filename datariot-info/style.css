@@ -12772,7 +12772,6 @@ html.navx-open .brandmark {
 @keyframes sc-z { from { transform: translate(0, 0); opacity: 1; } to { transform: translate(3px, -9px); opacity: 0; } }
 @keyframes sc-coin { 0% { visibility: hidden; } 4% { visibility: visible; } 94% { visibility: hidden; } }
 
-#hero .hero__phone-showcase.is-inview .sc g,
 .reel.is-inview .sc g {
     animation-play-state: running;
 }
@@ -12894,354 +12893,583 @@ html.navx-open .brandmark {
     padding: 0 16px !important;
 }
 
-/* ---------- the phone: a feed that plays ---------- */
-#hero .phone__screen {
-    background: #0A1330;
+/* ---------- the phone: a real clip from the app, alive ----------
+   The clip is cut out of the original screen recording (no status bar, no
+   letterbox, no Android buttons) and set in the app's own layout, drawn
+   crisp: blurred light from the clip fills the screen around it, the
+   counters move, the room reacts, somebody types a comment. The phone
+   leans toward the cursor; real app screens fan out behind it. */
+#hero .hero__phone-showcase {
+    --tx: 0;
+    --ty: 0;
 }
 
-.feedx {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    color: #fff;
-    font-family: var(--font-sans);
-    -webkit-user-select: none;
-    user-select: none;
+#hero .hero__phone-glow {
+    width: 440px;
+    height: 560px;
+    background: radial-gradient(ellipse, rgba(47, 128, 232, 0.34) 0%, rgba(142, 124, 240, 0.16) 42%, transparent 70%);
+    filter: blur(50px);
+    translate: calc(var(--tx) * 18px) calc(var(--ty) * 14px);
+    transition: translate .8s cubic-bezier(.2, .8, .2, 1);
 }
 
-.feedx__track {
-    position: absolute;
-    inset: 0;
-    transition: transform .62s cubic-bezier(.75, 0, .2, 1);
+[data-theme="dark"] #hero .hero__phone-glow {
+    background: radial-gradient(ellipse, rgba(47, 128, 232, 0.42) 0%, rgba(142, 124, 240, 0.2) 42%, transparent 70%);
 }
 
-.feedx__top {
-    position: absolute;
-    left: 0;
-    right: 0;
+#hero .hero__phone-frame {
+    animation: hx-idle 7s ease-in-out infinite;
+    transform: rotateY(calc(var(--tx) * 14deg)) rotateX(calc(var(--ty) * -10deg));
+    transition: transform .6s cubic-bezier(.2, .8, .2, 1);
+    animation-play-state: paused;
+}
+
+#hero .hero__phone-showcase.is-inview .hero__phone-frame {
+    animation-play-state: running;
+}
+
+@keyframes hx-idle {
+    0%, 100% { translate: 0 0; rotate: y -4deg; }
+    50% { translate: 0 -12px; rotate: y 4deg; }
+}
+
+/* a glossy sweep instead of the old scan line */
+#hero .hero__phone-frame::after {
     top: 0;
-    z-index: 3;
-    padding: 13px 24px 0;
-    pointer-events: none;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
-}
-
-.feedx__status {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font: 700 11px/1 var(--font-sans);
-}
-
-.feedx__status i {
-    display: inline-block;
-    width: 20px;
-    height: 9px;
-    border: 1.5px solid #fff;
-    border-radius: 3px;
-    position: relative;
-    opacity: .9;
-}
-
-.feedx__status i::after {
-    content: '';
-    position: absolute;
-    inset: 1px 5px 1px 1px;
-    background: #fff;
-    border-radius: 1px;
-}
-
-.feedx__tabs {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 11px;
-    font: 700 10px/1 var(--font-tech);
-    letter-spacing: 0.14em;
-}
-
-.feedx__tabs span {
-    opacity: .62;
-    padding-bottom: 5px;
-}
-
-.feedx__tabs .is-on {
-    opacity: 1;
-    box-shadow: inset 0 -2px 0 #fff;
-}
-
-.clipx {
-    position: absolute;
-    left: 0;
-    width: 100%;
+    left: -80%;
+    width: 55%;
     height: 100%;
-    overflow: hidden;
+    z-index: 6;
+    border-radius: 0;
+    background: linear-gradient(100deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.22) 45%, rgba(255, 255, 255, 0.04) 60%, rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-14deg);
+    animation: hx-sheen 7.5s ease-in-out infinite;
 }
 
-.clipx__art,
-.clipx__art .sc {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-.clipx__who {
-    position: absolute;
-    left: -1.85%;
-    bottom: 0;
-    width: 66.67%;
-}
-
-.clipx__who .pp {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-.clipx__shade {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(4, 8, 20, .5) 0, rgba(4, 8, 20, 0) 17%, rgba(4, 8, 20, 0) 64%, rgba(4, 8, 20, .62) 100%);
-}
-
-/* auto captions, word by word, with a hard pixel outline */
-.clipx__cap {
-    position: absolute;
-    left: 5%;
-    right: 19%;
-    top: 44%;
-    margin: 0;
-    text-align: center;
-    font: 400 19px/1.16 var(--px-font);
-    color: #fff;
-    text-shadow:
-        2px 0 0 #0B0B12, -2px 0 0 #0B0B12, 0 2px 0 #0B0B12, 0 -2px 0 #0B0B12,
-        2px 2px 0 #0B0B12, -2px -2px 0 #0B0B12, 2px -2px 0 #0B0B12, -2px 2px 0 #0B0B12,
-        0 4px 0 rgba(11, 11, 18, .55);
-}
-
-.clipx__cap .is-now {
-    color: #FFE45C;
-}
-
-.clipx__rail {
-    position: absolute;
-    right: 8px;
-    bottom: 94px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-}
-
-.clipx__ava {
-    position: relative;
-    width: 34px;
-    height: 34px;
-    margin-bottom: 4px;
-    border-radius: 50%;
-    box-shadow: 0 0 0 2px #fff;
-    background: #9DC0F7;
-}
-
-.clipx__ava .pp {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-}
-
-.clipx__ava i {
-    position: absolute;
-    left: 50%;
-    bottom: -8px;
-    width: 16px;
-    height: 16px;
-    margin-left: -8px;
-    border-radius: 50%;
-    font: 700 13px/16px var(--font-sans);
-    font-style: normal;
-    text-align: center;
-    color: #fff;
-    background: var(--brand-500);
-}
-
-.clipx__btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-}
-
-.clipx__btn svg {
-    width: 25px;
-    height: 25px;
-    fill: #fff;
-    filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, .5));
-}
-
-.clipx__btn b {
-    font: 700 9.5px/1 var(--font-sans);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
-}
-
-.clipx__btn--dive svg {
-    fill: #BFD7FA;
-}
-
-.clipx.is-saved .clipx__btn--save svg {
-    fill: #FFD45C;
-    animation: clipx-pop .45s cubic-bezier(.3, 1.6, .5, 1);
-}
-
-@keyframes clipx-pop {
-    0% { transform: scale(.6); }
-    100% { transform: scale(1); }
-}
-
-.clipx__meta {
-    position: absolute;
-    left: 13px;
-    right: 58px;
-    bottom: 17px;
-    transition: opacity .25s ease;
-}
-
-.clipx__meta b {
-    font: 800 12.5px/1 var(--font-sans);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
-}
-
-.clipx__meta p {
-    margin: 5px 0 7px;
-    font: 600 11.5px/1.3 var(--font-sans);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
-}
-
-.clipx__meta span {
-    display: inline-block;
-    padding: 4px 6px 3px;
-    font: 700 8.5px/1 var(--font-tech);
-    letter-spacing: 0.14em;
-    background: rgba(8, 12, 26, .55);
-}
-
-.clipx.is-point .clipx__meta {
-    opacity: 0;
-}
-
-/* the point: every clip ends on it */
-.clipx__point {
-    position: absolute;
-    left: 9px;
-    right: 9px;
-    bottom: 11px;
-    padding: 11px 12px 10px;
-    color: #0B1220;
-    background: #fff;
-    clip-path: var(--px-notch);
-    transform: translateY(calc(100% + 16px));
-    transition: transform .5s cubic-bezier(.2, .9, .25, 1);
-}
-
-.clipx.is-point .clipx__point {
-    transform: none;
-}
-
-.clipx__point span {
-    font: 800 9px/1 var(--font-tech);
-    letter-spacing: 0.2em;
-    color: var(--brand-500);
-}
-
-.clipx__point p {
-    margin: 6px 0 8px;
-    font: 800 14px/1.24 var(--font-sans);
-    letter-spacing: -0.01em;
-}
-
-.clipx__point em {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font: 600 8.5px/1 var(--font-tech);
-    font-style: normal;
-    letter-spacing: 0.05em;
-    color: #56627E;
-}
-
-.clipx__point em svg {
-    width: 11px;
-    height: 11px;
-    flex: none;
-    fill: var(--brand-500);
-}
-
-.clipx__prog {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 3px;
-    background: rgba(255, 255, 255, .22);
-}
-
-.clipx__prog i {
-    display: block;
-    width: 0;
-    height: 100%;
-    background: #fff;
-}
-
-/* floating app UI around the phone, filled from the clip on screen */
-#hero .hero__float--live b {
-    color: var(--text-primary);
-    font-weight: 700;
-    letter-spacing: 0.14em;
-}
-
-#hero .hero__float--live .hero__float-dot {
-    background: var(--brand-500);
-}
-
-#hero .hero__float-face {
-    width: 28px;
-    height: 28px;
-    flex: none;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #9DC0F7;
-}
-
-#hero .hero__float-face .pp {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-#hero .hero__float-body b {
-    font-family: var(--font-sans);
-    font-weight: 800;
-}
-
-/* the floats sit clear of the captions and the point card */
-#hero .hero__float--live {
-    top: 64px;
-    right: -92px;
-}
-
-#hero .hero__float--reply {
-    top: 23%;
-    left: -64px;
+@keyframes hx-sheen {
+    0%, 72% { left: -80%; }
+    100% { left: 140%; }
 }
 
 @media (min-width: 1025px) {
     #hero .hero__phone-frame {
         width: 300px;
         height: 624px;
+    }
+}
+
+/* real app screens, fanned out behind the phone */
+#hero .hero__clip-stack {
+    translate: calc(var(--tx) * -14px) calc(var(--ty) * -10px);
+    transition: translate .8s cubic-bezier(.2, .8, .2, 1);
+}
+
+#hero .hero__clip-stack-card {
+    overflow: hidden;
+    border: 5px solid #fff;
+    border-radius: 36px;
+    background: #0B1220;
+    box-shadow: 0 24px 50px rgba(15, 23, 42, 0.18);
+    opacity: 1;
+    transition: transform .7s cubic-bezier(.2, .8, .2, 1);
+}
+
+[data-theme="dark"] #hero .hero__clip-stack-card {
+    border-color: #161A24;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+}
+
+#hero .hero__clip-stack-card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
+#hero .hero__clip-stack-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(241, 245, 252, 0.28), rgba(241, 245, 252, 0.5));
+}
+
+[data-theme="dark"] #hero .hero__clip-stack-card::after {
+    background: linear-gradient(180deg, rgba(8, 9, 13, 0.3), rgba(8, 9, 13, 0.55));
+}
+
+#hero .hero__clip-stack-card--1 {
+    width: 232px;
+    height: 494px;
+    transform: translateX(-104px) rotate(-11deg);
+}
+
+#hero .hero__clip-stack-card--2 {
+    width: 246px;
+    height: 524px;
+    transform: translateX(-58px) rotate(-5.5deg);
+}
+
+#hero .hero__clip-stack-card--3 {
+    width: 240px;
+    height: 510px;
+    transform: translateX(78px) rotate(7deg);
+}
+
+#hero .hero__phone-showcase:hover .hero__clip-stack-card--1 { transform: translateX(-150px) rotate(-15deg); }
+#hero .hero__phone-showcase:hover .hero__clip-stack-card--2 { transform: translateX(-92px) rotate(-8deg); }
+#hero .hero__phone-showcase:hover .hero__clip-stack-card--3 { transform: translateX(118px) rotate(10deg); }
+
+/* the floats lean with the phone, a little further out */
+#hero .hero__float {
+    translate: calc(var(--tx) * 26px) calc(var(--ty) * 18px);
+    transition: translate .7s cubic-bezier(.2, .8, .2, 1), opacity .45s ease;
+}
+
+#hero .hero__float--live {
+    top: 52px;
+    right: -74px;
+}
+
+#hero .hero__float--live b {
+    min-width: 5ch;
+}
+
+#hero .hero__float--reply {
+    top: 30%;
+    left: -92px;
+}
+
+#hero .hero__float--verdict {
+    right: -96px;
+    bottom: 176px;
+}
+
+/* the reply and the scan come and go with the clip */
+#hero .hero__float--reply,
+#hero .hero__float--verdict {
+    opacity: 0;
+}
+
+#hero .hero__float.is-on {
+    opacity: 1;
+}
+
+#hero .hero__float--reply .hero__float-avatar {
+    position: relative;
+    opacity: 1;
+    background: linear-gradient(135deg, #4A8BEC, #8E7CF0);
+}
+
+#hero .hero__float--reply .hero__float-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid #F43F5E;
+    animation: hx-rec 1.4s ease-in-out infinite;
+}
+
+@keyframes hx-rec {
+    0%, 100% { opacity: .9; transform: scale(1); }
+    50% { opacity: .25; transform: scale(1.12); }
+}
+
+#hero .hero__float-meter span {
+    width: calc(var(--scan, 0) * 1%);
+    transition: width 1.6s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* ---------- the app screen ---------- */
+#hero .phone__screen {
+    background: #05070D;
+}
+
+.hx-app {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: #fff;
+    font-family: var(--font-sans);
+    background: #05070D;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* light from the clip spills into the screen around it; the poster stands
+   in until the video is drawing */
+.hx-app__amb,
+.hx-app__amb-img {
+    position: absolute;
+    inset: -30px;
+    width: calc(100% + 60px);
+    height: calc(100% + 60px);
+    filter: blur(22px) saturate(1.5) brightness(.6);
+}
+
+.hx-app__amb-img {
+    background-size: cover;
+    background-position: center;
+}
+
+.hx-app__amb {
+    opacity: 0;
+    transition: opacity .6s ease;
+}
+
+.hx-app.is-live .hx-app__amb {
+    opacity: 1;
+}
+
+.hx-app__top {
+    position: relative;
+    z-index: 2;
+    padding: 13px 24px 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+.hx-app__status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font: 700 11px/1 var(--font-sans);
+}
+
+.hx-app__status i {
+    position: relative;
+    width: 20px;
+    height: 9px;
+    border: 1.5px solid #fff;
+    border-radius: 3px;
+    opacity: .9;
+}
+
+.hx-app__status i::after {
+    content: '';
+    position: absolute;
+    inset: 1px 5px 1px 1px;
+    border-radius: 1px;
+    background: #fff;
+}
+
+.hx-app__tabs {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 12px;
+    font: 700 10px/1 var(--font-tech);
+    letter-spacing: 0.14em;
+}
+
+.hx-app__tabs span {
+    padding-bottom: 5px;
+    opacity: .6;
+}
+
+.hx-app__tabs .is-on {
+    opacity: 1;
+    box-shadow: inset 0 -2px 0 #fff;
+}
+
+.hx-app__clip {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 596 / 638;
+    margin: auto 0;
+    overflow: hidden;
+    background: #0B0F1A;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .45);
+}
+
+.hx-app__video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hx-app__who {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font: 800 12.5px/1 var(--font-sans);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .7);
+}
+
+.hx-app__who i {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #DCEBFF;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .85);
+}
+
+.hx-app__who i::before {
+    content: '';
+    margin-left: 2px;
+    border-left: 8px solid var(--brand-500);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+}
+
+/* the room reacts: a sparkle over the clip, the like button pops */
+.hx-app__pop {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 86px;
+    height: 86px;
+    margin: -43px 0 0 -43px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hx-app__pop svg {
+    width: 100%;
+    height: 100%;
+    fill: #fff;
+    filter: drop-shadow(0 0 12px rgba(107, 165, 242, .95)) drop-shadow(0 0 2px rgba(47, 128, 232, 1));
+}
+
+.hx-app__pop.is-pop {
+    animation: hx-pop .95s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+@keyframes hx-pop {
+    0% { opacity: 0; transform: scale(.2) rotate(-25deg); }
+    30% { opacity: 1; transform: scale(1.15) rotate(6deg); }
+    55% { opacity: 1; transform: scale(1) rotate(0); }
+    100% { opacity: 0; transform: scale(1.05) translateY(-26px); }
+}
+
+.hx-app__under {
+    position: relative;
+    z-index: 2;
+    padding: 12px 12px 12px;
+    background: linear-gradient(180deg, rgba(3, 5, 10, 0), rgba(3, 5, 10, .72) 26%, rgba(3, 5, 10, .9));
+}
+
+.hx-app__cap {
+    margin: 0 0 11px;
+    font: 600 11.5px/1.35 var(--font-sans);
+    color: rgba(255, 255, 255, .95);
+}
+
+.hx-app__cap b {
+    color: rgba(255, 255, 255, .55);
+    font-weight: 700;
+}
+
+.hx-app__row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.hx-app__act {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 30px;
+}
+
+.hx-app__act svg {
+    width: 19px;
+    height: 19px;
+    fill: #fff;
+}
+
+.hx-app__act i {
+    font: 600 8px/1 var(--font-sans);
+    font-style: normal;
+    opacity: .8;
+}
+
+.hx-app__act b {
+    font: 700 8.5px/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+}
+
+.hx-app__act--like {
+    position: relative;
+}
+
+.hx-app__act--like.is-pop svg {
+    fill: #6BA5F2;
+    animation: hx-like .6s cubic-bezier(.3, 1.8, .5, 1);
+}
+
+@keyframes hx-like {
+    0% { transform: scale(.5); }
+    100% { transform: scale(1); }
+}
+
+/* six sparks fly off the like button */
+.hx-app__act--like::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 9px;
+    width: 3px;
+    height: 3px;
+    margin-left: -1.5px;
+    border-radius: 50%;
+    opacity: 0;
+    color: #9DC0F7;
+    box-shadow: 0 -14px, 12px -7px, 12px 7px, 0 14px, -12px 7px, -12px -7px;
+}
+
+.hx-app__act--like.is-pop::after {
+    animation: hx-sparks .6s ease-out;
+}
+
+@keyframes hx-sparks {
+    0% { opacity: 1; transform: scale(.4); }
+    100% { opacity: 0; transform: scale(1.5); }
+}
+
+.hx-app__input {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px 0 11px;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, .1);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22);
+}
+
+.hx-app__input em {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font: 500 10.5px/1 var(--font-sans);
+    font-style: normal;
+    color: rgba(255, 255, 255, .55);
+}
+
+.hx-app__input.is-typing em {
+    color: #fff;
+}
+
+.hx-app__input.is-typing em::after {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 11px;
+    margin-left: 1px;
+    vertical-align: -1px;
+    background: #fff;
+    animation: hx-caret .8s steps(1, end) infinite;
+}
+
+@keyframes hx-caret {
+    50% { opacity: 0; }
+}
+
+.hx-app__input.is-sent em {
+    animation: hx-sent .5s ease-in forwards;
+}
+
+@keyframes hx-sent {
+    to { opacity: 0; transform: translateY(-16px); }
+}
+
+.hx-app__send {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex: none;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.hx-app__send svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: var(--brand-500);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hx-app__time {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.hx-app__bar {
+    position: relative;
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, .22);
+}
+
+.hx-app__bar i {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+}
+
+.hx-app__bar i::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: -4px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.hx-app__time b {
+    font: 700 9.5px/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    opacity: .9;
+}
+
+@media (max-width: 1024px) {
+    #hero .hero__clip-stack {
+        display: flex;
+    }
+
+    #hero .hero__clip-stack-card--1 { width: 196px; height: 418px; transform: translateX(-70px) rotate(-10deg); }
+    #hero .hero__clip-stack-card--2 { display: none; }
+    #hero .hero__clip-stack-card--3 { width: 200px; height: 426px; transform: translateX(72px) rotate(9deg); }
+
+    #hero .hero__float--live {
+        top: -16px;
+        right: 4px;
+    }
+
+    /* the phone is narrower here: icons and counts only, so the comment box keeps its words */
+    .hx-app__act i {
+        display: none;
+    }
+
+    .hx-app__act {
+        min-width: 24px;
     }
 }
 
@@ -13728,9 +13956,6 @@ html.navx-open .brandmark {
         font-size: 12.5px !important;
     }
 
-    #hero .hero__float--live {
-        display: none !important;
-    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -13754,8 +13979,20 @@ html.navx-open .brandmark {
         animation: none !important;
     }
 
-    .feedx__track,
-    .clipx__point {
-        transition: none;
+    #hero .hero__phone-frame,
+    #hero .hero__phone-frame::after,
+    #hero .hero__float--reply .hero__float-avatar::after,
+    .hx-app__pop,
+    .hx-app__act--like svg,
+    .hx-app__act--like::after {
+        animation: none !important;
+    }
+
+    #hero .hero__phone-frame,
+    #hero .hero__float,
+    #hero .hero__clip-stack,
+    #hero .hero__clip-stack-card,
+    #hero .hero__phone-glow {
+        transition: none !important;
     }
 }
