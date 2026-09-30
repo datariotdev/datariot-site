@@ -2,7 +2,7 @@
   <img src="./assets/logo.jpg" width="120" height="120" style="border-radius: 28px; box-shadow: 0 12px 36px rgba(0, 102, 255, 0.25); margin-bottom: 20px;" />
 
   # DATARIOT
-  ### *Content with Gravity. Logic Wins, Not Likes.*
+  ### *Short videos with a point. Logic wins, not likes.*
 
   <p align="center">
     <a href="https://expo.dev"><img src="https://img.shields.io/badge/Platform-Expo%20%7C%20React%20Native-0066FF?style=for-the-badge&logo=expo&logoColor=white" alt="Platform" /></a>
