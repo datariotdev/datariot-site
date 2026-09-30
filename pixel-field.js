@@ -85,13 +85,14 @@
         // the brand blue: deep navy, through saturated cobalt, to azure
         // where the light catches a fold
         vec3 tone(float i) {
-            vec3 c = vec3(0.016, 0.055, 0.173);                    // #040E2C
-            c = mix(c, vec3(0.024, 0.106, 0.290), step(0.5, i));   // #061B4A
-            c = mix(c, vec3(0.039, 0.165, 0.431), step(1.5, i));   // #0A2A6E
-            c = mix(c, vec3(0.055, 0.235, 0.569), step(2.5, i));   // #0E3C91
-            c = mix(c, vec3(0.071, 0.314, 0.675), step(3.5, i));   // #1250AC
-            c = mix(c, vec3(0.078, 0.400, 0.776), step(4.5, i));   // #1466C6
-            c = mix(c, vec3(0.118, 0.525, 0.855), step(5.5, i));   // #1E86DA
+            // the logo's two colours: black up to ice, through its greys
+            vec3 c = vec3(0.027, 0.031, 0.047);                    // #07080C
+            c = mix(c, vec3(0.055, 0.063, 0.086), step(0.5, i));   // #0E1016
+            c = mix(c, vec3(0.090, 0.102, 0.133), step(1.5, i));   // #171A22
+            c = mix(c, vec3(0.145, 0.165, 0.208), step(2.5, i));   // #252A35
+            c = mix(c, vec3(0.227, 0.259, 0.322), step(3.5, i));   // #3A4252
+            c = mix(c, vec3(0.420, 0.467, 0.549), step(4.5, i));   // #6B778C
+            c = mix(c, vec3(0.855, 0.902, 0.969), step(5.5, i));   // #DAE6F7
             return c;
         }
 
@@ -181,7 +182,7 @@
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, index, gl.STATIC_DRAW);
 
     gl.enable(gl.DEPTH_TEST);
-    gl.clearColor(0.016, 0.055, 0.173, 1);
+    gl.clearColor(0.027, 0.031, 0.047, 1);
 
     // ---- camera -----------------------------------------------------------
     function perspective(fovy, aspect, near, far) {
