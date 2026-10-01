@@ -3,34 +3,36 @@ import { Text, TextInput } from 'react-native';
 import { FONT } from './fonts';
 
 /**
- * React Native has no global "default font". Any <Text> that does not name a
- * family renders in the system face — on web that is Arial — so a screen whose
- * author never thought about type (login, settings, most modals) sits in a
- * different typeface from the rest of the app.
- *
- * This puts Manrope underneath every Text and TextInput. It goes FIRST in the
- * style array, so any explicit fontFamily still wins; passing it as a prop
- * rather than patching the rendered element matters on web, where the
- * element's style is already compiled and an inline fontFamily would beat the
- * atomic classes that carry explicit ones.
+ * Native twin of defaultFont.web.ts: Manrope underneath every Text and
+ * TextInput, first in the style array so an explicit fontFamily still wins,
+ * and nested <Text> inherits its parent's family instead of resetting it.
  */
 let patched = false;
 
-const patch = (Component: any) => {
+let TextAncestor: any = null;
+try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mod = require('react-native/Libraries/Text/TextAncestor');
+    TextAncestor = mod?.default ?? mod;
+} catch {
+    TextAncestor = null;
+}
+
+const patch = (Component: any, skipNested: boolean) => {
     const render = Component?.render;
     if (typeof render !== 'function') return;
     Component.render = function (props: any, ref: any) {
-        return render.call(this, { ...props, style: [{ fontFamily: FONT.sans }, props.style] }, ref);
+        const nested = skipNested && TextAncestor ? React.useContext(TextAncestor) : false;
+        return render.call(this, nested ? props : { ...props, style: [{ fontFamily: FONT.sans }, props.style] }, ref);
     };
 };
 
 export const applyDefaultFont = () => {
     if (patched) return;
     patched = true;
-    patch(Text);
-    patch(TextInput);
+    patch(Text, true);
+    patch(TextInput, false);
 };
 
 // Side-effect import: `import '@design-system/defaultFont'` is enough.
 applyDefaultFont();
-void React;

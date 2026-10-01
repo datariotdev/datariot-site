@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { MONO, useDockSurface } from './DockModule';
+import { pixelClip } from '@design-system/pixel';
 
 export interface Objective {
     id: string;
@@ -160,7 +161,7 @@ export const PilotStatus = ({
 
 const styles = StyleSheet.create({
     card: {
-        borderRadius: 12,
+        ...pixelClip(3),
         borderWidth: 1,
         padding: 14,
     },
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     },
     connectBtn: {
         height: 34,
-        borderRadius: 8,
+        ...pixelClip(2),
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
     avatar: {
         width: 36,
         height: 36,
-        borderRadius: 10,
+        ...pixelClip(2),
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
         gap: 3,
         paddingHorizontal: 6,
         paddingVertical: 3,
-        borderRadius: 5,
+        ...pixelClip(2),
         borderWidth: 1,
     },
     streakText: {
@@ -270,7 +271,7 @@ const styles = StyleSheet.create({
     checkbox: {
         width: 14,
         height: 14,
-        borderRadius: 4,
+        ...pixelClip(2),
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',

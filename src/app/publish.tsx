@@ -12,6 +12,8 @@ import { supabase } from '../lib/supabase/client';
 import { generateDebateSeed, generateVideoAnalysis, DebateSeed } from '../lib/ai/client';
 import { useTheme } from '../components/Theme/ThemeProvider';
 import { pageBg } from '@design-system/surface';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 const showAlert = (title: string, message: string) => {
     if (Platform.OS === 'web') {
@@ -321,7 +323,7 @@ export default function PublishScreen() {
             {/* Header */}
             <View style={[styles.header, { borderBottomColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Text style={[styles.cancelText, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium }]}>Cancel</Text>
+                    <Text style={[styles.cancelText, { color: theme.colors.text.secondary, fontFamily: FONT.tech }]}>[ CANCEL ]</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={handlePost}
@@ -335,13 +337,13 @@ export default function PublishScreen() {
                     ]}
                 >
                     {uploading ? (
-                        <ActivityIndicator color={isDark ? '#000000' : '#ffffff'} size="small" />
+                        <ActivityIndicator color={isDark ? '#07080C' : '#ffffff'} size="small" />
                     ) : (
                         <Text style={[
                             styles.postButtonText,
                             {
-                                color: isDark ? '#000000' : '#ffffff',
-                                fontFamily: theme.typography.fontFamilies.bold
+                                color: isDark ? '#07080C' : '#ffffff',
+                                fontFamily: FONT.techBold
                             }
                         ]}>Post</Text>
                     )}
@@ -352,7 +354,7 @@ export default function PublishScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}
             >
-                <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100 }}>
+                <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100, width: '100%', maxWidth: 720, alignSelf: 'center' }}>
                     {/* User Info (Optional) */}
                     <View style={styles.userInfo}>
                         <View style={[
@@ -556,7 +558,7 @@ export default function PublishScreen() {
 
                 {/* TOOLBAR */}
                 {!isVideoSelection && (
-                    <View style={[styles.toolbar, { backgroundColor: theme.colors.background.primary, borderTopColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }]}>
+                    <View style={[styles.toolbar, { backgroundColor: 'transparent', borderTopColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)' }]}>
                         <TouchableOpacity
                             style={[styles.toolbarButton, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)' }]}
                             onPress={pickImage}
@@ -609,9 +611,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderBottomWidth: 1,
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
     },
     cancelText: {
-        fontSize: 16,
+        fontSize: 13,
+        letterSpacing: 0.6,
     },
     headerTitle: {
         fontSize: 16,
@@ -623,7 +629,7 @@ const styles = StyleSheet.create({
     postButton: {
         paddingHorizontal: 20,
         paddingVertical: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     disabledButton: {
         opacity: 0.5,
@@ -644,7 +650,7 @@ const styles = StyleSheet.create({
     avatarPlaceholder: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -667,7 +673,7 @@ const styles = StyleSheet.create({
     mediaPreview: {
         marginHorizontal: 20,
         height: 250,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
         position: 'relative',
         marginTop: 10,
@@ -688,7 +694,7 @@ const styles = StyleSheet.create({
     categoryChip: {
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     categoryChipText: {
         fontSize: 14,
@@ -703,7 +709,7 @@ const styles = StyleSheet.create({
         right: 10,
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 4,
+        ...pixelClip(2),
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
@@ -717,14 +723,14 @@ const styles = StyleSheet.create({
     imagePreviewContainer: {
         marginHorizontal: 20,
         marginTop: 10,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
     },
     imagePreview: {
         width: '100%',
         height: 300,
         resizeMode: 'cover',
-        borderRadius: 16,
+        ...pixelClip(4),
     },
     removeMedia: {
         position: 'absolute',
@@ -733,7 +739,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.6)',
         width: 32,
         height: 32,
-        borderRadius: 16,
+        ...pixelClip(3),
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -744,12 +750,12 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginTop: 20,
         padding: 12,
-        borderRadius: 16,
+        ...pixelClip(4),
     },
     playButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
@@ -776,11 +782,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 12,
         borderTopWidth: 1,
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
     },
     toolbarButton: {
         width: 44,
         height: 44,
-        borderRadius: 22,
+        ...pixelClip(4),
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 8,
@@ -832,7 +841,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 12,
+        ...pixelClip(3),
         marginHorizontal: 20,
         marginTop: 8,
         gap: 8,

@@ -7,6 +7,7 @@ import { theme } from '@design-system/theme';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
+import { pixelClip } from '@design-system/pixel';
 
 export default function VideoPlayerScreen() {
     const isFocused = useIsFocused();
@@ -92,8 +93,8 @@ export default function VideoPlayerScreen() {
         return (
             <View style={styles.loadingContainer}>
                 <Text style={{ color: 'white' }}>Video not found</Text>
-                <TouchableOpacity onPress={handleBack} style={{ marginTop: 20, padding: 10, backgroundColor: theme.colors.primary.DEFAULT, borderRadius: 8 }}>
-                    <Text style={{ color: 'white' }}>Go Back</Text>
+                <TouchableOpacity onPress={handleBack} style={{ marginTop: 20, paddingVertical: 10, paddingHorizontal: 18, backgroundColor: '#DAE6F7' }}>
+                    <Text style={{ color: '#07080C' }}>Go Back</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
         left: 20,
         zIndex: 10,
         padding: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
         backgroundColor: 'rgba(0,0,0,0.3)',
     }
 });

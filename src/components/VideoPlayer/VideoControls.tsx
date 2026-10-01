@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
+import { pixelClip } from '@design-system/pixel';
 
 interface VideoControlsProps {
     isPlaying: boolean;
@@ -316,18 +317,18 @@ const styles = StyleSheet.create({
     avatarContainerLive: {
         borderWidth: 2,
         borderColor: '#FF0050',
-        borderRadius: 22,
+        ...pixelClip(6),
         padding: 2,
     },
     avatar: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
     },
     avatarLive: {
         width: 36,
         height: 36,
-        borderRadius: 18,
+        ...pixelClip(3),
     },
     avatarPlaceholder: {
         backgroundColor: theme.colors.surface.DEFAULT,
@@ -415,7 +416,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 40,
         backgroundColor: 'rgba(255,255,255,0.1)',
-        borderRadius: 20, // Rounded pill look
+        ...pixelClip(4), // Rounded pill look
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
         marginLeft: 16,
@@ -431,7 +432,7 @@ const styles = StyleSheet.create({
     sendIcon: {
         width: 24,
         height: 24,
-        borderRadius: 12, // Circular button look
+        ...pixelClip(3), // Circular button look
         backgroundColor: '#DAE6F7',
         alignItems: 'center',
         justifyContent: 'center',

@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS } from 'react-native-reanimated';
 import { theme } from '@design-system/theme';
+import { pixelClip } from '@design-system/pixel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TIMELINE_HEIGHT = 60;
@@ -240,10 +241,10 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.primary.DEFAULT,
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     saveButtonText: {
-        color: 'white',
+        color: '#07080C',
         fontWeight: 'bold',
     },
     videoContainer: {
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         backgroundColor: 'rgba(0,0,0,0.3)',
         padding: 20,
-        borderRadius: 50,
+        ...pixelClip(6),
     },
     pauseOverlay: {
         ...StyleSheet.absoluteFillObject,
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
     timelineTrack: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: '#333',
-        borderRadius: 8,
+        ...pixelClip(2),
         overflow: 'hidden',
     },
     selectedRegion: {
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
         width: HANDLE_WIDTH,
         height: TIMELINE_HEIGHT + 10, // Slightly taller
         backgroundColor: '#DAE6F7',
-        borderRadius: 4,
+        ...pixelClip(2),
         justifyContent: 'center',
         alignItems: 'center',
         top: -5,

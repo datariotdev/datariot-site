@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 interface TrendingItem {
     id: string;
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         padding: 20,
         backgroundColor: 'rgba(0,0,0,0.02)',
-        borderRadius: 24,
+        ...pixelClip(6),
         borderWidth: 1,
         borderColor: 'rgba(0,0,0,0.03)',
     },

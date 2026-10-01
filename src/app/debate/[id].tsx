@@ -12,6 +12,8 @@ import { Post } from '@lib/supabase/hooks/usePosts';
 import { useDebateArguments, Argument } from '@lib/supabase/hooks/useDebateArguments';
 import { Ionicons } from '@expo/vector-icons';
 import { pageBg } from '@design-system/surface';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 const VoteButton = ({ isVoted, score, onPress }: { isVoted: boolean; score: number; onPress: () => void }) => {
     const { theme, mode } = useTheme();
@@ -32,13 +34,13 @@ const VoteButton = ({ isVoted, score, onPress }: { isVoted: boolean; score: numb
 
     return (
         <Pressable
-            style={[styles.voteButton, isVoted && { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}
+            style={[styles.voteButton, isVoted && { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.07)' }]}
             onPress={handlePress}
         >
             <Animated.View style={[styles.voteIconContainer, animatedStyle]}>
-                <Ionicons name={isVoted ? "bulb" : "bulb-outline"} size={16} color={isVoted ? "#DAE6F7" : theme.colors.text.secondary} />
+                <Ionicons name={isVoted ? "bulb" : "bulb-outline"} size={16} color={isVoted ? theme.colors.primary.DEFAULT : theme.colors.text.secondary} />
             </Animated.View>
-            <Text style={[styles.voteText, { color: isVoted ? "#DAE6F7" : theme.colors.text.secondary }]}>
+            <Text style={[styles.voteText, { color: isVoted ? theme.colors.primary.DEFAULT : theme.colors.text.secondary }]}>
                 {score} Reputation
             </Text>
         </Pressable>
@@ -52,6 +54,14 @@ export default function DebateThreadScreen() {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
     const insets = useSafeAreaInsets();
+
+    // FOR is the accent (ice on dark, ink on light); AGAINST is the graphite step
+    // between the two logo colours — the same pairing as the arena tally on the feed.
+    const accent = theme.colors.primary.DEFAULT;
+    const onAccent = theme.colors.primary.onPrimary;
+    const againstFill = isDark ? '#5F6B82' : '#9AA7BD';
+    const againstText = isDark ? '#9AA7BD' : '#3A4252';
+    const hairline = isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)';
 
     const [post, setPost] = useState<Post | null>(null);
     const [loadingPost, setLoadingPost] = useState(true);
@@ -214,13 +224,15 @@ export default function DebateThreadScreen() {
 
     const renderArgument = ({ item }: { item: Argument }) => {
         const isFor = item.side === 'FOR';
-        const colorMain = isFor ? "#DAE6F7" : "#FFFFFF";
-        const bgLabel = isFor ? 'rgba(218, 230, 247, 0.15)' : 'rgba(255, 255, 255, 0.15)';
+        const colorMain = isFor ? accent : againstText;
+        const bgLabel = isFor
+            ? (isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.08)')
+            : (isDark ? 'rgba(154, 167, 189, 0.16)' : 'rgba(95, 107, 130, 0.12)');
 
         return (
-            <View style={[styles.argumentCard, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#FFF' }]}>
+            <View style={[styles.argumentCard, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.03)' : 'rgba(255, 255, 255, 0.65)', borderColor: hairline }]}>
                 {/* Left Line Indicator */}
-                <View style={[styles.sideIndicator, { backgroundColor: colorMain }]} />
+                <View style={[styles.sideIndicator, { backgroundColor: isFor ? accent : againstFill }]} />
 
                 <View style={styles.argumentContent}>
                     <View style={styles.argHeader}>
@@ -228,8 +240,8 @@ export default function DebateThreadScreen() {
                             {item.authorAvatar ? (
                                 <Image source={{ uri: item.authorAvatar }} style={styles.argAvatarImage} />
                             ) : (
-                                <View style={[styles.argAvatar, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]}>
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: theme.colors.text.primary }}>{item.authorName[0].toUpperCase()}</Text>
+                                <View style={[styles.argAvatar, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.1)' : 'rgba(7, 8, 12, 0.08)' }]}>
+                                    <Text style={{ fontSize: 14, fontFamily: FONT.display, color: theme.colors.text.primary }}>{item.authorName[0].toUpperCase()}</Text>
                                 </View>
                             )}
                             <Text style={[styles.argAuthorName, { color: theme.colors.text.primary }]}>{item.authorName}</Text>
@@ -295,15 +307,15 @@ export default function DebateThreadScreen() {
             <Stack.Screen options={{ headerShown: false }} />
 
             {/* Header */}
-            <View style={[styles.header, { paddingTop: insets.top + 10, borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}>
+            <View style={[styles.header, { paddingTop: insets.top + 10, borderBottomColor: hairline }]}>
                 <Pressable onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={theme.colors.text.primary} />
                 </Pressable>
-                <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>Debate Thread</Text>
+                <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>DEBATE THREAD</Text>
                 {post && (
                     <Pressable onPress={handleLikePost} style={styles.headerLikeBtn}>
-                        <Text style={{ fontSize: 18, color: post.isLiked ? "#DAE6F7" : theme.colors.text.secondary }}>✦</Text>
-                        <Text style={[styles.headerLikeCount, { color: post.isLiked ? "#DAE6F7" : theme.colors.text.secondary }]}>{post.likes}</Text>
+                        <Text style={{ fontSize: 18, color: post.isLiked ? accent : theme.colors.text.secondary }}>✦</Text>
+                        <Text style={[styles.headerLikeCount, { color: post.isLiked ? accent : theme.colors.text.secondary }]}>{post.likes}</Text>
                     </Pressable>
                 )}
                 {!post && <View style={{ width: 40 }} />}
@@ -317,7 +329,7 @@ export default function DebateThreadScreen() {
                 ListHeaderComponent={() => (
                     <View style={styles.listHeader}>
                         {loadingPost ? (
-                            <ActivityIndicator color="#DAE6F7" />
+                            <ActivityIndicator color={accent} />
                         ) : post ? (
                             <View>
                                 <DebateCard
@@ -329,18 +341,18 @@ export default function DebateThreadScreen() {
 
                                 {/* Stats Bar */}
                                 {argumentsList.length > 0 && (
-                                    <View style={[styles.statsContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#FFF' }]}>
-                                        <Text style={[styles.statsTitle, { color: theme.colors.text.primary }]}>Logic Balance</Text>
+                                    <View style={[styles.statsContainer, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.03)' : 'rgba(255, 255, 255, 0.65)', borderColor: hairline }]}>
+                                        <Text style={[styles.statsTitle, { color: theme.colors.text.muted }]}>[ LOGIC BALANCE ]</Text>
 
                                         <View style={styles.statsBarRow}>
-                                            <Text style={[styles.statsCount, { color: '#DAE6F7', width: 40 }]}>{stats.forScore}</Text>
+                                            <Text style={[styles.statsCount, { color: accent, width: 40 }]}>{stats.forScore}</Text>
 
                                             <View style={styles.progressBarContainer}>
-                                                <Animated.View style={[styles.progressBarFillFor, forStyle]} />
-                                                <Animated.View style={[styles.progressBarFillAgainst, againstStyle]} />
+                                                <Animated.View style={[styles.progressBarFillFor, { backgroundColor: accent }, forStyle]} />
+                                                <Animated.View style={[styles.progressBarFillAgainst, { backgroundColor: againstFill }, againstStyle]} />
                                             </View>
 
-                                            <Text style={[styles.statsCount, { color: '#FFFFFF', textAlign: 'right', width: 40 }]}>{stats.againstScore}</Text>
+                                            <Text style={[styles.statsCount, { color: againstText, textAlign: 'right', width: 40 }]}>{stats.againstScore}</Text>
                                         </View>
 
                                         <View style={styles.statsLabelRow}>
@@ -355,8 +367,8 @@ export default function DebateThreadScreen() {
                         )}
                         <View style={styles.sectionTitleRow}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Arguments</Text>
-                                <View style={[styles.argCountBadge, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}>
+                                <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>ARGUMENTS</Text>
+                                <View style={[styles.argCountBadge, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.1)' : 'rgba(7, 8, 12, 0.06)' }]}>
                                     <Text style={[styles.argCountText, { color: theme.colors.text.secondary }]}>{argumentsList.length}</Text>
                                 </View>
                             </View>
@@ -372,7 +384,7 @@ export default function DebateThreadScreen() {
             {/* Input Bar */}
             <View style={[
                 styles.inputWrapper,
-                { borderTopColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }
+                { borderTopColor: hairline }
             ]}>
                 <BlurView
                     intensity={Platform.OS === 'ios' ? 80 : 100}
@@ -384,15 +396,16 @@ export default function DebateThreadScreen() {
                         }
                     ]}
                 >
+                    <View style={styles.inputColumn}>
                     {selectedSide === null ? (
                         <View style={styles.sideSelector}>
-                            <Text style={[styles.promptText, { color: theme.colors.text.primary }]}>Take a stance:</Text>
+                            <Text style={[styles.promptText, { color: theme.colors.text.muted }]}>[ TAKE A STANCE ]</Text>
                             <View style={styles.stanceButtons}>
-                                <Pressable style={[styles.stanceBtn, { backgroundColor: 'rgba(218, 230, 247, 0.15)' }]} onPress={() => setSelectedSide('FOR')}>
-                                    <Text style={[styles.stanceBtnText, { color: '#DAE6F7' }]}>Argue FOR</Text>
+                                <Pressable style={[styles.stanceBtn, { backgroundColor: accent }]} onPress={() => setSelectedSide('FOR')}>
+                                    <Text style={[styles.stanceBtnText, { color: onAccent }]}>Argue FOR</Text>
                                 </Pressable>
-                                <Pressable style={[styles.stanceBtn, { backgroundColor: 'rgba(255, 255, 255, 0.15)' }]} onPress={() => setSelectedSide('AGAINST')}>
-                                    <Text style={[styles.stanceBtnText, { color: '#FFFFFF' }]}>Argue AGAINST</Text>
+                                <Pressable style={[styles.stanceBtn, { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: againstFill }]} onPress={() => setSelectedSide('AGAINST')}>
+                                    <Text style={[styles.stanceBtnText, { color: theme.colors.text.primary }]}>Argue AGAINST</Text>
                                 </Pressable>
                             </View>
 
@@ -404,8 +417,8 @@ export default function DebateThreadScreen() {
                                         params: { debateId: id, side: 'FOR' }
                                     })}
                                 >
-                                    <Ionicons name="videocam" size={16} color="#DAE6F7" />
-                                    <Text style={[styles.videoResponseBtnText, { color: '#DAE6F7' }]}>Video FOR</Text>
+                                    <Ionicons name="videocam" size={16} color={accent} />
+                                    <Text numberOfLines={1} style={[styles.videoResponseBtnText, { color: accent }]}>Video FOR</Text>
                                 </Pressable>
                                 <Pressable
                                     style={styles.videoResponseBtn}
@@ -414,15 +427,15 @@ export default function DebateThreadScreen() {
                                         params: { debateId: id, side: 'AGAINST' }
                                     })}
                                 >
-                                    <Ionicons name="videocam" size={16} color="#FFFFFF" />
-                                    <Text style={[styles.videoResponseBtnText, { color: '#FFFFFF' }]}>Video AGAINST</Text>
+                                    <Ionicons name="videocam" size={16} color={againstText} />
+                                    <Text numberOfLines={1} style={[styles.videoResponseBtnText, { color: againstText }]}>Video AGAINST</Text>
                                 </Pressable>
                             </View>
                         </View>
                     ) : (
                         <View>
                             {replyingTo && (
-                                <View style={[styles.replyingBar, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F0F0F0' }]}>
+                                <View style={[styles.replyingBar, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.06)' : 'rgba(7, 8, 12, 0.05)' }]}>
                                     <Text style={[styles.replyingText, { color: theme.colors.text.secondary }]} numberOfLines={1}>
                                         Replying to <Text style={{ fontWeight: '700' }}>{replyingTo.authorName}</Text>: {replyingTo.content}
                                     </Text>
@@ -434,16 +447,16 @@ export default function DebateThreadScreen() {
                             <View style={styles.typeRow}>
                                 <View style={[
                                     styles.sideBadgeInput,
-                                    { backgroundColor: selectedSide === 'FOR' ? 'rgba(218, 230, 247, 0.1)' : 'rgba(255, 255, 255, 0.1)' }
+                                    { backgroundColor: selectedSide === 'FOR' ? accent : againstFill }
                                 ]}>
                                     <Text style={[
                                         styles.sideBadgeText,
-                                        { color: selectedSide === 'FOR' ? '#000000' : '#FFFFFF' }
+                                        { color: selectedSide === 'FOR' ? onAccent : '#07080C' }
                                     ]}>{selectedSide}</Text>
                                 </View>
 
                                 <TextInput
-                                    style={[styles.textInput, { color: theme.colors.text.primary, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F5F5F5' }]}
+                                    style={[styles.textInput, { color: theme.colors.text.primary, backgroundColor: isDark ? 'rgba(218, 230, 247, 0.06)' : 'rgba(7, 8, 12, 0.05)' }]}
                                     placeholder="Write your logical argument..."
                                     placeholderTextColor={theme.colors.text.muted}
                                     value={newArgument}
@@ -453,11 +466,11 @@ export default function DebateThreadScreen() {
                                 />
 
                                 <Pressable
-                                    style={[styles.sendButton, (!newArgument.trim() || posting) && { opacity: 0.5 }]}
+                                    style={[styles.sendButton, { backgroundColor: accent }, (!newArgument.trim() || posting) && { opacity: 0.5 }]}
                                     onPress={handlePostArgument}
                                     disabled={!newArgument.trim() || posting}
                                 >
-                                    {posting ? <ActivityIndicator size="small" color="#fff" /> : <Ionicons name="send" size={20} color="#fff" />}
+                                    {posting ? <ActivityIndicator size="small" color={onAccent} /> : <Ionicons name="send" size={18} color={onAccent} />}
                                 </Pressable>
 
                                 <Pressable style={styles.cancelSideBtn} onPress={() => { setSelectedSide(null); setReplyingTo(null); }}>
@@ -466,6 +479,7 @@ export default function DebateThreadScreen() {
                             </View>
                         </View>
                     )}
+                    </View>
                 </BlurView>
             </View>
         </KeyboardAvoidingView>
@@ -481,34 +495,36 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingBottom: 16,
         borderBottomWidth: 1,
+        width: '100%',
+        maxWidth: 820,
+        alignSelf: 'center',
     },
     backButton: { padding: 8, marginLeft: -8 },
-    headerTitle: { fontSize: 18, fontWeight: 'bold' },
+    headerTitle: { fontSize: 22, letterSpacing: 1, fontFamily: FONT.display },
     videoResponseRow: {
         flexDirection: 'row',
-        gap: 12,
-        marginTop: 12,
+        gap: 8,
     },
     videoResponseBtn: {
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
         paddingVertical: 10,
-        borderRadius: 12,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        paddingHorizontal: 12,
+        ...pixelClip(3),
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColor: 'rgba(154, 167, 189, 0.3)',
     },
     videoResponseBtnText: {
-        fontSize: 13,
-        fontWeight: 'bold',
+        fontFamily: FONT.tech,
+        fontSize: 11,
+        letterSpacing: 0.8,
     },
     argVideoContainer: {
         width: '100%',
         height: 180,
-        borderRadius: 12,
+        ...pixelClip(3),
         overflow: 'hidden',
         marginBottom: 12,
         backgroundColor: '#000',
@@ -529,13 +545,13 @@ const styles = StyleSheet.create({
         gap: 4,
         paddingHorizontal: 10,
         paddingVertical: 6,
-        borderRadius: 16,
+        ...pixelClip(4),
     },
     headerLikeCount: {
-        fontSize: 14,
-        fontWeight: '700',
+        fontFamily: FONT.techBold,
+        fontSize: 13,
     },
-    listContent: {},
+    listContent: { width: '100%', maxWidth: 820, alignSelf: 'center' },
     listHeader: { paddingVertical: 16 },
     errorText: { textAlign: 'center', marginVertical: 20 },
 
@@ -548,22 +564,24 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: '800',
+        fontFamily: FONT.display,
+        fontSize: 22,
+        letterSpacing: 0.8,
     },
     sortText: {
-        fontSize: 12,
-        color: '#DAE6F7',
-        fontWeight: 'bold',
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 1.6,
+        color: '#5F6B82',
     },
     argCountBadge: {
         paddingHorizontal: 8,
         paddingVertical: 2,
-        borderRadius: 10,
+        ...pixelClip(2),
     },
     argCountText: {
-        fontSize: 12,
-        fontWeight: '700',
+        fontFamily: FONT.techBold,
+        fontSize: 11,
     },
     emptyText: {
         textAlign: 'center',
@@ -576,10 +594,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginHorizontal: 16,
         marginBottom: 12,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(128,128,128,0.1)'
     },
     sideIndicator: {
         width: 4,
@@ -602,7 +619,7 @@ const styles = StyleSheet.create({
     argAvatar: {
         width: 24,
         height: 24,
-        borderRadius: 12,
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
@@ -610,24 +627,27 @@ const styles = StyleSheet.create({
     argAvatarImage: {
         width: 24,
         height: 24,
-        borderRadius: 12,
+        ...pixelClip(3),
     },
     argAuthorName: {
-        fontWeight: '600',
+        fontFamily: FONT.sansBold,
         fontSize: 14,
     },
     sideBadge: {
         paddingHorizontal: 6,
         paddingVertical: 2,
-        borderRadius: 4,
+        ...pixelClip(2),
     },
     sideBadgeText: {
-        fontSize: 10,
-        fontWeight: 'bold',
+        fontFamily: FONT.techBold,
+        fontSize: 9,
+        letterSpacing: 1.2,
     },
     argDate: {
-        fontSize: 12,
-        color: 'gray',
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 0.8,
+        color: '#5F6B82',
     },
     argHeaderRight: {
         flexDirection: 'row',
@@ -637,7 +657,7 @@ const styles = StyleSheet.create({
     argDeleteBtn: {
         padding: 4,
         backgroundColor: 'rgba(239,68,68,0.1)',
-        borderRadius: 12,
+        ...pixelClip(3),
     },
     argText: {
         fontSize: 15,
@@ -656,11 +676,12 @@ const styles = StyleSheet.create({
         gap: 4,
         paddingHorizontal: 10,
         paddingVertical: 6,
-        borderRadius: 12,
+        ...pixelClip(3),
     },
     replyBtnText: {
-        fontSize: 13,
-        fontWeight: '600',
+        fontFamily: FONT.tech,
+        fontSize: 11,
+        letterSpacing: 0.6,
     },
     voteButton: {
         flexDirection: 'row',
@@ -668,7 +689,7 @@ const styles = StyleSheet.create({
         gap: 6,
         paddingHorizontal: 10,
         paddingVertical: 6,
-        borderRadius: 12,
+        ...pixelClip(3),
     },
     voteIconContainer: {
         width: 16,
@@ -677,8 +698,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     voteText: {
-        fontSize: 13,
-        fontWeight: '600',
+        fontFamily: FONT.tech,
+        fontSize: 11,
+        letterSpacing: 0.6,
     },
 
     // Input Bar 
@@ -693,14 +715,24 @@ const styles = StyleSheet.create({
     inputContainer: {
         padding: 16,
     },
+    inputColumn: {
+        width: '100%',
+        maxWidth: 820,
+        alignSelf: 'center',
+    },
     sideSelector: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
+        rowGap: 12,
+        columnGap: 12,
     },
     promptText: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 2,
+        flexShrink: 0,
     },
     stanceButtons: {
         flexDirection: 'row',
@@ -709,11 +741,12 @@ const styles = StyleSheet.create({
     stanceBtn: {
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     stanceBtnText: {
-        fontWeight: 'bold',
-        fontSize: 13,
+        fontFamily: FONT.techMedium,
+        fontSize: 12,
+        letterSpacing: 0.4,
     },
     typeRow: {
         flexDirection: 'row',
@@ -723,13 +756,14 @@ const styles = StyleSheet.create({
     sideBadgeInput: {
         paddingHorizontal: 8,
         paddingVertical: 6,
-        borderRadius: 6,
+        ...pixelClip(2),
     },
     textInput: {
+        fontFamily: FONT.sans,
         flex: 1,
         minHeight: 40,
         maxHeight: 100,
-        borderRadius: 20,
+        ...pixelClip(5),
         paddingHorizontal: 16,
         paddingTop: 10,
         fontSize: 15,
@@ -737,8 +771,7 @@ const styles = StyleSheet.create({
     sendButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
-        backgroundColor: '#DAE6F7',
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -751,7 +784,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 12,
         paddingVertical: 8,
-        borderRadius: 12,
+        ...pixelClip(3),
         marginBottom: 8,
         gap: 8,
     },
@@ -765,13 +798,13 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginTop: 8,
         padding: 16,
-        borderRadius: 16,
+        ...pixelClip(4),
         borderWidth: 1,
-        borderColor: 'rgba(128,128,128,0.1)'
     },
     statsTitle: {
-        fontSize: 14,
-        fontWeight: 'bold',
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 2,
         marginBottom: 12,
         textAlign: 'center',
     },
@@ -784,21 +817,18 @@ const styles = StyleSheet.create({
     progressBarContainer: {
         flex: 1,
         height: 8,
-        borderRadius: 4,
         flexDirection: 'row',
         overflow: 'hidden',
     },
     progressBarFillFor: {
-        backgroundColor: '#DAE6F7',
         height: '100%',
     },
     progressBarFillAgainst: {
-        backgroundColor: '#FFFFFF',
         height: '100%',
     },
     statsCount: {
-        fontSize: 14,
-        fontWeight: 'bold',
+        fontFamily: FONT.lcd,
+        fontSize: 17,
     },
     statsLabelRow: {
         flexDirection: 'row',
@@ -806,7 +836,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 52, // Align with edges of progress bar roughly
     },
     statsLabel: {
-        fontSize: 10,
-        fontWeight: '600',
+        fontFamily: FONT.tech,
+        fontSize: 9,
+        letterSpacing: 1.4,
     }
 });

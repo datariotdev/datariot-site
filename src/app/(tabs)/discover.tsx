@@ -19,6 +19,7 @@ import { TrendingBullets } from '@components/Discovery/TrendingBullets';
 import { DebateSwitcher } from '@components/Discovery/DebateSwitcher';
 import { IntellectRecommendations } from '@components/Discovery/IntellectRecommendations';
 import { pageBg } from '@design-system/surface';
+import { pixelClip } from '@design-system/pixel';
 
 export default function DiscoverScreen() {
     const { theme, mode } = useTheme();
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
         paddingBottom: 16,
     },
     searchBarBlur: {
-        borderRadius: 25,
+        ...pixelClip(6),
         overflow: 'hidden',
     },
     searchBar: {

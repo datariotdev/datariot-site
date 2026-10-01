@@ -26,6 +26,7 @@ const formatNumber = (num: number): string => {
 
 import { encodeVideoUrl } from '../../../lib/utils/url';
 import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 interface MosaicVideoProps {
     videoUrl: string;
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
         aspectRatio: 1, // Keep it square
         marginHorizontal: GRID_SPACING / 2,
         marginBottom: GRID_SPACING,
-        borderRadius: 24,
+        ...pixelClip(6),
         overflow: 'hidden',
         // High-end shadow
         shadowColor: '#000',
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
         borderColor: '#DAE6F7',
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 4,
+        ...pixelClip(2),
         zIndex: 20,
     },
     categoryText: {
@@ -230,6 +231,6 @@ const styles = StyleSheet.create({
     activeBorder: {
         ...StyleSheet.absoluteFillObject,
         borderWidth: 2,
-        borderRadius: 24,
+        ...pixelClip(6),
     }
 });

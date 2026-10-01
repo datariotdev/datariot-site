@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, Pressable, Platform } from 'react-native
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 interface Intellect {
     id: string;
@@ -90,13 +91,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 12,
-        borderRadius: 20,
+        ...pixelClip(5),
         borderWidth: 1,
     },
     avatar: {
         width: 44,
         height: 44,
-        borderRadius: 22,
+        ...pixelClip(4),
         backgroundColor: 'rgba(0,0,0,0.1)',
     },
     info: {
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
     followButton: {
         paddingHorizontal: 14,
         paddingVertical: 8,
-        borderRadius: 12,
+        ...pixelClip(3),
         borderWidth: 1,
     },
     followText: {

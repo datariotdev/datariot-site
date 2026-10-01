@@ -49,21 +49,23 @@ export function ChatItem({
             ]}
         >
             {/* Avatar: a notched tile, like the logo */}
-            <View
-                style={[
-                    styles.avatar,
-                    pixelClip(4),
-                    isAi
-                        ? { backgroundColor: INK, borderColor: ICE }
-                        : { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)', borderColor: hairline },
-                ]}
-            >
-                {isAi ? (
-                    <MaterialCommunityIcons name="robot-excited" size={24} color={ICE} />
-                ) : (
-                    <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>{name.charAt(0).toUpperCase()}</Text>
-                )}
-                {isAi && <View style={[styles.onlineBadge, { borderColor: INK, backgroundColor: theme.colors.success }]} />}
+            <View style={styles.avatarWrap}>
+                <View
+                    style={[
+                        styles.avatar,
+                        pixelClip(4),
+                        isAi
+                            ? { backgroundColor: INK, borderColor: ICE }
+                            : { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)', borderColor: hairline },
+                    ]}
+                >
+                    {isAi ? (
+                        <MaterialCommunityIcons name="robot-excited" size={24} color={ICE} />
+                    ) : (
+                        <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>{name.charAt(0).toUpperCase()}</Text>
+                    )}
+                </View>
+                {isAi && <View style={[styles.onlineBadge, { borderColor: isDark ? '#0C0D12' : '#FFFFFF', backgroundColor: theme.colors.success }]} />}
             </View>
 
             <View style={styles.contentContainer}>
@@ -115,13 +117,17 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderWidth: 1,
     },
+    avatarWrap: {
+        width: 52,
+        height: 52,
+        marginRight: 14,
+    },
     avatar: {
         width: 52,
         height: 52,
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 14,
     },
     avatarText: {
         fontFamily: FONT.display,

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 interface TopicItem {
     id: string;
@@ -100,13 +101,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
-        borderRadius: 24,
+        ...pixelClip(6),
         borderWidth: 1,
     },
     iconBox: {
         width: 44,
         height: 44,
-        borderRadius: 14,
+        ...pixelClip(4),
         alignItems: 'center',
         justifyContent: 'center',
     },

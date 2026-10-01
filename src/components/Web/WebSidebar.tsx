@@ -329,10 +329,10 @@ export const WebSidebar = () => {
                             style={[
                                 styles.profileCard,
                                 expanded && {
-                                    backgroundColor: isDark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.03)',
+                                    backgroundColor: isDark ? 'rgba(218, 230, 247, 0.04)' : 'rgba(7, 8, 12, 0.03)',
                                     borderColor: isProfileHovered
-                                        ? (isDark ? 'rgba(218, 230, 247, 0.25)' : 'rgba(7, 8, 12, 0.3)')
-                                        : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'),
+                                        ? (isDark ? 'rgba(218, 230, 247, 0.3)' : 'rgba(7, 8, 12, 0.3)')
+                                        : (isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.1)'),
                                     borderWidth: 1,
                                 },
                             ]}
@@ -343,7 +343,7 @@ export const WebSidebar = () => {
                                 end={{ x: 1, y: 1 }}
                                 style={styles.avatar}
                             >
-                                <Text style={[styles.avatarText, { fontFamily: MONO }]}>
+                                <Text style={[styles.avatarText, { fontFamily: MONO, color: theme.colors.primary.onPrimary }]}>
                                     {user.email?.[0].toUpperCase()}
                                 </Text>
                             </LinearGradient>
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: 46,
         height: 46,
-        borderRadius: 23,
+        ...pixelClip(4),
     },
     logoText: {
         fontSize: 13,
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
         height: 46,
         paddingLeft: 5,
         gap: 14,
-        borderRadius: 10,
+        ...pixelClip(2),
         borderWidth: 1,
         position: 'relative',
         // @ts-ignore
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
         gap: 14,
         paddingLeft: 17,
         paddingRight: 14,
-        borderRadius: 10,
+        ...pixelClip(2),
         borderWidth: 1,
         // @ts-ignore
         transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
         gap: 10,
         paddingVertical: 7,
         paddingHorizontal: 10,
-        borderRadius: 8,
+        ...pixelClip(2),
         borderWidth: 1,
     },
     mediaDot: {
@@ -591,7 +591,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 12,
         padding: 7,
-        borderRadius: 12,
+        ...pixelClip(3),
         borderWidth: 1,
         borderColor: 'transparent',
         // @ts-ignore
@@ -602,12 +602,11 @@ const styles = StyleSheet.create({
     avatar: {
         width: 34,
         height: 34,
-        borderRadius: 10,
+        ...pixelClip(2),
         alignItems: 'center',
         justifyContent: 'center',
     },
     avatarText: {
-        color: '#000000',
         fontSize: 14,
         fontWeight: '800',
     },
@@ -633,7 +632,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 10,
         height: 44,
-        borderRadius: 10,
+        ...pixelClip(2),
         borderWidth: 1,
     },
     loginText: {

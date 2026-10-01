@@ -19,6 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useComments, Comment } from '@lib/supabase/hooks/useComments';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { useTheme } from '../Theme/ThemeProvider';
+import { pixelClip } from '@design-system/pixel';
 
 interface CommentsModalProps {
     visible: boolean;
@@ -334,7 +335,7 @@ const styles = StyleSheet.create({
     commentAvatar: {
         width: 36,
         height: 36,
-        borderRadius: 18,
+        ...pixelClip(3),
         flexShrink: 0,
     },
     commentBody: {
@@ -373,7 +374,7 @@ const styles = StyleSheet.create({
         marginLeft: 'auto',
         paddingHorizontal: 8,
         paddingVertical: 5,
-        borderRadius: 12,
+        ...pixelClip(3),
     },
     commentLikePill: {
         backgroundColor: 'rgba(218, 230, 247, 0.1)',
@@ -402,7 +403,7 @@ const styles = StyleSheet.create({
     replyAvatar: {
         width: 26,
         height: 26,
-        borderRadius: 13,
+        ...pixelClip(3),
     },
     replyIndicator: {
         flexDirection: 'row',
@@ -411,7 +412,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         marginHorizontal: 16,
-        borderRadius: 10,
+        ...pixelClip(2),
         marginBottom: 4,
     },
     replyIndicatorText: {
@@ -430,7 +431,7 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        borderRadius: 20,
+        ...pixelClip(5),
         paddingHorizontal: 16,
         paddingVertical: 10,
         fontSize: 15,
@@ -439,7 +440,7 @@ const styles = StyleSheet.create({
     sendBtn: {
         width: 36,
         height: 36,
-        borderRadius: 18,
+        ...pixelClip(3),
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,

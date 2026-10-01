@@ -977,7 +977,7 @@ const styles = StyleSheet.create({
     },
     // XP Card
     xpCard: {
-        borderRadius: 20,
+        ...pixelClip(5),
         padding: 18,
         marginBottom: 14,
     },
@@ -1046,14 +1046,14 @@ const styles = StyleSheet.create({
     },
     achCard: {
         flex: 1,
-        borderRadius: 18,
+        ...pixelClip(4),
         padding: 14,
         alignItems: 'flex-start',
     },
     achIconRing: {
         width: 44,
         height: 44,
-        borderRadius: 22,
+        ...pixelClip(4),
         borderWidth: 1.5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -1072,7 +1072,7 @@ const styles = StyleSheet.create({
     achBadgePill: {
         paddingHorizontal: 8,
         paddingVertical: 3,
-        borderRadius: 10,
+        ...pixelClip(2),
     },
     achBadgePillText: {
         fontSize: 10,
@@ -1082,7 +1082,7 @@ const styles = StyleSheet.create({
     // Reputation Score Row
     repScoreRow: {
         flexDirection: 'row',
-        borderRadius: 18,
+        ...pixelClip(4),
         borderWidth: 1,
         overflow: 'hidden',
     },
@@ -1151,7 +1151,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     promoteBtn: {
-        borderRadius: 14,
+        ...pixelClip(4),
         overflow: 'hidden',
         alignSelf: 'flex-start',
         shadowColor: '#DAE6F7',
@@ -1166,7 +1166,7 @@ const styles = StyleSheet.create({
         gap: 6,
         paddingVertical: 9,
         paddingHorizontal: 16,
-        borderRadius: 14,
+        ...pixelClip(4),
     },
     promoteBtnText: {
         color: '#fff',
@@ -1237,7 +1237,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         height: 40, // Height of the sliding pill
         backgroundColor: '#DAE6F7',
-        borderRadius: 20,
+        ...pixelClip(4),
         zIndex: 1,
     },
     activeTabText: {
@@ -1355,7 +1355,7 @@ const styles = StyleSheet.create({
     authSignInWrapper: {
         width: '100%',
         maxWidth: 300,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 4 },
@@ -1370,7 +1370,7 @@ const styles = StyleSheet.create({
         gap: 10,
         paddingVertical: 18,
         paddingHorizontal: 32,
-        borderRadius: 16,
+        ...pixelClip(4),
         backgroundColor: '#DAE6F7',
     },
     authSignInText: {
@@ -1386,7 +1386,7 @@ const styles = StyleSheet.create({
     postItem: {
         backgroundColor: 'rgba(255,255,255,0.03)',
         marginBottom: 20,
-        borderRadius: 24,
+        ...pixelClip(6),
         marginHorizontal: 16,
         padding: 4,
         borderWidth: 1,
@@ -1451,7 +1451,7 @@ const styles = StyleSheet.create({
     postAvatar: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
         backgroundColor: 'rgba(255,255,255,0.1)',
         justifyContent: 'center',
         alignItems: 'center',
@@ -1477,6 +1477,6 @@ const styles = StyleSheet.create({
     },
     optionsButton: {
         padding: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
 });

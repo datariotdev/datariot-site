@@ -7,6 +7,7 @@ import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { DockModule, MONO, useDockSurface } from './Dock/DockModule';
 import { PilotStatus, Objective } from './Dock/PilotStatus';
 import { SignalTile } from './Dock/SignalTile';
+import { pixelClip } from '@design-system/pixel';
 
 /* ------------------------------------------------------------------------- *
  * PLACEHOLDER DATA
@@ -370,7 +371,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         height: 42,
-        borderRadius: 9,
+        ...pixelClip(2),
         borderWidth: 1,
         paddingHorizontal: 12,
         gap: 9,
@@ -391,7 +392,7 @@ const styles = StyleSheet.create({
     keyHint: {
         width: 18,
         height: 18,
-        borderRadius: 4,
+        ...pixelClip(2),
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -424,7 +425,7 @@ const styles = StyleSheet.create({
         gap: 11,
         paddingVertical: 9,
         paddingHorizontal: 11,
-        borderRadius: 9,
+        ...pixelClip(2),
         borderWidth: 1,
         // @ts-ignore
         transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -439,7 +440,7 @@ const styles = StyleSheet.create({
     collectionIcon: {
         width: 26,
         height: 26,
-        borderRadius: 7,
+        ...pixelClip(2),
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -482,7 +483,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
     challengeCard: {
-        borderRadius: 12,
+        ...pixelClip(3),
         borderWidth: 1,
         padding: 16,
         overflow: 'hidden',
@@ -553,7 +554,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 7,
         height: 38,
-        borderRadius: 8,
+        ...pixelClip(2),
         borderWidth: 1,
         // @ts-ignore
         transition: 'background-color 0.2s ease',

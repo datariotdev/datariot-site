@@ -15,6 +15,7 @@ import { useTheme } from '../Theme/ThemeProvider';
 import { supabase } from '../../lib/supabase/client';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import { pixelClip } from '@design-system/pixel';
 
 
 interface SideMenuProps {
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(255,255,255,0.1)',
-        borderRadius: 22,
+        ...pixelClip(4),
     },
     logoText: {
         color: 'white',
@@ -337,21 +338,21 @@ const styles = StyleSheet.create({
         width: 140,
         height: 80,
         marginRight: 15,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
     },
     mediaGradient: {
         flex: 1,
         justifyContent: 'space-between',
         padding: 12,
-        borderRadius: 16,
+        ...pixelClip(4),
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
     },
     mediaIconPlaceholder: {
         width: 24,
         height: 24,
-        borderRadius: 12,
+        ...pixelClip(3),
         backgroundColor: 'rgba(255,255,255,0.1)',
         justifyContent: 'center',
         alignItems: 'center',
@@ -374,7 +375,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.05)',
         paddingHorizontal: 30,
         paddingVertical: 15,
-        borderRadius: 100, // Pill shape dock
+        ...pixelClip(6), // Pill shape dock
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
     },
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.1)',
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 20,
+        ...pixelClip(5),
         gap: 8,
     },
     themeToggleText: {

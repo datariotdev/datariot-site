@@ -20,6 +20,7 @@ import { generateDeepDive, chatWithVideo, DeepDiveData, DeepDiveMessage } from '
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInDown, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, withDelay } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
+import { pixelClip } from '@design-system/pixel';
 
 interface DeepDiveModalProps {
     visible: boolean;
@@ -146,7 +147,7 @@ export function DeepDiveModal({ visible, video, onClose }: DeepDiveModalProps) {
             <Animated.View entering={FadeIn.duration(200)} style={isUser ? styles.userBubbleContainer : styles.aiBubbleContainer}>
                 {!isUser && (
                     <View style={[styles.aiAvatar, { backgroundColor: theme.colors.primary.DEFAULT }]}>
-                        <MaterialCommunityIcons name="robot-excited" size={14} color="#FFF" />
+                        <MaterialCommunityIcons name="robot-excited" size={14} color={theme.colors.primary.onPrimary} />
                     </View>
                 )}
                 <View style={[
@@ -155,7 +156,7 @@ export function DeepDiveModal({ visible, video, onClose }: DeepDiveModalProps) {
                         ? [styles.userBubble, { backgroundColor: theme.colors.primary.DEFAULT }]
                         : [styles.aiBubble, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0,0,0,0.04)' }]
                 ]}>
-                    <Text style={[styles.chatText, { color: isUser ? '#FFF' : textColor }]}>
+                    <Text style={[styles.chatText, { color: isUser ? theme.colors.primary.onPrimary : textColor }]}>
                         {item.content}
                     </Text>
                 </View>
@@ -410,7 +411,7 @@ const styles = StyleSheet.create({
     headerIconWrapper: {
         width: 38,
         height: 38,
-        borderRadius: 10,
+        ...pixelClip(2),
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -478,7 +479,7 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
         borderWidth: 1,
-        borderRadius: 16,
+        ...pixelClip(4),
         padding: 16,
     },
     summaryText: {
@@ -487,7 +488,7 @@ const styles = StyleSheet.create({
     },
     termCard: {
         borderLeftWidth: 3,
-        borderRadius: 8,
+        ...pixelClip(2),
         padding: 12,
         marginBottom: 12,
     },
@@ -503,7 +504,7 @@ const styles = StyleSheet.create({
     // Resources
     resourceCard: {
         borderWidth: 1,
-        borderRadius: 16,
+        ...pixelClip(4),
         padding: 16,
         marginBottom: 14,
     },
@@ -515,7 +516,7 @@ const styles = StyleSheet.create({
     resourceIcon: {
         width: 32,
         height: 32,
-        borderRadius: 8,
+        ...pixelClip(2),
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -569,7 +570,7 @@ const styles = StyleSheet.create({
     aiAvatar: {
         width: 24,
         height: 24,
-        borderRadius: 12,
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 4,
@@ -577,7 +578,7 @@ const styles = StyleSheet.create({
     chatBubble: {
         paddingHorizontal: 14,
         paddingVertical: 10,
-        borderRadius: 16,
+        ...pixelClip(4),
     },
     userBubble: {
         borderBottomRightRadius: 4,
@@ -599,7 +600,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 12,
         paddingVertical: 8,
-        borderRadius: 16,
+        ...pixelClip(4),
         backgroundColor: 'rgba(255,255,255,0.04)',
     },
     typingDot: {
@@ -619,7 +620,7 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        borderRadius: 22,
+        ...pixelClip(6),
         borderWidth: 1,
         paddingHorizontal: 16,
         paddingVertical: 10,
@@ -629,7 +630,7 @@ const styles = StyleSheet.create({
     sendBtn: {
         width: 36,
         height: 36,
-        borderRadius: 18,
+        ...pixelClip(3),
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,

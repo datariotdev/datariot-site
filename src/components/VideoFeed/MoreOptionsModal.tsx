@@ -11,6 +11,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import { pixelClip } from '@design-system/pixel';
 
 interface MoreOptionsModalProps {
     visible: boolean;
@@ -143,14 +144,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
-        borderRadius: 20,
+        ...pixelClip(5),
         borderWidth: 1,
         overflow: 'hidden',
     },
     iconWrapper: {
         width: 44,
         height: 44,
-        borderRadius: 12,
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 16,

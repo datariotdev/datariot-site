@@ -57,7 +57,7 @@ const ThemedStack = () => {
         <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
             <HudBackdrop isDark={mode === 'dark'} />
             <NavThemeProvider value={navTheme}>
-                <Stack screenOptions={{ contentStyle: { backgroundColor: 'transparent' } }}>
+                <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                     <Stack.Screen name="auth" options={{ headerShown: false }} />
                     <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'fullScreenModal' }} />

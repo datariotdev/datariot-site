@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 360,
         padding: 32,
-        borderRadius: 20,
+        ...pixelClip(5),
         alignItems: 'center',
         borderWidth: 1,
         overflow: 'hidden',
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     emptyIconContainer: {
         width: 64,
         height: 64,
-        borderRadius: 16,
+        ...pixelClip(4),
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 22,
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     retryButton: {
         paddingHorizontal: 26,
         paddingVertical: 11,
-        borderRadius: 8,
+        ...pixelClip(2),
         borderWidth: 1,
     },
     retryText: {

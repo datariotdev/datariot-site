@@ -19,6 +19,8 @@ import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
 import { useTheme } from '../components/Theme/ThemeProvider';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -74,18 +76,8 @@ export default function BusinessScreen() {
     const selectedReachOption = REACH_OPTIONS.find(r => r.id === selectedReach) || REACH_OPTIONS[0];
 
     return (
-        <View style={styles.root}>
+        <View style={[styles.root, { backgroundColor: isDark && Platform.OS === 'web' ? 'transparent' : '#07080C' }]}>
             <StatusBar barStyle="light-content" />
-
-            {/* Full-screen gradient background */}
-            <LinearGradient
-                colors={['#000000', '#000000', '#000000']}
-                style={StyleSheet.absoluteFill}
-            />
-
-            {/* Top decorative blobs */}
-            <View style={[styles.blob, styles.blobTop]} />
-            <View style={[styles.blob, styles.blobMid]} />
 
             <SafeAreaView style={styles.safeArea}>
                 <KeyboardAvoidingView
@@ -121,7 +113,7 @@ export default function BusinessScreen() {
                         </View>
 
                         {/* Category Picker */}
-                        <Text style={styles.sectionLabel}>Category</Text>
+                        <Text style={styles.sectionLabel}>[ Category ]</Text>
                         <View style={styles.categoryGrid}>
                             {CATEGORIES.map(cat => {
                                 const isActive = cat.id === selectedCategory;
@@ -145,9 +137,9 @@ export default function BusinessScreen() {
                                         <Ionicons
                                             name={cat.icon}
                                             size={22}
-                                            color={isActive ? '#fff' : 'rgba(255,255,255,0.5)'}
+                                            color={isActive ? '#07080C' : 'rgba(255,255,255,0.5)'}
                                         />
-                                        <Text style={[styles.categoryLabel, isActive && { color: '#fff', fontWeight: '700' }]}>
+                                        <Text style={[styles.categoryLabel, isActive && { color: '#07080C' }]}>
                                             {cat.label}
                                         </Text>
                                     </Pressable>
@@ -158,7 +150,7 @@ export default function BusinessScreen() {
                         {/* Form */}
                         <Animated.View style={{ opacity: fadeAnim }}>
                             <BlurView intensity={18} tint="dark" style={styles.formCard}>
-                                <Text style={styles.sectionLabel}>Campaign Details</Text>
+                                <Text style={styles.sectionLabel}>[ Campaign Details ]</Text>
 
                                 <View style={styles.inputGroup}>
                                     <Text style={styles.inputLabel}>Business Name *</Text>
@@ -210,7 +202,7 @@ export default function BusinessScreen() {
                         </Animated.View>
 
                         {/* Reach */}
-                        <Text style={styles.sectionLabel}>Audience Reach</Text>
+                        <Text style={styles.sectionLabel}>[ Audience Reach ]</Text>
                         <View style={styles.reachList}>
                             {REACH_OPTIONS.map(opt => {
                                 const isActive = opt.id === selectedReach;
@@ -238,7 +230,7 @@ export default function BusinessScreen() {
                                             </View>
                                         </View>
                                         <View style={[styles.reachPriceBadge, isActive && { backgroundColor: '#DAE6F7' }]}>
-                                            <Text style={styles.reachPriceText}>{opt.price}</Text>
+                                            <Text style={[styles.reachPriceText, isActive && { color: '#07080C' }]}>{opt.price}</Text>
                                         </View>
                                     </Pressable>
                                 );
@@ -246,7 +238,7 @@ export default function BusinessScreen() {
                         </View>
 
                         {/* Ad Preview */}
-                        <Text style={styles.sectionLabel}>Ad Preview</Text>
+                        <Text style={styles.sectionLabel}>[ Ad Preview ]</Text>
                         <BlurView intensity={18} tint="dark" style={styles.previewCard}>
                             <LinearGradient
                                 colors={selectedCat.gradient}
@@ -316,7 +308,7 @@ export default function BusinessScreen() {
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
                             >
-                                <MaterialCommunityIcons name="rocket-launch-outline" size={20} color="#fff" />
+                                <MaterialCommunityIcons name="rocket-launch-outline" size={20} color="#07080C" />
                                 <Text style={styles.launchText}>Launch Campaign</Text>
                             </LinearGradient>
                         </Pressable>
@@ -336,32 +328,10 @@ export default function BusinessScreen() {
 const styles = StyleSheet.create({
     root: {
         flex: 1,
-        backgroundColor: '#000000',
     },
     safeArea: {
         flex: 1,
         backgroundColor: 'transparent',
-    },
-    blob: {
-        position: 'absolute',
-        borderRadius: 999,
-        opacity: 0.25,
-    },
-    blobTop: {
-        width: 300,
-        height: 300,
-        backgroundColor: '#DAE6F7',
-        top: -80,
-        right: -80,
-        transform: [{ scale: 1.4 }],
-    },
-    blobMid: {
-        width: 250,
-        height: 250,
-        backgroundColor: '#DAE6F7',
-        top: 350,
-        left: -120,
-        opacity: 0.12,
     },
     header: {
         flexDirection: 'row',
@@ -370,11 +340,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 8,
         paddingBottom: 4,
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
     },
     backBtn: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
         backgroundColor: 'rgba(255,255,255,0.08)',
         alignItems: 'center',
         justifyContent: 'center',
@@ -388,12 +361,14 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(218, 230, 247, 0.3)',
         paddingHorizontal: 12,
         paddingVertical: 5,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     headerBadgeText: {
         color: '#DAE6F7',
-        fontSize: 12,
-        fontWeight: '600',
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 1.6,
+        textTransform: 'uppercase',
     },
     scroll: {
         flex: 1,
@@ -401,17 +376,22 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingHorizontal: 20,
         paddingTop: 8,
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
     },
     hero: {
         marginBottom: 28,
         marginTop: 8,
     },
     heroTitle: {
-        fontSize: 38,
-        fontWeight: '900',
+        fontFamily: FONT.display,
+        fontSize: 40,
+        fontWeight: '400',
         color: '#fff',
-        letterSpacing: -1.2,
-        lineHeight: 44,
+        letterSpacing: 1,
+        lineHeight: 46,
+        textTransform: 'uppercase',
         marginBottom: 12,
     },
     heroGradientText: {
@@ -423,10 +403,10 @@ const styles = StyleSheet.create({
         lineHeight: 22,
     },
     sectionLabel: {
-        fontSize: 12,
-        fontWeight: '700',
-        color: 'rgba(255,255,255,0.35)',
-        letterSpacing: 1.5,
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        color: 'rgba(255,255,255,0.4)',
+        letterSpacing: 2,
         textTransform: 'uppercase',
         marginBottom: 12,
         marginTop: 4,
@@ -438,9 +418,10 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     categoryCard: {
-        width: (SCREEN_WIDTH - 60) / 3,
+        flexGrow: 1,
+        flexBasis: 150,
         paddingVertical: 14,
-        borderRadius: 16,
+        ...pixelClip(4),
         alignItems: 'center',
         justifyContent: 'center',
         gap: 6,
@@ -453,12 +434,14 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
     },
     categoryLabel: {
-        fontSize: 11,
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 1,
         color: 'rgba(255,255,255,0.5)',
-        fontWeight: '600',
+        textTransform: 'uppercase',
     },
     formCard: {
-        borderRadius: 20,
+        ...pixelClip(5),
         overflow: 'hidden',
         padding: 20,
         borderWidth: 1,
@@ -469,16 +452,18 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     inputLabel: {
-        fontSize: 12,
-        color: 'rgba(255,255,255,0.45)',
-        fontWeight: '600',
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 1.4,
+        color: 'rgba(255,255,255,0.5)',
+        textTransform: 'uppercase',
         marginBottom: 8,
     },
     inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'rgba(255,255,255,0.06)',
-        borderRadius: 12,
+        ...pixelClip(3),
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
         paddingHorizontal: 14,
@@ -501,7 +486,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: 'rgba(255,255,255,0.05)',
-        borderRadius: 16,
+        ...pixelClip(4),
         padding: 16,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.08)',
@@ -518,7 +503,7 @@ const styles = StyleSheet.create({
     reachRadio: {
         width: 20,
         height: 20,
-        borderRadius: 10,
+        ...pixelClip(3),
         borderWidth: 2,
         borderColor: 'rgba(255,255,255,0.2)',
         alignItems: 'center',
@@ -530,12 +515,11 @@ const styles = StyleSheet.create({
     reachRadioDot: {
         width: 8,
         height: 8,
-        borderRadius: 4,
         backgroundColor: '#DAE6F7',
     },
     reachLabel: {
+        fontFamily: FONT.sansBold,
         fontSize: 15,
-        fontWeight: '700',
         color: 'rgba(255,255,255,0.7)',
         marginBottom: 2,
     },
@@ -545,17 +529,17 @@ const styles = StyleSheet.create({
     },
     reachPriceBadge: {
         backgroundColor: 'rgba(255,255,255,0.1)',
-        borderRadius: 10,
+        ...pixelClip(2),
         paddingHorizontal: 12,
         paddingVertical: 6,
     },
     reachPriceText: {
         color: '#fff',
-        fontSize: 13,
-        fontWeight: '700',
+        fontFamily: FONT.techBold,
+        fontSize: 12,
     },
     previewCard: {
-        borderRadius: 20,
+        ...pixelClip(5),
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
@@ -575,21 +559,23 @@ const styles = StyleSheet.create({
     },
     previewBadge: {
         alignSelf: 'flex-start',
-        borderRadius: 8,
+        ...pixelClip(2),
         paddingHorizontal: 10,
         paddingVertical: 4,
         marginBottom: 8,
         overflow: 'hidden',
     },
     previewBadgeText: {
-        color: '#fff',
+        color: '#07080C',
+        fontFamily: FONT.techBold,
         fontSize: 10,
-        fontWeight: '800',
-        letterSpacing: 0.5,
+        letterSpacing: 1,
+        textTransform: 'uppercase',
     },
     previewTitle: {
-        fontSize: 19,
-        fontWeight: '800',
+        fontFamily: FONT.display,
+        fontSize: 22,
+        letterSpacing: 0.6,
         color: '#fff',
         marginBottom: 4,
         maxWidth: SCREEN_WIDTH * 0.55,
@@ -603,7 +589,7 @@ const styles = StyleSheet.create({
     previewIcon: {
         width: 56,
         height: 56,
-        borderRadius: 16,
+        ...pixelClip(4),
         backgroundColor: 'rgba(255,255,255,0.08)',
         alignItems: 'center',
         justifyContent: 'center',
@@ -623,14 +609,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     previewCta: {
-        borderRadius: 10,
+        ...pixelClip(2),
         paddingHorizontal: 16,
         paddingVertical: 8,
     },
     previewCtaText: {
-        color: '#000000',
-        fontSize: 12,
-        fontWeight: '700',
+        color: '#07080C',
+        fontFamily: FONT.techBold,
+        fontSize: 11,
     },
     statsRow: {
         flexDirection: 'row',
@@ -641,7 +627,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         padding: 14,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.08)',
@@ -649,23 +635,20 @@ const styles = StyleSheet.create({
     },
     statValue: {
         color: '#fff',
-        fontSize: 16,
-        fontWeight: '800',
+        fontFamily: FONT.lcd,
+        fontSize: 20,
     },
     statLabel: {
-        color: 'rgba(255,255,255,0.35)',
-        fontSize: 10,
-        fontWeight: '600',
+        color: 'rgba(255,255,255,0.4)',
+        fontFamily: FONT.tech,
+        fontSize: 9,
+        letterSpacing: 1.6,
+        textTransform: 'uppercase',
     },
     launchWrapper: {
-        borderRadius: 18,
+        ...pixelClip(4),
         overflow: 'hidden',
         marginBottom: 16,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.5,
-        shadowRadius: 20,
-        elevation: 12,
     },
     launchBtn: {
         flexDirection: 'row',
@@ -673,13 +656,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 10,
         paddingVertical: 18,
-        borderRadius: 18,
+        ...pixelClip(4),
     },
     launchText: {
-        color: '#000000',
-        fontSize: 17,
-        fontWeight: '800',
-        letterSpacing: 0.3,
+        color: '#07080C',
+        fontFamily: FONT.techBold,
+        fontSize: 15,
+        letterSpacing: 0.4,
     },
     disclaimer: {
         textAlign: 'center',

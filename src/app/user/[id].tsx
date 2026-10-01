@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Image, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { useVideos } from '@lib/supabase/hooks/useVideos';
 import { usePosts, Post } from '@lib/supabase/hooks/usePosts';
 import { supabase } from '@lib/supabase/client';
-import { theme } from '@design-system/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { encodeVideoUrl } from '@lib/utils/url';
-import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useAnimatedScrollHandler, useSharedValue, useAnimatedStyle, interpolate, Extrapolation, SharedValue } from 'react-native-reanimated';
+import { useTheme } from '../../components/Theme/ThemeProvider';
+import { DebateCard } from '@components/Debate/DebateCard';
+import { Button } from '@components/UI/Button';
+import { pixelClip } from '@design-system/pixel';
+import { pageBg } from '@design-system/surface';
+import { FONT } from '@design-system/fonts';
 
 interface ProfileData {
     username: string;
@@ -24,38 +28,45 @@ interface ProfileData {
     videos_count: number;
 }
 
-const { width } = Dimensions.get('window');
-const VIDEO_ITEM_WIDTH = (width - 2) / 3;
-const HEADER_HEIGHT = 350;
+const { width: WINDOW_WIDTH } = Dimensions.get('window');
+// On the web the page is a single centred column, like the profile tab.
+const COLUMN_WIDTH = Platform.OS === 'web' ? Math.min(WINDOW_WIDTH, 720) : WINDOW_WIDTH;
+const VIDEO_ITEM_WIDTH = (COLUMN_WIDTH - 2) / 3;
+const HEADER_HEIGHT = 200;
 
 const StickyHeader = ({ scrollY, user }: { scrollY: SharedValue<number>, user: any }) => {
     const router = useRouter();
+    const { theme, mode } = useTheme();
+    const isDark = mode === 'dark';
+    const hairline = isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)';
+
     const headerStyle = useAnimatedStyle(() => {
-        const opacity = interpolate(scrollY.value, [200, 300], [0, 1], Extrapolation.CLAMP);
+        const opacity = interpolate(scrollY.value, [160, 240], [0, 1], Extrapolation.CLAMP);
         return { opacity };
     });
 
+    const chip = { backgroundColor: isDark ? 'rgba(8, 9, 13, 0.55)' : 'rgba(255, 255, 255, 0.7)' };
+
     return (
         <View style={styles.stickyHeaderContainer}>
-            <Animated.View style={[styles.stickyHeaderBackground, headerStyle]}>
-                <LinearGradient
-                    colors={['rgba(0,0,0,0.9)', 'rgba(0,0,0,0.0)']}
-                    style={StyleSheet.absoluteFill}
-                />
-            </Animated.View>
+            <Animated.View
+                style={[
+                    styles.stickyHeaderBackground,
+                    headerStyle,
+                    { backgroundColor: isDark ? 'rgba(8, 9, 13, 0.92)' : 'rgba(241, 245, 252, 0.92)', borderBottomColor: hairline },
+                ]}
+            />
             <SafeAreaView style={styles.stickyHeaderSafeArea}>
                 <View style={styles.stickyHeaderContent}>
-                    <Pressable style={styles.iconButton} onPress={() => router.back()}>
-                        <Ionicons name="arrow-back" size={24} color="white" />
+                    <Pressable style={[styles.iconButton, pixelClip(3), chip]} onPress={() => router.back()}>
+                        <Ionicons name="arrow-back" size={20} color={theme.colors.text.primary} />
                     </Pressable>
-                    <Animated.Text style={[styles.stickyUsername, headerStyle]}>
+                    <Animated.Text style={[styles.stickyUsername, headerStyle, { color: theme.colors.text.primary }]}>
                         @{user?.username || user?.email?.split('@')[0]}
                     </Animated.Text>
-                    <View style={styles.stickyHeaderActions}>
-                        <Pressable style={styles.iconButton} onPress={() => { }}>
-                            <Ionicons name="ellipsis-horizontal" size={24} color="white" />
-                        </Pressable>
-                    </View>
+                    <Pressable style={[styles.iconButton, pixelClip(3), chip]} onPress={() => { }}>
+                        <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.text.primary} />
+                    </Pressable>
                 </View>
             </SafeAreaView>
         </View>
@@ -63,6 +74,11 @@ const StickyHeader = ({ scrollY, user }: { scrollY: SharedValue<number>, user: a
 };
 
 const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setActiveTab, isFollowing, onFollow, onMessage }: any) => {
+    const { theme, mode } = useTheme();
+    const isDark = mode === 'dark';
+    const hairline = isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)';
+    const glass = isDark ? 'rgba(218, 230, 247, 0.04)' : 'rgba(255, 255, 255, 0.6)';
+    const mono = { fontFamily: FONT.tech };
 
     const bannerStyle = useAnimatedStyle(() => {
         const scale = interpolate(scrollY.value, [-100, 0], [1.2, 1], Extrapolation.CLAMP);
@@ -72,117 +88,98 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
         };
     });
 
+    const initial = profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
+    const stats: [string, number][] = [
+        ['FOLLOWERS', profile?.followers_count || 0],
+        ['FOLLOWING', profile?.following_count || 0],
+        ['VIDEOS', profile?.videos_count || 0],
+    ];
+
     return (
         <View>
             <View style={styles.headerContainer}>
-                <Animated.View style={[StyleSheet.absoluteFill, bannerStyle]}>
-                    <ImageBackground
-                        source={{ uri: headerImageUrl }}
-                        style={StyleSheet.absoluteFill}
-                    />
-                    <LinearGradient
-                        colors={['transparent', 'rgba(0,0,0,0.8)', theme.colors.background.primary]}
-                        style={StyleSheet.absoluteFill}
-                    />
+                <Animated.View style={[StyleSheet.absoluteFill, bannerStyle, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
+                    <ImageBackground source={{ uri: headerImageUrl }} style={StyleSheet.absoluteFill} />
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.1)' }]} />
                 </Animated.View>
+            </View>
 
-                {/* Content Overlay */}
-                <View style={styles.headerContent}>
-                    {/* Top Profile Section */}
-                    <View style={styles.profileTopSection}>
-                        <View style={styles.avatarContainer}>
-                            <View style={styles.avatar}>
-                                {profile?.avatar_url ? (
-                                    <ImageBackground source={{ uri: profile.avatar_url }} style={{ width: 80, height: 80, borderRadius: 40 }} resizeMode="cover" />
-                                ) : (
-                                    <Text style={styles.avatarText}>
-                                        {profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
-                                    </Text>
-                                )}
-                            </View>
-                        </View>
-
-                        <View style={styles.infoColumn}>
-                            <Text style={styles.displayName}>
-                                {profile?.display_name || user?.email?.split('@')[0] || 'User'}
-                            </Text>
-                            <Text style={styles.username}>
-                                @{profile?.username || user?.email?.split('@')[0]}
-                            </Text>
-
-                            <View style={styles.compactStatsRow}>
-                                <View style={styles.compactStatItem}>
-                                    <Text style={styles.compactStatValue}>{profile?.followers_count || 0}</Text>
-                                    <Text style={styles.compactStatLabel}>Followers</Text>
-                                </View>
-                                <View style={styles.compactStatDivider} />
-                                <View style={styles.compactStatItem}>
-                                    <Text style={styles.compactStatValue}>{profile?.following_count || 0}</Text>
-                                    <Text style={styles.compactStatLabel}>Following</Text>
-                                </View>
-                                <View style={styles.compactStatDivider} />
-                                <View style={styles.compactStatItem}>
-                                    <Text style={styles.compactStatValue}>{profile?.videos_count || 0}</Text>
-                                    <Text style={styles.compactStatLabel}>Videos</Text>
-                                </View>
-                            </View>
-                        </View>
+            <View style={styles.headerContent}>
+                <View style={styles.profileTopSection}>
+                    <View style={[styles.avatar, pixelClip(8), { borderColor: theme.colors.background.primary, backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
+                        {profile?.avatar_url ? (
+                            <Image source={{ uri: profile.avatar_url }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                        ) : (
+                            <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>{initial}</Text>
+                        )}
                     </View>
 
-                    {/* Action Buttons */}
+                    <Text style={[styles.displayName, { color: theme.colors.text.primary }]}>
+                        {profile?.display_name || user?.email?.split('@')[0] || 'User'}
+                    </Text>
+                    <Text style={[styles.username, mono, { color: theme.colors.text.secondary }]}>
+                        &gt; @{profile?.username || user?.email?.split('@')[0]}
+                    </Text>
+
+                    <View style={[styles.statsPill, pixelClip(4), { backgroundColor: glass, borderColor: hairline }]}>
+                        {stats.map(([label, value], i) => (
+                            <React.Fragment key={label}>
+                                {i > 0 && <View style={[styles.statDivider, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.22)' : 'rgba(7, 8, 12, 0.18)' }]} />}
+                                <View style={styles.statItem}>
+                                    <Text style={[styles.statValue, mono, { color: theme.colors.text.primary }]}>{value}</Text>
+                                    <Text style={[styles.statLabel, mono, { color: theme.colors.text.secondary }]}>{label}</Text>
+                                </View>
+                            </React.Fragment>
+                        ))}
+                    </View>
+
                     <View style={styles.actionButtonsRow}>
-                        <Pressable
-                            style={[styles.actionButtonWrapper, { flex: 1 }]}
+                        <Button
+                            title={isFollowing ? 'Following' : 'Follow'}
+                            variant={isFollowing ? 'secondary' : 'primary'}
                             onPress={onFollow}
-                        >
-                            {isFollowing ? (
-                                <View style={[styles.modernButton, styles.followingButton]}>
-                                    <Text style={styles.followingButtonText}>Following</Text>
-                                </View>
-                            ) : (
-                                <LinearGradient
-                                    colors={[theme.colors.primary.DEFAULT, theme.colors.primary.DEFAULT]} // Strict 3-color palette
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 0 }}
-                                    style={styles.modernButton}
-                                >
-                                    <Text style={styles.followButtonText}>Follow</Text>
-                                </LinearGradient>
-                            )}
-                        </Pressable>
-
-                        <Pressable
-                            style={[styles.actionButtonWrapper, { flex: 1 }]} // Message also flex 1
-                            onPress={onMessage}
-                        >
-                            <View style={[styles.modernButton, styles.messageButton]}>
-                                <Text style={styles.messageButtonText}>Message</Text>
-                            </View>
-                        </Pressable>
+                            style={{ flex: 1 }}
+                        />
+                        <Button title="Message" variant="secondary" onPress={onMessage} style={{ flex: 1 }} />
                     </View>
+                </View>
 
-                    <View style={styles.bioSection}>
-                        <Text style={styles.bioText}>
-                            {profile?.bio || 'passionate creator • sharing knowledge • learning every day'}
-                        </Text>
-                    </View>
+                <View style={styles.bioSection}>
+                    <Text style={[styles.bioText, { color: theme.colors.text.secondary }]}>
+                        {profile?.bio || 'passionate creator • sharing knowledge • learning every day'}
+                    </Text>
                 </View>
             </View>
 
-            <View style={styles.tabsContainer}>
-                {(['videos', 'posts'] as const).map((tab) => (
-                    <Pressable
-                        key={tab}
-                        style={[styles.tabItem, activeTab === tab && styles.activeTabItem]}
-                        onPress={() => setActiveTab(tab)}
-                    >
-                        <Ionicons
-                            name={tab === 'posts' ? 'lock-closed-outline' : 'grid-outline'}
-                            size={24}
-                            color={activeTab === tab ? theme.colors.text.primary : theme.colors.text.secondary}
-                        />
-                    </Pressable>
-                ))}
+            <View style={[styles.tabsContainer, pixelClip(5), { borderColor: hairline }]}>
+                {(['videos', 'posts'] as const).map((tab) => {
+                    const isActive = activeTab === tab;
+                    return (
+                        <Pressable
+                            key={tab}
+                            style={[
+                                styles.tabItem,
+                                isActive && [pixelClip(4), {
+                                    backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)',
+                                    borderColor: theme.colors.primary.DEFAULT,
+                                    borderWidth: 1,
+                                }],
+                            ]}
+                            onPress={() => setActiveTab(tab)}
+                        >
+                            <Ionicons
+                                name={tab === 'posts' ? 'infinite-outline' : 'grid-outline'}
+                                size={20}
+                                color={isActive ? theme.colors.primary.DEFAULT : theme.colors.text.secondary}
+                            />
+                            {isActive && (
+                                <Text style={[styles.tabLabel, mono, { color: theme.colors.primary.DEFAULT }]}>
+                                    [ {tab === 'videos' ? 'ESSENCE' : 'THESES'} ]
+                                </Text>
+                            )}
+                        </Pressable>
+                    );
+                })}
             </View>
         </View>
     );
@@ -206,9 +203,12 @@ const InternalVideoGridItem = ({ videoUrl }: { videoUrl: string }) => {
 };
 
 const VideoGridItem = ({ item, index, onPress }: { item: any, index: number, onPress: () => void }) => {
+    const { mode } = useTheme();
+    const isDark = mode === 'dark';
+
     return (
         <Pressable
-            style={styles.videoGridItem}
+            style={[styles.videoGridItem, { backgroundColor: isDark ? '#000000' : '#E4EBF6' }]}
             onPress={onPress}
         >
             {item.videoUrl ? (
@@ -230,6 +230,8 @@ export default function UserProfileScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const { user: currentUser } = useAuth(); // Current logged-in user
     const router = useRouter();
+    const { theme, mode } = useTheme();
+    const isDark = mode === 'dark';
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [activeTab, setActiveTab] = useState<'posts' | 'videos'>('videos');
     const [isFollowing, setIsFollowing] = useState(false);
@@ -250,41 +252,7 @@ export default function UserProfileScreen() {
     } = usePosts(id);
 
     const renderPostItem = ({ item }: { item: Post }) => (
-        <View style={styles.postItem}>
-            <View style={styles.postHeader}>
-                <View style={styles.authorRow}>
-                    <View style={styles.postAvatar}>
-                        {item.authorAvatar ? (
-                            <ImageBackground source={{ uri: item.authorAvatar }} style={{ flex: 1, borderRadius: 20 }} />
-                        ) : (
-                            <Text style={styles.postAvatarText}>
-                                {item.authorName[0].toUpperCase()}
-                            </Text>
-                        )}
-                    </View>
-                    <View style={styles.authorInfo}>
-                        <Text style={styles.postAuthor}>{item.authorName}</Text>
-                        <Text style={styles.postDate}>{new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
-                    </View>
-                </View>
-            </View>
-
-            <View style={styles.postBody}>
-                <Text style={styles.postContent}>{item.content}</Text>
-            </View>
-
-            <View style={styles.postFooter}>
-                <Pressable style={styles.actionButtonInteraction}>
-                    <Text style={{ color: '#DAE6F7', fontSize: 18 }}>✦</Text>
-                    <Text style={styles.actionText}>{item.likes || 0}</Text>
-                </Pressable>
-
-                <Pressable style={styles.actionButtonInteraction}>
-                    <Ionicons name="chatbubble-outline" size={20} color={theme.colors.text.secondary} />
-                    <Text style={styles.actionText}>{item.comments || 0}</Text>
-                </Pressable>
-            </View>
-        </View>
+        <DebateCard item={item} onPress={() => router.push(`/debate/${item.id}`)} />
     );
 
     const getProfileCoverImage = React.useCallback((userId: string) => {
@@ -301,8 +269,6 @@ export default function UserProfileScreen() {
         return getProfileCoverImage(id || 'default');
     }, [id, profile?.banner_url, getProfileCoverImage]);
 
-
-
     const fetchProfile = React.useCallback(async () => {
         if (!supabase || !id) {
             return;
@@ -316,8 +282,6 @@ export default function UserProfileScreen() {
                 .single();
 
             if (profileError) throw profileError;
-
-            // console.log('Fetched Profile Data:', JSON.stringify(profileData, null, 2));
 
             const { count } = await supabase
                 .from('videos')
@@ -406,7 +370,6 @@ export default function UserProfileScreen() {
         });
     };
 
-
     const navigateToVideo = (videoId: string, initialScrollIndex: number) => {
         router.push({
             pathname: '/video-player',
@@ -422,6 +385,12 @@ export default function UserProfileScreen() {
         <VideoGridItem item={item} index={index} onPress={() => navigateToVideo(item.id, index)} />
     );
 
+    const emptyText = (text: string) => (
+        <View style={styles.emptyState}>
+            <Text style={[styles.emptyStateText, { color: theme.colors.text.muted }]}>[ {text} ]</Text>
+        </View>
+    );
+
     const renderContent = () => {
         if (activeTab === 'videos') {
             if (loadingVideos && videos.length === 0) {
@@ -432,11 +401,7 @@ export default function UserProfileScreen() {
                 );
             }
             if (!videos || videos.length === 0) {
-                return (
-                    <View style={styles.emptyState}>
-                        <Text style={styles.emptyStateText}>No videos yet.</Text>
-                    </View>
-                );
+                return emptyText('NO VIDEOS YET');
             }
             return null; // FlatList handles data rendering
         }
@@ -450,11 +415,7 @@ export default function UserProfileScreen() {
                 );
             }
             if (posts.length === 0) {
-                return (
-                    <View style={styles.emptyState}>
-                        <Text style={styles.emptyStateText}>No posts yet.</Text>
-                    </View>
-                );
+                return emptyText('NO THESES YET');
             }
             return null;
         }
@@ -462,43 +423,45 @@ export default function UserProfileScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="light-content" />
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
+            <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
-            {/* Sticky Header Overlay */}
-            <StickyHeader scrollY={scrollY} user={profile} />
+            <View style={styles.column}>
+                {/* Sticky Header Overlay */}
+                <StickyHeader scrollY={scrollY} user={profile} />
 
-            <Animated.FlatList
-                key={activeTab}
-                data={(activeTab === 'videos' ? videos : activeTab === 'posts' ? posts : []) as any}
-                renderItem={(props: any) => activeTab === 'videos' ? renderVideoItem(props) : renderPostItem(props)}
-                keyExtractor={(item) => item.id}
-                numColumns={activeTab === 'videos' ? 3 : 1}
-                contentContainerStyle={styles.flatListContent}
-                ListHeaderComponent={() => (
-                    <ProfileHeader
-                        profile={profile}
-                        user={currentUser} // Pass undefined or logic to fallback
-                        scrollY={scrollY}
-                        headerImageUrl={headerImageUrl}
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                        isFollowing={isFollowing}
-                        onFollow={handleFollow}
-                        onMessage={handleMessage}
-                    />
-                )}
-                ListFooterComponent={renderContent}
-                showsVerticalScrollIndicator={false}
-                columnWrapperStyle={activeTab === 'videos' ? styles.videoColumnWrapper : undefined}
-                removeClippedSubviews={Platform.OS === 'android'}
-                maxToRenderPerBatch={10}
-                windowSize={5}
-                initialNumToRender={12}
-                onScroll={scrollHandler}
-                scrollEventThrottle={16}
-                style={{ backgroundColor: 'transparent' }}
-            />
+                <Animated.FlatList
+                    key={activeTab}
+                    data={(activeTab === 'videos' ? videos : activeTab === 'posts' ? posts : []) as any}
+                    renderItem={(props: any) => activeTab === 'videos' ? renderVideoItem(props) : renderPostItem(props)}
+                    keyExtractor={(item) => item.id}
+                    numColumns={activeTab === 'videos' ? 3 : 1}
+                    contentContainerStyle={styles.flatListContent}
+                    ListHeaderComponent={() => (
+                        <ProfileHeader
+                            profile={profile}
+                            user={currentUser}
+                            scrollY={scrollY}
+                            headerImageUrl={headerImageUrl}
+                            activeTab={activeTab}
+                            setActiveTab={setActiveTab}
+                            isFollowing={isFollowing}
+                            onFollow={handleFollow}
+                            onMessage={handleMessage}
+                        />
+                    )}
+                    ListFooterComponent={renderContent}
+                    showsVerticalScrollIndicator={false}
+                    columnWrapperStyle={activeTab === 'videos' ? styles.videoColumnWrapper : undefined}
+                    removeClippedSubviews={Platform.OS === 'android'}
+                    maxToRenderPerBatch={10}
+                    windowSize={5}
+                    initialNumToRender={12}
+                    onScroll={scrollHandler}
+                    scrollEventThrottle={16}
+                    style={{ backgroundColor: 'transparent' }}
+                />
+            </View>
         </View>
     );
 }
@@ -506,7 +469,12 @@ export default function UserProfileScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.colors.background.primary,
+    },
+    column: {
+        flex: 1,
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
     },
     // Sticky Header
     stickyHeaderContainer: {
@@ -515,8 +483,8 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 100,
-        borderBottomWidth: 0, // Explicitly 0
-        elevation: 0, // No shadow
+        borderBottomWidth: 0,
+        elevation: 0,
         shadowOpacity: 0,
     },
     stickyHeaderSafeArea: {
@@ -526,206 +494,151 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: theme.spacing.lg,
+        paddingHorizontal: 16,
         paddingVertical: 10,
-        height: 50,
-    },
-    stickyHeaderActions: {
-        flexDirection: 'row',
-        gap: 16,
+        height: 54,
     },
     stickyHeaderBackground: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: theme.colors.background.primary,
         borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.1)',
     },
     stickyUsername: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'white',
+        fontFamily: FONT.display,
+        fontSize: 20,
+        letterSpacing: 0.6,
         opacity: 0, // Default hidden
     },
     iconButton: {
-        padding: 4,
+        width: 36,
+        height: 36,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 
     // Main Content
     flatListContent: {
-        paddingTop: 0, // Content starts at top for seamless header
+        paddingTop: 0,
         paddingBottom: 80,
     },
     headerContainer: {
         height: HEADER_HEIGHT,
-        marginBottom: theme.spacing.md,
-        overflow: 'hidden', // Ensure banner clips
-        justifyContent: 'flex-end',
+        overflow: 'hidden',
     },
     headerContent: {
-        paddingBottom: theme.spacing.md,
-        paddingTop: 100, // Push content down
+        paddingBottom: 12,
+        zIndex: 2,
     },
 
     // Profile Top Section
     profileTopSection: {
-        flexDirection: 'row',
-        alignItems: 'center', // Centered vertically
-        paddingHorizontal: theme.spacing.lg,
-        marginBottom: theme.spacing.md, // Tight
-        paddingTop: 10,
-    },
-    avatarContainer: {
-        marginRight: 16,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        marginTop: -52, // The avatar overlaps the banner
     },
     avatar: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: 'rgba(255,255,255,0.2)',
+        width: 84,
+        height: 84,
+        ...pixelClip(8),
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 2,
-        borderColor: 'white',
+        borderWidth: 4,
         overflow: 'hidden',
+        marginBottom: 10,
     },
     avatarText: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    infoColumn: {
-        flex: 1,
-        paddingTop: 0,
+        fontFamily: FONT.display,
+        fontSize: 34,
     },
     displayName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'white',
+        fontFamily: FONT.display,
+        fontSize: 28,
+        letterSpacing: 1,
+        textAlign: 'center',
         marginBottom: 2,
     },
     username: {
-        fontSize: 14,
-        color: 'rgba(255,255,255,0.9)',
-        marginBottom: 8,
+        fontSize: 13,
+        marginBottom: 12,
+        opacity: 0.8,
     },
 
-    // Action Buttons
+    // Stats
+    statsPill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderWidth: 1,
+        marginBottom: 16,
+    },
+    statItem: {
+        flexDirection: 'row',
+        alignItems: 'baseline',
+    },
+    statValue: {
+        fontSize: 15,
+        fontWeight: '700',
+        marginRight: 6,
+    },
+    statLabel: {
+        fontSize: 9.5,
+        letterSpacing: 1.2,
+        opacity: 0.8,
+    },
+    statDivider: {
+        width: 1,
+        height: 14,
+        marginHorizontal: 14,
+    },
+
+    // Actions
     actionButtonsRow: {
         flexDirection: 'row',
-        paddingHorizontal: theme.spacing.lg,
-        marginBottom: 16,
+        width: '100%',
         gap: 12,
-    },
-    actionButtonWrapper: {
-        borderRadius: 20,
-        overflow: 'hidden', // Contain gradient
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
-    },
-    modernButton: {
-        height: 40,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    followButtonText: {
-        color: 'white',
-        fontWeight: '700',
-        fontSize: 14,
-        letterSpacing: 0.5,
-    },
-    followingButton: {
-        backgroundColor: 'rgba(255,255,255,0.1)',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)',
-    },
-    followingButtonText: {
-        color: 'white',
-        fontWeight: '600',
-    },
-    messageButton: {
-        backgroundColor: 'rgba(255,255,255,0.15)', // Glass effect
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
-    },
-    messageButtonText: {
-        color: 'white',
-        fontWeight: '600',
-        fontSize: 14,
     },
 
     // Bio
     bioSection: {
-        paddingHorizontal: theme.spacing.lg,
-        marginBottom: theme.spacing.md,
+        paddingHorizontal: 24,
+        marginTop: 14,
+        alignItems: 'center',
     },
     bioText: {
         fontSize: 14,
-        color: 'rgba(255,255,255,0.9)',
         lineHeight: 20,
-    },
-
-    // Compact Stats
-    compactStatsRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    compactStatItem: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        marginRight: 12,
-    },
-    compactStatValue: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: 'white',
-        marginRight: 4,
-    },
-    compactStatLabel: {
-        fontSize: 12,
-        color: 'rgba(255,255,255,0.8)',
-    },
-    compactStatDivider: {
-        width: 1,
-        height: 12,
-        backgroundColor: 'rgba(255,255,255,0.4)',
-        marginRight: 12,
+        textAlign: 'center',
     },
 
     // Tabs
     tabsContainer: {
         flexDirection: 'row',
-        paddingHorizontal: theme.spacing.md,
-        paddingBottom: 0,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.1)',
-        marginBottom: 1,
+        marginHorizontal: 16,
+        marginBottom: 12,
+        padding: 4,
+        borderWidth: 1,
+        height: 56,
     },
     tabItem: {
         flex: 1,
-        height: 44,
+        flexDirection: 'row',
+        gap: 8,
         justifyContent: 'center',
         alignItems: 'center',
-        borderBottomWidth: 3,
-        borderBottomColor: 'transparent',
+        margin: 2,
     },
-    activeTabItem: {
-        borderBottomColor: theme.colors.primary.DEFAULT, // Use primary color for un-capped tabs
+    tabLabel: {
+        fontSize: 11,
+        letterSpacing: 1.2,
     },
 
     // Grid
     videoColumnWrapper: {
         gap: 1,
-        backgroundColor: theme.colors.background.primary, // Ensure bg
     },
     videoGridItem: {
         width: VIDEO_ITEM_WIDTH,
         height: VIDEO_ITEM_WIDTH * 1.3,
-        backgroundColor: 'rgba(255,255,255,0.05)',
         marginBottom: 1,
     },
     videoThumbnail: {
@@ -743,8 +656,8 @@ const styles = StyleSheet.create({
     },
     viewsText: {
         color: 'white',
-        fontSize: 12,
-        fontWeight: '600',
+        fontFamily: FONT.tech,
+        fontSize: 11,
         textShadowColor: 'rgba(0,0,0,0.5)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 2,
@@ -761,96 +674,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     emptyStateText: {
-        color: theme.colors.text.secondary,
-        fontSize: 16,
-        marginBottom: 16,
-    },
-
-    // Post Item
-    postItem: {
-        backgroundColor: 'rgba(255,255,255,0.03)',
-        marginBottom: 20,
-        borderRadius: 24,
-        marginHorizontal: 16,
-        padding: 4,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.08)',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.30,
-        shadowRadius: 4.65,
-        elevation: 8,
-    },
-    postHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: 12,
-        paddingBottom: 8,
-    },
-    authorRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    postAvatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#333',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 10,
-    },
-    postAvatarText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    postBody: {
-        paddingHorizontal: 16,
-        paddingBottom: 12,
-    },
-    postFooter: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start', // Left aligned
-        gap: 24, // Consistent spacing
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        paddingTop: 8,
-    },
-    postAuthor: {
-        color: 'white',
-        fontWeight: '700',
-        fontSize: 16,
-        marginBottom: 2,
-    },
-    postDate: {
-        color: 'rgba(255,255,255,0.4)',
-        fontSize: 12,
-        fontWeight: '500',
-    },
-    authorInfo: {
-        marginLeft: 12,
-        justifyContent: 'center'
-    },
-    postContent: {
-        color: 'rgba(255,255,255,0.95)',
-        fontSize: 15,
-        lineHeight: 22,
-    },
-    actionButtonInteraction: {
-        flexDirection: 'row',
-        gap: 6,
-        alignItems: 'center'
-    },
-    actionText: {
-        color: theme.colors.text.secondary,
-        fontSize: 14,
-        fontWeight: '600',
+        fontFamily: FONT.tech,
+        fontSize: 11,
+        letterSpacing: 1.6,
     },
 });

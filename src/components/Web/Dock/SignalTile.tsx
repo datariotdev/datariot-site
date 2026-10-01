@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MONO, useDockSurface } from './DockModule';
+import { pixelClip } from '@design-system/pixel';
 
 /**
  * Stat tile: label · value · delta · 24-point trend.
@@ -192,7 +193,7 @@ export const SignalTile = ({
 
 const styles = StyleSheet.create({
     card: {
-        borderRadius: 12,
+        ...pixelClip(3),
         borderWidth: 1,
         padding: 14,
     },
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
         top: -10,
         paddingHorizontal: 7,
         paddingVertical: 4,
-        borderRadius: 6,
+        ...pixelClip(2),
         borderWidth: 1,
         minWidth: 52,
         alignItems: 'center',

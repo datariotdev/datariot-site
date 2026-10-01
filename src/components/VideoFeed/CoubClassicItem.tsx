@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { encodeVideoUrl } from '../../lib/utils/url';
 import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
     },
     videoContainer: {
         backgroundColor: '#06070A',
-        borderRadius: 28,
+        ...pixelClip(6),
         overflow: 'hidden',
         position: 'relative',
         shadowColor: '#000',
@@ -412,7 +413,7 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     infoPanel: {
-        borderRadius: 22,
+        ...pixelClip(6),
         paddingHorizontal: 20,
         paddingVertical: 16,
         overflow: 'hidden',
@@ -457,7 +458,7 @@ const styles = StyleSheet.create({
         borderColor: '#DAE6F7',
         paddingHorizontal: 10,
         paddingVertical: 6,
-        borderRadius: 4,
+        ...pixelClip(2),
         zIndex: 20,
     },
     cyberBadgeText: {
@@ -537,7 +538,7 @@ const styles = StyleSheet.create({
         right: 14,
         width: 34,
         height: 34,
-        borderRadius: 17,
+        ...pixelClip(3),
         backgroundColor: 'rgba(0,0,0,0.4)',
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.06)',
@@ -555,7 +556,7 @@ const styles = StyleSheet.create({
     pauseIconContainer: {
         width: 64,
         height: 64,
-        borderRadius: 32,
+        ...pixelClip(4),
         backgroundColor: 'rgba(0,0,0,0.35)',
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
@@ -596,7 +597,7 @@ const styles = StyleSheet.create({
         marginTop: 12,
         paddingVertical: 8,
         paddingHorizontal: 12,
-        borderRadius: 10,
+        ...pixelClip(2),
         borderWidth: 1,
     },
     logicBalanceTrack: {
