@@ -16,18 +16,6 @@ const CSS = `
 }
 .status-pulse-anim { animation: status-pulse-anim 2s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
 
-/* --- Aurora ribbons: the info site's page-fx, slow and non-repeating ------ */
-@keyframes dr-sway-l {
-    from { transform: translate3d(0, 0, 0) rotate(-8deg); }
-    to   { transform: translate3d(4vw, 6vh, 0) rotate(5deg); }
-}
-@keyframes dr-sway-r {
-    from { transform: translate3d(0, 0, 0) rotate(9deg); }
-    to   { transform: translate3d(-4vw, -5vh, 0) rotate(-4deg); }
-}
-.dr-sway-l { animation: dr-sway-l 28s ease-in-out infinite alternate; }
-.dr-sway-r { animation: dr-sway-r 36s ease-in-out infinite alternate; }
-
 /* --- Live ticker marquee ---------------------------------------------- */
 @keyframes dr-ticker {
     0%   { transform: translateX(0); }
@@ -77,7 +65,7 @@ html, body, #root { font-synthesis: none; -webkit-font-smoothing: antialiased; -
 [data-theme="light"] *::-webkit-scrollbar-thumb:hover { background: rgba(7, 8, 12, 0.32); }
 
 @media (prefers-reduced-motion: reduce) {
-    .dr-sway-l, .dr-sway-r, .dr-ticker, .dr-flicker, .status-pulse-anim {
+    .dr-ticker, .dr-flicker, .status-pulse-anim {
         animation: none !important;
     }
 }

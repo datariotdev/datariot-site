@@ -2,7 +2,7 @@ import React, { useRef, useState, memo } from 'react';
 import { View, Text, StyleSheet, Pressable, Dimensions, Animated, Image, Platform, useWindowDimensions } from 'react-native';
 import { Video, ResizeMode, Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../Theme/ThemeProvider';
 import { theme } from '../../design-system/theme';
@@ -544,8 +544,6 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255,255,255,0.06)',
         justifyContent: 'center',
         alignItems: 'center',
-        // @ts-ignore
-        backdropFilter: 'blur(8px)',
     },
     pauseOverlay: {
         ...StyleSheet.absoluteFillObject,
@@ -562,8 +560,6 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255,255,255,0.1)',
         justifyContent: 'center',
         alignItems: 'center',
-        // @ts-ignore
-        backdropFilter: 'blur(8px)',
     },
 
     progressBarContainer: {

@@ -288,6 +288,10 @@ export function FullScreenVideoModal({
                     keyExtractor={item => item.id}
                     pagingEnabled
                     showsVerticalScrollIndicator={false}
+                    // Rows are a screen tall; keep only the one on show and its neighbours mounted.
+                    initialNumToRender={3}
+                    windowSize={3}
+                    maxToRenderPerBatch={2}
                     getItemLayout={(_, index) => ({
                         length: screenHeight,
                         offset: screenHeight * index,
@@ -299,6 +303,7 @@ export function FullScreenVideoModal({
                         <WebVideoStage
                             item={item}
                             isActive={index === activeIndex && isFocused}
+                            shouldLoad={Math.abs(index - activeIndex) <= 1}
                             width={screenWidth}
                             height={screenHeight}
                             onLike={() => onLike(item.id)}

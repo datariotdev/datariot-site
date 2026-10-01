@@ -8,12 +8,17 @@ interface HudBackdropProps {
 
 /**
  * The surface behind the app — info.datariot.xyz's "page-fx", one continuous
- * tone with the logo's ice laid over it as light: a few soft glows, two slow
- * aurora ribbons down the edges of the viewport, and a grain tile so the
- * surface is not a plastic sheet. No lines, no cells, no bands.
+ * tone with the logo's ice laid over it as light: a few soft glows, two aurora
+ * ribbons down the edges of the viewport, and a grain tile so the surface is
+ * not a plastic sheet. No lines, no cells, no bands.
+ *
+ * It is deliberately still. The ribbons used to sway and the grain used a
+ * blend mode; both force the browser to re-composite the whole page behind
+ * everything every frame, and halved the frame rate on machines without a
+ * strong GPU. A static backdrop is painted once.
  *
  * Web only gets the full treatment (raw divs, so we can use layered radial
- * gradients and CSS animation); native falls back to a gradient wash.
+ * gradients); native falls back to a gradient wash.
  */
 
 const ICE = '218, 230, 247';
@@ -21,6 +26,7 @@ const ICE = '218, 230, 247';
 const GRAIN =
     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E" +
     "%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E" +
+    "%3CfeColorMatrix type='saturate' values='0'/%3E" +
     "%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")";
 
 export const HudBackdrop = ({ isDark }: HudBackdropProps) => {
@@ -59,7 +65,6 @@ export const HudBackdrop = ({ isDark }: HudBackdropProps) => {
         width: '46vw',
         height: '132vh',
         borderRadius: '50%',
-        willChange: 'transform',
         background: `radial-gradient(closest-side, rgba(${ICE}, ${side === 'l' ? a.ribbonA : a.ribbonA * 0.9}), rgba(${ICE}, ${a.ribbonB}) 52%, transparent)`,
     });
 
@@ -71,9 +76,9 @@ export const HudBackdrop = ({ isDark }: HudBackdropProps) => {
 
             {/* aurora ribbons */}
             {/* @ts-ignore web-only element */}
-            <div className="dr-sway-l" style={ribbon('l')} />
+            <div style={ribbon('l')} />
             {/* @ts-ignore web-only element */}
-            <div className="dr-sway-r" style={ribbon('r')} />
+            <div style={ribbon('r')} />
 
             {/* grain */}
             {/* @ts-ignore web-only element */}
@@ -83,8 +88,7 @@ export const HudBackdrop = ({ isDark }: HudBackdropProps) => {
                     inset: 0,
                     backgroundImage: GRAIN,
                     backgroundSize: '160px 160px',
-                    opacity: isDark ? 0.10 : 0.05,
-                    mixBlendMode: isDark ? 'screen' : 'multiply',
+                    opacity: isDark ? 0.045 : 0.035,
                 }}
             />
         </View>

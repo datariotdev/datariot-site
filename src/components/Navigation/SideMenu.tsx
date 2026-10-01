@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { useTheme } from '../Theme/ThemeProvider';
 import { supabase } from '../../lib/supabase/client';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { pixelClip } from '@design-system/pixel';
 

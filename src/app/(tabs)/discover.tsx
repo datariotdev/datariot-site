@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, Pressable, FlatList, useWindowDimensions, ActivityIndicator, Platform, RefreshControl } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
 import { theme as baseTheme } from '@design-system/theme';
 import { useRecommendedUsers } from '@lib/supabase/hooks/useRecommendedUsers';

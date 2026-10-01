@@ -5,7 +5,7 @@ import { Feather, SimpleLineIcons, Ionicons, MaterialCommunityIcons, Entypo } fr
 import { View, Dimensions, Platform, useWindowDimensions, StyleSheet } from 'react-native';
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { pixelClip } from '@design-system/pixel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

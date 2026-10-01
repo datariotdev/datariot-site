@@ -10,7 +10,7 @@ import { SideMenu } from '../../components/Navigation/SideMenu';
 import { useIsFocused } from '@react-navigation/native';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { CommentsModal } from '../../components/VideoFeed/CommentsModal';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { CategoryPills } from '../../components/Discovery/CategoryPills';
 import { VIDEO_CATEGORIES } from '../../lib/constants/categories';
 import { PulseFeed } from '../../components/VideoFeed/PulseFeed/PulseFeed';
