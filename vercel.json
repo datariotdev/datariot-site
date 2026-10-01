@@ -102,6 +102,10 @@
             "destination": "/xyz.html"
         },
         {
+            "source": "/",
+            "destination": "/xyz.html"
+        },
+        {
             "source": "/_expo/:path*",
             "destination": "/datariot-xyz/_expo/:path*"
         },
