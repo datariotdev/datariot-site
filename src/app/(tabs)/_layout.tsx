@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'expo-router';
 import { setAudioModeAsync } from 'expo-audio';
 import { Feather, SimpleLineIcons, Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
@@ -9,6 +9,31 @@ import { BlurView } from 'expo-blur';
 import { pixelClip } from '@design-system/pixel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+/**
+ * Hides a tab's scene while it is not the focused one.
+ *
+ * On web the navigator stacks every visited scene on top of one another and
+ * relies on the scenes' own backgrounds to hide the ones beneath. Now that the
+ * scenes are transparent (the aurora behind them is one continuous surface),
+ * the feed would show through Discover, so unfocused scenes are taken out of
+ * the layout instead.
+ */
+const WebSceneGate = ({ navigation, children }: { navigation: any; children: React.ReactNode }) => {
+    const [focused, setFocused] = useState<boolean>(() => navigation.isFocused());
+
+    useEffect(() => {
+        setFocused(navigation.isFocused());
+        const onFocus = navigation.addListener('focus', () => setFocused(true));
+        const onBlur = navigation.addListener('blur', () => setFocused(false));
+        return () => {
+            onFocus();
+            onBlur();
+        };
+    }, [navigation]);
+
+    return <View style={{ flex: 1, display: focused ? 'flex' : 'none' }}>{children}</View>;
+};
 
 const TabLayout = () => {
     useEffect(() => {
@@ -33,6 +58,9 @@ const TabLayout = () => {
     return (
         <ResponsiveLayout>
             <Tabs
+                screenLayout={Platform.OS === 'web'
+                    ? ({ navigation, children }) => <WebSceneGate navigation={navigation}>{children}</WebSceneGate>
+                    : undefined}
                 screenOptions={{
                     headerShown: false,
                     // Let the layout's HUD backdrop show through instead of the
