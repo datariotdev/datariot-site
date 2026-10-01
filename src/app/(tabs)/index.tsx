@@ -21,6 +21,8 @@ import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
 import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
 import { TECH_FONT } from '@design-system/fonts';
 import { pageBg } from '@design-system/surface';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -262,6 +264,7 @@ const HomeScreen = () => {
                         <Pressable
                             style={[
                                 styles.roundButton,
+                                pixelClip(5),
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
@@ -280,6 +283,7 @@ const HomeScreen = () => {
                             tint={isDark ? 'dark' : 'light'}
                             style={[
                                 styles.pillBlur,
+                                pixelClip(5),
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : 'rgba(255, 255, 255, 0.8)',
                                     borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
@@ -303,6 +307,7 @@ const HomeScreen = () => {
                         <Pressable
                             style={[
                                 styles.roundButton,
+                                pixelClip(5),
                                 {
                                     backgroundColor: viewMode === 'mosaic'
                                         ? theme.colors.primary.DEFAULT
@@ -324,6 +329,7 @@ const HomeScreen = () => {
                         <Pressable
                             style={[
                                 styles.roundButton,
+                                pixelClip(5),
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
@@ -392,7 +398,6 @@ const styles = StyleSheet.create({
     roundButton: {
         width: 44,
         height: 44,
-        borderRadius: 22,
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
@@ -422,8 +427,7 @@ const styles = StyleSheet.create({
     pillBlur: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 30,
-        padding: 4,
+        padding: 3,
         overflow: 'hidden',
         borderWidth: 1,
         alignSelf: 'stretch',
@@ -434,20 +438,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 4,
-        borderRadius: 18,
         overflow: 'hidden',
     },
-    tabIndicatorBackground: {
-        position: 'absolute',
-        top: 2,
-        bottom: 2,
-        left: 2,
-        right: 2,
-        borderRadius: 16,
-    },
     tabText: {
-        fontSize: 10,
-        fontWeight: '700',
+        // three mono labels have to share ~150px on a phone
+        fontSize: 9,
         letterSpacing: 0.5,
     },
     loadingContainer: {
@@ -513,32 +508,19 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
             onHoverOut={() => setIsHovered(false)}
             style={[
                 styles.tabButton,
+                pixelClip(4),
+                isActive && { backgroundColor: theme.colors.primary.DEFAULT },
                 isHovered && !isActive && {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                    backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)',
                 },
             ]}
         >
-            {isActive && (
-                <View style={[StyleSheet.absoluteFill, { padding: 2 }]}>
-                    <LinearGradient
-                        colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.tabIndicatorBackground}
-                    />
-                </View>
-            )}
             <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
                 style={[
                     styles.tabText,
-                    { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium },
-                    isActive && {
-                        color: isDark ? '#000000' : '#FFFFFF',
-                        fontFamily: theme.typography.fontFamilies.bold,
-                        fontWeight: '800',
-                    },
+                    { color: isActive ? theme.colors.primary.onPrimary : theme.colors.text.secondary, fontFamily: FONT.tech },
                 ]}
             >
                 {label}

@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { theme as baseTheme } from '../../design-system/theme';
 import { useTheme } from '../Theme/ThemeProvider';
+import { FONT } from '@design-system/fonts';
+import { ICE, INK } from '@design-system/theme';
+import { pixelClip } from '@design-system/pixel';
 
 interface ChatItemProps {
     id: string;
@@ -27,91 +28,80 @@ export function ChatItem({
 }: ChatItemProps) {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
+    const accent = theme.colors.primary.DEFAULT;
 
-    const renderContent = () => (
-        <>
-            <View style={[
-                styles.avatarContainer,
-                { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)' },
-                isAi && [styles.aiAvatarContainer, { backgroundColor: '#07080C' }]
-            ]}>
+    const hairline = isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)';
+    const hairlineStrong = isDark ? 'rgba(218, 230, 247, 0.4)' : 'rgba(7, 8, 12, 0.5)';
+
+    return (
+        <TouchableOpacity
+            onPress={onPress}
+            activeOpacity={0.75}
+            style={[
+                styles.container,
+                pixelClip(5),
+                {
+                    backgroundColor: isAi
+                        ? (isDark ? 'rgba(218, 230, 247, 0.07)' : 'rgba(255, 255, 255, 0.82)')
+                        : (isDark ? 'rgba(218, 230, 247, 0.03)' : 'rgba(255, 255, 255, 0.55)'),
+                    borderColor: isAi ? hairlineStrong : hairline,
+                },
+            ]}
+        >
+            {/* Avatar: a notched tile, like the logo */}
+            <View
+                style={[
+                    styles.avatar,
+                    pixelClip(4),
+                    isAi
+                        ? { backgroundColor: INK, borderColor: ICE }
+                        : { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)', borderColor: hairline },
+                ]}
+            >
                 {isAi ? (
-                    <MaterialCommunityIcons name="robot-excited" size={24} color="#DAE6F7" />
+                    <MaterialCommunityIcons name="robot-excited" size={24} color={ICE} />
                 ) : (
-                    <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>{name.charAt(0)}</Text>
+                    <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>{name.charAt(0).toUpperCase()}</Text>
                 )}
-                {isAi && <View style={[styles.onlineBadge, { borderColor: theme.colors.background.primary, backgroundColor: '#10B981' }]} />}
+                {isAi && <View style={[styles.onlineBadge, { borderColor: INK, backgroundColor: theme.colors.success }]} />}
             </View>
 
             <View style={styles.contentContainer}>
                 <View style={styles.header}>
-                    <Text style={[
-                        styles.name,
-                        { color: theme.colors.text.primary },
-                        isAi && [styles.aiName, { color: theme.colors.primary.DEFAULT }]
-                    ]}>
-                        {name} {isAi && <Ionicons name="checkmark-circle" size={14} color={theme.colors.primary.DEFAULT} />}
+                    <Text
+                        style={[
+                            styles.name,
+                            { color: theme.colors.text.primary },
+                            isAi && styles.aiName,
+                        ]}
+                        numberOfLines={1}
+                    >
+                        {name} {isAi && <Ionicons name="checkmark-circle" size={14} color={accent} />}
                     </Text>
-                    <Text style={[styles.time, { color: unreadCount > 0 ? theme.colors.primary.DEFAULT : theme.colors.text.muted }]}>
-                        {time}
+                    <Text style={[styles.time, { color: unreadCount > 0 ? theme.colors.text.primary : theme.colors.text.muted }]}>
+                        {time.toUpperCase()}
                     </Text>
                 </View>
 
                 <View style={styles.footer}>
-                    <Text style={[
-                        styles.message,
-                        { color: theme.colors.text.secondary },
-                        isAi && [styles.aiMessage, { color: theme.colors.primary.light }],
-                        unreadCount > 0 && [styles.unreadMessage, { color: theme.colors.text.primary }]
-                    ]} numberOfLines={2}>
+                    <Text
+                        style={[
+                            styles.message,
+                            { color: theme.colors.text.secondary },
+                            unreadCount > 0 && { color: theme.colors.text.primary },
+                        ]}
+                        numberOfLines={2}
+                    >
                         {isTyping ? 'Thinking...' : message}
                     </Text>
 
                     {unreadCount > 0 && (
-                        <LinearGradient
-                            colors={['#DAE6F7', '#DAE6F7']}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={styles.badge}
-                        >
-                            <Text style={styles.badgeText}>{unreadCount}</Text>
-                        </LinearGradient>
+                        <View style={[styles.badge, pixelClip(2), { backgroundColor: accent }]}>
+                            <Text style={[styles.badgeText, { color: theme.colors.primary.onPrimary }]}>{unreadCount}</Text>
+                        </View>
                     )}
                 </View>
             </View>
-        </>
-    );
-
-    if (isAi) {
-        return (
-            <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.outerAiContainer}>
-                <LinearGradient
-                    colors={['rgba(218, 230, 247, 0.5)', 'rgba(218, 230, 247, 0.5)']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.aiBorder}
-                >
-                    <View style={[styles.container, styles.innerAiContainer, { backgroundColor: isDark ? 'rgba(30,30,40,0.95)' : 'rgba(255,255,255,0.95)' }]}>
-                        {renderContent()}
-                    </View>
-                </LinearGradient>
-            </TouchableOpacity>
-        );
-    }
-
-    return (
-        <TouchableOpacity
-            style={[
-                styles.container,
-                {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0,0,0,0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0,0,0,0.05)'
-                }
-            ]}
-            onPress={onPress}
-            activeOpacity={0.7}
-        >
-            {renderContent()}
         </TouchableOpacity>
     );
 }
@@ -119,66 +109,30 @@ export function ChatItem({
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        padding: 16,
+        padding: 14,
         alignItems: 'center',
         marginHorizontal: 16,
-        marginBottom: 12,
-        borderRadius: 24,
+        marginBottom: 10,
         borderWidth: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 2,
     },
-    outerAiContainer: {
-        marginHorizontal: 16,
-        marginBottom: 12,
-        borderRadius: 24,
-        shadowColor: '#DAE6F7',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.3,
-        shadowRadius: 16,
-        elevation: 8,
-    },
-    aiBorder: {
-        borderRadius: 24,
-        padding: 1, // 1px border
-    },
-    innerAiContainer: {
-        marginHorizontal: 0,
-        marginBottom: 0,
-        borderWidth: 0,
-        shadowOpacity: 0,
-        elevation: 0,
-    },
-    avatarContainer: {
+    avatar: {
         width: 52,
         height: 52,
-        borderRadius: 4, // Modular modular look
+        borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 16,
-    },
-    aiAvatarContainer: {
-        shadowColor: '#DAE6F7',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.6,
-        shadowRadius: 12,
-        borderWidth: 1,
-        borderColor: '#DAE6F7',
+        marginRight: 14,
     },
     avatarText: {
-        fontSize: 20,
-        fontFamily: baseTheme.typography.fontFamilies.bold,
+        fontFamily: FONT.display,
+        fontSize: 24,
     },
     onlineBadge: {
         position: 'absolute',
-        bottom: -2,
-        right: -2,
-        width: 14,
-        height: 14,
-        borderRadius: 7,
+        bottom: -3,
+        right: -3,
+        width: 11,
+        height: 11,
         borderWidth: 2,
     },
     contentContainer: {
@@ -189,19 +143,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 6,
+        marginBottom: 5,
+        gap: 12,
     },
     name: {
+        flexShrink: 1,
+        fontFamily: FONT.sansBold,
         fontSize: 16,
-        fontFamily: baseTheme.typography.fontFamilies.bold,
-        letterSpacing: -0.3,
     },
     aiName: {
-        letterSpacing: 0.5,
+        fontFamily: FONT.display,
+        fontSize: 18,
+        letterSpacing: 0.6,
     },
     time: {
-        fontSize: 12,
-        fontFamily: baseTheme.typography.fontFamilies.medium,
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 1.2,
     },
     footer: {
         flexDirection: 'row',
@@ -209,33 +167,21 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
     },
     message: {
+        fontFamily: FONT.sans,
         fontSize: 14,
-        fontFamily: baseTheme.typography.fontFamilies.regular,
         flex: 1,
-        marginRight: 16,
+        marginRight: 14,
         lineHeight: 20,
     },
-    aiMessage: {
-        fontStyle: 'italic',
-    },
-    unreadMessage: {
-        fontWeight: 'bold',
-    },
     badge: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 2,
+        paddingHorizontal: 7,
+        paddingVertical: 3,
         minWidth: 24,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#DAE6F7',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
     },
     badgeText: {
-        color: '#FFF',
-        fontSize: 10,
-        fontFamily: baseTheme.typography.fontFamilies.bold,
+        fontFamily: FONT.techBold,
+        fontSize: 11,
     },
 });

@@ -6,6 +6,7 @@ import { View, Dimensions, Platform, useWindowDimensions, StyleSheet } from 'rea
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { BlurView } from 'expo-blur';
+import { pixelClip } from '@design-system/pixel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -38,7 +39,7 @@ const TabLayout = () => {
                     // navigator's default light scene background.
                     sceneStyle: { backgroundColor: 'transparent' },
                     tabBarActiveTintColor: theme.colors.primary.DEFAULT,
-                    tabBarInactiveTintColor: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0,0,0,0.4)',
+                    tabBarInactiveTintColor: isDark ? 'rgba(218, 230, 247, 0.55)' : 'rgba(7, 8, 12, 0.5)',
                     tabBarStyle: {
                         display: isDesktopWeb ? 'none' : 'flex',
                         position: 'absolute',
@@ -46,10 +47,10 @@ const TabLayout = () => {
                         left: 0,
                         right: 0,
                         height: Platform.OS === 'ios' ? 88 : 64,
-                        backgroundColor: 'transparent',
+                        backgroundColor: isDark ? 'rgba(8, 9, 13, 0.92)' : 'rgba(250, 252, 255, 0.94)',
                         borderWidth: 0,
-                        borderTopWidth: 0,
-                        borderTopColor: 'transparent',
+                        borderTopWidth: 1,
+                        borderTopColor: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.12)',
                         borderColor: 'transparent',
                         elevation: 0,
                         shadowOpacity: 0,
@@ -102,23 +103,17 @@ const TabLayout = () => {
                     options={{
                         title: '',
                         tabBarIcon: ({ focused }) => (
-                            <View style={{
+                            <View style={[{
                                 width: 44,
                                 height: 44,
-                                borderRadius: 22,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 backgroundColor: theme.colors.primary.DEFAULT,
-                                shadowColor: theme.colors.primary.DEFAULT,
-                                shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 8,
-                                elevation: 4,
-                            }}>
+                            }, pixelClip(5)]}>
                                 <Feather
                                     name="plus"
                                     size={22}
-                                    color="#000000"
+                                    color={theme.colors.primary.onPrimary}
                                 />
                             </View>
                         ),

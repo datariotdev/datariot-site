@@ -18,6 +18,9 @@ import { DebateCard } from '@components/Debate/DebateCard';
 import { AmbientGlow } from '../../components/UI/AmbientGlow';
 import { TECH_FONT } from '@design-system/fonts';
 import { pageBg } from '@design-system/surface';
+import { FONT } from '@design-system/fonts';
+import { Button } from '@components/UI/Button';
+import { pixelClip } from '@design-system/pixel';
 
 interface ProfileData {
     username: string;
@@ -128,7 +131,7 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                 <View style={styles.profileTopSection}>
                     <View style={styles.avatarContainer}>
 
-                        <View style={[styles.avatar, { overflow: 'hidden', borderColor: theme.colors.background.primary, backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
+                        <View style={[styles.avatar, pixelClip(8), { overflow: 'hidden', borderColor: theme.colors.background.primary, backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
                             {profile?.avatar_url ? (
                                 <Image source={{ uri: profile.avatar_url }} style={StyleSheet.absoluteFill} />
                             ) : (
@@ -143,11 +146,11 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
 
                     <View style={styles.infoColumn}>
                         <View style={styles.nameRow}>
-                            <Text style={[styles.displayName, { color: theme.colors.text.primary }]}>
+                            <Text style={[styles.displayName, { color: theme.colors.text.primary, fontFamily: FONT.display }]}>
                                 {profile?.display_name || user.email?.split('@')[0] || 'User'}
                             </Text>
                             <Pressable
-                                style={styles.iconicEditBtn}
+                                style={[styles.iconicEditBtn, pixelClip(4), { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)' }]}
                                 onPress={() => router.push('/edit-profile')}
                             >
                                 <Ionicons name="create-outline" size={18} color={isDark ? theme.colors.primary.DEFAULT : theme.colors.text.primary} />
@@ -160,9 +163,10 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                         {/* Stats Row */}
                         <View style={[
                             styles.compactStatsContainer,
+                            pixelClip(4),
                             {
-                                backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)',
-                                borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                                backgroundColor: isDark ? 'rgba(218, 230, 247, 0.04)' : 'rgba(255, 255, 255, 0.6)',
+                                borderColor: isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)',
                                 borderWidth: 1,
                             }
                         ]}>
@@ -171,12 +175,12 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                                     <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: TECH_FONT }]}>{profile?.followers_count || 0}</Text>
                                     <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: TECH_FONT }]}>FOLLOWERS</Text>
                                 </View>
-                                <View style={[styles.compactStatDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)' }]} />
+                                <View style={[styles.compactStatDivider, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.22)' : 'rgba(7, 8, 12, 0.18)' }]} />
                                 <View style={styles.compactStatItem}>
                                     <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: TECH_FONT }]}>{profile?.following_count || 0}</Text>
                                     <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: TECH_FONT }]}>FOLLOWING</Text>
                                 </View>
-                                <View style={[styles.compactStatDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)' }]} />
+                                <View style={[styles.compactStatDivider, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.22)' : 'rgba(7, 8, 12, 0.18)' }]} />
                                 <View style={styles.compactStatItem}>
                                     <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: TECH_FONT }]}>{profile?.arguments_count || 0}</Text>
                                     <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: TECH_FONT }]}>ARGUMENTS</Text>
@@ -187,9 +191,9 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                         {/* Creator DNA Button */}
                         <Pressable
                             onPress={onShowAchievements}
-                            style={[styles.achievementsBtn, {
-                                backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                            style={[styles.achievementsBtn, pixelClip(4), {
+                                backgroundColor: isDark ? 'rgba(218, 230, 247, 0.04)' : 'rgba(255, 255, 255, 0.6)',
+                                borderColor: isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)',
                                 borderWidth: 1,
                             }]}
                         >
@@ -209,7 +213,7 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                 </View>
             </View>
 
-            <View style={[styles.tabsWrapper, { borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', borderWidth: 1 }]}>
+            <View style={[styles.tabsWrapper, pixelClip(5), { borderColor: isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)', borderWidth: 1 }]}>
                 <BlurView intensity={isDark ? 40 : 60} tint={isDark ? 'dark' : 'light'} style={styles.tabsBlur}>
                     <View style={styles.tabsContainer}>
                         {(['videos', 'posts', 'saved'] as const).map((tab) => {
@@ -219,13 +223,12 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                                     key={tab}
                                     style={[
                                         styles.tabItem,
-                                        isActive && {
-                                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
-                                            borderColor: isDark ? 'rgba(218, 230, 247, 0.2)' : 'rgba(7, 8, 12, 0.2)',
+                                        isActive && [pixelClip(4), {
+                                            backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)',
+                                            borderColor: theme.colors.primary.DEFAULT,
                                             borderWidth: 1,
-                                            borderRadius: 16,
                                             margin: 2,
-                                        }
+                                        }]
                                     ]}
                                     onPress={() => setActiveTab(tab)}
                                 >
@@ -327,7 +330,7 @@ const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { ite
                     style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', padding: featured ? 14 : 6 }]}
                 >
                     {featured && (
-                        <View style={styles.featuredBadge}>
+                        <View style={[styles.featuredBadge, pixelClip(2)]}>
                             <Ionicons name="flame" size={11} color="#FFFFFF" />
                             <Text style={styles.featuredBadgeText}>FEATURED</Text>
                         </View>
@@ -337,7 +340,7 @@ const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { ite
                             <Ionicons name="play" size={featured ? 13 : 10} color="white" />
                             <Text style={[styles.viewsText, featured && { fontSize: 13 }]}>{formatViews(viewsCount)}</Text>
                         </View>
-                        <View style={styles.durationBadge}>
+                        <View style={[styles.durationBadge, pixelClip(2)]}>
                             <Text style={styles.durationText}>{durationLabel}</Text>
                         </View>
                     </View>
@@ -598,24 +601,16 @@ export default function ProfileScreen() {
                 <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
                     <View style={styles.authPrompt}>
                         <Ionicons name="person-circle-outline" size={80} color={isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'} style={{ marginBottom: 16 }} />
-                        <Text style={[styles.authTitle, { color: theme.colors.text.primary }]}>Welcome to Orvelis</Text>
+                        <Text style={[styles.authTitle, { color: theme.colors.text.primary, fontFamily: FONT.display }]}>Welcome to Orvelis</Text>
                         <Text style={[styles.authSubtitle, { color: theme.colors.text.secondary }]}>
                             Sign in to create and save content
                         </Text>
-                        <Pressable
+                        <Button
+                            title="Sign in"
+                            size="large"
                             onPress={() => router.push('/auth/login')}
-                            style={styles.authSignInWrapper}
-                        >
-                            <LinearGradient
-                                colors={['#DAE6F7', '#DAE6F7']}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                                style={styles.authSignInGradient}
-                            >
-                                <Text style={styles.authSignInText}>Sign In</Text>
-                                <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                            </LinearGradient>
-                        </Pressable>
+                            trailing={<Ionicons name="arrow-forward" size={18} color={theme.colors.primary.onPrimary} />}
+                        />
                     </View>
                 </View>
             </SafeAreaView>
@@ -663,8 +658,8 @@ export default function ProfileScreen() {
                 return (
                     <View style={styles.emptyState}>
                         <Text style={[styles.emptyStateText, { color: theme.colors.text.secondary }]}>Share your first video</Text>
-                        <Pressable style={[styles.createFirstButton, { backgroundColor: theme.colors.primary.DEFAULT }]} onPress={() => router.push('/create')}>
-                            <Text style={styles.createFirstButtonText}>Create</Text>
+                        <Pressable style={[styles.createFirstButton, pixelClip(4), { backgroundColor: theme.colors.primary.DEFAULT }]} onPress={() => router.push('/create')}>
+                            <Text style={[styles.createFirstButtonText, { color: theme.colors.primary.onPrimary }]}>Create</Text>
                         </Pressable>
                     </View>
                 );
@@ -685,8 +680,8 @@ export default function ProfileScreen() {
                 return (
                     <View style={styles.emptyState}>
                         <Text style={[styles.emptyStateText, { color: theme.colors.text.secondary }]}>No theses yet.</Text>
-                        <Pressable style={[styles.createFirstButton, { backgroundColor: theme.colors.primary.DEFAULT }]} onPress={() => router.push('/create')}>
-                            <Text style={styles.createFirstButtonText}>Propose a thesis</Text>
+                        <Pressable style={[styles.createFirstButton, pixelClip(4), { backgroundColor: theme.colors.primary.DEFAULT }]} onPress={() => router.push('/create')}>
+                            <Text style={[styles.createFirstButtonText, { color: theme.colors.primary.onPrimary }]}>Propose a thesis</Text>
                         </Pressable>
                     </View>
                 );
@@ -764,9 +759,10 @@ export default function ProfileScreen() {
                 <Pressable style={styles.modalOverlay} onPress={() => setShowAchievements(false)}>
                     <Pressable style={[
                         styles.modalContent,
+                        pixelClip(8),
                         {
-                            backgroundColor: isDark ? '#050508' : '#FAF9F6',
-                            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+                            backgroundColor: isDark ? '#0C0D12' : '#FFFFFF',
+                            borderColor: isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)',
                             borderWidth: 1,
                         }
                     ]}>
@@ -775,8 +771,8 @@ export default function ProfileScreen() {
 
                         <View style={styles.modalHeader}>
                             <View>
-                                <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>Creator DNA</Text>
-                                <Text style={[styles.modalSubtitle, { color: theme.colors.text.secondary }]}>Identity · Stats · History</Text>
+                                <Text style={[styles.modalTitle, { color: theme.colors.text.primary, fontFamily: FONT.display }]}>CREATOR DNA</Text>
+                                <Text style={[styles.modalSubtitle, { color: theme.colors.text.secondary, fontFamily: TECH_FONT }]}>[ IDENTITY // STATS // HISTORY ]</Text>
                             </View>
                             <Pressable onPress={() => setShowAchievements(false)} style={styles.modalCloseBtn}>
                                 <Ionicons name="close" size={20} color={theme.colors.text.secondary} />
@@ -785,7 +781,7 @@ export default function ProfileScreen() {
 
                         {/* DNA Core Stats */}
                         <View style={{ marginBottom: 24, marginTop: 16 }}>
-                            <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>MEMBER SINCE</Text>
+                            <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4, fontFamily: TECH_FONT }]}>MEMBER SINCE</Text>
                             <Text style={{ color: theme.colors.text.primary, fontSize: 20, fontWeight: '700' }}>
                                 {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Loading...'}
                             </Text>
@@ -794,13 +790,13 @@ export default function ProfileScreen() {
                         <View style={{ flexDirection: 'row', gap: 48, marginBottom: 32 }}>
                             {/* Total Impact (Replaces Location) */}
                             <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>TOTAL IMPACT</Text>
+                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4, fontFamily: TECH_FONT }]}>TOTAL IMPACT</Text>
                                 <Text style={{ color: theme.colors.text.primary, fontSize: 16, fontWeight: '600' }}>{profile?.total_impact_score || 0}</Text>
                             </View>
 
                             {/* Favorite Category */}
                             <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>TOP INTEREST</Text>
+                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4, fontFamily: TECH_FONT }]}>TOP INTEREST</Text>
                                 <Text style={{ color: theme.colors.text.primary, fontSize: 16, fontWeight: '600' }}>{profile?.top_category || 'General'}</Text>
                             </View>
                         </View>
@@ -808,15 +804,15 @@ export default function ProfileScreen() {
                         {/* Engagement score */}
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 16, borderTopWidth: StyleSheet.hairlineWidth, borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
                             <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>GLOBAL RANK</Text>
+                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4, fontFamily: TECH_FONT }]}>GLOBAL RANK</Text>
                                 <Text style={{ color: theme.colors.text.primary, fontSize: 18, fontWeight: '700' }}>{profile?.global_rank || 'N/A'}</Text>
                             </View>
                             <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>ACTIVITY</Text>
+                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4, fontFamily: TECH_FONT }]}>ACTIVITY</Text>
                                 <Text style={{ color: theme.colors.text.primary, fontSize: 18, fontWeight: '700' }}>{profile?.activity_level || 'Low'}</Text>
                             </View>
                             <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>APPROVAL RATE</Text>
+                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4, fontFamily: TECH_FONT }]}>APPROVAL RATE</Text>
                                 <Text style={{ color: theme.colors.text.primary, fontSize: 18, fontWeight: '700' }}>{profile?.win_rate || 'N/A'}</Text>
                             </View>
                         </View>
@@ -902,7 +898,6 @@ const styles = StyleSheet.create({
     avatar: {
         width: 84,
         height: 84,
-        borderRadius: 42,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 4,
@@ -913,13 +908,12 @@ const styles = StyleSheet.create({
         right: 2,
         width: 14,
         height: 14,
-        borderRadius: 7,
         backgroundColor: '#DAE6F7',
         borderWidth: 2,
     },
     avatarText: {
-        fontSize: 32,
-        fontWeight: 'bold',
+        fontFamily: FONT.display,
+        fontSize: 34,
     },
     achievementsBtn: {
         flexDirection: 'row',
@@ -927,7 +921,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
-        borderRadius: 16,
         marginTop: 12,
         marginBottom: 8,
         width: '90%',
@@ -939,9 +932,8 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     achievementsBtnText: {
-        fontSize: 14,
-        fontWeight: '700',
-        letterSpacing: -0.2,
+        fontSize: 13,
+        letterSpacing: 1.2,
     },
     modalOverlay: {
         flex: 1,
@@ -949,16 +941,16 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     modalContent: {
-        borderTopLeftRadius: 32,
-        borderTopRightRadius: 32,
-        padding: 20,
+        width: '100%',
+        maxWidth: 560,
+        alignSelf: 'center',
+        padding: 24,
         paddingBottom: Platform.OS === 'ios' ? 44 : 28,
     },
     modalHandle: {
         width: 36,
         height: 4,
-        borderRadius: 2,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: 'rgba(218, 230, 247, 0.2)',
         alignSelf: 'center',
         marginBottom: 20,
     },
@@ -969,20 +961,19 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     modalTitle: {
-        fontSize: 22,
-        fontWeight: '900',
-        letterSpacing: -0.5,
+        fontSize: 26,
+        fontWeight: '400',
+        letterSpacing: 1,
     },
     modalSubtitle: {
-        fontSize: 12,
-        marginTop: 2,
-        opacity: 0.6,
-        letterSpacing: 0.3,
+        fontSize: 10,
+        marginTop: 6,
+        opacity: 0.8,
+        letterSpacing: 1.4,
     },
     modalCloseBtn: {
         padding: 6,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: 20,
+        backgroundColor: 'rgba(218, 230, 247, 0.08)',
     },
     // XP Card
     xpCard: {
@@ -998,9 +989,8 @@ const styles = StyleSheet.create({
     },
     xpLevelLabel: {
         fontSize: 10,
-        fontWeight: '700',
         color: 'rgba(255,255,255,0.6)',
-        letterSpacing: 1.5,
+        letterSpacing: 1.8,
     },
     xpLevelNum: {
         fontSize: 40,
@@ -1126,8 +1116,9 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     displayName: {
-        fontSize: 22,
-        fontWeight: '900',
+        fontSize: 28,
+        fontWeight: '400',
+        letterSpacing: 1,
         marginBottom: 2,
         textAlign: 'center',
         maxWidth: '70%',
@@ -1137,8 +1128,6 @@ const styles = StyleSheet.create({
         right: 16,
         width: 32,
         height: 32,
-        borderRadius: 16,
-        backgroundColor: 'rgba(255,255,255,0.05)',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -1191,8 +1180,7 @@ const styles = StyleSheet.create({
     compactStatsContainer: {
         marginTop: 4,
         paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
+        paddingVertical: 8,
         alignSelf: 'center',
     },
     compactStatsRow: {
@@ -1206,26 +1194,24 @@ const styles = StyleSheet.create({
     },
     compactStatValue: {
         fontSize: 15,
-        fontWeight: '800',
-        marginRight: 4,
+        fontWeight: '700',
+        marginRight: 6,
     },
     compactStatLabel: {
-        fontSize: 10,
-        fontWeight: '500',
-        letterSpacing: 0.2,
-        opacity: 0.6,
+        fontSize: 9.5,
+        letterSpacing: 1.2,
+        opacity: 0.8,
     },
     compactStatDivider: {
         width: 1,
-        height: 12,
-        marginRight: 12,
+        height: 14,
+        marginHorizontal: 14,
     },
 
     // Tabs
     tabsWrapper: {
         marginHorizontal: 16,
         marginBottom: 12,
-        borderRadius: 20,
         overflow: 'hidden',
     },
     tabsBlur: {
@@ -1255,10 +1241,8 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     activeTabText: {
-        color: '#fff',
-        fontSize: 12,
-        fontWeight: '800',
-        letterSpacing: 0.5,
+        fontSize: 11,
+        letterSpacing: 1.2,
     },
 
     // Grid
@@ -1297,15 +1281,14 @@ const styles = StyleSheet.create({
     },
     durationBadge: {
         backgroundColor: 'rgba(0,0,0,0.55)',
-        borderRadius: 4,
         paddingHorizontal: 5,
         paddingVertical: 2,
     },
     durationText: {
         color: 'white',
+        fontFamily: FONT.tech,
         fontSize: 10,
-        fontWeight: '700',
-        letterSpacing: 0.3,
+        letterSpacing: 0.6,
     },
     featuredBadge: {
         flexDirection: 'row',
@@ -1313,7 +1296,6 @@ const styles = StyleSheet.create({
         gap: 4,
         backgroundColor: 'rgba(0,0,0,0.5)',
         alignSelf: 'flex-start',
-        borderRadius: 6,
         paddingHorizontal: 7,
         paddingVertical: 3,
         marginBottom: 6,
@@ -1322,9 +1304,9 @@ const styles = StyleSheet.create({
     },
     featuredBadgeText: {
         color: '#FFFFFF',
+        fontFamily: FONT.tech,
         fontSize: 9,
-        fontWeight: '900',
-        letterSpacing: 1,
+        letterSpacing: 1.4,
     },
 
     // Empty & Loading
@@ -1344,13 +1326,13 @@ const styles = StyleSheet.create({
     },
     createFirstButton: {
         paddingHorizontal: 24,
-        paddingVertical: 12,
+        paddingVertical: 13,
         backgroundColor: theme.colors.primary.DEFAULT,
-        borderRadius: 8,
     },
     createFirstButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
+        fontFamily: FONT.techMedium,
+        fontSize: 14,
+        letterSpacing: 0.4,
     },
     authPrompt: {
         flex: 1,

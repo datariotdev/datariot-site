@@ -5,8 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../components/Theme/ThemeProvider';
 import { useAuth } from '../lib/supabase/hooks/useAuth';
-import { LinearGradient } from 'expo-linear-gradient';
 import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 import { pageBg } from '@design-system/surface';
 
 export default function SettingsScreen() {
@@ -35,6 +35,19 @@ export default function SettingsScreen() {
     };
 
     const monoFont = { fontFamily: TECH_FONT };
+    const accent = theme.colors.primary.DEFAULT;
+    const onAccent = theme.colors.primary.onPrimary;
+
+    // Ice track with an ink thumb on dark, ink track with a white thumb on light.
+    const switchColors = (on: boolean) => ({
+        trackColor: {
+            false: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)',
+            true: accent,
+        },
+        thumbColor: on ? onAccent : theme.colors.text.muted,
+        // react-native-web: colour of the thumb while the switch is on
+        activeThumbColor: onAccent,
+    });
 
     return (
         <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
@@ -53,23 +66,18 @@ export default function SettingsScreen() {
                     {/* Promote Business — gradient CTA */}
                     <Pressable
                         onPress={() => router.push('/business')}
-                        style={styles.promoteWrapper}
+                        style={[styles.promoteWrapper, pixelClip(5), { backgroundColor: accent }]}
                     >
-                        <LinearGradient
-                            colors={['#DAE6F7', '#DAE6F7', '#9AA7BD']}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            style={styles.promoteGradient}
-                        >
+                        <View style={styles.promoteGradient}>
                             <View style={styles.promoteLeft}>
-                                <MaterialCommunityIcons name="rocket-launch-outline" size={22} color="#fff" />
+                                <MaterialCommunityIcons name="rocket-launch-outline" size={22} color={onAccent} />
                                 <View>
-                                    <Text style={[styles.promoteTitle, monoFont]}>[ PROMOTE BUSINESS ]</Text>
-                                    <Text style={[styles.promoteSubtitle, monoFont]}>[ ADVERTISING.AND.PROMOTION ]</Text>
+                                    <Text style={[styles.promoteTitle, monoFont, { color: onAccent }]}>[ PROMOTE BUSINESS ]</Text>
+                                    <Text style={[styles.promoteSubtitle, monoFont, { color: onAccent }]}>[ ADVERTISING.AND.PROMOTION ]</Text>
                                 </View>
                             </View>
-                            <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.7)" />
-                        </LinearGradient>
+                            <Ionicons name="chevron-forward" size={20} color={onAccent} />
+                        </View>
                     </Pressable>
 
                     <View style={[styles.section, { borderBottomColor: theme.colors.surface.overlay }]}>
@@ -95,12 +103,12 @@ export default function SettingsScreen() {
                             <Switch
                                 value={isDark}
                                 onValueChange={toggleTheme}
-                                trackColor={{ false: theme.colors.surface.light, true: theme.colors.primary.DEFAULT }}
+                                {...switchColors(isDark)}
                             />
                         </View>
                         <View style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]}>
                             <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>&gt; AUTOPLAY VIDEOS</Text>
-                            <Switch value={true} trackColor={{ false: theme.colors.surface.light, true: theme.colors.primary.DEFAULT }} />
+                            <Switch value={true} {...switchColors(true)} />
                         </View>
                     </View>
 
@@ -158,13 +166,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginTop: 20,
         marginBottom: 8,
-        borderRadius: 16,
-        overflow: 'hidden',
-        shadowColor: '#DAE6F7',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.35,
-        shadowRadius: 12,
-        elevation: 8,
     },
     promoteGradient: {
         flexDirection: 'row',
@@ -179,27 +180,27 @@ const styles = StyleSheet.create({
         gap: 14,
     },
     promoteTitle: {
-        color: '#FFFFFF',
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '700',
+        letterSpacing: 0.6,
     },
     promoteSubtitle: {
-        color: 'rgba(255,255,255,0.7)',
-        fontSize: 12,
-        fontWeight: '500',
-        marginTop: 2,
+        fontSize: 10,
+        letterSpacing: 1.2,
+        marginTop: 4,
+        opacity: 0.7,
     },
     section: {
         marginBottom: 24,
         borderBottomWidth: 1,
     },
     sectionTitle: {
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: '700',
         marginLeft: 20,
         marginBottom: 8,
         marginTop: 16,
-        letterSpacing: 1,
+        letterSpacing: 2,
     },
     row: {
         flexDirection: 'row',
@@ -210,7 +211,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     rowLabel: {
-        fontSize: 16,
+        fontSize: 15,
+        letterSpacing: 0.6,
     },
     version: {
         textAlign: 'center',

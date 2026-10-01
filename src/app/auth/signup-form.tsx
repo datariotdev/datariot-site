@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from '@components/UI/SafeAreaView';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
-import { theme } from '@design-system/theme';
-import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
+import { useTheme } from '../../components/Theme/ThemeProvider';
+import { AuthShell } from '@components/Auth/AuthShell';
+import { Field } from '@components/UI/Field';
+import { Button } from '@components/UI/Button';
+import { FONT } from '@design-system/fonts';
 
 export default function SignupFormScreen() {
     const { signUp } = useAuth();
     const router = useRouter();
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const { theme } = useTheme();
 
     const handleSignUp = async () => {
         if (!email || !password || !username) {
@@ -41,180 +44,52 @@ export default function SignupFormScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={styles.container}
-            >
-                {/* Back Button */}
-                <Pressable onPress={() => router.back()} style={styles.backButton}>
-                    <Text style={styles.backButtonText}>← Back</Text>
-                </Pressable>
+        <AuthShell kicker="Create account" title="Sign Up" subtitle="Create your account" onBack={() => router.back()}>
+            <Field
+                label="Username"
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+            />
+            <Field
+                label="Email"
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+            />
+            <Field
+                label="Password"
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                onSubmitEditing={handleSignUp}
+            />
 
-                <View style={styles.content}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>Sign Up</Text>
-                        <Text style={styles.subtitle}>Create your account</Text>
-                    </View>
+            {error ? <Text style={[styles.error, { color: theme.colors.error }]}>[ ! ] {error}</Text> : null}
 
-                    <View style={styles.form}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Username"
-                            placeholderTextColor={theme.colors.text.muted}
-                            value={username}
-                            onChangeText={setUsername}
-                            autoCapitalize="none"
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Email"
-                            placeholderTextColor={theme.colors.text.muted}
-                            value={email}
-                            onChangeText={setEmail}
-                            autoCapitalize="none"
-                            keyboardType="email-address"
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Password"
-                            placeholderTextColor={theme.colors.text.muted}
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
+            <Button title="Create Account" size="large" fullWidth loading={loading} onPress={handleSignUp} />
 
-                        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-                        <Pressable
-                            style={[styles.signupButton, loading && styles.buttonDisabled]}
-                            onPress={handleSignUp}
-                            disabled={loading}
-                        >
-                            <LinearGradient
-                                colors={['#DAE6F7', '#DAE6F7']}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                                style={styles.signupButtonGradient}
-                            >
-                                <Text style={styles.signupButtonText}>
-                                    {loading ? 'Loading...' : 'Create Account'}
-                                </Text>
-                            </LinearGradient>
-                        </Pressable>
-
-
-
-                        {/* Google Button */}
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.googleButton,
-                                pressed && styles.buttonPressed
-                            ]}
-                            onPress={() => {/* TODO: Google Auth */ }}
-                        >
-                            <AntDesign name="google" size={20} color="#DAE6F7" style={styles.googleIcon} />
-                            <Text style={styles.googleButtonText}>Continue with Google</Text>
-                        </Pressable>
-                    </View>
-                </View>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+            <Button
+                title="Continue with Google"
+                variant="secondary"
+                size="large"
+                fullWidth
+                onPress={() => {/* TODO: Google Auth */ }}
+                leading={<AntDesign name="google" size={18} color={theme.colors.text.primary} />}
+            />
+        </AuthShell>
     );
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: theme.colors.background.primary,
-    },
-    container: {
-        flex: 1,
-    },
-    backButton: {
-        padding: theme.spacing.lg,
-    },
-    backButtonText: {
-        color: '#DAE6F7',
-        fontSize: theme.typography.sizes.lg,
-    },
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        paddingHorizontal: theme.spacing.xl,
-    },
-    header: {
-        marginBottom: theme.spacing['3xl'],
-    },
-    title: {
-        fontSize: theme.typography.sizes['4xl'],
-        fontWeight: 'bold',
-        color: theme.colors.white,
-        marginBottom: theme.spacing.sm,
-    },
-    subtitle: {
-        fontSize: theme.typography.sizes.lg,
-        color: theme.colors.text.secondary,
-    },
-    form: {
-        gap: theme.spacing.lg,
-    },
-    input: {
-        backgroundColor: theme.colors.surface.DEFAULT,
-        borderRadius: theme.borderRadius.lg,
-        paddingVertical: theme.spacing.md,
-        paddingHorizontal: theme.spacing.lg,
-        fontSize: theme.typography.sizes.lg,
-        color: theme.colors.text.primary,
-        borderWidth: 1,
-        borderColor: 'rgba(218, 230, 247, 0.2)',
-    },
-    errorText: {
-        color: theme.colors.error,
-        fontSize: theme.typography.sizes.sm,
-        textAlign: 'center',
-    },
-    signupButton: {
-        borderRadius: 16,
-        overflow: 'hidden',
-        shadowColor: '#DAE6F7',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 16,
-        elevation: 8,
-    },
-    signupButtonGradient: {
-        paddingVertical: theme.spacing.lg,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    signupButtonText: {
-        fontSize: theme.typography.sizes.xl,
-        fontWeight: '600',
-        color: '#000000',
-    },
-    buttonDisabled: {
-        opacity: 0.5,
-    },
-
-    googleButton: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: theme.borderRadius.xl,
-        paddingVertical: theme.spacing.lg,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        flexDirection: 'row',
-    },
-    googleButtonText: {
-        fontSize: theme.typography.sizes.xl,
-        fontWeight: '600',
-        color: '#000000',
-    },
-    googleIcon: {
-        marginRight: 10,
-    },
-    buttonPressed: {
-        opacity: 0.8,
+    error: {
+        fontFamily: FONT.tech,
+        fontSize: 12,
+        letterSpacing: 0.4,
+        lineHeight: 18,
     },
 });
