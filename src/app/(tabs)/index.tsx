@@ -259,6 +259,18 @@ const HomeScreen = () => {
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
             <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+                {/* On web the feed scrolls under this chrome as ordinary page content, so the
+                    buttons and filter chips get a fade to read against instead of floating over text. */}
+                {Platform.OS === 'web' && (
+                    <LinearGradient
+                        colors={isDark
+                            ? ['rgba(8, 9, 13, 0.97)', 'rgba(8, 9, 13, 0.9)', 'rgba(8, 9, 13, 0)']
+                            : ['rgba(241, 245, 252, 0.98)', 'rgba(241, 245, 252, 0.92)', 'rgba(241, 245, 252, 0)']}
+                        locations={[0, 0.82, 1]}
+                        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: activeTab === 'trending' ? -74 : -26 }}
+                        pointerEvents="none"
+                    />
+                )}
                 <View style={styles.topNavContent} pointerEvents="box-none">
                     <View style={styles.leftActionsContainer}>
                         <Pressable

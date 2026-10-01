@@ -35,6 +35,9 @@ import Animated, {
     FadeIn
 } from 'react-native-reanimated';
 import { useTheme } from '../Theme/ThemeProvider';
+import { WebVideoStage } from './WebVideoStage';
+import { HudBackdrop } from '../UI/HudBackdrop';
+import { pixelClip } from '@design-system/pixel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -184,7 +187,7 @@ export function FullScreenVideoModal({
     const insets = useSafeAreaInsets();
     const { theme } = useTheme();
     const router = useRouter();
-    const { height: screenHeight } = useWindowDimensions();
+    const { height: screenHeight, width: screenWidth } = useWindowDimensions();
     const [activeIndex, setActiveIndex] = useState(0);
 
     // AI Pulsing Animation
@@ -250,7 +253,8 @@ export function FullScreenVideoModal({
             onRequestClose={onClose}
         >
             <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
-            <View style={styles.container}>
+            <View style={[styles.container, Platform.OS === 'web' && { backgroundColor: '#07080C' }]}>
+                {Platform.OS === 'web' && <HudBackdrop isDark />}
                 <LinearGradient
                     colors={['rgba(0,0,0,0.6)', 'transparent']}
                     style={[styles.statusShadow, { height: insets.top + 30 }]}
@@ -258,10 +262,10 @@ export function FullScreenVideoModal({
                 />
                 <View style={[styles.headerWrapper, { top: Math.max(insets.top, 20) }]}>
                     <TouchableOpacity
-                        style={styles.closeButton}
+                        style={[styles.closeButton, pixelClip(4), styles.headerTile]}
                         onPress={onClose}
                     >
-                        <Ionicons name="close" size={28} color="#FFF" />
+                        <Ionicons name="close" size={24} color="#DAE6F7" />
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -272,23 +276,8 @@ export function FullScreenVideoModal({
                         }}
                         style={styles.aiLogoContainer}
                     >
-                        <View style={[
-                            styles.aiLogoWrapper,
-                            {
-                                width: 38,
-                                height: 38,
-                                borderRadius: 19,
-                                borderWidth: 1,
-                                borderColor: 'rgba(218, 230, 247, 0.15)',
-                                backgroundColor: 'rgba(0, 8, 20, 0.5)',
-                                shadowColor: '#DAE6F7',
-                                shadowOffset: { width: 0, height: 0 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 6,
-                                elevation: 3,
-                            }
-                        ]}>
-                            <MaterialCommunityIcons name="robot-excited" size={18} color="#DAE6F7" />
+                        <View style={[styles.aiLogoWrapper, pixelClip(4), styles.headerTile, { width: 44, height: 44 }]}>
+                            <MaterialCommunityIcons name="robot-excited" size={20} color="#DAE6F7" />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -306,7 +295,19 @@ export function FullScreenVideoModal({
                     })}
                     viewabilityConfig={viewabilityConfig}
                     onViewableItemsChanged={onViewableItemsChanged}
-                    renderItem={({ item, index }) => (
+                    renderItem={({ item, index }) => Platform.OS === 'web' ? (
+                        <WebVideoStage
+                            item={item}
+                            isActive={index === activeIndex && isFocused}
+                            width={screenWidth}
+                            height={screenHeight}
+                            onLike={() => onLike(item.id)}
+                            onComment={() => handleOpenComments(item.id)}
+                            onSave={() => onSave(item.id)}
+                            onMore={() => setMoreOptionsVideo(item)}
+                            onFollow={() => onFollow(item.authorId)}
+                        />
+                    ) : (
                         <FullScreenVideoItem
                             item={item}
                             isActive={index === activeIndex && isFocused}
@@ -361,6 +362,11 @@ const styles = StyleSheet.create({
         height: 44,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    headerTile: {
+        backgroundColor: 'rgba(218, 230, 247, 0.1)',
+        borderWidth: 1,
+        borderColor: 'rgba(218, 230, 247, 0.22)',
     },
     pauseOverlay: {
         ...StyleSheet.absoluteFillObject,

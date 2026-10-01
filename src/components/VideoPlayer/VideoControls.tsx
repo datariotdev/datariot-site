@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 interface VideoControlsProps {
     isPlaying: boolean;
@@ -32,7 +33,7 @@ interface VideoControlsProps {
     onFollow: () => void;
 }
 
-const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime: number, duration: number, onSeek?: (value: number) => void }) => {
+export const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime: number, duration: number, onSeek?: (value: number) => void }) => {
     const [isSeeking, setIsSeeking] = useState(false);
     const [seekValue, setSeekValue] = useState(0);
     const trackHeightAnim = useRef(new Animated.Value(2)).current; // Initial ultra thin height
@@ -101,7 +102,7 @@ const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime:
                     value={isSeeking ? seekValue : currentTime}
                     minimumTrackTintColor="transparent"
                     maximumTrackTintColor="transparent"
-                    thumbTintColor="#FFFFFF" // Making thumb visible definitively
+                    thumbTintColor="#DAE6F7" // Making thumb visible definitively
                     onSlidingStart={handleSlidingStart}
                     onValueChange={handleValueChange}
                     onSlidingComplete={handleSlidingComplete}
@@ -284,7 +285,7 @@ export function VideoControls({
     );
 }
 
-function formatCount(count: number): string {
+export function formatCount(count: number): string {
     if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
     if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
     return count.toString();
@@ -464,7 +465,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 2,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: 'rgba(218, 230, 247, 0.22)',
     },
     trackFill: {
         position: 'absolute',
@@ -473,19 +474,16 @@ const styles = StyleSheet.create({
         height: 2,
         backgroundColor: '#DAE6F7',
         zIndex: 1,
-        shadowColor: '#DAE6F7',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.8,
-        shadowRadius: 4,
     },
     timeWrapper: {
         justifyContent: 'center',
         height: 32,
     },
     timeText: {
-        color: '#FFFFFF',
-        fontFamily: theme.typography.fontFamilies.bold,
-        fontSize: 11,
+        color: '#DAE6F7',
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 0.6,
         textAlign: 'right',
         minWidth: 80,
         textShadowColor: 'rgba(0, 0, 0, 0.9)',

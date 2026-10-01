@@ -237,7 +237,7 @@ export const CoubClassicItem = memo(({
                 <View style={[
                     styles.infoPanel,
                     {
-                        backgroundColor: isDark ? 'rgba(14, 16, 23, 0.8)' : 'rgba(255, 255, 255, 0.75)',
+                        backgroundColor: isDark ? 'rgba(14, 16, 23, 0.8)' : 'rgba(255, 255, 255, 0.96)',
                         borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(7, 8, 12, 0.12)',
                     },
                     isDark ? {
@@ -265,7 +265,7 @@ export const CoubClassicItem = memo(({
                         <View style={[styles.infoSection, isExpanded && styles.infoSectionExpanded]}>
                             {/* Author Handle Link */}
                             <Pressable onPress={handleNavigateProfile} style={styles.authorContainer}>
-                                <Text style={styles.authorHandleText}>
+                                <Text style={[styles.authorHandleText, { color: theme.colors.text.secondary }]}>
                                     {`> @${(item.author || 'unknown').toUpperCase()}`}
                                 </Text>
                             </Pressable>
@@ -282,19 +282,19 @@ export const CoubClassicItem = memo(({
 
                             {/* Hashtag */}
                             {item.hashtag && (
-                                <Text style={styles.hashtag}>
+                                <Text style={[styles.hashtag, { color: theme.colors.text.secondary }]}>
                                     {`[ #${item.hashtag.toUpperCase()} ]`}
                                 </Text>
                             )}
 
                             {/* Cyber Stats */}
-                            <Text style={styles.cyberStatsText}>
+                            <Text style={[styles.cyberStatsText, { color: theme.colors.text.muted }]}>
                                 {`VIEWS: ${formatNumber(item.views || 0)}    LIKES: ${formatNumber(item.likes || 0)}`}
                             </Text>
 
                             {!isExpanded && item.title && item.title.length > 50 && (
                                 <Pressable onPress={() => setIsExpanded(!isExpanded)}>
-                                    <Text style={styles.readMoreText}>more</Text>
+                                    <Text style={[styles.readMoreText, { color: theme.colors.text.muted }]}>more</Text>
                                 </Pressable>
                             )}
 
