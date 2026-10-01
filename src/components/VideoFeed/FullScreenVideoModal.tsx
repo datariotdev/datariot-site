@@ -279,16 +279,16 @@ export function FullScreenVideoModal({
                                 height: 38,
                                 borderRadius: 19,
                                 borderWidth: 1,
-                                borderColor: 'rgba(217, 228, 255, 0.15)',
+                                borderColor: 'rgba(218, 230, 247, 0.15)',
                                 backgroundColor: 'rgba(0, 8, 20, 0.5)',
-                                shadowColor: '#D9E4FF',
+                                shadowColor: '#DAE6F7',
                                 shadowOffset: { width: 0, height: 0 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 6,
                                 elevation: 3,
                             }
                         ]}>
-                            <MaterialCommunityIcons name="robot-excited" size={18} color="#D9E4FF" />
+                            <MaterialCommunityIcons name="robot-excited" size={18} color="#DAE6F7" />
                         </View>
                     </TouchableOpacity>
                 </View>

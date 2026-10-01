@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
+import { useTheme } from '../Theme/ThemeProvider';
 
 /**
  * Injects the web-only keyframes / global chrome the HUD design language needs.
@@ -15,30 +16,17 @@ const CSS = `
 }
 .status-pulse-anim { animation: status-pulse-anim 2s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
 
-/* --- Ambient aurora blobs: slow, non-repeating drift ------------------- */
-@keyframes dr-drift-a {
-    0%   { transform: translate3d(0, 0, 0) scale(1); }
-    33%  { transform: translate3d(6vw, 4vh, 0) scale(1.12); }
-    66%  { transform: translate3d(-3vw, 7vh, 0) scale(0.94); }
-    100% { transform: translate3d(0, 0, 0) scale(1); }
+/* --- Aurora ribbons: the info site's page-fx, slow and non-repeating ------ */
+@keyframes dr-sway-l {
+    from { transform: translate3d(0, 0, 0) rotate(-8deg); }
+    to   { transform: translate3d(4vw, 6vh, 0) rotate(5deg); }
 }
-@keyframes dr-drift-b {
-    0%   { transform: translate3d(0, 0, 0) scale(1.05); }
-    40%  { transform: translate3d(-7vw, 5vh, 0) scale(0.9); }
-    75%  { transform: translate3d(4vw, -4vh, 0) scale(1.18); }
-    100% { transform: translate3d(0, 0, 0) scale(1.05); }
+@keyframes dr-sway-r {
+    from { transform: translate3d(0, 0, 0) rotate(9deg); }
+    to   { transform: translate3d(-4vw, -5vh, 0) rotate(-4deg); }
 }
-.dr-drift-a { animation: dr-drift-a 38s ease-in-out infinite; }
-.dr-drift-b { animation: dr-drift-b 52s ease-in-out infinite; }
-
-/* --- Scanline sweep down the viewport --------------------------------- */
-@keyframes dr-scan {
-    0%   { transform: translateY(-20vh); opacity: 0; }
-    8%   { opacity: 1; }
-    92%  { opacity: 1; }
-    100% { transform: translateY(120vh); opacity: 0; }
-}
-.dr-scan { animation: dr-scan 11s linear infinite; }
+.dr-sway-l { animation: dr-sway-l 28s ease-in-out infinite alternate; }
+.dr-sway-r { animation: dr-sway-r 36s ease-in-out infinite alternate; }
 
 /* --- Live ticker marquee ---------------------------------------------- */
 @keyframes dr-ticker {
@@ -65,25 +53,44 @@ const CSS = `
 .dr-sweep { animation: dr-sweep 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* --- Global chrome ----------------------------------------------------- */
-::selection { background: rgba(217, 228, 255, 0.28); color: #fff; }
+/* Each type face is its own family (that is how expo-font registers them), so
+   weight is picked by face. Without this a stray fontWeight: '700' next to a
+   Regular face makes the browser fake-bold it on top of itself. */
+html, body, #root { font-synthesis: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+[data-theme="dark"]  ::selection { background: #DAE6F7; color: #07080C; }
+[data-theme="light"] ::selection { background: #07080C; color: #DAE6F7; }
+
+:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 *::-webkit-scrollbar { width: 9px; height: 9px; }
 *::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb {
-    background: rgba(217, 228, 255, 0.14);
-    border-radius: 0;
-    border-left: 1px solid rgba(217, 228, 255, 0.22);
+[data-theme="dark"] *::-webkit-scrollbar-thumb {
+    background: rgba(218, 230, 247, 0.16);
+    border-left: 1px solid rgba(218, 230, 247, 0.24);
 }
-*::-webkit-scrollbar-thumb:hover { background: rgba(217, 228, 255, 0.26); }
+[data-theme="dark"] *::-webkit-scrollbar-thumb:hover { background: rgba(218, 230, 247, 0.30); }
+[data-theme="light"] *::-webkit-scrollbar-thumb {
+    background: rgba(7, 8, 12, 0.16);
+    border-left: 1px solid rgba(7, 8, 12, 0.26);
+}
+[data-theme="light"] *::-webkit-scrollbar-thumb:hover { background: rgba(7, 8, 12, 0.32); }
 
 @media (prefers-reduced-motion: reduce) {
-    .dr-drift-a, .dr-drift-b, .dr-scan, .dr-ticker, .dr-flicker, .status-pulse-anim {
+    .dr-sway-l, .dr-sway-r, .dr-ticker, .dr-flicker, .status-pulse-anim {
         animation: none !important;
     }
 }
 `;
 
 export const GlobalWebStyles = () => {
+    const { mode } = useTheme();
+
+    useEffect(() => {
+        if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+        document.documentElement.setAttribute('data-theme', mode);
+    }, [mode]);
+
     useEffect(() => {
         if (Platform.OS !== 'web') return;
         if (typeof document === 'undefined') return;

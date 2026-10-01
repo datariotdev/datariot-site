@@ -9,6 +9,7 @@ import { theme } from '../../design-system/theme';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { encodeVideoUrl } from '../../lib/utils/url';
+import { TECH_FONT } from '@design-system/fonts';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -151,23 +152,23 @@ export const CoubClassicItem = memo(({
                 styles.videoContainer,
                 { width: cardWidth, height: videoHeight },
                 isDark ? {
-                    shadowColor: '#D9E4FF',
+                    shadowColor: '#DAE6F7',
                     shadowOffset: { width: 0, height: 8 },
                     shadowOpacity: 0.08,
                     shadowRadius: 32,
                 } : {
-                    shadowColor: '#6B7FCC',
+                    shadowColor: '#3A4252',
                     shadowOffset: { width: 0, height: 8 },
                     shadowOpacity: 0.06,
                     shadowRadius: 24,
                 },
                 isWeb && !isMobileWeb && isDark && {
                     // @ts-ignore — web only: side bloom glow
-                    boxShadow: '-40px 0 80px rgba(165,198,255,0.10), 40px 0 80px rgba(217,228,255,0.10), 0 12px 40px rgba(0,0,0,0.5)',
+                    boxShadow: '-40px 0 80px rgba(218, 230, 247,0.10), 40px 0 80px rgba(218, 230, 247,0.10), 0 12px 40px rgba(0,0,0,0.5)',
                 },
                 isWeb && !isMobileWeb && !isDark && {
                     // @ts-ignore — web only: side bloom glow light mode
-                    boxShadow: '-32px 0 60px rgba(107,127,204,0.08), 32px 0 60px rgba(107,127,204,0.08), 0 8px 32px rgba(107,127,204,0.12)',
+                    boxShadow: '-32px 0 60px rgba(7, 8, 12,0.08), 32px 0 60px rgba(7, 8, 12,0.08), 0 8px 32px rgba(7, 8, 12,0.12)',
                 },
             ]} onPress={togglePlayback}>
 
@@ -216,7 +217,7 @@ export const CoubClassicItem = memo(({
                 {/* Premium Gradient Progress Bar */}
                 <View style={styles.progressBarContainer} pointerEvents="none">
                     <LinearGradient
-                        colors={['#D9E4FF', '#A5C6FF']}
+                        colors={['#DAE6F7', '#B7C2D6']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={[styles.progressBarFill, { width: `${progress * 100}%` }]}
@@ -236,14 +237,14 @@ export const CoubClassicItem = memo(({
                     styles.infoPanel,
                     {
                         backgroundColor: isDark ? 'rgba(14, 16, 23, 0.8)' : 'rgba(255, 255, 255, 0.75)',
-                        borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(107, 127, 204, 0.12)',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(7, 8, 12, 0.12)',
                     },
                     isDark ? {
                         shadowColor: '#000',
                         shadowOpacity: 0.25,
                         shadowRadius: 12,
                     } : {
-                        shadowColor: '#6B7FCC',
+                        shadowColor: '#3A4252',
                         shadowOffset: { width: 0, height: 4 },
                         shadowOpacity: 0.04,
                         shadowRadius: 10,
@@ -453,7 +454,7 @@ const styles = StyleSheet.create({
         left: 14,
         backgroundColor: 'rgba(8, 9, 13, 0.6)',
         borderWidth: 1,
-        borderColor: '#38BDF8',
+        borderColor: '#DAE6F7',
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 4,
@@ -461,20 +462,20 @@ const styles = StyleSheet.create({
     },
     cyberBadgeText: {
         fontSize: 11,
-        color: '#38BDF8',
+        color: '#DAE6F7',
         fontWeight: '700',
         letterSpacing: 1,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     authorContainer: {
         marginBottom: 6,
     },
     authorHandleText: {
         fontSize: 13,
-        color: '#38BDF8',
+        color: '#DAE6F7',
         fontWeight: '700',
         letterSpacing: 0.5,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     title: {
         fontSize: 18,
@@ -488,9 +489,9 @@ const styles = StyleSheet.create({
     },
     hashtag: {
         fontSize: 12,
-        color: '#38BDF8',
+        color: '#DAE6F7',
         fontWeight: '700',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
         marginBottom: 8,
         letterSpacing: 0.5,
     },
@@ -499,7 +500,7 @@ const styles = StyleSheet.create({
         color: 'rgba(255, 255, 255, 0.55)',
         fontWeight: '600',
         letterSpacing: 0.8,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
         marginTop: 4,
         marginBottom: 4,
     },
@@ -508,7 +509,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: 'rgba(255, 255, 255, 0.4)',
         marginTop: 2,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
         letterSpacing: 0.5,
     },
     actionIconBtn: {
@@ -528,7 +529,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginTop: 4,
         letterSpacing: 0.2,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     mutedOverlay: {
         position: 'absolute',
@@ -583,9 +584,9 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         marginLeft: -4,
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.8,
         shadowRadius: 6,
@@ -616,6 +617,6 @@ const styles = StyleSheet.create({
         fontSize: 9,
         fontWeight: '700',
         letterSpacing: 0.8,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
 });

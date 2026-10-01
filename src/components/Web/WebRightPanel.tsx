@@ -97,7 +97,7 @@ export const WebRightPanel = () => {
                         borderColor: isSearchFocused ? accent : cardBorder,
                     },
                     isSearchFocused && {
-                        shadowColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                        shadowColor: isDark ? '#DAE6F7' : '#07080C',
                         shadowOffset: { width: 0, height: 0 },
                         shadowOpacity: isDark ? 0.25 : 0.12,
                         shadowRadius: 16,
@@ -222,12 +222,12 @@ export const WebRightPanel = () => {
                     </View>
                 }
             >
-                <View style={[styles.challengeCard, { borderColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.2)', backgroundColor: cardBg }]}>
+                <View style={[styles.challengeCard, { borderColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.2)', backgroundColor: cardBg }]}>
                     <View style={[styles.cardBracket, styles.cbTL, { borderColor: accent }]} pointerEvents="none" />
                     <View style={[styles.cardBracket, styles.cbBR, { borderColor: accent }]} pointerEvents="none" />
 
                     <LinearGradient
-                        colors={isDark ? ['rgba(217, 228, 255, 0.09)', 'transparent'] : ['rgba(76, 110, 245, 0.07)', 'transparent']}
+                        colors={isDark ? ['rgba(218, 230, 247, 0.09)', 'transparent'] : ['rgba(7, 8, 12, 0.07)', 'transparent']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={StyleSheet.absoluteFillObject}
@@ -253,9 +253,9 @@ export const WebRightPanel = () => {
                     </Text>
 
                     <View style={styles.meterRow}>
-                        <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.14)' }]}>
+                        <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)' }]}>
                             <LinearGradient
-                                colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
+                                colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
                                 style={[styles.meterFill, { width: '62%' }]}
@@ -273,8 +273,8 @@ export const WebRightPanel = () => {
                             {
                                 borderColor: accent,
                                 backgroundColor: hovered
-                                    ? (isDark ? 'rgba(217, 228, 255, 0.18)' : 'rgba(76, 110, 245, 0.14)')
-                                    : (isDark ? 'rgba(217, 228, 255, 0.08)' : 'rgba(76, 110, 245, 0.06)'),
+                                    ? (isDark ? 'rgba(218, 230, 247, 0.18)' : 'rgba(7, 8, 12, 0.14)')
+                                    : (isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)'),
                             },
                         ]}
                     >
@@ -329,7 +329,7 @@ const CollectionItem = ({
                 styles.collectionItem,
                 {
                     borderColor: isHovered
-                        ? (isDark ? 'rgba(217, 228, 255, 0.25)' : 'rgba(76, 110, 245, 0.3)')
+                        ? (isDark ? 'rgba(218, 230, 247, 0.25)' : 'rgba(7, 8, 12, 0.3)')
                         : (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'),
                     backgroundColor: isHovered
                         ? (isDark ? 'rgba(255, 255, 255, 0.045)' : 'rgba(0, 0, 0, 0.03)')
@@ -341,7 +341,7 @@ const CollectionItem = ({
                 {String(index).padStart(2, '0')}
             </Text>
 
-            <View style={[styles.collectionIcon, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(76, 110, 245, 0.08)' }]}>
+            <View style={[styles.collectionIcon, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.07)' : 'rgba(7, 8, 12, 0.08)' }]}>
                 <Feather name={iconName} size={12} color={accent} />
             </View>
 

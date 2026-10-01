@@ -275,7 +275,7 @@ export default function UserProfileScreen() {
 
             <View style={styles.postFooter}>
                 <Pressable style={styles.actionButtonInteraction}>
-                    <Text style={{ color: '#D9E4FF', fontSize: 18 }}>✦</Text>
+                    <Text style={{ color: '#DAE6F7', fontSize: 18 }}>✦</Text>
                     <Text style={styles.actionText}>{item.likes || 0}</Text>
                 </Pressable>
 

@@ -137,7 +137,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                 )}
                 {/* Subtle Gradient Overlay for depth */}
                 <LinearGradient
-                    colors={['rgba(217, 228, 255, 0.1)', 'transparent']}
+                    colors={['rgba(218, 230, 247, 0.1)', 'transparent']}
                     style={StyleSheet.absoluteFill}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
@@ -152,7 +152,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <View style={{ position: 'relative', width: 26, height: 26, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
                         {/* Blue 'Ice' Tone Overlay */}
-                        <View style={{ position: 'absolute', width: 28, height: 28, backgroundColor: 'rgba(56, 189, 248, 0.15)', borderRadius: 14 }} />
+                        <View style={{ position: 'absolute', width: 28, height: 28, backgroundColor: 'rgba(218, 230, 247, 0.15)', borderRadius: 14 }} />
                         <RNImage
                             source={require('../../../assets/logo.jpg')}
                             style={{ width: 22, height: 22, borderRadius: 11 }}
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         marginLeft: 15,
         marginTop: 5,
     },

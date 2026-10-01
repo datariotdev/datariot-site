@@ -11,6 +11,7 @@ import { DebateCard } from '@components/Debate/DebateCard';
 import { Post } from '@lib/supabase/hooks/usePosts';
 import { useDebateArguments, Argument } from '@lib/supabase/hooks/useDebateArguments';
 import { Ionicons } from '@expo/vector-icons';
+import { pageBg } from '@design-system/surface';
 
 const VoteButton = ({ isVoted, score, onPress }: { isVoted: boolean; score: number; onPress: () => void }) => {
     const { theme, mode } = useTheme();
@@ -35,9 +36,9 @@ const VoteButton = ({ isVoted, score, onPress }: { isVoted: boolean; score: numb
             onPress={handlePress}
         >
             <Animated.View style={[styles.voteIconContainer, animatedStyle]}>
-                <Ionicons name={isVoted ? "bulb" : "bulb-outline"} size={16} color={isVoted ? "#D9E4FF" : theme.colors.text.secondary} />
+                <Ionicons name={isVoted ? "bulb" : "bulb-outline"} size={16} color={isVoted ? "#DAE6F7" : theme.colors.text.secondary} />
             </Animated.View>
-            <Text style={[styles.voteText, { color: isVoted ? "#D9E4FF" : theme.colors.text.secondary }]}>
+            <Text style={[styles.voteText, { color: isVoted ? "#DAE6F7" : theme.colors.text.secondary }]}>
                 {score} Reputation
             </Text>
         </Pressable>
@@ -213,8 +214,8 @@ export default function DebateThreadScreen() {
 
     const renderArgument = ({ item }: { item: Argument }) => {
         const isFor = item.side === 'FOR';
-        const colorMain = isFor ? "#D9E4FF" : "#FFFFFF";
-        const bgLabel = isFor ? 'rgba(217, 228, 255, 0.15)' : 'rgba(255, 255, 255, 0.15)';
+        const colorMain = isFor ? "#DAE6F7" : "#FFFFFF";
+        const bgLabel = isFor ? 'rgba(218, 230, 247, 0.15)' : 'rgba(255, 255, 255, 0.15)';
 
         return (
             <View style={[styles.argumentCard, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#FFF' }]}>
@@ -287,7 +288,7 @@ export default function DebateThreadScreen() {
 
     return (
         <KeyboardAvoidingView
-            style={[styles.container, { backgroundColor: theme.colors.background.primary }]}
+            style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
@@ -301,8 +302,8 @@ export default function DebateThreadScreen() {
                 <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>Debate Thread</Text>
                 {post && (
                     <Pressable onPress={handleLikePost} style={styles.headerLikeBtn}>
-                        <Text style={{ fontSize: 18, color: post.isLiked ? "#D9E4FF" : theme.colors.text.secondary }}>✦</Text>
-                        <Text style={[styles.headerLikeCount, { color: post.isLiked ? "#D9E4FF" : theme.colors.text.secondary }]}>{post.likes}</Text>
+                        <Text style={{ fontSize: 18, color: post.isLiked ? "#DAE6F7" : theme.colors.text.secondary }}>✦</Text>
+                        <Text style={[styles.headerLikeCount, { color: post.isLiked ? "#DAE6F7" : theme.colors.text.secondary }]}>{post.likes}</Text>
                     </Pressable>
                 )}
                 {!post && <View style={{ width: 40 }} />}
@@ -316,7 +317,7 @@ export default function DebateThreadScreen() {
                 ListHeaderComponent={() => (
                     <View style={styles.listHeader}>
                         {loadingPost ? (
-                            <ActivityIndicator color="#D9E4FF" />
+                            <ActivityIndicator color="#DAE6F7" />
                         ) : post ? (
                             <View>
                                 <DebateCard
@@ -332,7 +333,7 @@ export default function DebateThreadScreen() {
                                         <Text style={[styles.statsTitle, { color: theme.colors.text.primary }]}>Logic Balance</Text>
 
                                         <View style={styles.statsBarRow}>
-                                            <Text style={[styles.statsCount, { color: '#D9E4FF', width: 40 }]}>{stats.forScore}</Text>
+                                            <Text style={[styles.statsCount, { color: '#DAE6F7', width: 40 }]}>{stats.forScore}</Text>
 
                                             <View style={styles.progressBarContainer}>
                                                 <Animated.View style={[styles.progressBarFillFor, forStyle]} />
@@ -387,8 +388,8 @@ export default function DebateThreadScreen() {
                         <View style={styles.sideSelector}>
                             <Text style={[styles.promptText, { color: theme.colors.text.primary }]}>Take a stance:</Text>
                             <View style={styles.stanceButtons}>
-                                <Pressable style={[styles.stanceBtn, { backgroundColor: 'rgba(217, 228, 255, 0.15)' }]} onPress={() => setSelectedSide('FOR')}>
-                                    <Text style={[styles.stanceBtnText, { color: '#D9E4FF' }]}>Argue FOR</Text>
+                                <Pressable style={[styles.stanceBtn, { backgroundColor: 'rgba(218, 230, 247, 0.15)' }]} onPress={() => setSelectedSide('FOR')}>
+                                    <Text style={[styles.stanceBtnText, { color: '#DAE6F7' }]}>Argue FOR</Text>
                                 </Pressable>
                                 <Pressable style={[styles.stanceBtn, { backgroundColor: 'rgba(255, 255, 255, 0.15)' }]} onPress={() => setSelectedSide('AGAINST')}>
                                     <Text style={[styles.stanceBtnText, { color: '#FFFFFF' }]}>Argue AGAINST</Text>
@@ -403,8 +404,8 @@ export default function DebateThreadScreen() {
                                         params: { debateId: id, side: 'FOR' }
                                     })}
                                 >
-                                    <Ionicons name="videocam" size={16} color="#D9E4FF" />
-                                    <Text style={[styles.videoResponseBtnText, { color: '#D9E4FF' }]}>Video FOR</Text>
+                                    <Ionicons name="videocam" size={16} color="#DAE6F7" />
+                                    <Text style={[styles.videoResponseBtnText, { color: '#DAE6F7' }]}>Video FOR</Text>
                                 </Pressable>
                                 <Pressable
                                     style={styles.videoResponseBtn}
@@ -433,7 +434,7 @@ export default function DebateThreadScreen() {
                             <View style={styles.typeRow}>
                                 <View style={[
                                     styles.sideBadgeInput,
-                                    { backgroundColor: selectedSide === 'FOR' ? 'rgba(217, 228, 255, 0.1)' : 'rgba(255, 255, 255, 0.1)' }
+                                    { backgroundColor: selectedSide === 'FOR' ? 'rgba(218, 230, 247, 0.1)' : 'rgba(255, 255, 255, 0.1)' }
                                 ]}>
                                     <Text style={[
                                         styles.sideBadgeText,
@@ -552,7 +553,7 @@ const styles = StyleSheet.create({
     },
     sortText: {
         fontSize: 12,
-        color: '#D9E4FF',
+        color: '#DAE6F7',
         fontWeight: 'bold',
     },
     argCountBadge: {
@@ -737,7 +738,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -788,7 +789,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     progressBarFillFor: {
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         height: '100%',
     },
     progressBarFillAgainst: {

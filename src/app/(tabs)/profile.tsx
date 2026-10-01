@@ -16,6 +16,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { DebateCard } from '@components/Debate/DebateCard';
 import { AmbientGlow } from '../../components/UI/AmbientGlow';
+import { TECH_FONT } from '@design-system/fonts';
+import { pageBg } from '@design-system/surface';
 
 interface ProfileData {
     username: string;
@@ -151,7 +153,7 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                                 <Ionicons name="create-outline" size={18} color={isDark ? theme.colors.primary.DEFAULT : theme.colors.text.primary} />
                             </Pressable>
                         </View>
-                        <Text style={[styles.username, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>
+                        <Text style={[styles.username, { color: theme.colors.text.secondary, fontFamily: TECH_FONT }]}>
                             &gt; @{profile?.username || user.email?.split('@')[0]}
                         </Text>
 
@@ -166,18 +168,18 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                         ]}>
                             <View style={styles.compactStatsRow}>
                                 <View style={styles.compactStatItem}>
-                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{profile?.followers_count || 0}</Text>
-                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>FOLLOWERS</Text>
+                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: TECH_FONT }]}>{profile?.followers_count || 0}</Text>
+                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: TECH_FONT }]}>FOLLOWERS</Text>
                                 </View>
                                 <View style={[styles.compactStatDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)' }]} />
                                 <View style={styles.compactStatItem}>
-                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{profile?.following_count || 0}</Text>
-                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>FOLLOWING</Text>
+                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: TECH_FONT }]}>{profile?.following_count || 0}</Text>
+                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: TECH_FONT }]}>FOLLOWING</Text>
                                 </View>
                                 <View style={[styles.compactStatDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)' }]} />
                                 <View style={styles.compactStatItem}>
-                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{profile?.arguments_count || 0}</Text>
-                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>ARGUMENTS</Text>
+                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: TECH_FONT }]}>{profile?.arguments_count || 0}</Text>
+                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: TECH_FONT }]}>ARGUMENTS</Text>
                                 </View>
                             </View>
                         </View>
@@ -193,7 +195,7 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                         >
                             <View style={styles.achievementsBtnLeft}>
                                 <Ionicons name="finger-print" size={18} color={theme.colors.primary.DEFAULT} style={{ marginRight: 8 }} />
-                                <Text style={[styles.achievementsBtnText, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>[ CREATOR DNA ]</Text>
+                                <Text style={[styles.achievementsBtnText, { color: theme.colors.text.primary, fontFamily: TECH_FONT }]}>[ CREATOR DNA ]</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={16} color={theme.colors.text.secondary} />
                         </Pressable>
@@ -219,7 +221,7 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                                         styles.tabItem,
                                         isActive && {
                                             backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
-                                            borderColor: isDark ? 'rgba(0, 240, 255, 0.2)' : 'rgba(8, 145, 178, 0.2)',
+                                            borderColor: isDark ? 'rgba(218, 230, 247, 0.2)' : 'rgba(7, 8, 12, 0.2)',
                                             borderWidth: 1,
                                             borderRadius: 16,
                                             margin: 2,
@@ -245,7 +247,7 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                                         />
                                     )}
                                     {isActive && (
-                                        <Text style={[styles.activeTabText, { color: theme.colors.primary.DEFAULT, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>
+                                        <Text style={[styles.activeTabText, { color: theme.colors.primary.DEFAULT, fontFamily: TECH_FONT }]}>
                                             [ {tab === 'videos' ? 'ESSENCE' : tab === 'posts' ? 'THESES' : 'VAULT'} ]
                                         </Text>
                                     )}
@@ -593,7 +595,7 @@ export default function ProfileScreen() {
     if (!user) {
         return (
             <SafeAreaView>
-                <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+                <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
                     <View style={styles.authPrompt}>
                         <Ionicons name="person-circle-outline" size={80} color={isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'} style={{ marginBottom: 16 }} />
                         <Text style={[styles.authTitle, { color: theme.colors.text.primary }]}>Welcome to Orvelis</Text>
@@ -605,7 +607,7 @@ export default function ProfileScreen() {
                             style={styles.authSignInWrapper}
                         >
                             <LinearGradient
-                                colors={['#D9E4FF', '#D9E4FF']}
+                                colors={['#DAE6F7', '#DAE6F7']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
                                 style={styles.authSignInGradient}
@@ -712,8 +714,8 @@ export default function ProfileScreen() {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <AmbientGlow color={isDark ? "rgba(217, 228, 255, 0.08)" : "rgba(217, 228, 255, 0.04)"} size={400} opacity={0.6} duration={25000} delay={0} />
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
+            <AmbientGlow color={isDark ? "rgba(218, 230, 247, 0.08)" : "rgba(218, 230, 247, 0.04)"} size={400} opacity={0.6} duration={25000} delay={0} />
             <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
             {/* Sticky Header Overlay */}
@@ -912,7 +914,7 @@ const styles = StyleSheet.create({
         width: 14,
         height: 14,
         borderRadius: 7,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         borderWidth: 2,
     },
     avatarText: {
@@ -1163,7 +1165,7 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         overflow: 'hidden',
         alignSelf: 'flex-start',
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.45,
         shadowRadius: 10,
@@ -1248,7 +1250,7 @@ const styles = StyleSheet.create({
     tabIndicator: {
         position: 'absolute',
         height: 40, // Height of the sliding pill
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         borderRadius: 20,
         zIndex: 1,
     },
@@ -1387,7 +1389,7 @@ const styles = StyleSheet.create({
         paddingVertical: 18,
         paddingHorizontal: 32,
         borderRadius: 16,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
     },
     authSignInText: {
         fontSize: 18,

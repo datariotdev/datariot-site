@@ -3,7 +3,6 @@ import { View, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { WebSidebar, RAIL_WIDTH } from '../Web/WebSidebar';
 import { WebRightPanel } from '../Web/WebRightPanel';
 import { GlobalWebStyles } from '../UI/GlobalWebStyles';
-import { HudBackdrop } from '../UI/HudBackdrop';
 import { usePathname } from 'expo-router';
 import { useTheme } from '../Theme/ThemeProvider';
 
@@ -23,7 +22,14 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     const isDark = mode === 'dark';
 
     if (!isWeb) {
-        return <View style={{ flex: 1 }}>{children}</View>;
+        // A phone browser still needs the web chrome (theme attribute, font
+        // synthesis off); on native the component renders nothing.
+        return (
+            <View style={{ flex: 1 }}>
+                <GlobalWebStyles />
+                {children}
+            </View>
+        );
     }
 
     // Routes that keep the nav rail
@@ -43,9 +49,8 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
 
     if (!showSidebar) {
         return (
-            <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+            <View style={styles.container}>
                 <GlobalWebStyles />
-                <HudBackdrop isDark={isDark} />
                 <View style={[styles.content, { maxWidth: '100%', paddingHorizontal: 24 }]}>
                     <View style={styles.fullWidthColumn}>{children}</View>
                 </View>
@@ -54,9 +59,8 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     }
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={styles.container}>
             <GlobalWebStyles />
-            <HudBackdrop isDark={isDark} />
 
             {/* The rail floats above everything; this column just reserves its gutter */}
             <WebSidebar />
@@ -74,7 +78,7 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
                             styles.dockColumn,
                             {
                                 width: DOCK_WIDTH,
-                                borderLeftColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(0, 0, 0, 0.06)',
+                                borderLeftColor: isDark ? 'rgba(218, 230, 247, 0.07)' : 'rgba(0, 0, 0, 0.06)',
                             },
                         ]}
                     >

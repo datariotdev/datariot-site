@@ -90,7 +90,7 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
             <View style={styles.body}>
                 <View style={styles.bodyContentRow}>
                     <View style={styles.textContent}>
-                        <View style={[styles.thesisBadge, { backgroundColor: isDark ? 'rgba(0, 102, 255, 0.15)' : 'rgba(0, 102, 255, 0.1)' }]}>
+                        <View style={[styles.thesisBadge, { backgroundColor: isDark ? 'rgba(154, 167, 189, 0.15)' : 'rgba(154, 167, 189, 0.1)' }]}>
                             <Text style={[styles.thesisBadgeText, { color: theme.colors.primary.DEFAULT }]}>THESIS</Text>
                         </View>
                         <Text style={[styles.content, { color: theme.colors.text.primary }]} numberOfLines={3}>
@@ -333,12 +333,12 @@ const styles = StyleSheet.create({
     logicScoreText: {
         fontSize: 11,
         fontWeight: '700',
-        color: '#D9E4FF',
+        color: '#DAE6F7',
     },
     aiBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 8,

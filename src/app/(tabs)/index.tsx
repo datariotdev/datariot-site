@@ -19,6 +19,8 @@ import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideo
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
 import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
+import { TECH_FONT } from '@design-system/fonts';
+import { pageBg } from '@design-system/surface';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -230,7 +232,7 @@ const HomeScreen = () => {
                             styles.filterRow,
                             {
                                 backgroundColor: isDark ? '#0A0B11' : '#FBFBFD',
-                                borderBottomColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(0,0,0,0.06)',
+                                borderBottomColor: isDark ? 'rgba(218, 230, 247, 0.07)' : 'rgba(0,0,0,0.06)',
                             },
                         ]}
                     >
@@ -251,7 +253,7 @@ const HomeScreen = () => {
 
     /* ---------------- Mobile: original floating chrome ---------------- */
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
             <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
@@ -358,7 +360,7 @@ const HomeScreen = () => {
     );
 };
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
 const styles = StyleSheet.create({
     container: {
@@ -519,7 +521,7 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
             {isActive && (
                 <View style={[StyleSheet.absoluteFill, { padding: 2 }]}>
                     <LinearGradient
-                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
+                        colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={styles.tabIndicatorBackground}

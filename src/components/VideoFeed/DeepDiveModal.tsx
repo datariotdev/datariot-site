@@ -178,7 +178,7 @@ export function DeepDiveModal({ visible, video, onClose }: DeepDiveModalProps) {
                     {/* Header */}
                     <View style={styles.sheetHeader}>
                         <View style={styles.headerInfo}>
-                            <View style={[styles.headerIconWrapper, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(14, 165, 233, 0.1)' }]}>
+                            <View style={[styles.headerIconWrapper, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.1)' : 'rgba(7, 8, 12, 0.1)' }]}>
                                 <MaterialCommunityIcons name="brain" size={20} color={theme.colors.primary.DEFAULT} />
                             </View>
                             <View style={styles.headerTitles}>
@@ -269,7 +269,7 @@ export function DeepDiveModal({ visible, video, onClose }: DeepDiveModalProps) {
                                         <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }]}>RECOMMENDED STUDY</Text>
                                         {deepDiveData?.recommendations.map((rec, index) => {
                                             let icon = 'book';
-                                            let iconColor = '#38BDF8';
+                                            let iconColor: string = theme.colors.primary.DEFAULT;
                                             if (rec.type === 'Video') { icon = 'videocam'; iconColor = '#F43F5E'; }
                                             else if (rec.type === 'Podcast') { icon = 'mic'; iconColor = '#10B981'; }
 
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: 'rgba(56, 189, 248, 0.8)',
+        backgroundColor: 'rgba(218, 230, 247, 0.8)',
         marginHorizontal: 1.5,
     },
     inputRow: {

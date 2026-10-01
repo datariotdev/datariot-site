@@ -38,7 +38,7 @@ const tabs: TabItem[] = [
         icon: (focused, color) => (
             <View style={styles.createButton}>
                 <LinearGradient
-                    colors={['#D9E4FF', '#D9E4FF']}
+                    colors={['#DAE6F7', '#DAE6F7']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFill}

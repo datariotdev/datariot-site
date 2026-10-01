@@ -295,16 +295,16 @@ const styles = StyleSheet.create({
     selectedRegion: {
         position: 'absolute',
         height: '100%',
-        backgroundColor: 'rgba(217, 228, 255, 0.3)', // Logo Blue with opacity
+        backgroundColor: 'rgba(218, 230, 247, 0.3)', // Logo Blue with opacity
         borderTopWidth: 2,
         borderBottomWidth: 2,
-        borderColor: '#D9E4FF',
+        borderColor: '#DAE6F7',
     },
     handle: {
         position: 'absolute',
         width: HANDLE_WIDTH,
         height: TIMELINE_HEIGHT + 10, // Slightly taller
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         borderRadius: 4,
         justifyContent: 'center',
         alignItems: 'center',

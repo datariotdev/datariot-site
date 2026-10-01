@@ -38,7 +38,7 @@ export const ArenaHero: React.FC<ArenaHeroProps> = ({ debate, onPress }) => {
         >
             <Pressable onPress={onPress} style={styles.content}>
                 <LinearGradient
-                    colors={['#D9E4FF', '#000814']}
+                    colors={['#DAE6F7', '#000814']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFill}
@@ -156,10 +156,10 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#00FF88',
+        backgroundColor: '#DAE6F7',
     },
     liveText: {
-        color: '#00FF88',
+        color: '#DAE6F7',
         fontSize: 10,
         fontWeight: '900',
         letterSpacing: 1.5,

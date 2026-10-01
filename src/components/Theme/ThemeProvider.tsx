@@ -26,51 +26,59 @@ const defaultContext: ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType>(defaultContext);
 
 // --- Theme Palettes ---
-// We keep the original colors in baseTheme.colors as the "dark" theme (blue-focused dark mode)
-// We extract specific semantic overrides for light mode.
+// baseTheme.colors is the dark palette; lightColors below is its mirror image.
 
 const darkColors = { ...baseTheme.colors };
 
+// Light is the same two logo colours turned over: ink (#07080C) is the accent
+// and ice (#DAE6F7) is the tint, exactly as on info.datariot.xyz.
 const lightColors = {
     ...baseTheme.colors,
     primary: {
-        DEFAULT: '#4C6EF5', // Premium high-contrast Royal Blue
-        light: '#EDF2FF',
-        dark: '#364FC7',
-        ultra: '#DBE4FF',
-        brand: '#4C6EF5',
+        DEFAULT: '#07080C',
+        light: '#3A4252',
+        dark: '#000000',
+        ultra: '#DAE6F7',
+        brand: '#07080C',
         onPrimary: '#FFFFFF',
-        glow: 'rgba(76, 110, 245, 0.12)',
-        glowStrong: 'rgba(76, 110, 245, 0.25)',
-        glowSubtle: 'rgba(76, 110, 245, 0.05)',
+        glow: 'rgba(7, 8, 12, 0.12)',
+        glowStrong: 'rgba(7, 8, 12, 0.22)',
+        glowSubtle: 'rgba(7, 8, 12, 0.05)',
+    },
+    secondary: {
+        DEFAULT: '#3A4252',
+        dark: '#07080C',
+        light: '#DAE6F7',
+        onSecondary: '#FFFFFF',
+        glow: 'rgba(58, 66, 82, 0.14)',
     },
     background: {
-        primary: '#F8F8FA',
-        DEFAULT: '#F8F8FA',
-        secondary: '#F0F0F4',
-        tertiary: '#E8E8EE',
-        web: '#F8F8FA',
+        primary: '#F1F5FC',
+        DEFAULT: '#F1F5FC',
+        secondary: '#EAF0FA',
+        tertiary: '#DFE8F6',
+        web: '#F1F5FC',
         webSecondary: '#FFFFFF',
         paper: '#FFFFFF',
     },
     surface: {
         ...baseTheme.colors.surface,
         DEFAULT: '#FFFFFF',
-        light: '#FFFFFF',
+        light: '#F6F9FE',
         elevated: '#FFFFFF',
-        overlay: 'rgba(248, 248, 250, 0.95)',
+        overlay: 'rgba(241, 245, 252, 0.95)',
         card: '#FFFFFF',
-        glass: 'rgba(255, 255, 255, 0.7)',
-        glassHover: 'rgba(255, 255, 255, 0.85)',
-        border: 'rgba(0, 0, 0, 0.05)',
-        borderHover: 'rgba(0, 0, 0, 0.1)',
-        borderActive: 'rgba(76, 110, 245, 0.2)',
+        glass: 'rgba(255, 255, 255, 0.72)',
+        glassHover: 'rgba(255, 255, 255, 0.90)',
+        border: 'rgba(7, 8, 12, 0.10)',
+        borderHover: 'rgba(7, 8, 12, 0.22)',
+        borderActive: 'rgba(7, 8, 12, 0.55)',
     },
     text: {
-        primary: '#111118',
-        secondary: '#52526A',
-        muted: '#8E8E9E',
-        accent: '#4C6EF5',
+        primary: '#191A1E',
+        secondary: '#475569',
+        muted: '#7C8AA0',
+        accent: '#07080C',
     },
 };
 

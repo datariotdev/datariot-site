@@ -9,6 +9,7 @@ import { useChats } from '../../lib/supabase/hooks/useChats';
 import { supabase } from '../../lib/supabase/client';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { useTheme } from '../../components/Theme/ThemeProvider';
+import { pageBg } from '@design-system/surface';
 
 interface Profile {
     id: string;
@@ -202,7 +203,7 @@ export default function InboxScreen() {
 
     if (isSearching) {
         return (
-            <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
+            <SafeAreaView style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]} edges={['top']}>
                 {renderHeader()}
                 {searchLoading ? (
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -240,7 +241,7 @@ export default function InboxScreen() {
     }
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]} edges={['top']}>
             <FlatList
                 data={chats}
                 keyExtractor={(item) => item.chat_id || item.id}
@@ -306,7 +307,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: 'rgba(217, 228, 255, 0.1)',
+        backgroundColor: 'rgba(218, 230, 247, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -360,7 +361,7 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000000',
@@ -389,7 +390,7 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,

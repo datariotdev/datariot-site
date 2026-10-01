@@ -21,6 +21,7 @@ import { supabase } from '@lib/supabase/client';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
+import { TECH_FONT } from '@design-system/fonts';
 
 export default function Page() {
     const router = useRouter();
@@ -258,7 +259,7 @@ export default function Page() {
         }
     };
 
-    const monoFont = { fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' };
+    const monoFont = { fontFamily: TECH_FONT };
 
     return (
         <SafeAreaView style={styles.container}>

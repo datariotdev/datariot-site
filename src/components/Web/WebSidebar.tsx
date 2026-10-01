@@ -6,11 +6,13 @@ import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { supabase } from '../../lib/supabase/client';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../Theme/ThemeProvider';
+import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 export const RAIL_WIDTH = 78;
 export const RAIL_WIDTH_EXPANDED = 250;
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
 interface NavEntry {
     key: string;
@@ -81,14 +83,15 @@ const RailItem = ({
             onHoverOut={() => setIsHovered(false)}
             style={[
                 styles.railItem,
+                pixelClip(3),
                 {
                     backgroundColor: isActive
-                        ? (isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(107, 127, 204, 0.09)')
+                        ? (isDark ? 'rgba(218, 230, 247, 0.07)' : 'rgba(7, 8, 12, 0.09)')
                         : isHovered
                             ? (isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.035)')
                             : 'transparent',
                     borderColor: isActive
-                        ? (isDark ? 'rgba(217, 228, 255, 0.22)' : 'rgba(107, 127, 204, 0.28)')
+                        ? (isDark ? 'rgba(218, 230, 247, 0.22)' : 'rgba(7, 8, 12, 0.28)')
                         : isHovered
                             ? (isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.07)')
                             : 'transparent',
@@ -98,7 +101,7 @@ const RailItem = ({
             {/* Active edge bar — the rail's "selected channel" marker */}
             {isActive && (
                 <LinearGradient
-                    colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#6B7FCC']}
+                    colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 0, y: 1 }}
                     style={styles.activeEdge}
@@ -211,11 +214,11 @@ export const WebSidebar = () => {
                 {
                     width: expanded ? RAIL_WIDTH_EXPANDED : RAIL_WIDTH,
                     backgroundColor: expanded
-                        ? (isDark ? '#0B0C12' : '#FBFBFD')
+                        ? (isDark ? 'rgba(8, 9, 13, 0.94)' : 'rgba(250, 252, 255, 0.94)')
                         : 'transparent',
                     borderRightColor: expanded
-                        ? (isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(0, 0, 0, 0.08)')
-                        : (isDark ? 'rgba(217, 228, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'),
+                        ? (isDark ? 'rgba(218, 230, 247, 0.10)' : 'rgba(0, 0, 0, 0.08)')
+                        : (isDark ? 'rgba(218, 230, 247, 0.05)' : 'rgba(0, 0, 0, 0.05)'),
                 },
                 expanded && styles.containerExpanded,
             ]}
@@ -223,8 +226,8 @@ export const WebSidebar = () => {
             {/* Logo mark */}
             <Pressable onPress={() => router.push('/')} style={[styles.logoRow, expanded && { paddingLeft: 18 }]}>
                 <View style={styles.logoGlyph}>
-                    <View style={[styles.logoHalo, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(107, 127, 204, 0.10)' }]} />
-                    <RNImage source={require('../../../assets/logo.jpg')} style={{ width: 30, height: 30, borderRadius: 9 }} />
+                    <View style={[styles.logoHalo, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.10)' }]} />
+                    <RNImage source={require('../../../assets/logo.jpg')} style={[{ width: 30, height: 30 }, pixelClip(3)]} />
                 </View>
                 {expanded && (
                     <Text
@@ -238,7 +241,7 @@ export const WebSidebar = () => {
 
             {/* Section marker */}
             <View style={styles.railDividerRow}>
-                <View style={[styles.railDivider, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(0,0,0,0.08)' }]} />
+                <View style={[styles.railDivider, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.10)' : 'rgba(0,0,0,0.08)' }]} />
                 {expanded && (
                     <Text style={[styles.railGroupLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>NAV</Text>
                 )}
@@ -263,12 +266,13 @@ export const WebSidebar = () => {
                 onHoverOut={() => setArenaHovered(false)}
                 style={[
                     styles.arenaButton,
+                    pixelClip(3),
                     {
                         borderColor: arenaActive || arenaHovered
                             ? theme.colors.primary.DEFAULT
-                            : (isDark ? 'rgba(217, 228, 255, 0.22)' : 'rgba(107, 127, 204, 0.3)'),
-                        backgroundColor: isDark ? 'rgba(217, 228, 255, 0.06)' : 'rgba(107, 127, 204, 0.07)',
-                        shadowColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                            : (isDark ? 'rgba(218, 230, 247, 0.22)' : 'rgba(7, 8, 12, 0.3)'),
+                        backgroundColor: isDark ? 'rgba(218, 230, 247, 0.06)' : 'rgba(7, 8, 12, 0.07)',
+                        shadowColor: isDark ? '#DAE6F7' : '#07080C',
                         shadowOpacity: arenaActive || arenaHovered ? (isDark ? 0.35 : 0.2) : 0,
                         shadowRadius: 16,
                         shadowOffset: { width: 0, height: 0 },
@@ -286,7 +290,7 @@ export const WebSidebar = () => {
                         </Text>
                     </View>
                 )}
-                {expanded && <View style={[styles.arenaDot, { backgroundColor: '#34D399' }]} />}
+                {expanded && <View style={[styles.arenaDot, { backgroundColor: theme.colors.primary.DEFAULT }]} />}
             </Pressable>
 
             <View style={{ flex: 1 }} />
@@ -303,7 +307,7 @@ export const WebSidebar = () => {
                             style={[styles.mediaRow, { borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}
                             onPress={() => router.push({ pathname: '/video-player', params: { type: 'video', initialVideoId: video.id } })}
                         >
-                            <View style={[styles.mediaDot, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(107, 127, 204, 0.12)' }]}>
+                            <View style={[styles.mediaDot, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.12)' }]}>
                                 <Feather name="play" size={9} color={theme.colors.primary.DEFAULT} />
                             </View>
                             <Text numberOfLines={1} style={[styles.mediaTitle, { color: theme.colors.text.secondary, fontFamily: MONO }]}>
@@ -327,14 +331,14 @@ export const WebSidebar = () => {
                                 expanded && {
                                     backgroundColor: isDark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.03)',
                                     borderColor: isProfileHovered
-                                        ? (isDark ? 'rgba(217, 228, 255, 0.25)' : 'rgba(107, 127, 204, 0.3)')
+                                        ? (isDark ? 'rgba(218, 230, 247, 0.25)' : 'rgba(7, 8, 12, 0.3)')
                                         : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'),
                                     borderWidth: 1,
                                 },
                             ]}
                         >
                             <LinearGradient
-                                colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
+                                colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 1 }}
                                 style={styles.avatar}

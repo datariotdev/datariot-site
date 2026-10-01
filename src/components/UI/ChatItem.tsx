@@ -33,10 +33,10 @@ export function ChatItem({
             <View style={[
                 styles.avatarContainer,
                 { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)' },
-                isAi && [styles.aiAvatarContainer, { backgroundColor: '#FFFFFF' }]
+                isAi && [styles.aiAvatarContainer, { backgroundColor: '#07080C' }]
             ]}>
                 {isAi ? (
-                    <MaterialCommunityIcons name="robot-excited" size={24} color="#0EA5E9" />
+                    <MaterialCommunityIcons name="robot-excited" size={24} color="#DAE6F7" />
                 ) : (
                     <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>{name.charAt(0)}</Text>
                 )}
@@ -69,7 +69,7 @@ export function ChatItem({
 
                     {unreadCount > 0 && (
                         <LinearGradient
-                            colors={['#D9E4FF', '#D9E4FF']}
+                            colors={['#DAE6F7', '#DAE6F7']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 1 }}
                             style={styles.badge}
@@ -86,7 +86,7 @@ export function ChatItem({
         return (
             <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.outerAiContainer}>
                 <LinearGradient
-                    colors={['rgba(217, 228, 255, 0.5)', 'rgba(217, 228, 255, 0.5)']}
+                    colors={['rgba(218, 230, 247, 0.5)', 'rgba(218, 230, 247, 0.5)']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.aiBorder}
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginBottom: 12,
         borderRadius: 24,
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.3,
         shadowRadius: 16,
@@ -161,12 +161,12 @@ const styles = StyleSheet.create({
         marginRight: 16,
     },
     aiAvatarContainer: {
-        shadowColor: '#0EA5E9',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.6,
         shadowRadius: 12,
         borderWidth: 1,
-        borderColor: '#0EA5E9',
+        borderColor: '#DAE6F7',
     },
     avatarText: {
         fontSize: 20,
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
         minWidth: 24,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#0EA5E9',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.5,
         shadowRadius: 4,

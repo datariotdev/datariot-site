@@ -92,7 +92,7 @@ export default function SignupFormScreen() {
                             disabled={loading}
                         >
                             <LinearGradient
-                                colors={['#D9E4FF', '#D9E4FF']}
+                                colors={['#DAE6F7', '#DAE6F7']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
                                 style={styles.signupButtonGradient}
@@ -113,7 +113,7 @@ export default function SignupFormScreen() {
                             ]}
                             onPress={() => {/* TODO: Google Auth */ }}
                         >
-                            <AntDesign name="google" size={20} color="#D9E4FF" style={styles.googleIcon} />
+                            <AntDesign name="google" size={20} color="#DAE6F7" style={styles.googleIcon} />
                             <Text style={styles.googleButtonText}>Continue with Google</Text>
                         </Pressable>
                     </View>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
         padding: theme.spacing.lg,
     },
     backButtonText: {
-        color: '#D9E4FF',
+        color: '#DAE6F7',
         fontSize: theme.typography.sizes.lg,
     },
     content: {
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         fontSize: theme.typography.sizes.lg,
         color: theme.colors.text.primary,
         borderWidth: 1,
-        borderColor: 'rgba(217, 228, 255, 0.2)',
+        borderColor: 'rgba(218, 230, 247, 0.2)',
     },
     errorText: {
         color: theme.colors.error,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     signupButton: {
         borderRadius: 16,
         overflow: 'hidden',
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.4,
         shadowRadius: 16,

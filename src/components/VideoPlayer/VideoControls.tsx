@@ -215,7 +215,7 @@ export function VideoControls({
                     <View style={styles.leftActions}>
                         <Pressable onPress={() => { animateLike(); onLike(); }} style={styles.actionButton}>
                             <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-                                <Text style={[styles.actionIcon, { color: isLiked ? '#D9E4FF' : 'white' }]}>✦</Text>
+                                <Text style={[styles.actionIcon, { color: isLiked ? '#DAE6F7' : 'white' }]}>✦</Text>
                             </Animated.View>
                             <Text style={styles.actionLabel}>Like</Text>
                             <Text style={styles.actionCount}>{formatCount(likes)}</Text>
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     hashtag: {
-        color: '#0EA5E9',
+        color: '#DAE6F7',
         fontFamily: theme.typography.fontFamilies.bold,
     },
 
@@ -393,8 +393,8 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     actionIconActive: {
-        color: '#0EA5E9',
-        textShadowColor: 'rgba(14, 165, 233, 0.8)',
+        color: '#DAE6F7',
+        textShadowColor: 'rgba(218, 230, 247, 0.8)',
         textShadowOffset: { width: 0, height: 0 },
         textShadowRadius: 10,
     },
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         borderRadius: 12, // Circular button look
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -470,9 +470,9 @@ const styles = StyleSheet.create({
         top: 14,
         left: 0,
         height: 2,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         zIndex: 1,
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.8,
         shadowRadius: 4,

@@ -115,7 +115,7 @@ export const PulseItem = memo(({
                 {/* Neon Glow Border for Focus */}
                 {isFocus && (
                     <LinearGradient
-                        colors={[theme.colors.primary.DEFAULT, '#D9E4FF']}
+                        colors={[theme.colors.primary.DEFAULT, '#DAE6F7']}
                         style={styles.neonBorder}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}

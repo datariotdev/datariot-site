@@ -1,8 +1,9 @@
 import React from 'react';
 import { ScrollView, Text, StyleSheet, Pressable, View, Platform } from 'react-native';
 import { useTheme } from '../Theme/ThemeProvider';
+import { TECH_FONT } from '@design-system/fonts';
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
 interface CategoryPillsProps {
     categories: string[];
@@ -63,16 +64,16 @@ const Chip = ({
                     borderColor: isActive
                         ? accent
                         : isHovered
-                            ? (isDark ? 'rgba(217, 228, 255, 0.3)' : 'rgba(76, 110, 245, 0.35)')
+                            ? (isDark ? 'rgba(218, 230, 247, 0.3)' : 'rgba(7, 8, 12, 0.35)')
                             : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.09)'),
                     backgroundColor: isActive
-                        ? (isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(76, 110, 245, 0.10)')
+                        ? (isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.10)')
                         : isHovered
                             ? (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.035)')
                             : 'transparent',
                 },
                 isActive && {
-                    shadowColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                    shadowColor: isDark ? '#DAE6F7' : '#07080C',
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: isDark ? 0.3 : 0.15,
                     shadowRadius: 12,

@@ -18,6 +18,7 @@ import { TrendingTopics } from '@components/Discovery/TrendingTopics';
 import { TrendingBullets } from '@components/Discovery/TrendingBullets';
 import { DebateSwitcher } from '@components/Discovery/DebateSwitcher';
 import { IntellectRecommendations } from '@components/Discovery/IntellectRecommendations';
+import { pageBg } from '@design-system/surface';
 
 export default function DiscoverScreen() {
     const { theme, mode } = useTheme();
@@ -119,8 +120,8 @@ export default function DiscoverScreen() {
         : textPosts;
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <AmbientGlow color={isDark ? "rgba(217, 228, 255, 0.08)" : "rgba(217, 228, 255, 0.04)"} size={380} opacity={0.6} duration={25000} delay={0} />
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
+            <AmbientGlow color={isDark ? "rgba(218, 230, 247, 0.08)" : "rgba(218, 230, 247, 0.04)"} size={380} opacity={0.6} duration={25000} delay={0} />
             <SafeAreaView style={styles.safeArea}>
 
                 {/* Search Bar */}

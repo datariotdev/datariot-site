@@ -23,12 +23,12 @@ import { useTheme } from '../components/Theme/ThemeProvider';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const CATEGORIES = [
-    { id: 'restaurant', label: 'Restaurant', icon: 'restaurant-outline' as const, gradient: ['#D9E4FF', '#D9E4FF'] as const },
-    { id: 'cafe', label: 'Cafe', icon: 'cafe-outline' as const, gradient: ['#D9E4FF', '#D9E4FF'] as const },
-    { id: 'beauty', label: 'Beauty', icon: 'sparkles-outline' as const, gradient: ['#D9E4FF', '#D9E4FF'] as const },
-    { id: 'fitness', label: 'Fitness', icon: 'fitness-outline' as const, gradient: ['#D9E4FF', '#D9E4FF'] as const },
-    { id: 'shop', label: 'Shop', icon: 'bag-handle-outline' as const, gradient: ['#D9E4FF', '#D9E4FF'] as const },
-    { id: 'other', label: 'Other', icon: 'ellipsis-horizontal-outline' as const, gradient: ['#D9E4FF', '#D9E4FF'] as const },
+    { id: 'restaurant', label: 'Restaurant', icon: 'restaurant-outline' as const, gradient: ['#DAE6F7', '#DAE6F7'] as const },
+    { id: 'cafe', label: 'Cafe', icon: 'cafe-outline' as const, gradient: ['#DAE6F7', '#DAE6F7'] as const },
+    { id: 'beauty', label: 'Beauty', icon: 'sparkles-outline' as const, gradient: ['#DAE6F7', '#DAE6F7'] as const },
+    { id: 'fitness', label: 'Fitness', icon: 'fitness-outline' as const, gradient: ['#DAE6F7', '#DAE6F7'] as const },
+    { id: 'shop', label: 'Shop', icon: 'bag-handle-outline' as const, gradient: ['#DAE6F7', '#DAE6F7'] as const },
+    { id: 'other', label: 'Other', icon: 'ellipsis-horizontal-outline' as const, gradient: ['#DAE6F7', '#DAE6F7'] as const },
 ];
 
 const REACH_OPTIONS = [
@@ -98,7 +98,7 @@ export default function BusinessScreen() {
                             <Ionicons name="chevron-back" size={22} color="rgba(255,255,255,0.8)" />
                         </Pressable>
                         <View style={styles.headerBadge}>
-                            <Ionicons name="megaphone-outline" size={13} color="#D9E4FF" />
+                            <Ionicons name="megaphone-outline" size={13} color="#DAE6F7" />
                             <Text style={styles.headerBadgeText}>For Business</Text>
                         </View>
                     </View>
@@ -222,7 +222,7 @@ export default function BusinessScreen() {
                                     >
                                         {isActive && (
                                             <LinearGradient
-                                                colors={['rgba(217, 228, 255,0.2)', 'rgba(217, 228, 255,0.15)']}
+                                                colors={['rgba(218, 230, 247,0.2)', 'rgba(218, 230, 247,0.15)']}
                                                 style={StyleSheet.absoluteFill}
                                                 start={{ x: 0, y: 0 }}
                                                 end={{ x: 1, y: 1 }}
@@ -237,7 +237,7 @@ export default function BusinessScreen() {
                                                 <Text style={styles.reachDesc}>{opt.description}</Text>
                                             </View>
                                         </View>
-                                        <View style={[styles.reachPriceBadge, isActive && { backgroundColor: '#D9E4FF' }]}>
+                                        <View style={[styles.reachPriceBadge, isActive && { backgroundColor: '#DAE6F7' }]}>
                                             <Text style={styles.reachPriceText}>{opt.price}</Text>
                                         </View>
                                     </Pressable>
@@ -301,7 +301,7 @@ export default function BusinessScreen() {
                                 { icon: 'flash-outline', value: '24h', label: 'Launch' },
                             ].map((s, i) => (
                                 <BlurView key={i} intensity={18} tint="dark" style={styles.statCard}>
-                                    <Ionicons name={s.icon as any} size={18} color="#D9E4FF" />
+                                    <Ionicons name={s.icon as any} size={18} color="#DAE6F7" />
                                     <Text style={styles.statValue}>{s.value}</Text>
                                     <Text style={styles.statLabel}>{s.label}</Text>
                                 </BlurView>
@@ -311,7 +311,7 @@ export default function BusinessScreen() {
                         {/* CTA Button */}
                         <Pressable onPress={handleLaunch} style={styles.launchWrapper}>
                             <LinearGradient
-                                colors={['#D9E4FF', '#D9E4FF']}
+                                colors={['#DAE6F7', '#DAE6F7']}
                                 style={styles.launchBtn}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     blobTop: {
         width: 300,
         height: 300,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         top: -80,
         right: -80,
         transform: [{ scale: 1.4 }],
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     blobMid: {
         width: 250,
         height: 250,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         top: 350,
         left: -120,
         opacity: 0.12,
@@ -383,15 +383,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5,
-        backgroundColor: 'rgba(217, 228, 255, 0.15)',
+        backgroundColor: 'rgba(218, 230, 247, 0.15)',
         borderWidth: 1,
-        borderColor: 'rgba(217, 228, 255, 0.3)',
+        borderColor: 'rgba(218, 230, 247, 0.3)',
         paddingHorizontal: 12,
         paddingVertical: 5,
         borderRadius: 20,
     },
     headerBadgeText: {
-        color: '#D9E4FF',
+        color: '#DAE6F7',
         fontSize: 12,
         fontWeight: '600',
     },
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     heroGradientText: {
-        color: '#D9E4FF',
+        color: '#DAE6F7',
     },
     heroSubtitle: {
         fontSize: 15,
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     reachCardActive: {
-        borderColor: 'rgba(217, 228, 255, 0.4)',
+        borderColor: 'rgba(218, 230, 247, 0.4)',
     },
     reachLeft: {
         flexDirection: 'row',
@@ -525,13 +525,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     reachRadioActive: {
-        borderColor: '#D9E4FF',
+        borderColor: '#DAE6F7',
     },
     reachRadioDot: {
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
     },
     reachLabel: {
         fontSize: 15,

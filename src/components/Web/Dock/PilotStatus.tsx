@@ -50,7 +50,7 @@ export const PilotStatus = ({
                         {
                             borderColor: accent,
                             backgroundColor: hovered
-                                ? (isDark ? 'rgba(217, 228, 255, 0.16)' : 'rgba(76, 110, 245, 0.12)')
+                                ? (isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.12)')
                                 : 'transparent',
                         },
                     ]}
@@ -69,7 +69,7 @@ export const PilotStatus = ({
             {/* Identity */}
             <View style={styles.identityRow}>
                 <LinearGradient
-                    colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
+                    colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.avatar}
@@ -95,9 +95,9 @@ export const PilotStatus = ({
             {/* Tier meter — the unfilled track is a dimmer step of the same ramp,
                 so the whole bar reads as one scale rather than fill-on-gray. */}
             <View style={styles.meterBlock}>
-                <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.14)' }]}>
+                <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)' }]}>
                     <LinearGradient
-                        colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
+                        colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={[styles.meterFill, { width: `${progress * 100}%` }]}

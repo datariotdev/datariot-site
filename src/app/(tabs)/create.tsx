@@ -10,6 +10,7 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from '../../components/UI/SafeAreaView';
 import { useTheme } from '../../components/Theme/ThemeProvider';
+import { pageBg } from '@design-system/surface';
 
 function ActionCard({
     onPress,
@@ -37,7 +38,7 @@ function ActionCard({
             style={[
                 styles.card,
                 isPrimary
-                    ? { backgroundColor: '#D9E4FF', shadowColor: '#D9E4FF', shadowOpacity: 0.15 }
+                    ? { backgroundColor: '#DAE6F7', shadowColor: '#DAE6F7', shadowOpacity: 0.15 }
                     : { backgroundColor: bg, borderColor: borderCol, borderWidth: 1 }
             ]}
         >
@@ -93,7 +94,7 @@ export default function CreateScreen() {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
-    const bg = theme.colors.background.primary;
+    const bg = pageBg(theme.colors.background.primary);
     const fg = theme.colors.text.primary;
 
     const pickVideo = async () => {
@@ -153,7 +154,7 @@ export default function CreateScreen() {
                     <Text style={[styles.heroText, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
                         SOMETHING
                     </Text>
-                    <Text style={[styles.heroText, { color: isDark ? '#D9E4FF' : theme.colors.primary.DEFAULT, fontFamily: theme.typography.fontFamilies.brand }]}>
+                    <Text style={[styles.heroText, { color: isDark ? '#DAE6F7' : theme.colors.primary.DEFAULT, fontFamily: theme.typography.fontFamilies.brand }]}>
                         NEW
                     </Text>
                 </View>
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
 
     // Hero
     heroBox: { marginBottom: 40, marginTop: 10 },
-    heroLine: { width: 40, height: 4, backgroundColor: '#D9E4FF', marginBottom: 24 },
+    heroLine: { width: 40, height: 4, backgroundColor: '#DAE6F7', marginBottom: 24 },
     heroText: {
         fontSize: Platform.OS === 'web' ? 44 : 38,
         fontWeight: '900',

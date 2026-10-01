@@ -6,8 +6,11 @@ import { Video as ExpoVideo, ResizeMode } from 'expo-av';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { encodeVideoUrl } from '../../../lib/utils/url';
 import type { Video } from '../../../lib/supabase/hooks/useVideos';
+import { TECH_FONT } from '@design-system/fonts';
+import { ICE } from '@design-system/theme';
+import { pixelClip } from '@design-system/pixel';
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
 export type CardScale = 'hero' | 'wide' | 'standard' | 'compact';
 
@@ -67,7 +70,7 @@ export const DeckCard = ({
 
     const isBig = scale === 'hero' || scale === 'wide';
     const titleSize = scale === 'hero' ? 22 : scale === 'wide' ? 17 : scale === 'standard' ? 15 : 13;
-    const accent = theme.colors.primary.DEFAULT;
+    const accent = ICE; // drawn over a dark scrim in both themes
     const signal = signalFor(item.id);
 
     const thumb = item.thumbnailUrl || `https://picsum.photos/seed/${item.id}/900/600`;
@@ -82,10 +85,10 @@ export const DeckCard = ({
                 {
                     height,
                     borderColor: hovered
-                        ? (isDark ? 'rgba(217, 228, 255, 0.4)' : 'rgba(76, 110, 245, 0.45)')
-                        : (isDark ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.08)'),
-                    backgroundColor: isDark ? '#0B0C11' : '#EDEEF3',
-                    shadowColor: isDark ? '#000' : '#6B7FCC',
+                        ? (isDark ? 'rgba(218, 230, 247, 0.5)' : 'rgba(7, 8, 12, 0.6)')
+                        : (isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.14)'),
+                    backgroundColor: '#07080C',
+                    shadowColor: isDark ? '#000' : '#3A4252',
                     shadowOpacity: hovered ? (isDark ? 0.55 : 0.18) : 0.25,
                     shadowRadius: hovered ? 30 : 14,
                     shadowOffset: { width: 0, height: hovered ? 14 : 6 },
@@ -133,7 +136,7 @@ export const DeckCard = ({
             {/* Accent wash on hover */}
             {hovered && (
                 <LinearGradient
-                    colors={['transparent', isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(76, 110, 245, 0.12)']}
+                    colors={['transparent', isDark ? 'rgba(218, 230, 247, 0.10)' : 'rgba(7, 8, 12, 0.12)']}
                     start={{ x: 0.2, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFillObject}
@@ -175,15 +178,15 @@ export const DeckCard = ({
 
                 <View style={styles.topRight}>
                     {item.isHighSynergy && (
-                        <View style={[styles.chip, { borderColor: 'rgba(52, 211, 153, 0.55)', backgroundColor: 'rgba(6, 30, 22, 0.75)' }]}>
-                            <View style={[styles.chipDot, { backgroundColor: '#34D399' }]} />
-                            <Text style={[styles.chipText, { color: '#34D399', fontFamily: MONO }]}>
+                        <View style={[styles.chip, pixelClip(2), { borderColor: 'rgba(218, 230, 247, 0.5)', backgroundColor: 'rgba(7, 8, 12, 0.78)' }]}>
+                            <View style={[styles.chipDot, { backgroundColor: ICE }]} />
+                            <Text style={[styles.chipText, { color: ICE, fontFamily: MONO }]}>
                                 {item.dnaMatch || 90}% MATCH
                             </Text>
                         </View>
                     )}
                     {item.category ? (
-                        <View style={[styles.chip, { borderColor: 'rgba(255,255,255,0.18)', backgroundColor: 'rgba(6, 7, 12, 0.7)' }]}>
+                        <View style={[styles.chip, pixelClip(2), { borderColor: 'rgba(255,255,255,0.18)', backgroundColor: 'rgba(6, 7, 12, 0.7)' }]}>
                             <Text style={[styles.chipText, { color: 'rgba(255,255,255,0.8)', fontFamily: MONO }]}>
                                 {item.category.toUpperCase()}
                             </Text>
@@ -199,7 +202,7 @@ export const DeckCard = ({
                         styles.playRing,
                         {
                             borderColor: hovered ? accent : 'rgba(255,255,255,0.25)',
-                            backgroundColor: hovered ? 'rgba(217, 228, 255, 0.14)' : 'rgba(6, 7, 12, 0.35)',
+                            backgroundColor: hovered ? 'rgba(218, 230, 247, 0.14)' : 'rgba(6, 7, 12, 0.35)',
                             width: isBig ? 58 : 44,
                             height: isBig ? 58 : 44,
                             opacity: previewing ? 0 : 1,
@@ -235,7 +238,7 @@ export const DeckCard = ({
                     <View style={styles.signalRow}>
                         <View style={styles.signalTrack}>
                             <LinearGradient
-                                colors={[accent, isDark ? '#7DE2FF' : '#7DA2FF']}
+                                colors={[ICE, '#9AA7BD']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
                                 style={[styles.signalFill, { width: `${signal}%` }]}
@@ -279,7 +282,7 @@ export const DeckCard = ({
 const styles = StyleSheet.create({
     card: {
         flex: 1,
-        borderRadius: 16,
+        borderRadius: 8,
         borderWidth: 1,
         overflow: 'hidden',
         position: 'relative',

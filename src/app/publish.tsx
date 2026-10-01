@@ -11,6 +11,7 @@ import { VIDEO_CATEGORIES, CATEGORY_DISPLAY_NAMES, VideoCategory } from '../lib/
 import { supabase } from '../lib/supabase/client';
 import { generateDebateSeed, generateVideoAnalysis, DebateSeed } from '../lib/ai/client';
 import { useTheme } from '../components/Theme/ThemeProvider';
+import { pageBg } from '@design-system/surface';
 
 const showAlert = (title: string, message: string) => {
     if (Platform.OS === 'web') {
@@ -314,7 +315,7 @@ export default function PublishScreen() {
     const isVideoSelection = !!videoUri;
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]} edges={['top']}>
             <Stack.Screen options={{ headerShown: false }} />
 
             {/* Header */}
@@ -328,7 +329,7 @@ export default function PublishScreen() {
                     style={[
                         styles.postButton,
                         {
-                            backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                            backgroundColor: isDark ? '#DAE6F7' : '#07080C',
                         },
                         (uploading || isVerifying || (isVideoSelection && verificationStatus !== 'verified')) && styles.disabledButton
                     ]}
@@ -375,7 +376,7 @@ export default function PublishScreen() {
                                 color: theme.colors.text.primary,
                                 fontFamily: theme.typography.fontFamilies.regular,
                                 // @ts-ignore - Web outline reset
-                                outlineStyle: 'none',
+                                outlineStyle: 'none' as any, // web-only; RN's types only know solid/dotted/dashed
                                 outlineWidth: 0,
                             }
                         ]}
@@ -392,8 +393,8 @@ export default function PublishScreen() {
                         style={[
                             styles.aiSuggestBtn,
                             {
-                                backgroundColor: isDark ? 'rgba(217, 228, 255, 0.08)' : 'rgba(76, 110, 245, 0.06)',
-                                borderColor: isDark ? 'rgba(217, 228, 255, 0.15)' : 'rgba(76, 110, 245, 0.12)',
+                                backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)',
+                                borderColor: isDark ? 'rgba(218, 230, 247, 0.15)' : 'rgba(7, 8, 12, 0.12)',
                                 borderWidth: 1,
                             },
                             suggesting && { opacity: 0.7 }
@@ -402,13 +403,13 @@ export default function PublishScreen() {
                         disabled={suggesting}
                     >
                         {suggesting ? (
-                            <ActivityIndicator size="small" color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                            <ActivityIndicator size="small" color={isDark ? '#DAE6F7' : '#07080C'} />
                         ) : (
                             <>
-                                <Ionicons name="sparkles" size={16} color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                                <Ionicons name="sparkles" size={16} color={isDark ? '#DAE6F7' : '#07080C'} />
                                 <Text style={[
                                     styles.aiSuggestText,
-                                    { color: isDark ? '#D9E4FF' : '#4C6EF5', fontFamily: theme.typography.fontFamilies.bold }
+                                    { color: isDark ? '#DAE6F7' : '#07080C', fontFamily: theme.typography.fontFamilies.bold }
                                 ]}>
                                     AI Logic Oracle: Extract Thesis
                                 </Text>
@@ -436,7 +437,7 @@ export default function PublishScreen() {
                             {/* Verification Overlay */}
                             {isVerifying && (
                                 <View style={styles.verificationOverlay}>
-                                    <ActivityIndicator size="large" color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                                    <ActivityIndicator size="large" color={isDark ? '#DAE6F7' : '#07080C'} />
                                     <Text style={[styles.verificationText, { fontFamily: theme.typography.fontFamilies.medium }]}>Verifying AI Content...</Text>
                                 </View>
                             )}
@@ -490,17 +491,17 @@ export default function PublishScreen() {
                                 onPress={isPlaying ? stopSound : playSound}
                                 style={[
                                     styles.playButton,
-                                    { backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }
+                                    { backgroundColor: isDark ? '#DAE6F7' : '#07080C' }
                                 ]}
                             >
                                 <Ionicons name={isPlaying ? "pause" : "play"} size={24} color={isDark ? '#000000' : '#ffffff'} />
                             </TouchableOpacity>
                             <View style={styles.audioWaveform}>
-                                <View style={[styles.bar, { height: 12, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
-                                <View style={[styles.bar, { height: 20, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
-                                <View style={[styles.bar, { height: 16, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
-                                <View style={[styles.bar, { height: 24, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
-                                <View style={[styles.bar, { height: 10, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
+                                <View style={[styles.bar, { height: 12, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
+                                <View style={[styles.bar, { height: 20, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
+                                <View style={[styles.bar, { height: 16, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
+                                <View style={[styles.bar, { height: 24, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
+                                <View style={[styles.bar, { height: 10, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
                             </View>
                             <TouchableOpacity style={styles.deleteAudio} onPress={() => {
                                 setAudioUri(null);
@@ -527,8 +528,8 @@ export default function PublishScreen() {
                                                 borderWidth: 1,
                                             },
                                             selectedCategory === cat && {
-                                                backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5',
-                                                borderColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                                                backgroundColor: isDark ? '#DAE6F7' : '#07080C',
+                                                borderColor: isDark ? '#DAE6F7' : '#07080C',
                                             }
                                         ]}
                                     >
@@ -560,7 +561,7 @@ export default function PublishScreen() {
                             style={[styles.toolbarButton, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)' }]}
                             onPress={pickImage}
                         >
-                            <Ionicons name="image-outline" size={24} color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                            <Ionicons name="image-outline" size={24} color={isDark ? '#DAE6F7' : '#07080C'} />
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -575,16 +576,16 @@ export default function PublishScreen() {
                             <MaterialIcons
                                 name="mic"
                                 size={24}
-                                color={isRecording ? "#FFF" : (isDark ? '#D9E4FF' : '#4C6EF5')}
+                                color={isRecording ? "#FFF" : (isDark ? '#DAE6F7' : '#07080C')}
                             />
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.toolbarButton, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)' }]}>
-                            <MaterialIcons name="poll" size={24} color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                            <MaterialIcons name="poll" size={24} color={isDark ? '#DAE6F7' : '#07080C'} />
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.toolbarButton, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)' }]}>
-                            <Ionicons name="location-outline" size={24} color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                            <Ionicons name="location-outline" size={24} color={isDark ? '#DAE6F7' : '#07080C'} />
                         </TouchableOpacity>
 
                         {isRecording && (

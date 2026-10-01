@@ -7,6 +7,7 @@ import { DiscoveryCarousel } from '../Discovery/DiscoveryCarousel';
 import { FeaturedHero } from '../Discovery/FeaturedHero';
 import { DeckGrid } from './DeckFeed/DeckGrid';
 import { Video } from '../../lib/supabase/hooks/useVideos';
+import { pageBg } from '@design-system/surface';
 
 interface CoubClassicFeedProps {
     videos: Video[];
@@ -181,7 +182,7 @@ export function CoubClassicFeed({
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <FlatList
                 ref={flatListRef}
                 data={scrollVideos}

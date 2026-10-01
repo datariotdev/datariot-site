@@ -18,7 +18,7 @@ export const WebTopNav = () => {
                 <View style={styles.left}>
                     <Pressable onPress={() => router.push('/')} style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <View style={[styles.logoIconPlaceholder, { borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)', backgroundColor: 'transparent', position: 'relative' }]}>
-                            <View style={{ position: 'absolute', width: 48, height: 48, backgroundColor: 'rgba(217, 228, 255, 0.1)', borderRadius: 24, left: -4, top: -4 }} />
+                            <View style={{ position: 'absolute', width: 48, height: 48, backgroundColor: 'rgba(218, 230, 247, 0.1)', borderRadius: 24, left: -4, top: -4 }} />
                             <RNImage
                                 source={require('../../../assets/logo.jpg')}
                                 style={styles.logoImage}
@@ -62,7 +62,7 @@ export const WebTopNav = () => {
 
                     <View style={styles.loginButtonWrapper}>
                         <LinearGradient
-                            colors={['#D9E4FF', '#A5C6FF']}
+                            colors={['#DAE6F7', '#B7C2D6']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
                             style={styles.loginGradient}
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     loginButtonWrapper: {
         borderRadius: 12,
         overflow: 'hidden',
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 10,

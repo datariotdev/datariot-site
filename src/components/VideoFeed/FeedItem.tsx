@@ -118,7 +118,7 @@ export const FeedItem = React.memo(({
                 </View>
                 <View style={styles.actionsContainer}>
                     <Pressable onPress={onLike} style={styles.actionButton}>
-                        <Text style={[styles.customIcon, { color: item.isLiked ? '#D9E4FF' : '#FFF' }]}>✦</Text>
+                        <Text style={[styles.customIcon, { color: item.isLiked ? '#DAE6F7' : '#FFF' }]}>✦</Text>
                         <Text style={styles.actionIconText}>{item.likes || 0}</Text>
                     </Pressable>
 
@@ -128,7 +128,7 @@ export const FeedItem = React.memo(({
                     </Pressable>
 
                     <Pressable onPress={onSave} style={styles.actionButton}>
-                        <Ionicons name="bookmark" size={24} color={item.isSaved ? '#D9E4FF' : '#FFF'} style={styles.plainIcon} />
+                        <Ionicons name="bookmark" size={24} color={item.isSaved ? '#DAE6F7' : '#FFF'} style={styles.plainIcon} />
                         <Text style={styles.actionIconText}>{item.saved || 0}</Text>
                     </Pressable>
 

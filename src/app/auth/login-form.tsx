@@ -6,6 +6,7 @@ import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from '../../components/Theme/ThemeProvider';
+import { pageBg } from '@design-system/surface';
 
 export default function LoginFormScreen() {
     const { signIn } = useAuth();
@@ -42,14 +43,14 @@ export default function LoginFormScreen() {
     };
 
     return (
-        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background.primary }]}>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}
             >
                 {/* Back Button */}
                 <Pressable onPress={() => router.back()} style={styles.backButton}>
-                    <Text style={[styles.backButtonText, { color: '#D9E4FF' }]}>← Back</Text>
+                    <Text style={[styles.backButtonText, { color: '#DAE6F7' }]}>← Back</Text>
                 </Pressable>
 
                 <View style={styles.content}>
@@ -63,7 +64,7 @@ export default function LoginFormScreen() {
                             style={[styles.input, {
                                 backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9',
                                 color: theme.colors.text.primary,
-                                borderColor: isDark ? 'rgba(217, 228, 255, 0.2)' : 'rgba(0,0,0,0.08)',
+                                borderColor: isDark ? 'rgba(218, 230, 247, 0.2)' : 'rgba(0,0,0,0.08)',
                             }]}
                             placeholder="Email"
                             placeholderTextColor={theme.colors.text.muted}
@@ -76,7 +77,7 @@ export default function LoginFormScreen() {
                             style={[styles.input, {
                                 backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9',
                                 color: theme.colors.text.primary,
-                                borderColor: isDark ? 'rgba(217, 228, 255, 0.2)' : 'rgba(0,0,0,0.08)',
+                                borderColor: isDark ? 'rgba(218, 230, 247, 0.2)' : 'rgba(0,0,0,0.08)',
                             }]}
                             placeholder="Password"
                             placeholderTextColor={theme.colors.text.muted}
@@ -93,7 +94,7 @@ export default function LoginFormScreen() {
                             disabled={loading}
                         >
                             <LinearGradient
-                                colors={['#D9E4FF', '#D9E4FF']}
+                                colors={['#DAE6F7', '#DAE6F7']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
                                 style={styles.loginButtonGradient}
@@ -113,7 +114,7 @@ export default function LoginFormScreen() {
                             ]}
                             onPress={() => {/* TODO: Google Auth */ }}
                         >
-                            <AntDesign name="google" size={20} color="#D9E4FF" style={styles.googleIcon} />
+                            <AntDesign name="google" size={20} color="#DAE6F7" style={styles.googleIcon} />
                             <Text style={styles.googleButtonText}>Continue with Google</Text>
                         </Pressable>
                     </View>
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     loginButton: {
         borderRadius: 16,
         overflow: 'hidden',
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.4,
         shadowRadius: 16,

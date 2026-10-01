@@ -1,14 +1,25 @@
-import React from 'react';
-import { Pressable, Text, StyleSheet, ActivityIndicator, PressableProps } from 'react-native';
-import { theme } from '@design-system/theme';
+import React, { useState } from 'react';
+import { Pressable, Text, StyleSheet, ActivityIndicator, PressableProps, View } from 'react-native';
+import { useTheme } from '../Theme/ThemeProvider';
+import { FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
-interface ButtonProps extends PressableProps {
+interface ButtonProps extends Omit<PressableProps, 'children'> {
     title: string;
+    /**
+     * primary   — solid: ink on a light page, ice on a dark one (the info site's CTA)
+     * secondary — outlined, translucent fill
+     * ghost     — text only
+     */
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
     size?: 'small' | 'medium' | 'large';
     loading?: boolean;
     disabled?: boolean;
     fullWidth?: boolean;
+    /** Rendered before the label (an icon). */
+    leading?: React.ReactNode;
+    /** Rendered after the label (usually an arrow). */
+    trailing?: React.ReactNode;
 }
 
 export function Button({
@@ -18,29 +29,57 @@ export function Button({
     loading = false,
     disabled = false,
     fullWidth = false,
+    leading,
+    trailing,
     style,
     ...props
 }: ButtonProps) {
+    const { theme, mode } = useTheme();
+    const isDark = mode === 'dark';
+    const [hovered, setHovered] = useState(false);
+
+    const accent = theme.colors.primary.DEFAULT;
+    const onAccent = theme.colors.primary.onPrimary;
+    const kind = variant === 'outline' ? 'secondary' : variant;
+
+    const fill =
+        kind === 'primary'
+            ? accent
+            : kind === 'secondary'
+                ? hovered
+                    ? (isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.07)')
+                    : (isDark ? 'rgba(218, 230, 247, 0.04)' : 'rgba(255, 255, 255, 0.62)')
+                : 'transparent';
+
+    const labelColor = kind === 'primary' ? onAccent : theme.colors.text.primary;
+    const borderColor = kind === 'secondary' ? (hovered ? accent : theme.colors.surface.borderHover) : 'transparent';
+
     return (
         <Pressable
+            onHoverIn={() => setHovered(true)}
+            onHoverOut={() => setHovered(false)}
+            disabled={disabled || loading}
             style={(state) => [
                 styles.base,
-                styles[variant],
+                pixelClip(4),
                 styles[size],
+                { backgroundColor: fill, borderColor, borderWidth: kind === 'secondary' ? 1.5 : 0 },
+                kind === 'primary' && hovered && { opacity: 0.88 },
                 fullWidth && styles.fullWidth,
                 (disabled || loading) && styles.disabled,
                 state.pressed && styles.pressed,
                 typeof style === 'function' ? style(state) : style,
             ]}
-            disabled={disabled || loading}
             {...props}
         >
             {loading ? (
-                <ActivityIndicator color={variant === 'outline' ? theme.colors.primary.DEFAULT : theme.colors.white} />
+                <ActivityIndicator color={labelColor} />
             ) : (
-                <Text style={[styles.text, styles[`${variant}Text`], styles[`${size}Text`]]}>
-                    {title}
-                </Text>
+                <View style={styles.row}>
+                    {leading}
+                    <Text style={[styles.text, styles[`${size}Text`], { color: labelColor }]}>{title}</Text>
+                    {trailing}
+                </View>
             )}
         </Pressable>
     );
@@ -50,77 +89,34 @@ const styles = StyleSheet.create({
     base: {
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: theme.borderRadius.lg,
+        // @ts-ignore — web-only
+        cursor: 'pointer',
+        // @ts-ignore — web-only
+        transition: 'background-color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease',
+    },
+    row: {
         flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
     },
     fullWidth: {
         width: '100%',
     },
 
-    // Variants
-    primary: {
-        backgroundColor: theme.colors.primary.DEFAULT,
-    },
-    secondary: {
-        backgroundColor: theme.colors.secondary.DEFAULT,
-    },
-    outline: {
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        borderColor: theme.colors.primary.DEFAULT,
-    },
-    ghost: {
-        backgroundColor: 'transparent',
-    },
+    small: { paddingHorizontal: 14, minHeight: 36 },
+    medium: { paddingHorizontal: 22, minHeight: 48 },
+    large: { paddingHorizontal: 28, minHeight: 58 },
 
-    // Sizes
-    small: {
-        paddingHorizontal: theme.spacing.md,
-        paddingVertical: theme.spacing.sm,
-        minHeight: 36,
-    },
-    medium: {
-        paddingHorizontal: theme.spacing.lg,
-        paddingVertical: theme.spacing.md,
-        minHeight: 48,
-    },
-    large: {
-        paddingHorizontal: theme.spacing.xl,
-        paddingVertical: theme.spacing.lg,
-        minHeight: 56,
-    },
-
-    // Text styles
+    // The info site sets its buttons in JetBrains Mono, sentence case.
     text: {
-        fontWeight: '600',
+        fontFamily: FONT.techMedium,
+        letterSpacing: 0.4,
     },
-    primaryText: {
-        color: theme.colors.white,
-    },
-    secondaryText: {
-        color: theme.colors.white,
-    },
-    outlineText: {
-        color: theme.colors.primary.DEFAULT,
-    },
-    ghostText: {
-        color: theme.colors.primary.DEFAULT,
-    },
-    smallText: {
-        fontSize: theme.typography.sizes.sm,
-    },
-    mediumText: {
-        fontSize: theme.typography.sizes.base,
-    },
-    largeText: {
-        fontSize: theme.typography.sizes.lg,
-    },
+    smallText: { fontSize: 12 },
+    mediumText: { fontSize: 15 },
+    largeText: { fontSize: 17 },
 
-    // States
-    pressed: {
-        opacity: 0.8,
-    },
-    disabled: {
-        opacity: 0.5,
-    },
+    pressed: { opacity: 0.82, transform: [{ translateY: 1 }] },
+    disabled: { opacity: 0.45 },
 });

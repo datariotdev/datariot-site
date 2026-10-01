@@ -78,7 +78,7 @@ export const DNAMatchCard: React.FC<DNAMatchCardProps> = ({ creator, onPress }) 
                 </View>
 
                 <View style={styles.dnaDecoration}>
-                    <MaterialCommunityIcons name="dna" size={120} color="rgba(217, 228, 255, 0.1)" />
+                    <MaterialCommunityIcons name="dna" size={120} color="rgba(218, 230, 247, 0.1)" />
                 </View>
             </Pressable>
         </Animated.View>

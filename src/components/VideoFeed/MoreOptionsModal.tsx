@@ -64,17 +64,17 @@ export function MoreOptionsModal({ visible, onClose, onDeepDive }: MoreOptionsMo
                                 styles.optionCard,
                                 {
                                     backgroundColor: isDark 
-                                        ? (pressed ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255,255,255,0.03)') 
-                                        : (pressed ? 'rgba(14, 165, 233, 0.08)' : 'rgba(0,0,0,0.02)'),
-                                    borderColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.15)'
+                                        ? (pressed ? 'rgba(218, 230, 247, 0.12)' : 'rgba(255,255,255,0.03)') 
+                                        : (pressed ? 'rgba(7, 8, 12, 0.08)' : 'rgba(0,0,0,0.02)'),
+                                    borderColor: isDark ? 'rgba(218, 230, 247, 0.15)' : 'rgba(7, 8, 12, 0.15)'
                                 }
                             ]}
                         >
                             <LinearGradient
-                                colors={isDark ? ['rgba(56, 189, 248, 0.05)', 'transparent'] : ['rgba(14, 165, 233, 0.03)', 'transparent']}
+                                colors={isDark ? ['rgba(218, 230, 247, 0.05)', 'transparent'] : ['rgba(7, 8, 12, 0.03)', 'transparent']}
                                 style={StyleSheet.absoluteFillObject}
                             />
-                            <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.1)' }]}>
+                            <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.15)' : 'rgba(7, 8, 12, 0.1)' }]}>
                                 <MaterialCommunityIcons name="brain" size={24} color={theme.colors.primary.DEFAULT} />
                             </View>
                             <View style={styles.optionDetails}>

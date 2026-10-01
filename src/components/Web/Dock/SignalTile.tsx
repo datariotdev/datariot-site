@@ -5,7 +5,7 @@ import { MONO, useDockSurface } from './DockModule';
 /**
  * Stat tile: label · value · delta · 24-point trend.
  *
- * One series only. The brand's ice blue (#D9E4FF) and cyan (#7DE2FF) sit ΔE 3.0
+ * One series only. The brand's ice blue (#DAE6F7) and cyan (#B7C2D6) sit ΔE 3.0
  * apart under protanopia, so they can never be two series in the same plot — if
  * a second measure is ever added here it needs its own tile, not a second line.
  */
@@ -130,7 +130,7 @@ export const SignalTile = ({
                                     y1={0}
                                     x2={active.x}
                                     y2={VB_H}
-                                    stroke={isDark ? 'rgba(217, 228, 255, 0.35)' : 'rgba(76, 110, 245, 0.35)'}
+                                    stroke={isDark ? 'rgba(218, 230, 247, 0.35)' : 'rgba(7, 8, 12, 0.35)'}
                                     strokeWidth={1}
                                     vectorEffect="non-scaling-stroke"
                                 />

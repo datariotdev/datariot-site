@@ -6,6 +6,8 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../components/Theme/ThemeProvider';
 import { useAuth } from '../lib/supabase/hooks/useAuth';
 import { LinearGradient } from 'expo-linear-gradient';
+import { TECH_FONT } from '@design-system/fonts';
+import { pageBg } from '@design-system/surface';
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -32,10 +34,10 @@ export default function SettingsScreen() {
         );
     };
 
-    const monoFont = { fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' };
+    const monoFont = { fontFamily: TECH_FONT };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <Stack.Screen options={{ headerShown: false }} />
             <SafeAreaView style={styles.safeArea}>
                 {/* Header */}
@@ -54,7 +56,7 @@ export default function SettingsScreen() {
                         style={styles.promoteWrapper}
                     >
                         <LinearGradient
-                            colors={['#D9E4FF', '#D9E4FF', '#EC4899']}
+                            colors={['#DAE6F7', '#DAE6F7', '#9AA7BD']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
                             style={styles.promoteGradient}
@@ -158,7 +160,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         borderRadius: 16,
         overflow: 'hidden',
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.35,
         shadowRadius: 12,
