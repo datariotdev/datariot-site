@@ -12,9 +12,11 @@ interface DebateCardProps {
     onPress?: () => void;
     onDelete?: (id: string) => void;
     isOwnPost?: boolean;
+    /** Outer spacing override, for laying cards out in columns. */
+    style?: any;
 }
 
-export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardProps) {
+export function DebateCard({ item, onPress, onDelete, isOwnPost, style }: DebateCardProps) {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
     const deleteScale = useSharedValue(1);
@@ -45,6 +47,7 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                     backgroundColor: isDark ? 'rgba(218, 230, 247, 0.03)' : 'rgba(255, 255, 255, 0.6)',
                     borderColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)',
                 },
+                style,
                 pressed && { opacity: 0.8 }
             ]}
         >
@@ -226,6 +229,7 @@ const styles = StyleSheet.create({
         padding: 8,
     },
     body: {
+        flexGrow: 1,
         paddingHorizontal: 16,
         paddingBottom: 16,
     },
