@@ -14629,6 +14629,7 @@ html.navx-open .brandmark {
 
 [data-theme="dark"],
 #features,
+#catch,
 #debates,
 #ai-core,
 .foot,
@@ -14663,5 +14664,389 @@ html.navx-open .brandmark {
 @media (min-width: 769px) and (max-width: 1024px) {
     .top-nav {
         right: 140px;
+    }
+}
+
+/* ==========================================================================
+   THE CATCH — A SCROLL SCENE BETWEEN THE APP AND THE ARENA
+   The page pins for a few screens while the feed rushes past. Orvelis, drawn
+   as the logo's camera on eight pixel legs, lowers itself on a thread, takes
+   hold of the one clip with a point and reels it up into its web. The spider
+   and the web are pixel canvases (clips.js); the clip is a real video. With
+   no script, or with reduced motion, the scene is its last frame, held.
+   ========================================================================== */
+#catch {
+    --ct-dim: #9AA7BD;
+    --ct-cw: 250px;
+    position: relative;
+    isolation: isolate;
+    height: 330vh;
+    color: var(--px-ice);
+}
+
+.catch__pin {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+}
+
+.catch__feed {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+/* the noise: clips with nothing in them, a dithered blank and a tag */
+.catch__noise {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 118px;
+    aspect-ratio: 9 / 16;
+    border-radius: 12px;
+    background: repeating-conic-gradient(#191C24 0 25%, #0C0D12 0 50%) 0 0 / 4px 4px;
+    box-shadow: inset 0 0 0 1px rgba(218, 230, 247, 0.14);
+    will-change: transform, opacity;
+}
+
+.catch__noise::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    margin: -9px 0 0 -6px;
+    border-left: 14px solid rgba(218, 230, 247, 0.22);
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+}
+
+.catch__noise span {
+    position: absolute;
+    left: 8px;
+    bottom: 10px;
+    padding: 4px 6px 3px;
+    font: 700 8.5px/1 var(--font-tech);
+    letter-spacing: 0.14em;
+    color: var(--ct-dim);
+    box-shadow: inset 0 0 0 1px rgba(218, 230, 247, 0.22);
+    white-space: nowrap;
+}
+
+.catch__web,
+.catch__spider {
+    position: absolute;
+    left: 0;
+    top: 0;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    pointer-events: none;
+}
+
+.catch__web { z-index: 2; }
+.catch__spider { z-index: 4; }
+
+/* the clip: a short video in the app's frame */
+.catch__clip {
+    position: absolute;
+    z-index: 3;
+    left: calc(62% - var(--ct-cw) / 2);
+    top: 26%;
+    width: var(--ct-cw);
+    aspect-ratio: 9 / 16;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 18px;
+    background: var(--px-black);
+    box-shadow: 0 0 0 1.5px rgba(218, 230, 247, 0.4), 0 30px 70px rgba(0, 0, 0, 0.6);
+    transform-origin: 50% 0;
+    will-change: transform;
+}
+
+.catch__media,
+.catch__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.catch__clip::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(7, 8, 12, .5) 0, rgba(7, 8, 12, 0) 20%, rgba(7, 8, 12, 0) 55%, rgba(7, 8, 12, .85) 100%);
+}
+
+.catch__chip {
+    position: absolute;
+    z-index: 2;
+    left: 12px;
+    right: 12px;
+    top: 12px;
+    display: flex;
+    justify-content: space-between;
+    font: 700 10px/1 var(--font-tech);
+    letter-spacing: 0.14em;
+    color: #fff;
+}
+
+.catch__chip em {
+    font-style: normal;
+    padding: 4px 6px 3px;
+    color: var(--px-black);
+    background: var(--px-ice);
+}
+
+.catch__chip b {
+    padding-top: 4px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+
+.catch__cap {
+    position: absolute;
+    z-index: 2;
+    left: 10px;
+    right: 10px;
+    bottom: 64px;
+    margin: 0;
+    text-align: center;
+    font: 800 19px/1.25 var(--font-sans);
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, .75);
+}
+
+.catch__cap mark {
+    padding: 0 4px;
+    color: var(--px-black);
+    text-shadow: none;
+    background: var(--px-ice);
+}
+
+.catch__who {
+    position: absolute;
+    z-index: 2;
+    left: 12px;
+    bottom: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font: 800 13px/1 var(--font-sans);
+    color: #fff;
+}
+
+.catch__who i {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--px-ice);
+}
+
+.catch__who i::before {
+    content: '';
+    margin-left: 2px;
+    border-left: 7px solid var(--px-black);
+    border-top: 4.5px solid transparent;
+    border-bottom: 4.5px solid transparent;
+}
+
+.catch__prog {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, .22);
+}
+
+.catch__prog i {
+    display: block;
+    height: 100%;
+    width: 40%;
+    background: #fff;
+}
+
+/* stamped once it is caught */
+.catch__stamp {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 40%;
+    padding: 9px 12px 8px;
+    font: 400 22px/1 var(--px-font);
+    letter-spacing: 0.04em;
+    color: var(--px-black);
+    background: var(--px-ice);
+    clip-path: var(--px-notch);
+    transform: translate(-50%, 0) rotate(-6deg);
+    box-shadow: 0 0 0 3px var(--px-black);
+}
+
+#catch.is-live .catch__stamp {
+    visibility: hidden;
+}
+
+#catch.is-live.is-caught .catch__stamp {
+    visibility: visible;
+    animation: catch-stamp .32s steps(4, end);
+}
+
+@keyframes catch-stamp {
+    from { transform: translate(-50%, 0) rotate(-6deg) scale(1.8); opacity: 0; }
+    to { transform: translate(-50%, 0) rotate(-6deg) scale(1); opacity: 1; }
+}
+
+.catch__readout {
+    position: absolute;
+    z-index: 5;
+    left: calc(62% + var(--ct-cw) / 2 + 24px);
+    top: calc(26% + 24px);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px 8px;
+    font: 700 11px/1 var(--font-tech);
+    letter-spacing: 0.16em;
+    color: var(--px-black);
+    background: var(--px-ice);
+    clip-path: var(--px-notch);
+    white-space: nowrap;
+}
+
+.catch__readout i {
+    width: 8px;
+    height: 8px;
+    background: var(--px-black);
+    animation: hero-pulse 1.2s steps(2, end) infinite;
+}
+
+/* the words, one line at a time; without script the last one stands */
+.catch__copy {
+    position: absolute;
+    z-index: 5;
+    left: max(48px, 7vw);
+    bottom: 13vh;
+    width: min(500px, 34vw);
+}
+
+.catch__label {
+    display: block;
+    font: 600 12px/1 var(--font-tech);
+    letter-spacing: 0.2em;
+    color: var(--ct-dim);
+}
+
+.catch__title {
+    display: grid;
+    margin: 22px 0 0;
+    font: 400 clamp(38px, 3.9vw, 58px)/1.08 var(--px-font);
+    letter-spacing: 0.005em;
+    color: var(--px-ice);
+    text-transform: none;
+}
+
+.catch__line {
+    grid-area: 1 / 1;
+    visibility: hidden;
+}
+
+.catch__line[data-step="2"],
+#catch.is-live .catch__line.is-on {
+    visibility: visible;
+}
+
+#catch.is-live .catch__line[data-step="2"]:not(.is-on) {
+    visibility: hidden;
+}
+
+#catch.is-live .catch__line.is-on {
+    animation: catch-line .3s steps(3, end);
+}
+
+@keyframes catch-line {
+    0% { transform: translateX(-10px); clip-path: inset(0 60% 0 0); }
+    50% { transform: translateX(6px); clip-path: inset(0 20% 0 0); }
+    100% { transform: none; clip-path: inset(0 0 0 0); }
+}
+
+.catch__lede {
+    margin: 22px 0 0;
+    max-width: 40ch;
+    font: 500 17px/1.6 var(--font-sans);
+    color: var(--ct-dim);
+}
+
+@media (max-width: 760px) {
+    #catch {
+        --ct-cw: min(44vw, 200px);
+        height: 300vh;
+    }
+
+    .catch__clip {
+        left: calc(50% - var(--ct-cw) / 2);
+        top: 18%;
+    }
+
+    .catch__noise {
+        width: 84px;
+        border-radius: 9px;
+    }
+
+    .catch__readout {
+        display: none;
+    }
+
+    .catch__copy {
+        left: 20px;
+        right: 20px;
+        bottom: 5vh;
+        width: auto;
+        padding: 18px 18px 20px;
+        background: rgba(7, 8, 12, .82);
+        clip-path: var(--px-notch);
+    }
+
+    .catch__title {
+        margin-top: 14px;
+        font-size: 30px !important;
+        line-height: 1.1 !important;
+    }
+
+    .catch__lede {
+        margin-top: 12px;
+        font-size: 14px;
+    }
+
+    .catch__cap {
+        font-size: 15px;
+        bottom: 52px;
+    }
+
+    .catch__stamp {
+        font-size: 17px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #catch {
+        height: auto;
+    }
+
+    .catch__pin {
+        position: relative;
+    }
+
+    .catch__readout i,
+    #catch.is-live.is-caught .catch__stamp,
+    #catch.is-live .catch__line.is-on {
+        animation: none;
     }
 }

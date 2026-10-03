@@ -36,7 +36,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=5.2.0" />
+    <link rel="stylesheet" href="style.css?v=5.3.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -1201,6 +1201,45 @@
             </div>
         </section>
 
+        <!-- ============================================================
+             THE CATCH: between the app and the arena, a scroll scene. The
+             feed rushes past; Orvelis, drawn as the logo's camera on eight
+             pixel legs, lowers itself on a thread, grabs the one clip with
+             a point and reels it up into its web. clips.js draws the spider
+             and the web; without script it is the last frame, held.
+             ============================================================ -->
+        <section class="catch" id="catch" aria-labelledby="catchTitle">
+            <div class="px-screen px-screen--into-next" aria-hidden="true"></div>
+            <div class="catch__pin">
+                <div class="catch__feed" aria-hidden="true"></div>
+                <canvas class="catch__web" aria-hidden="true"></canvas>
+                <figure class="catch__clip" aria-hidden="true">
+                    <div class="catch__media">
+                        <video class="catch__video" muted loop playsinline preload="none" poster="assets/hero-clip.jpg">
+                            <source src="assets/hero-clip.webm" type="video/webm">
+                            <source src="assets/hero-clip.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <span class="catch__chip"><em>DEBATE</em><b>0:14</b></span>
+                    <p class="catch__cap">logic or <mark>emotion?</mark></p>
+                    <span class="catch__who"><i></i>@Fronda</span>
+                    <span class="catch__prog"><i></i></span>
+                    <span class="catch__stamp">THE POINT</span>
+                </figure>
+                <canvas class="catch__spider" aria-hidden="true"></canvas>
+                <span class="catch__readout" aria-hidden="true"><i></i><b data-catch-readout>SCANNING THE FEED</b></span>
+                <div class="catch__copy">
+                    <span class="catch__label">[ ORVELIS // THE CATCH ]</span>
+                    <h2 class="catch__title" id="catchTitle">
+                        <span class="catch__line" data-step="0">The feed <span class="hx-mark">never stops.</span></span>
+                        <span class="catch__line" data-step="1">Orvelis waits for <span class="hx-mark">the point.</span></span>
+                        <span class="catch__line" data-step="2">Then it <span class="hx-mark">reels it in.</span></span>
+                    </h2>
+                    <p class="catch__lede">Noise slips through the web. Clips with a point get caught and pulled up to you.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- 04 — THE ARENA: one question, two cameras, a vote that works -->
         <section class="section section--debates" id="debates" data-inview>
             <!-- black like the logo; the backdrop runs on under slide 05's
@@ -1664,13 +1703,13 @@
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- 3D Scripts Restored -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=5.2.0"></script>
+    <script defer src="3d-fx.js?v=5.3.0"></script>
     <!-- slide 05's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=5.2.0"></script>
+    <script defer src="pixel-field.js?v=5.3.0"></script>
 
     <!-- the feed: the hero phone and the reel in 01 -->
-    <script defer src="clips.js?v=5.2.0"></script>
-    <script defer src="script.js?v=5.2.0"></script>
+    <script defer src="clips.js?v=5.3.0"></script>
+    <script defer src="script.js?v=5.3.0"></script>
 </body>
 
 </html>
