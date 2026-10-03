@@ -392,7 +392,12 @@ function initializeScripts() {
         }
 
         if (heroContent) {
-            gsap.to(heroContent, {
+            // Desktop only. On a phone the hero is one column with the phone
+            // under the copy, and this fade left the join button half
+            // transparent and drifting while it was still the thing to tap.
+            // gsap.matchMedia undoes it when the window crosses the line.
+            const heroScrub = (typeof gsap.matchMedia === 'function') ? gsap.matchMedia() : null;
+            const scrubHero = () => gsap.to(heroContent, {
                 scrollTrigger: {
                     trigger: ".section--hero",
                     start: "top top",
@@ -404,6 +409,8 @@ function initializeScripts() {
                 y: 120,
                 opacity: 0
             });
+            if (heroScrub) heroScrub.add('(min-width: 769px)', scrubHero);
+            else if (window.innerWidth > 768) scrubHero();
         }
 
         // PREMIUM: 3D Scroll-Linked Triple Phone Showcase
@@ -635,3 +642,70 @@ window.addEventListener('load', () => {
 
     // Global Activity Map logic moved to 3d-fx.js (Three.js 3D Globe)
 });
+
+/* =======================================
+   PHONE CHROME
+   A bar behind the brand mark and MENU once the page has moved, a hairline in
+   it that fills as you read, and the pinned waitlist button. The elements
+   exist at every width but are display: none above 768px (PHONE POLISH in
+   style.css), so there is nothing to gate here. Self-contained on purpose:
+   if gsap or a CDN is blocked this still runs.
+   ======================================= */
+(function () {
+    const root = document.documentElement;
+    const progress = document.querySelector('.mbar__progress');
+    const cta = document.getElementById('mobileCta');
+
+    // -- scrolled state + reading progress, one write per frame
+    let frame = 0;
+    let max = 0;
+    const measure = () => { max = root.scrollHeight - window.innerHeight; };
+    const paint = () => {
+        frame = 0;
+        const y = window.pageYOffset || 0;
+        root.classList.toggle('is-scrolled', y > 24);
+        if (progress) {
+            const p = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0;
+            progress.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+        }
+    };
+    const queue = () => { if (!frame) frame = requestAnimationFrame(paint); };
+
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', () => { measure(); queue(); }, { passive: true });
+    // the page grows and shrinks (an FAQ opening, the pinned scene, fonts
+    // arriving); measure when it does, not on every scroll frame
+    if ('ResizeObserver' in window) new ResizeObserver(() => { measure(); queue(); }).observe(document.body);
+    measure();
+    paint();
+
+    // -- the pinned waitlist button: on once the hero's own buttons have gone
+    //    up past the top, off again wherever the page already asks for the
+    //    email or is showing something full-screen
+    if (!cta || !('IntersectionObserver' in window)) return;
+
+    const holds = new Set();
+    let heroPast = false;
+    const update = () => cta.classList.toggle('is-on', heroPast && holds.size === 0);
+
+    const heroCta = document.querySelector('#hero .hx-cta');
+    if (heroCta) {
+        new IntersectionObserver((entries) => {
+            const e = entries[entries.length - 1];
+            heroPast = !e.isIntersecting && e.boundingClientRect.top < 0;
+            update();
+        }).observe(heroCta);
+    }
+
+    // #debates has its own pair of buttons (I'm for / I'm against) in the
+    // same black-with-ice look; the pinned one would read as a third choice
+    ['#beta', '#catch', '#debates', '.foot'].forEach((sel) => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        new IntersectionObserver((entries) => {
+            const e = entries[entries.length - 1];
+            if (e.isIntersecting) holds.add(sel); else holds.delete(sel);
+            update();
+        }).observe(el);
+    });
+})();

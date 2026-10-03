@@ -36,7 +36,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=5.4.0" />
+    <link rel="stylesheet" href="style.css?v=5.5.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -338,6 +338,15 @@
 
     <!-- Left Sidebar Navigation -->
     <!-- The icon rail is gone: the MENU overlay above is the only navigation. -->
+
+    <!-- Phone chrome (display: none above 768px). A bar behind the brand mark and
+         MENU once the page has moved, with a hairline that fills as you read, and a
+         pinned waitlist button that takes over once the hero's own has scrolled away.
+         script.js drives both; see PHONE POLISH in style.css. -->
+    <div class="mbar" aria-hidden="true"><i class="mbar__progress"></i></div>
+    <a class="mcta" id="mobileCta" href="#beta">Join the waitlist
+        <svg viewBox="0 0 9 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
+    </a>
 
     <!-- Fixed brand mark; balances the MENU trigger now that the icon rail is gone. -->
     <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
@@ -1560,7 +1569,9 @@
                             <form class="beta__inline-form" id="betaForm">
                                 <div class="beta__input-wrap">
                                     <input type="email" id="betaEmail" placeholder="your@email.com" required
-                                        autocomplete="email" />
+                                        autocomplete="email" inputmode="email" enterkeyhint="send"
+                                        autocapitalize="off" autocorrect="off" spellcheck="false"
+                                        aria-label="Email address" />
                                     <button type="submit" class="beta__submit-btn">
                                         [ COUNT ME IN ]
                                     </button>
@@ -1708,7 +1719,7 @@
 
     <!-- the feed: the hero phone and the reel in 01 -->
     <script defer src="clips.js?v=5.4.0"></script>
-    <script defer src="script.js?v=5.4.0"></script>
+    <script defer src="script.js?v=5.5.0"></script>
 </body>
 
 </html>
