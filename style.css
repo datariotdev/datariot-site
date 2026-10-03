@@ -15050,3 +15050,144 @@ html.navx-open .brandmark {
         animation: none;
     }
 }
+
+/* ==========================================================================
+   PERFORMANCE — WHAT THE PAGE NO LONGER ASKS FOR ON EVERY FRAME
+   On machines that composite in software (Firefox on Linux, most laptops
+   without a blessed GPU driver) the page stuttered. Each rule below removes
+   a per-frame cost; none of them changes what a still frame looks like.
+   ========================================================================== */
+
+/* a leftover layer of four drifting orbs, fixed over the dark theme */
+.floating-orbs {
+    display: none !important;
+}
+
+/* The grain was a tile as tall as the document, blended into everything
+   under it with multiply / screen: every frame of every scroll re-blended
+   the page. It is a plain, faint tile now. */
+.page-fx > .page-fx__grain,
+[data-theme="dark"] .page-fx > .page-fx__grain {
+    mix-blend-mode: normal;
+    opacity: .028;
+}
+
+/* the edge light holds still: two drifting layers the size of the screen
+   kept the compositor busy even with nothing scrolling */
+.page-fx__ribbon {
+    animation: none !important;
+    will-change: auto;
+}
+
+/* the phone's halo: a soft gradient is already soft; the 50px blur on top
+   of it was recomputed whenever the halo pulsed */
+#hero .hero__phone-glow {
+    filter: none;
+    animation: none;
+    opacity: .85;
+}
+
+/* the entrance used to end on filter: blur(0) and hold it forever, which
+   pushed the whole phone, video and all, through a filter every frame */
+@keyframes phone-entrance {
+    from {
+        opacity: 0;
+        transform: translateY(80px) scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* the sheen and the scroll cue moved by left / top, which is layout on
+   every frame; they move by transform now, along the same path */
+#hero .hero__phone-frame::after {
+    left: -80%;
+    animation-name: hx-sheen-t;
+}
+
+@keyframes hx-sheen-t {
+    0%, 72% { transform: translateX(0) skewX(-14deg); }
+    100% { transform: translateX(400%) skewX(-14deg); }
+}
+
+.scroll-indicator__line::after {
+    top: -40%;
+    animation-name: scroll-line-t;
+}
+
+@keyframes scroll-line-t {
+    from { transform: translateY(0); }
+    to { transform: translateY(400%); }
+}
+
+/* the reel's progress bars grew by width (layout, fourteen of them); they
+   scale now */
+.reel-card__prog i {
+    width: 100%;
+    transform: scaleX(.3);
+    transform-origin: 0 50%;
+}
+
+@keyframes reel-prog {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+/* the blurred light behind the landscape clips is baked into its own small
+   image (clips.js), so the moving reel carries no live filters */
+.reel-card__amb {
+    filter: none;
+}
+
+/* nothing animates in a section that is off screen: every section reports
+   whether it is in view (script.js), and its loops wait until it is */
+[data-inview]:not(.is-inview) *,
+[data-inview]:not(.is-inview) *::before,
+[data-inview]:not(.is-inview) *::after {
+    animation-play-state: paused !important;
+}
+
+/* where the slide 05 field runs in software (pixel-field.js) it no longer
+   redraws to follow the headline; a shade behind the words does that job */
+#ai-core.is-field-lite .aic-intro {
+    position: relative;
+    isolation: isolate;
+}
+
+#ai-core.is-field-lite .aic-intro::before {
+    content: '';
+    position: absolute;
+    inset: -56px -72px;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(closest-side, rgba(7, 8, 12, 0.92), rgba(7, 8, 12, 0.7) 55%, rgba(7, 8, 12, 0));
+}
+
+/* 06's globe: a pixel canvas (clips.js), scaled up without smoothing */
+.gnet__globe {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* where the page is composited in software (clips.js sets html.gfx-lite),
+   the extras that cost a repaint on every frame go: the edge fade over the
+   moving reel, the loops inside its cards (each card holds its last frame),
+   and the fixed edge light */
+html.gfx-lite .reel {
+    -webkit-mask: none;
+    mask: none;
+}
+
+html.gfx-lite .reel-card *,
+html.gfx-lite .reel-card *::before,
+html.gfx-lite .reel-card *::after {
+    animation: none !important;
+}
+
+html.gfx-lite .page-fx > .page-fx__aurora {
+    display: none;
+}
