@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, Image, ImageSourcePropType, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
+import { TECH_FONT, FONT } from '@design-system/fonts';
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
 interface SectionHeaderProps {
     title: string;
@@ -29,7 +30,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
     const accent = theme.colors.primary.DEFAULT;
-    const rule = isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(0, 0, 0, 0.10)';
+    const rule = isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)';
 
     return (
         <View style={[styles.container, containerStyle]}>
@@ -41,10 +42,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
             <View style={styles.body}>
                 <View style={styles.titleRow}>
                     {index ? (
-                        <Text style={[styles.index, { color: accent, fontFamily: MONO }]}>{index}</Text>
+                        <Text style={[styles.index, { color: accent, fontFamily: FONT.lcd }]}>{index}</Text>
                     ) : null}
 
-                    <Text style={[styles.title, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}>
+                    <Text style={[styles.title, { color: theme.colors.text.primary, fontFamily: FONT.display }]}>
                         {title.toUpperCase()}
                     </Text>
 
@@ -89,9 +90,8 @@ const styles = StyleSheet.create({
         paddingTop: 4,
     },
     markerBar: {
-        width: 3,
-        height: 20,
-        borderRadius: 2,
+        width: 4,
+        height: 22,
     },
     body: {
         flex: 1,
@@ -102,14 +102,13 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     index: {
-        fontSize: 11,
-        letterSpacing: 1.5,
-        opacity: 0.9,
+        fontSize: 15,
+        letterSpacing: 0.5,
         flexShrink: 0,
     },
     title: {
-        fontSize: 19,
-        letterSpacing: 1.2,
+        fontSize: 24,
+        letterSpacing: 0.8,
         flexShrink: 0,
     },
     rule: {
@@ -135,7 +134,6 @@ const styles = StyleSheet.create({
     },
     showAllText: {
         fontSize: 10,
-        fontWeight: '700',
         letterSpacing: 1.6,
     },
     subtitle: {

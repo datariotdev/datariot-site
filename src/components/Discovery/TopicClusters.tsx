@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { theme } from '../../design-system/theme';
 
 interface Topic {

@@ -11,7 +11,7 @@ interface AmbientGlowProps {
 }
 
 export const AmbientGlow: React.FC<AmbientGlowProps> = ({
-    color = 'rgba(217, 228, 255, 0.2)',
+    color = 'rgba(218, 230, 247, 0.2)',
     size = 600,
     duration = 25000,
     delay = 0,

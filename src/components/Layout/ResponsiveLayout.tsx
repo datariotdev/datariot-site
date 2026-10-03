@@ -3,9 +3,9 @@ import { View, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { WebSidebar, RAIL_WIDTH } from '../Web/WebSidebar';
 import { WebRightPanel } from '../Web/WebRightPanel';
 import { GlobalWebStyles } from '../UI/GlobalWebStyles';
-import { HudBackdrop } from '../UI/HudBackdrop';
 import { usePathname } from 'expo-router';
 import { useTheme } from '../Theme/ThemeProvider';
+import { DOCK_WIDTH } from './metrics';
 
 interface ResponsiveLayoutProps {
     children: React.ReactNode;
@@ -13,7 +13,6 @@ interface ResponsiveLayoutProps {
 
 /** Below this the right dock folds away and the deck takes the full width. */
 const DOCK_BREAKPOINT = 1280;
-const DOCK_WIDTH = 340;
 
 export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     const { width } = useWindowDimensions();
@@ -23,7 +22,14 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     const isDark = mode === 'dark';
 
     if (!isWeb) {
-        return <View style={{ flex: 1 }}>{children}</View>;
+        // A phone browser still needs the web chrome (theme attribute, font
+        // synthesis off); on native the component renders nothing.
+        return (
+            <View style={{ flex: 1 }}>
+                <GlobalWebStyles />
+                {children}
+            </View>
+        );
     }
 
     // Routes that keep the nav rail
@@ -43,9 +49,8 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
 
     if (!showSidebar) {
         return (
-            <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+            <View style={styles.container}>
                 <GlobalWebStyles />
-                <HudBackdrop isDark={isDark} />
                 <View style={[styles.content, { maxWidth: '100%', paddingHorizontal: 24 }]}>
                     <View style={styles.fullWidthColumn}>{children}</View>
                 </View>
@@ -54,27 +59,28 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     }
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={styles.container}>
             <GlobalWebStyles />
-            <HudBackdrop isDark={isDark} />
 
             {/* The rail floats above everything; this column just reserves its gutter */}
             <WebSidebar />
 
             <View style={[styles.content, { paddingLeft: RAIL_WIDTH }]}>
-                {/* Deck — the main working surface */}
-                <View style={styles.deckColumn}>
+                {/* Deck — the main working surface. With the dock it simply fills
+                    what the rail and the dock leave, and the screen centres its own
+                    column inside that; without it, pages are capped and centred. */}
+                <View style={[styles.deckColumn, !showRightPanel && styles.deckCapped]}>
                     <View style={styles.deckInner}>{children}</View>
                 </View>
 
-                {/* Instrument dock */}
+                {/* Instrument dock: flush with the window's right edge */}
                 {showRightPanel && (
                     <View
                         style={[
                             styles.dockColumn,
                             {
                                 width: DOCK_WIDTH,
-                                borderLeftColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(0, 0, 0, 0.06)',
+                                borderLeftColor: isDark ? 'rgba(218, 230, 247, 0.07)' : 'rgba(0, 0, 0, 0.06)',
                             },
                         ]}
                     >
@@ -106,10 +112,12 @@ const styles = StyleSheet.create({
     },
     deckColumn: {
         flex: 1,
-        maxWidth: 1180,
         position: 'relative',
         // @ts-ignore — web-only
         overflowY: 'auto',
+    },
+    deckCapped: {
+        maxWidth: 1180,
     },
     deckInner: {
         flex: 1,
@@ -117,9 +125,6 @@ const styles = StyleSheet.create({
     },
     dockColumn: {
         borderLeftWidth: 1,
-        paddingTop: 24,
-        paddingLeft: 24,
-        paddingRight: 12,
         // @ts-ignore — web-only
         overflowY: 'auto',
     },

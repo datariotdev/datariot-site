@@ -1,7 +1,7 @@
 import React, { memo, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Dimensions, Image, Platform } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../Theme/ThemeProvider';
@@ -25,6 +25,8 @@ const formatNumber = (num: number): string => {
 };
 
 import { encodeVideoUrl } from '../../../lib/utils/url';
+import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 interface MosaicVideoProps {
     videoUrl: string;
@@ -114,7 +116,7 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                         </View>
 
                         <View style={styles.statsContainer}>
-                            <Ionicons name="heart-outline" size={10} color="#38BDF8" />
+                            <Ionicons name="heart-outline" size={10} color="#DAE6F7" />
                             <Text style={styles.statsText}>{formatNumber(video.likes)}</Text>
                         </View>
                     </View>
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
         aspectRatio: 1, // Keep it square
         marginHorizontal: GRID_SPACING / 2,
         marginBottom: GRID_SPACING,
-        borderRadius: 24,
+        ...pixelClip(6),
         overflow: 'hidden',
         // High-end shadow
         shadowColor: '#000',
@@ -157,18 +159,18 @@ const styles = StyleSheet.create({
     categoryBadge: {
         backgroundColor: 'rgba(8, 9, 13, 0.65)',
         borderWidth: 1,
-        borderColor: '#38BDF8',
+        borderColor: '#DAE6F7',
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 4,
+        ...pixelClip(2),
         zIndex: 20,
     },
     categoryText: {
-        color: '#38BDF8',
+        color: '#DAE6F7',
         fontSize: 9,
         fontWeight: '900',
         letterSpacing: 0.5,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     bottomOverlay: {
         position: 'absolute',
@@ -208,11 +210,11 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255,255,255,0.3)',
     },
     authorName: {
-        color: '#38BDF8',
+        color: '#DAE6F7',
         fontSize: 10,
         fontWeight: '700',
         flex: 1,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
         letterSpacing: 0.5,
     },
     statsContainer: {
@@ -224,11 +226,11 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '700',
         marginLeft: 2,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     activeBorder: {
         ...StyleSheet.absoluteFillObject,
         borderWidth: 2,
-        borderRadius: 24,
+        ...pixelClip(6),
     }
 });

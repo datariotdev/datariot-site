@@ -10,7 +10,7 @@ import { SideMenu } from '../../components/Navigation/SideMenu';
 import { useIsFocused } from '@react-navigation/native';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { CommentsModal } from '../../components/VideoFeed/CommentsModal';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { CategoryPills } from '../../components/Discovery/CategoryPills';
 import { VIDEO_CATEGORIES } from '../../lib/constants/categories';
 import { PulseFeed } from '../../components/VideoFeed/PulseFeed/PulseFeed';
@@ -18,7 +18,12 @@ import { MosaicFeed } from '../../components/VideoFeed/MosaicFeed/MosaicFeed';
 import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideoModal';
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
-import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
+import { CommandBar, HudButton, CommandTab } from '../../components/Web/CommandBar';
+import { deckColumn } from '../../components/Layout/metrics';
+import { TECH_FONT } from '@design-system/fonts';
+import { pageBg } from '@design-system/surface';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -26,13 +31,6 @@ const TABS: CommandTab[] = [
     { key: 'ai', label: 'ARENA', hint: 'BETA' },
     { key: 'trending', label: 'FEED' },
     { key: 'following', label: 'CIRCLE' },
-];
-
-const TICKER_ITEMS = [
-    'ARENA OPEN — CHALLENGE ANY USER TO A LIVE DEBATE',
-    'WEEKLY MISSION: SLOW MOTION — 5,000 XP POOL',
-    'NEW: DNA MATCHING NOW RANKS YOUR FEED',
-    '1,248 PILOTS ENROLLED THIS CYCLE',
 ];
 
 const HomeScreen = () => {
@@ -198,7 +196,6 @@ const HomeScreen = () => {
                     tabs={TABS}
                     activeKey={activeTab}
                     onTabPress={(key) => setActiveTab(key as FeedType)}
-                    readout={['SIGNAL NOMINAL', '2.4K ONLINE', 'LAT 12MS']}
                     actions={
                         <>
                             <HudButton
@@ -222,22 +219,16 @@ const HomeScreen = () => {
                     }
                 />
 
-                <LiveTicker items={TICKER_ITEMS} />
-
                 {activeTab === 'trending' && (
-                    <View
-                        style={[
-                            styles.filterRow,
-                            {
-                                backgroundColor: isDark ? '#0A0B11' : '#FBFBFD',
-                                borderBottomColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(0,0,0,0.06)',
-                            },
-                        ]}
-                    >
+                    // Same column as the bar and the feed, no band of its own: the
+                    // chips sit on the page like everything else.
+                    <View style={styles.filterRow}>
                         <CategoryPills
                             categories={['All', ...VIDEO_CATEGORIES]}
                             activeCategory={activeCategory || 'All'}
                             onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
+                            showLabel={false}
+                            inset={0}
                         />
                     </View>
                 )}
@@ -251,15 +242,28 @@ const HomeScreen = () => {
 
     /* ---------------- Mobile: original floating chrome ---------------- */
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
             <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+                {/* On web the feed scrolls under this chrome as ordinary page content, so the
+                    buttons and filter chips get a fade to read against instead of floating over text. */}
+                {Platform.OS === 'web' && (
+                    <LinearGradient
+                        colors={isDark
+                            ? ['rgba(8, 9, 13, 0.97)', 'rgba(8, 9, 13, 0.9)', 'rgba(8, 9, 13, 0)']
+                            : ['rgba(241, 245, 252, 0.98)', 'rgba(241, 245, 252, 0.92)', 'rgba(241, 245, 252, 0)']}
+                        locations={[0, 0.82, 1]}
+                        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: activeTab === 'trending' ? -74 : -26 }}
+                        pointerEvents="none"
+                    />
+                )}
                 <View style={styles.topNavContent} pointerEvents="box-none">
                     <View style={styles.leftActionsContainer}>
                         <Pressable
                             style={[
                                 styles.roundButton,
+                                pixelClip(5),
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
@@ -278,6 +282,7 @@ const HomeScreen = () => {
                             tint={isDark ? 'dark' : 'light'}
                             style={[
                                 styles.pillBlur,
+                                pixelClip(5),
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : 'rgba(255, 255, 255, 0.8)',
                                     borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
@@ -301,6 +306,7 @@ const HomeScreen = () => {
                         <Pressable
                             style={[
                                 styles.roundButton,
+                                pixelClip(5),
                                 {
                                     backgroundColor: viewMode === 'mosaic'
                                         ? theme.colors.primary.DEFAULT
@@ -322,6 +328,7 @@ const HomeScreen = () => {
                         <Pressable
                             style={[
                                 styles.roundButton,
+                                pixelClip(5),
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
@@ -358,16 +365,16 @@ const HomeScreen = () => {
     );
 };
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
     filterRow: {
-        height: 46,
+        ...deckColumn,
+        height: 56,
         justifyContent: 'center',
-        borderBottomWidth: 1,
         zIndex: 18,
     },
     deckBody: {
@@ -390,7 +397,6 @@ const styles = StyleSheet.create({
     roundButton: {
         width: 44,
         height: 44,
-        borderRadius: 22,
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
@@ -420,8 +426,7 @@ const styles = StyleSheet.create({
     pillBlur: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 30,
-        padding: 4,
+        padding: 3,
         overflow: 'hidden',
         borderWidth: 1,
         alignSelf: 'stretch',
@@ -432,20 +437,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 4,
-        borderRadius: 18,
         overflow: 'hidden',
     },
-    tabIndicatorBackground: {
-        position: 'absolute',
-        top: 2,
-        bottom: 2,
-        left: 2,
-        right: 2,
-        borderRadius: 16,
-    },
     tabText: {
-        fontSize: 10,
-        fontWeight: '700',
+        // three mono labels have to share ~150px on a phone
+        fontSize: 9,
         letterSpacing: 0.5,
     },
     loadingContainer: {
@@ -463,7 +459,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 360,
         padding: 32,
-        borderRadius: 20,
+        ...pixelClip(5),
         alignItems: 'center',
         borderWidth: 1,
         overflow: 'hidden',
@@ -471,7 +467,7 @@ const styles = StyleSheet.create({
     emptyIconContainer: {
         width: 64,
         height: 64,
-        borderRadius: 16,
+        ...pixelClip(4),
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 22,
@@ -492,7 +488,7 @@ const styles = StyleSheet.create({
     retryButton: {
         paddingHorizontal: 26,
         paddingVertical: 11,
-        borderRadius: 8,
+        ...pixelClip(2),
         borderWidth: 1,
     },
     retryText: {
@@ -511,32 +507,19 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
             onHoverOut={() => setIsHovered(false)}
             style={[
                 styles.tabButton,
+                pixelClip(4),
+                isActive && { backgroundColor: theme.colors.primary.DEFAULT },
                 isHovered && !isActive && {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                    backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)',
                 },
             ]}
         >
-            {isActive && (
-                <View style={[StyleSheet.absoluteFill, { padding: 2 }]}>
-                    <LinearGradient
-                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.tabIndicatorBackground}
-                    />
-                </View>
-            )}
             <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
                 style={[
                     styles.tabText,
-                    { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium },
-                    isActive && {
-                        color: isDark ? '#000000' : '#FFFFFF',
-                        fontFamily: theme.typography.fontFamilies.bold,
-                        fontWeight: '800',
-                    },
+                    { color: isActive ? theme.colors.primary.onPrimary : theme.colors.text.secondary, fontFamily: FONT.tech },
                 ]}
             >
                 {label}

@@ -9,7 +9,7 @@ import Animated, {
     useSharedValue
 } from 'react-native-reanimated';
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../Theme/ThemeProvider';
@@ -35,6 +35,7 @@ interface PulseVideoProps {
 }
 
 import { encodeVideoUrl } from '../../../lib/utils/url';
+import { pixelClip } from '@design-system/pixel';
 
 const PulseVideo = ({ videoUrl, isActive, isMuted }: PulseVideoProps) => {
     const player = useVideoPlayer(encodeVideoUrl(videoUrl), (player) => {
@@ -115,7 +116,7 @@ export const PulseItem = memo(({
                 {/* Neon Glow Border for Focus */}
                 {isFocus && (
                     <LinearGradient
-                        colors={[theme.colors.primary.DEFAULT, '#D9E4FF']}
+                        colors={[theme.colors.primary.DEFAULT, '#DAE6F7']}
                         style={styles.neonBorder}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
@@ -192,7 +193,7 @@ PulseItem.displayName = 'PulseItem';
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        borderRadius: 30,
+        ...pixelClip(6),
         overflow: 'visible',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 10 },
@@ -206,12 +207,12 @@ const styles = StyleSheet.create({
         left: -2,
         right: -2,
         bottom: -2,
-        borderRadius: 32,
+        ...pixelClip(6),
         opacity: 0.8,
     },
     contentContainer: {
         flex: 1,
-        borderRadius: 30,
+        ...pixelClip(6),
         overflow: 'hidden',
         backgroundColor: '#000',
     },
@@ -236,12 +237,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'rgba(255,255,255,0.1)',
         padding: 4,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     avatar: {
         width: 24,
         height: 24,
-        borderRadius: 12,
+        ...pixelClip(3),
         marginRight: 8,
     },
     authorName: {
@@ -285,7 +286,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.4)',
         width: 28,
         height: 28,
-        borderRadius: 14,
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
     }

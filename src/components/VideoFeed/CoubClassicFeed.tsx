@@ -7,6 +7,7 @@ import { DiscoveryCarousel } from '../Discovery/DiscoveryCarousel';
 import { FeaturedHero } from '../Discovery/FeaturedHero';
 import { DeckGrid } from './DeckFeed/DeckGrid';
 import { Video } from '../../lib/supabase/hooks/useVideos';
+import { pageBg } from '@design-system/surface';
 
 interface CoubClassicFeedProps {
     videos: Video[];
@@ -118,10 +119,10 @@ export function CoubClassicFeed({
                 <>
                     <SectionHeader
                         title="Live Arena"
-                        subtitle="Debates running right now"
+                        subtitle={isDesktopWeb ? undefined : 'Debates running right now'}
                         index="01"
-                        meta={`${featuredVideos.length} OPEN`}
-                        containerStyle={isDesktopWeb ? { paddingHorizontal: 0, paddingTop: 20 } : undefined}
+                        meta={`${isDesktopWeb ? Math.min(3, featuredVideos.length) : featuredVideos.length} OPEN`}
+                        containerStyle={isDesktopWeb ? { paddingHorizontal: 0, paddingTop: 12, paddingBottom: 20 } : undefined}
                     />
                     <FeaturedHero featuredVideos={featuredVideos} onVideoPress={onSelect} />
                 </>
@@ -129,19 +130,19 @@ export function CoubClassicFeed({
 
             <SectionHeader
                 title="Datariot Originals"
-                subtitle="Curated high-signal video"
+                subtitle={isDesktopWeb ? undefined : 'Curated high-signal video'}
                 index="02"
-                meta={`${synergyVideos.length} PICKS`}
-                containerStyle={isDesktopWeb ? { paddingHorizontal: 0 } : undefined}
+                meta={isDesktopWeb ? 'CURATED' : `${synergyVideos.length} PICKS`}
+                containerStyle={isDesktopWeb ? { paddingHorizontal: 0, paddingTop: 48, paddingBottom: 20 } : undefined}
             />
             <DiscoveryCarousel videos={synergyVideos} onSelect={onSelect} />
 
             <SectionHeader
                 title="The Deck"
-                subtitle="Everything moving across the platform"
+                subtitle={isDesktopWeb ? undefined : 'Everything moving across the platform'}
                 index="03"
                 meta={`${scrollVideos.length} SIGNALS`}
-                containerStyle={isDesktopWeb ? { paddingHorizontal: 0 } : undefined}
+                containerStyle={isDesktopWeb ? { paddingHorizontal: 0, paddingTop: 48, paddingBottom: 20 } : undefined}
             />
         </View>
     );
@@ -181,7 +182,7 @@ export function CoubClassicFeed({
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <FlatList
                 ref={flatListRef}
                 data={scrollVideos}

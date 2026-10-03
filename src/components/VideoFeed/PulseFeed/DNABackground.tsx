@@ -89,7 +89,7 @@ export const DNABackground = () => {
                 <DNANode
                     key={`s2-${i}`}
                     index={i}
-                    color={theme.colors.secondary?.DEFAULT || '#D9E4FF'}
+                    color={theme.colors.secondary?.DEFAULT || '#DAE6F7'}
                     delay={Math.PI} // Opposite side
                 />
             ))}

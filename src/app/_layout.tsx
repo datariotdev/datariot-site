@@ -1,51 +1,39 @@
 import React, { useEffect } from 'react';
+import '@design-system/defaultFont';
 import { Stack } from 'expo-router';
+import { ThemeProvider as NavThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider } from '../components/Theme/ThemeProvider';
+import { ThemeProvider, useTheme } from '../components/Theme/ThemeProvider';
+import { HudBackdrop } from '../components/UI/HudBackdrop';
 import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
 import {
-    useFonts,
-    Oxanium_400Regular,
-    Oxanium_500Medium,
-    Oxanium_600SemiBold,
-    Oxanium_700Bold
-} from '@expo-google-fonts/oxanium';
+    PixelifySans_400Regular,
+    PixelifySans_500Medium,
+    PixelifySans_700Bold,
+} from '@expo-google-fonts/pixelify-sans';
 import {
-    Orbitron_400Regular,
-    Orbitron_500Medium,
-    Orbitron_600SemiBold,
-    Orbitron_700Bold,
-    Orbitron_900Black
-} from '@expo-google-fonts/orbitron';
+    JetBrainsMono_400Regular,
+    JetBrainsMono_500Medium,
+    JetBrainsMono_600SemiBold,
+    JetBrainsMono_700Bold,
+} from '@expo-google-fonts/jetbrains-mono';
 import {
-    Audiowide_400Regular
-} from '@expo-google-fonts/audiowide';
+    Doto_400Regular,
+    Doto_700Bold,
+    Doto_900Black,
+} from '@expo-google-fonts/doto';
 import {
-    Syncopate_400Regular,
-    Syncopate_700Bold
-} from '@expo-google-fonts/syncopate';
-import {
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold
-} from '@expo-google-fonts/inter';
-import {
-    Outfit_300Light,
-    Outfit_400Regular,
-    Outfit_500Medium,
-    Outfit_600SemiBold,
-    Outfit_700Bold,
-    Outfit_800ExtraBold,
-    Outfit_900Black
-} from '@expo-google-fonts/outfit';
-import {
-    SpaceGrotesk_400Regular,
-    SpaceGrotesk_500Medium,
-    SpaceGrotesk_700Bold
-} from '@expo-google-fonts/space-grotesk';
+    Manrope_300Light,
+    Manrope_400Regular,
+    Manrope_500Medium,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+    Manrope_800ExtraBold,
+} from '@expo-google-fonts/manrope';
 
 import { Feather, Ionicons, MaterialCommunityIcons, Entypo, SimpleLineIcons, AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 
@@ -54,33 +42,49 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 
 SplashScreen.preventAutoHideAsync();
 
+// The stack's content background used to be a fixed #08090D, which flashed
+// black between screens in light mode.
+const ThemedStack = () => {
+    const { theme, mode } = useTheme();
+    // The navigator paints its own scene colour (rgb(242,242,242) by default) over
+    // anything behind it. Transparent, so the aurora under the Stack shows through.
+    const base = mode === 'dark' ? DarkTheme : DefaultTheme;
+    const navTheme = { ...base, colors: { ...base.colors, background: 'transparent', card: 'transparent' } };
+    return (
+        // One surface under every route: the aurora lives here, the screens
+        // are transparent, and the base colour is only what shows on native
+        // before the wash. Login, publish and chat get the same page as the feed.
+        <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
+            <HudBackdrop isDark={mode === 'dark'} />
+            <NavThemeProvider value={navTheme}>
+                <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="auth" options={{ headerShown: false }} />
+                    <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
+                </Stack>
+            </NavThemeProvider>
+        </View>
+    );
+};
+
 export default function RootLayout() {
     const [fontsLoaded, fontError] = useFonts({
-        Oxanium_400Regular,
-        Oxanium_500Medium,
-        Oxanium_600SemiBold,
-        Oxanium_700Bold,
-        Orbitron_400Regular,
-        Orbitron_500Medium,
-        Orbitron_600SemiBold,
-        Orbitron_700Bold,
-        Orbitron_900Black,
-        Audiowide_400Regular,
-        Syncopate_400Regular,
-        Syncopate_700Bold,
-        Inter_400Regular,
-        Inter_500Medium,
-        Inter_600SemiBold,
-        Outfit_300Light,
-        Outfit_400Regular,
-        Outfit_500Medium,
-        Outfit_600SemiBold,
-        Outfit_700Bold,
-        Outfit_800ExtraBold,
-        Outfit_900Black,
-        SpaceGrotesk_400Regular,
-        SpaceGrotesk_500Medium,
-        SpaceGrotesk_700Bold,
+        PixelifySans_400Regular,
+        PixelifySans_500Medium,
+        PixelifySans_700Bold,
+        JetBrainsMono_400Regular,
+        JetBrainsMono_500Medium,
+        JetBrainsMono_600SemiBold,
+        JetBrainsMono_700Bold,
+        Doto_400Regular,
+        Doto_700Bold,
+        Doto_900Black,
+        Manrope_300Light,
+        Manrope_400Regular,
+        Manrope_500Medium,
+        Manrope_600SemiBold,
+        Manrope_700Bold,
+        Manrope_800ExtraBold,
         ...Feather.font,
         ...Ionicons.font,
         ...MaterialCommunityIcons.font,
@@ -105,11 +109,7 @@ export default function RootLayout() {
         <ThemeProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <SafeAreaProvider>
-                    <Stack screenOptions={{ contentStyle: { backgroundColor: '#08090D' } }}>
-                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                        <Stack.Screen name="auth" options={{ headerShown: false }} />
-                        <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
-                    </Stack>
+                    <ThemedStack />
                 </SafeAreaProvider>
             </GestureHandlerRootView>
             {Platform.OS === 'web' && (

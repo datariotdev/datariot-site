@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions, ScrollView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '@design-system/theme';
 import { encodeVideoUrl } from '@lib/utils/url';
 import { Video, ResizeMode } from 'expo-av';
-import { EdgeFade } from './EdgeFade';
+import { fadeRight, pixelClip } from '@design-system/pixel';
+import { TECH_FONT } from '@design-system/fonts';
 
 interface FeaturedVideo {
     id: string;
@@ -21,16 +22,25 @@ interface FeaturedVideo {
     logicStats?: { forScore: number; againstScore: number; forPercentage: number };
 }
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
-/** Stable per-debate hue so a card without artwork still has an identity. */
+/** The AGAINST side of the tally: the same ice, drawn in pixels — as the logo's screen does. */
+const DITHER: any = Platform.OS === 'web'
+    ? { backgroundColor: 'transparent', backgroundImage: 'repeating-conic-gradient(#DAE6F7 0 25%, transparent 0 50%)', backgroundSize: '4px 4px' }
+    : { backgroundColor: '#5F6B82' };
+
+/** Stable per-debate wash so a card without artwork still has an identity.
+ *  Graphite steps between the logo's black and a lifted slate — never a hue. */
+const WASHES: [string, string][] = [
+    ['#1C2130', '#0C0E15'],
+    ['#181C27', '#090B11'],
+    ['#222838', '#0E1118'],
+    ['#151823', '#07090E'],
+];
 const washFor = (id: string) => {
     let h = 0;
     for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
-    return {
-        hue: 196 + (h % 48),            // cyan through to the brand blue
-        light: 22 + ((h >> 5) % 12),    // keeps neighbouring cards from matching
-    };
+    return WASHES[h % WASHES.length];
 };
 
 interface FeaturedHeroProps {
@@ -62,9 +72,13 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
     // width now depends on whether the instrument dock is mounted.
     const [measuredWidth, setMeasuredWidth] = useState(0);
     const containerWidth = isWeb ? (measuredWidth || screenWidth - 460) : screenWidth;
-    const cardWidth = isWeb ? Math.max(200, (containerWidth - 32) / 3) : containerWidth;
+    // On desktop the row is three cards that exactly fill the column: no
+    // scroller, nothing running off the right edge.
+    const items = isWeb ? featuredVideos.slice(0, 3) : featuredVideos;
+    const GAP = 16;
+    const cardWidth = isWeb ? Math.max(200, (containerWidth - GAP * (items.length - 1)) / items.length) : containerWidth;
     const cardHeight = isWeb ? cardWidth * 0.78 : cardWidth;
-    const scrollInterval = isWeb ? cardWidth + 16 : cardWidth;
+    const scrollInterval = isWeb ? cardWidth + GAP : cardWidth;
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -77,7 +91,7 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
         const titleSize = isWeb ? 15 : 24;
         const titleLineHeight = isWeb ? 19 : 30;
 
-        const { hue, light } = washFor(item.id);
+        const [washTop, washBottom] = washFor(item.id);
         const tally = item.logicStats;
         const pro = tally ? Math.round(tally.forPercentage) : null;
 
@@ -91,8 +105,8 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
                     {
                         width: cardWidth,
                         height: cardHeight,
-                        marginRight: isWeb ? 16 : 0,
-                        borderColor: isHovered ? `hsla(${hue}, 90%, 72%, 0.55)` : 'rgba(255,255,255,0.09)',
+                        marginRight: isWeb && index < items.length - 1 ? GAP : 0,
+                        borderColor: isHovered ? 'rgba(218, 230, 247, 0.6)' : 'rgba(218, 230, 247, 0.14)',
                         transform: [{ translateY: isHovered && isWeb ? -4 : 0 }],
                     }
                 ]}
@@ -101,14 +115,14 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
                     {/* Identity wash. Most debates have no artwork yet, and a
                         bare <Image> left the card a black rectangle. */}
                     <LinearGradient
-                        colors={[`hsl(${hue}, 64%, ${light + 8}%)`, `hsl(${hue + 18}, 56%, ${light - 8}%)`, '#05070C']}
+                        colors={[washTop, washBottom, '#05070C']}
                         locations={[0, 0.55, 1]}
                         start={{ x: 0.1, y: 0 }}
                         end={{ x: 0.9, y: 1 }}
                         style={StyleSheet.absoluteFill}
                     />
                     <LinearGradient
-                        colors={[`hsla(${hue}, 95%, 70%, 0.22)`, 'transparent']}
+                        colors={['rgba(218, 230, 247, 0.12)', 'transparent']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 0.7, y: 0.7 }}
                         style={StyleSheet.absoluteFill}
@@ -137,7 +151,7 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
 
                         {/* instrument bar */}
                         <View style={styles.topBar}>
-                            <View style={styles.liveTag}>
+                            <View style={[styles.liveTag, pixelClip(2)]}>
                                 <View style={[styles.liveDot, { backgroundColor: '#F43F5E' }]} />
                                 <Text style={styles.liveText}>LIVE_DEBATE</Text>
                             </View>
@@ -160,12 +174,12 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
                                 {pro !== null ? (
                                     <View style={styles.tally}>
                                         <View style={styles.tallyLabels}>
-                                            <Text style={[styles.tallySide, { color: '#7DD3FC' }]}>PRO {pro}%</Text>
-                                            <Text style={[styles.tallySide, { color: '#C4B5FD' }]}>{100 - pro}% CON</Text>
+                                            <Text style={[styles.tallySide, { color: '#DAE6F7' }]}>PRO {pro}%</Text>
+                                            <Text style={[styles.tallySide, { color: '#9AA7BD' }]}>{100 - pro}% CON</Text>
                                         </View>
                                         <View style={styles.tallyTrack}>
-                                            <View style={[styles.tallyFill, { width: `${pro}%`, backgroundColor: '#38BDF8' }]} />
-                                            <View style={[styles.tallyFill, { width: `${100 - pro}%`, backgroundColor: '#8B7BF0' }]} />
+                                            <View style={[styles.tallyFill, { width: `${pro}%`, backgroundColor: '#DAE6F7' }]} />
+                                            <View style={[styles.tallyFill, { width: `${100 - pro}%` }, DITHER]} />
                                         </View>
                                         <Text style={styles.tallyMeta}>{formatNumber(item.likes)} VOTES CAST</Text>
                                     </View>
@@ -183,7 +197,7 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
                         <View style={[styles.tick, styles.tickBR]} />
 
                         {isWeb && isHovered && (
-                            <View style={styles.enterChip}>
+                            <View style={[styles.enterChip, pixelClip(2)]}>
                                 <Text style={styles.enterText}>[ ENTER ]</Text>
                             </View>
                         )}
@@ -209,25 +223,33 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
                 if (w && Math.abs(w - measuredWidth) > 1) setMeasuredWidth(w);
             }}
         >
-            <ScrollView
-                horizontal
-                pagingEnabled={!isWeb}
-                showsHorizontalScrollIndicator={false}
-                nestedScrollEnabled={true}
-                onMomentumScrollEnd={handleScrollEnd}
-                scrollEventThrottle={16}
-                snapToInterval={scrollInterval}
-                snapToAlignment="start"
-                decelerationRate="fast"
-            >
-                {featuredVideos.map((item, index) => (
-                    <React.Fragment key={`${item.id}-${index}`}>
-                        {renderFeaturedItem(item, index)}
-                    </React.Fragment>
-                ))}
-            </ScrollView>
-
-            {isWeb && <EdgeFade />}
+            {isWeb ? (
+                <View style={{ flexDirection: 'row' }}>
+                    {items.map((item, index) => (
+                        <React.Fragment key={`${item.id}-${index}`}>
+                            {renderFeaturedItem(item, index)}
+                        </React.Fragment>
+                    ))}
+                </View>
+            ) : (
+                <ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    nestedScrollEnabled={true}
+                    onMomentumScrollEnd={handleScrollEnd}
+                    scrollEventThrottle={16}
+                    snapToInterval={scrollInterval}
+                    snapToAlignment="start"
+                    decelerationRate="fast"
+                >
+                    {items.map((item, index) => (
+                        <React.Fragment key={`${item.id}-${index}`}>
+                            {renderFeaturedItem(item, index)}
+                        </React.Fragment>
+                    ))}
+                </ScrollView>
+            )}
 
             {/* Pagination Dots - Square */}
             {!isWeb && featuredVideos.length > 1 && (
@@ -261,6 +283,7 @@ const styles = StyleSheet.create({
     heroContainer: {
         height: 400, // Slightly shorter
         borderWidth: 1,
+        borderRadius: 8,
         overflow: 'hidden',
         // @ts-ignore — web only
         transition: 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease',
@@ -315,7 +338,7 @@ const styles = StyleSheet.create({
         fontSize: 8,
         fontWeight: '600',
         letterSpacing: 1.4,
-        color: 'rgba(226, 238, 255, 0.72)',
+        color: 'rgba(238, 242, 250, 0.72)',
         fontFamily: MONO,
     },
     tally: {
@@ -335,14 +358,14 @@ const styles = StyleSheet.create({
     tallyTrack: {
         flexDirection: 'row',
         height: 5,
-        backgroundColor: 'rgba(226, 238, 255, 0.14)',
+        backgroundColor: 'rgba(238, 242, 250, 0.14)',
         overflow: 'hidden',
     },
     tallyTrackEmpty: {
         height: 5,
         borderWidth: 1,
         borderStyle: 'dashed',
-        borderColor: 'rgba(226, 238, 255, 0.24)',
+        borderColor: 'rgba(238, 242, 250, 0.24)',
     },
     tallyFill: {
         height: '100%',
@@ -350,14 +373,14 @@ const styles = StyleSheet.create({
     tallyMeta: {
         fontSize: 8,
         letterSpacing: 1.3,
-        color: 'rgba(226, 238, 255, 0.55)',
+        color: 'rgba(238, 242, 250, 0.55)',
         fontFamily: MONO,
     },
     tick: {
         position: 'absolute',
         width: 12,
         height: 12,
-        borderColor: 'rgba(226, 238, 255, 0.5)',
+        borderColor: 'rgba(238, 242, 250, 0.5)',
     },
     tickTL: {
         top: 6,
@@ -377,15 +400,15 @@ const styles = StyleSheet.create({
         right: 12,
         paddingHorizontal: 9,
         paddingVertical: 4,
-        backgroundColor: 'rgba(56, 189, 248, 0.16)',
+        backgroundColor: 'rgba(218, 230, 247, 0.16)',
         borderWidth: 1,
-        borderColor: 'rgba(56, 189, 248, 0.6)',
+        borderColor: 'rgba(218, 230, 247, 0.6)',
     },
     enterText: {
         fontSize: 8,
         fontWeight: '700',
         letterSpacing: 1.6,
-        color: '#BAE6FD',
+        color: '#DAE6F7',
         fontFamily: MONO,
     },
     infoCard: {
@@ -407,9 +430,9 @@ const styles = StyleSheet.create({
     authorName: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#38BDF8',
+        color: '#DAE6F7',
         letterSpacing: 0.5,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     title: {
         fontSize: 24,
@@ -434,13 +457,13 @@ const styles = StyleSheet.create({
         color: 'rgba(255,255,255,0.6)',
         fontWeight: '600',
         letterSpacing: 0.5,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     statText: {
         fontSize: 12,
         color: '#FFF',
         fontWeight: '700',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     trendingBadge: {
         position: 'absolute',
@@ -448,7 +471,7 @@ const styles = StyleSheet.create({
         left: 20,
         backgroundColor: 'rgba(8, 9, 13, 0.65)',
         borderWidth: 1,
-        borderColor: '#38BDF8',
+        borderColor: '#DAE6F7',
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 4,
@@ -457,9 +480,9 @@ const styles = StyleSheet.create({
     badgeText: {
         fontSize: 9,
         fontWeight: '900',
-        color: '#38BDF8',
+        color: '#DAE6F7',
         letterSpacing: 1,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     pagination: {
         flexDirection: 'row',
@@ -485,18 +508,18 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 30,
         borderWidth: 2,
-        borderColor: '#D9E4FF',
+        borderColor: '#DAE6F7',
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
-        backgroundColor: 'rgba(217, 228, 255, 0.1)',
-        shadowColor: '#D9E4FF',
+        backgroundColor: 'rgba(218, 230, 247, 0.1)',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.8,
         shadowRadius: 20,
     },
     vsText: {
-        color: '#D9E4FF',
+        color: '#DAE6F7',
         fontSize: 20,
         fontWeight: '900',
         letterSpacing: 1,

@@ -4,10 +4,12 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useMessages } from '../../lib/supabase/hooks/useMessages';
 import { supabase } from '../../lib/supabase/client';
 import { useTheme } from '../../components/Theme/ThemeProvider';
+import { TECH_FONT, FONT } from '@design-system/fonts';
+import { pageBg } from '@design-system/surface';
+import { pixelClip } from '@design-system/pixel';
 
 export default function ChatScreen() {
     const { id, name } = useLocalSearchParams();
@@ -69,17 +71,13 @@ export default function ChatScreen() {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <LinearGradient
-                colors={isDark ? ['#000000', '#000000'] : ['#FFFFFF', '#FFFFFF']}
-                style={StyleSheet.absoluteFill}
-            />
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <Stack.Screen options={{ headerShown: false }} />
             <SafeAreaView style={styles.safeArea} edges={['top']}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-                    style={{ flex: 1 }}
+                    style={styles.column}
                 >
                     {/* Header */}
                     <View style={[styles.header, { borderBottomWidth: 0 }]}>
@@ -87,13 +85,13 @@ export default function ChatScreen() {
                             <Ionicons name="chevron-back" size={24} color={theme.colors.primary.light} />
                         </TouchableOpacity>
                         <View style={styles.headerInfo}>
-                            <Text style={[styles.headerTitle, { color: theme.colors.primary.light }]}>{name || 'Chat'}</Text>
-                            <Text style={[styles.headerStatus, { color: theme.colors.primary.DEFAULT }]}>SYSTEM.ONLINE</Text>
+                            <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>{name || 'Chat'}</Text>
+                            <Text style={[styles.headerStatus, { color: theme.colors.text.muted }]}>[ SYSTEM.ONLINE ]</Text>
                         </View>
-                        <TouchableOpacity style={[styles.headerAction, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.1)' : 'rgba(217, 228, 255, 0.05)' }]}>
+                        <TouchableOpacity style={[styles.headerAction, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.1)' : 'rgba(218, 230, 247, 0.05)' }]}>
                             <Ionicons name="call" size={22} color={theme.colors.primary.light} />
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.headerAction, { marginLeft: 8, backgroundColor: isDark ? 'rgba(217, 228, 255, 0.1)' : 'rgba(217, 228, 255, 0.05)' }]}>
+                        <TouchableOpacity style={[styles.headerAction, { marginLeft: 8, backgroundColor: isDark ? 'rgba(218, 230, 247, 0.1)' : 'rgba(218, 230, 247, 0.05)' }]}>
                             <Ionicons name="videocam" size={24} color={theme.colors.primary.light} />
                         </TouchableOpacity>
                     </View>
@@ -101,13 +99,13 @@ export default function ChatScreen() {
                     {/* Messages */}
                     {error ? (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-                            <Ionicons name="alert-circle-outline" size={48} color="#FFFFFF" />
-                            <Text style={{ color: '#FFF', textAlign: 'center', marginTop: 12, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }}>{error}</Text>
+                            <Ionicons name="alert-circle-outline" size={48} color={theme.colors.text.primary} />
+                            <Text style={{ color: theme.colors.text.primary, textAlign: 'center', marginTop: 12, fontFamily: TECH_FONT }}>{error}</Text>
                             <TouchableOpacity
                                 onPress={() => router.replace('/inbox')}
                                 style={{ marginTop: 20, padding: 12, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, borderWidth: 1, borderColor: theme.colors.primary.light }}
                             >
-                                <Text style={{ color: theme.colors.primary.light, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }}>[ RETURN_TO_SYSTEM ]</Text>
+                                <Text style={{ color: theme.colors.primary.light, fontFamily: TECH_FONT }}>[ RETURN_TO_SYSTEM ]</Text>
                             </TouchableOpacity>
                         </View>
                     ) : (
@@ -132,11 +130,11 @@ export default function ChatScreen() {
                                         </View>
                                     ) : (
                                         item.sender === 'me' ? (
-                                            <View style={[styles.myBubbleContent, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.15)' : 'rgba(217, 228, 255, 0.1)', borderColor: theme.colors.primary.light }]}>
+                                            <View style={[styles.myBubbleContent, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.07)', borderColor: isDark ? 'rgba(218, 230, 247, 0.55)' : 'rgba(7, 8, 12, 0.5)' }]}>
                                                 <Text style={[styles.messageTextMy, { color: theme.colors.primary.light }]}>{item.content}</Text>
                                             </View>
                                         ) : (
-                                            <View style={[styles.theirBubbleContent, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)' }]}>
+                                            <View style={[styles.theirBubbleContent, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.04)' : 'rgba(255, 255, 255, 0.6)', borderColor: isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)' }]}>
                                                 <Text style={[styles.messageTextTheir, { color: theme.colors.text.primary }]}>{item.content}</Text>
                                             </View>
                                         )
@@ -149,25 +147,25 @@ export default function ChatScreen() {
 
                     {/* Input */}
                     <View style={[styles.floatingInputWrapper, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-                        <View style={[styles.floatingInputContainer, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.05)' : 'rgba(217, 228, 255, 0.05)' }]}>
+                        <View style={[styles.floatingInputContainer, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.05)' : 'rgba(255, 255, 255, 0.7)', borderColor: isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)' }]}>
                             <TouchableOpacity style={styles.attachButton} onPress={attachMedia} disabled={uploading}>
                                 {uploading ? (
                                     <ActivityIndicator size="small" color={theme.colors.primary.light} />
                                 ) : (
-                                    <Ionicons name="add-circle" size={28} color={theme.colors.primary.light} />
+                                    <Ionicons name="add-circle-outline" size={28} color={theme.colors.text.secondary} />
                                 )}
                             </TouchableOpacity>
                             <TextInput
-                                style={[styles.input, { color: theme.colors.primary.light }]}
+                                style={[styles.input, { color: theme.colors.text.primary }]}
                                 placeholder="> MESSAGE..."
-                                placeholderTextColor="rgba(217, 228, 255, 0.5)"
+                                placeholderTextColor={theme.colors.text.muted}
                                 value={inputText}
                                 onChangeText={setInputText}
                                 multiline
                             />
                             <TouchableOpacity onPress={handleSend} style={styles.sendButtonContainer}>
-                                <View style={[styles.sendButton, { backgroundColor: theme.colors.primary.light }]}>
-                                    <Ionicons name="arrow-up" size={20} color="#000" />
+                                <View style={[styles.sendButton, { backgroundColor: theme.colors.primary.DEFAULT }]}>
+                                    <Ionicons name="arrow-up" size={20} color={theme.colors.primary.onPrimary} />
                                 </View>
                             </TouchableOpacity>
                         </View>
@@ -181,10 +179,15 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000',
     },
     safeArea: {
         flex: 1,
+    },
+    column: {
+        flex: 1,
+        width: '100%',
+        maxWidth: 860,
+        alignSelf: 'center',
     },
     header: {
         flexDirection: 'row',
@@ -197,30 +200,28 @@ const styles = StyleSheet.create({
     backButton: {
         padding: 8,
         backgroundColor: 'rgba(255,255,255,0.05)',
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     headerInfo: {
         flex: 1,
         marginLeft: 12,
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: '700',
+        fontSize: 24,
         letterSpacing: 1,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: FONT.display,
         textTransform: 'uppercase',
     },
     headerStatus: {
-        fontSize: 11,
-        fontWeight: 'bold',
-        marginTop: 2,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-        letterSpacing: 1,
+        fontSize: 10,
+        marginTop: 3,
+        fontFamily: TECH_FONT,
+        letterSpacing: 1.6,
     },
     headerAction: {
         padding: 10,
-        backgroundColor: 'rgba(217, 228, 255, 0.1)',
-        borderRadius: 20,
+        backgroundColor: 'rgba(218, 230, 247, 0.1)',
+        ...pixelClip(5),
     },
     messageList: {
         padding: 16,
@@ -239,18 +240,14 @@ const styles = StyleSheet.create({
     myBubbleContent: {
         padding: 12,
         paddingHorizontal: 16,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        borderBottomLeftRadius: 16,
-        borderBottomRightRadius: 4,
+        borderWidth: 1,
+        ...pixelClip(4),
     },
     theirBubbleContent: {
         padding: 12,
         paddingHorizontal: 16,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        borderBottomRightRadius: 16,
-        borderBottomLeftRadius: 4,
+        borderWidth: 1,
+        ...pixelClip(4),
     },
     mediaBubble: {
         padding: 4,
@@ -261,29 +258,28 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 20,
+        ...pixelClip(5),
         overflow: 'hidden',
     },
     messageTextMy: {
         fontSize: 14,
         lineHeight: 20,
         fontWeight: '600',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     messageTextTheir: {
         fontSize: 14,
         lineHeight: 20,
         fontWeight: '500',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     messageTime: {
-        color: 'rgba(255, 255, 255, 0.4)',
+        color: '#5F6B82',
         fontSize: 10,
         marginTop: 6,
         paddingHorizontal: 4,
-        fontWeight: 'bold',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-        letterSpacing: 0.5,
+        fontFamily: TECH_FONT,
+        letterSpacing: 1,
     },
     floatingInputWrapper: {
         paddingHorizontal: 16,
@@ -293,7 +289,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 6,
-        borderRadius: 8,
+        borderWidth: 1,
+        ...pixelClip(4),
     },
     attachButton: {
         padding: 8,
@@ -306,7 +303,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         maxHeight: 100,
         fontWeight: 'bold',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     sendButtonContainer: {
         padding: 4,
@@ -314,7 +311,7 @@ const styles = StyleSheet.create({
     sendButton: {
         width: 36,
         height: 36,
-        borderRadius: 8,
+        ...pixelClip(2),
         justifyContent: 'center',
         alignItems: 'center',
     },

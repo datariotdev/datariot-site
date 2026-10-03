@@ -1,13 +1,39 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'expo-router';
 import { setAudioModeAsync } from 'expo-audio';
 import { Feather, SimpleLineIcons, Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { View, Dimensions, Platform, useWindowDimensions, StyleSheet } from 'react-native';
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
+import { pixelClip } from '@design-system/pixel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+/**
+ * Hides a tab's scene while it is not the focused one.
+ *
+ * On web the navigator stacks every visited scene on top of one another and
+ * relies on the scenes' own backgrounds to hide the ones beneath. Now that the
+ * scenes are transparent (the aurora behind them is one continuous surface),
+ * the feed would show through Discover, so unfocused scenes are taken out of
+ * the layout instead.
+ */
+const WebSceneGate = ({ navigation, children }: { navigation: any; children: React.ReactNode }) => {
+    const [focused, setFocused] = useState<boolean>(() => navigation.isFocused());
+
+    useEffect(() => {
+        setFocused(navigation.isFocused());
+        const onFocus = navigation.addListener('focus', () => setFocused(true));
+        const onBlur = navigation.addListener('blur', () => setFocused(false));
+        return () => {
+            onFocus();
+            onBlur();
+        };
+    }, [navigation]);
+
+    return <View style={{ flex: 1, display: focused ? 'flex' : 'none' }}>{children}</View>;
+};
 
 const TabLayout = () => {
     useEffect(() => {
@@ -32,13 +58,16 @@ const TabLayout = () => {
     return (
         <ResponsiveLayout>
             <Tabs
+                screenLayout={Platform.OS === 'web'
+                    ? ({ navigation, children }) => <WebSceneGate navigation={navigation}>{children}</WebSceneGate>
+                    : undefined}
                 screenOptions={{
                     headerShown: false,
                     // Let the layout's HUD backdrop show through instead of the
                     // navigator's default light scene background.
                     sceneStyle: { backgroundColor: 'transparent' },
                     tabBarActiveTintColor: theme.colors.primary.DEFAULT,
-                    tabBarInactiveTintColor: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0,0,0,0.4)',
+                    tabBarInactiveTintColor: isDark ? 'rgba(218, 230, 247, 0.55)' : 'rgba(7, 8, 12, 0.5)',
                     tabBarStyle: {
                         display: isDesktopWeb ? 'none' : 'flex',
                         position: 'absolute',
@@ -46,10 +75,10 @@ const TabLayout = () => {
                         left: 0,
                         right: 0,
                         height: Platform.OS === 'ios' ? 88 : 64,
-                        backgroundColor: 'transparent',
+                        backgroundColor: isDark ? 'rgba(8, 9, 13, 0.92)' : 'rgba(250, 252, 255, 0.94)',
                         borderWidth: 0,
-                        borderTopWidth: 0,
-                        borderTopColor: 'transparent',
+                        borderTopWidth: 1,
+                        borderTopColor: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.12)',
                         borderColor: 'transparent',
                         elevation: 0,
                         shadowOpacity: 0,
@@ -102,23 +131,17 @@ const TabLayout = () => {
                     options={{
                         title: '',
                         tabBarIcon: ({ focused }) => (
-                            <View style={{
+                            <View style={[{
                                 width: 44,
                                 height: 44,
-                                borderRadius: 22,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 backgroundColor: theme.colors.primary.DEFAULT,
-                                shadowColor: theme.colors.primary.DEFAULT,
-                                shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 8,
-                                elevation: 4,
-                            }}>
+                            }, pixelClip(5)]}>
                                 <Feather
                                     name="plus"
                                     size={22}
-                                    color="#000000"
+                                    color={theme.colors.primary.onPrimary}
                                 />
                             </View>
                         ),

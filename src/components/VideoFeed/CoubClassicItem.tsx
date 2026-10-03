@@ -2,13 +2,15 @@ import React, { useRef, useState, memo } from 'react';
 import { View, Text, StyleSheet, Pressable, Dimensions, Animated, Image, Platform, useWindowDimensions } from 'react-native';
 import { Video, ResizeMode, Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../Theme/ThemeProvider';
 import { theme } from '../../design-system/theme';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { encodeVideoUrl } from '../../lib/utils/url';
+import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -151,23 +153,23 @@ export const CoubClassicItem = memo(({
                 styles.videoContainer,
                 { width: cardWidth, height: videoHeight },
                 isDark ? {
-                    shadowColor: '#D9E4FF',
+                    shadowColor: '#DAE6F7',
                     shadowOffset: { width: 0, height: 8 },
                     shadowOpacity: 0.08,
                     shadowRadius: 32,
                 } : {
-                    shadowColor: '#6B7FCC',
+                    shadowColor: '#3A4252',
                     shadowOffset: { width: 0, height: 8 },
                     shadowOpacity: 0.06,
                     shadowRadius: 24,
                 },
                 isWeb && !isMobileWeb && isDark && {
                     // @ts-ignore — web only: side bloom glow
-                    boxShadow: '-40px 0 80px rgba(165,198,255,0.10), 40px 0 80px rgba(217,228,255,0.10), 0 12px 40px rgba(0,0,0,0.5)',
+                    boxShadow: '-40px 0 80px rgba(218, 230, 247,0.10), 40px 0 80px rgba(218, 230, 247,0.10), 0 12px 40px rgba(0,0,0,0.5)',
                 },
                 isWeb && !isMobileWeb && !isDark && {
                     // @ts-ignore — web only: side bloom glow light mode
-                    boxShadow: '-32px 0 60px rgba(107,127,204,0.08), 32px 0 60px rgba(107,127,204,0.08), 0 8px 32px rgba(107,127,204,0.12)',
+                    boxShadow: '-32px 0 60px rgba(7, 8, 12,0.08), 32px 0 60px rgba(7, 8, 12,0.08), 0 8px 32px rgba(7, 8, 12,0.12)',
                 },
             ]} onPress={togglePlayback}>
 
@@ -216,7 +218,7 @@ export const CoubClassicItem = memo(({
                 {/* Premium Gradient Progress Bar */}
                 <View style={styles.progressBarContainer} pointerEvents="none">
                     <LinearGradient
-                        colors={['#D9E4FF', '#A5C6FF']}
+                        colors={['#DAE6F7', '#B7C2D6']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={[styles.progressBarFill, { width: `${progress * 100}%` }]}
@@ -235,15 +237,15 @@ export const CoubClassicItem = memo(({
                 <View style={[
                     styles.infoPanel,
                     {
-                        backgroundColor: isDark ? 'rgba(14, 16, 23, 0.8)' : 'rgba(255, 255, 255, 0.75)',
-                        borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(107, 127, 204, 0.12)',
+                        backgroundColor: isDark ? 'rgba(14, 16, 23, 0.8)' : 'rgba(255, 255, 255, 0.96)',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(7, 8, 12, 0.12)',
                     },
                     isDark ? {
                         shadowColor: '#000',
                         shadowOpacity: 0.25,
                         shadowRadius: 12,
                     } : {
-                        shadowColor: '#6B7FCC',
+                        shadowColor: '#3A4252',
                         shadowOffset: { width: 0, height: 4 },
                         shadowOpacity: 0.04,
                         shadowRadius: 10,
@@ -263,7 +265,7 @@ export const CoubClassicItem = memo(({
                         <View style={[styles.infoSection, isExpanded && styles.infoSectionExpanded]}>
                             {/* Author Handle Link */}
                             <Pressable onPress={handleNavigateProfile} style={styles.authorContainer}>
-                                <Text style={styles.authorHandleText}>
+                                <Text style={[styles.authorHandleText, { color: theme.colors.text.secondary }]}>
                                     {`> @${(item.author || 'unknown').toUpperCase()}`}
                                 </Text>
                             </Pressable>
@@ -280,19 +282,19 @@ export const CoubClassicItem = memo(({
 
                             {/* Hashtag */}
                             {item.hashtag && (
-                                <Text style={styles.hashtag}>
+                                <Text style={[styles.hashtag, { color: theme.colors.text.secondary }]}>
                                     {`[ #${item.hashtag.toUpperCase()} ]`}
                                 </Text>
                             )}
 
                             {/* Cyber Stats */}
-                            <Text style={styles.cyberStatsText}>
+                            <Text style={[styles.cyberStatsText, { color: theme.colors.text.muted }]}>
                                 {`VIEWS: ${formatNumber(item.views || 0)}    LIKES: ${formatNumber(item.likes || 0)}`}
                             </Text>
 
                             {!isExpanded && item.title && item.title.length > 50 && (
                                 <Pressable onPress={() => setIsExpanded(!isExpanded)}>
-                                    <Text style={styles.readMoreText}>more</Text>
+                                    <Text style={[styles.readMoreText, { color: theme.colors.text.muted }]}>more</Text>
                                 </Pressable>
                             )}
 
@@ -391,7 +393,7 @@ const styles = StyleSheet.create({
     },
     videoContainer: {
         backgroundColor: '#06070A',
-        borderRadius: 28,
+        ...pixelClip(6),
         overflow: 'hidden',
         position: 'relative',
         shadowColor: '#000',
@@ -411,7 +413,7 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     infoPanel: {
-        borderRadius: 22,
+        ...pixelClip(6),
         paddingHorizontal: 20,
         paddingVertical: 16,
         overflow: 'hidden',
@@ -453,28 +455,28 @@ const styles = StyleSheet.create({
         left: 14,
         backgroundColor: 'rgba(8, 9, 13, 0.6)',
         borderWidth: 1,
-        borderColor: '#38BDF8',
+        borderColor: '#DAE6F7',
         paddingHorizontal: 10,
         paddingVertical: 6,
-        borderRadius: 4,
+        ...pixelClip(2),
         zIndex: 20,
     },
     cyberBadgeText: {
         fontSize: 11,
-        color: '#38BDF8',
+        color: '#DAE6F7',
         fontWeight: '700',
         letterSpacing: 1,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     authorContainer: {
         marginBottom: 6,
     },
     authorHandleText: {
         fontSize: 13,
-        color: '#38BDF8',
+        color: '#DAE6F7',
         fontWeight: '700',
         letterSpacing: 0.5,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     title: {
         fontSize: 18,
@@ -488,9 +490,9 @@ const styles = StyleSheet.create({
     },
     hashtag: {
         fontSize: 12,
-        color: '#38BDF8',
+        color: '#DAE6F7',
         fontWeight: '700',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
         marginBottom: 8,
         letterSpacing: 0.5,
     },
@@ -499,7 +501,7 @@ const styles = StyleSheet.create({
         color: 'rgba(255, 255, 255, 0.55)',
         fontWeight: '600',
         letterSpacing: 0.8,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
         marginTop: 4,
         marginBottom: 4,
     },
@@ -508,7 +510,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: 'rgba(255, 255, 255, 0.4)',
         marginTop: 2,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
         letterSpacing: 0.5,
     },
     actionIconBtn: {
@@ -528,7 +530,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginTop: 4,
         letterSpacing: 0.2,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
     mutedOverlay: {
         position: 'absolute',
@@ -536,14 +538,12 @@ const styles = StyleSheet.create({
         right: 14,
         width: 34,
         height: 34,
-        borderRadius: 17,
+        ...pixelClip(3),
         backgroundColor: 'rgba(0,0,0,0.4)',
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.06)',
         justifyContent: 'center',
         alignItems: 'center',
-        // @ts-ignore
-        backdropFilter: 'blur(8px)',
     },
     pauseOverlay: {
         ...StyleSheet.absoluteFillObject,
@@ -554,14 +554,12 @@ const styles = StyleSheet.create({
     pauseIconContainer: {
         width: 64,
         height: 64,
-        borderRadius: 32,
+        ...pixelClip(4),
         backgroundColor: 'rgba(0,0,0,0.35)',
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
         justifyContent: 'center',
         alignItems: 'center',
-        // @ts-ignore
-        backdropFilter: 'blur(8px)',
     },
 
     progressBarContainer: {
@@ -583,9 +581,9 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         marginLeft: -4,
-        shadowColor: '#D9E4FF',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.8,
         shadowRadius: 6,
@@ -595,7 +593,7 @@ const styles = StyleSheet.create({
         marginTop: 12,
         paddingVertical: 8,
         paddingHorizontal: 12,
-        borderRadius: 10,
+        ...pixelClip(2),
         borderWidth: 1,
     },
     logicBalanceTrack: {
@@ -616,6 +614,6 @@ const styles = StyleSheet.create({
         fontSize: 9,
         fontWeight: '700',
         letterSpacing: 0.8,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+        fontFamily: TECH_FONT,
     },
 });

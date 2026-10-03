@@ -4,6 +4,7 @@ import { MosaicItem } from './MosaicItem';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { Video } from '../../../lib/supabase/hooks/useVideos';
 import { SectionHeader } from '../../Discovery/SectionHeader';
+import { pageBg } from '@design-system/surface';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_SPACING = 12;
@@ -62,7 +63,7 @@ export function MosaicFeed({
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <FlatList
                 data={videos}
                 renderItem={renderItem}

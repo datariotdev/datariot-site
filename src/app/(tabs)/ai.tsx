@@ -4,9 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInDown, FadeInUp, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, withDelay, Easing } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { generateVideoAnalysis, chatWithAI, generateDailyInsight, VideoAnalysis, DailyInsight } from '../../lib/ai/client';
+import { pageBg } from '@design-system/surface';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 const { width } = Dimensions.get('window');
 
@@ -26,10 +29,10 @@ const uniqueId = () => `msg_${Date.now()}_${++_msgIdCounter}`;
 
 // Example prompts for first-time users
 const EXAMPLE_PROMPTS = [
-    { iconType: 'material', iconName: 'lightning-bolt', color: '#A5C6FF', text: 'Daily insight', tool: 'insight' as ToolType, desc: 'Focus reading' },
-    { iconType: 'material', iconName: 'microscope', color: '#10B981', text: 'Analyze content', tool: 'analyze' as ToolType, desc: 'Truth scan' },
-    { iconType: 'material', iconName: 'brain', color: '#8B5CF6', text: 'What can you do?', tool: 'chat' as ToolType, desc: 'Capabilities' },
-    { iconType: 'feather', iconName: 'lightbulb', color: '#EC4899', text: 'Tell me something interesting', tool: 'chat' as ToolType, desc: 'Random insight' },
+    { iconType: 'material', iconName: 'lightning-bolt', color: '#B7C2D6', text: 'Daily insight', tool: 'insight' as ToolType, desc: 'Focus reading' },
+    { iconType: 'material', iconName: 'microscope', color: '#9AA7BD', text: 'Analyze content', tool: 'analyze' as ToolType, desc: 'Truth scan' },
+    { iconType: 'material', iconName: 'brain', color: '#9AA7BD', text: 'What can you do?', tool: 'chat' as ToolType, desc: 'Capabilities' },
+    { iconType: 'feather', iconName: 'lightbulb', color: '#9AA7BD', text: 'Tell me something interesting', tool: 'chat' as ToolType, desc: 'Random insight' },
 ];
 
 // Animated typing dots component
@@ -96,7 +99,7 @@ const PulseGlow = () => {
     return (
         <Animated.View style={[styles.headerGlow, glowStyle]}>
             <LinearGradient
-                colors={['rgba(217, 228, 255, 0.3)', 'rgba(217, 228, 255, 0.08)', 'transparent']}
+                colors={['rgba(218, 230, 247, 0.3)', 'rgba(218, 230, 247, 0.08)', 'transparent']}
                 style={StyleSheet.absoluteFill}
                 start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
@@ -168,13 +171,13 @@ const AIIntroCard = ({ theme, isDark }: { theme: any, isDark: boolean }) => {
                 styles.introCard,
                 {
                     backgroundColor: isDark ? 'rgba(14, 16, 23, 0.4)' : 'rgba(255, 255, 255, 0.45)',
-                    borderColor: isDark ? 'rgba(217, 228, 255, 0.08)' : 'rgba(107, 127, 204, 0.12)',
+                    borderColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.12)',
                 }
             ]}
         >
             {/* Ambient subtle flare background */}
             <LinearGradient
-                colors={isDark ? ['rgba(217, 228, 255, 0.01)', 'transparent'] : ['rgba(107, 127, 204, 0.01)', 'transparent']}
+                colors={isDark ? ['rgba(218, 230, 247, 0.01)', 'transparent'] : ['rgba(7, 8, 12, 0.01)', 'transparent']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFillObject}
@@ -184,8 +187,8 @@ const AIIntroCard = ({ theme, isDark }: { theme: any, isDark: boolean }) => {
                 <View style={[
                     styles.introIconContainer,
                     {
-                        backgroundColor: isDark ? 'rgba(217, 228, 255, 0.01)' : 'rgba(107, 127, 204, 0.02)',
-                        borderColor: isDark ? 'rgba(217, 228, 255, 0.05)' : 'rgba(107, 127, 204, 0.08)',
+                        backgroundColor: isDark ? 'rgba(218, 230, 247, 0.01)' : 'rgba(7, 8, 12, 0.02)',
+                        borderColor: isDark ? 'rgba(218, 230, 247, 0.05)' : 'rgba(7, 8, 12, 0.08)',
                     }
                 ]}>
                     <MaterialCommunityIcons name="brain" size={22} color={theme.colors.primary.DEFAULT} />
@@ -372,11 +375,11 @@ export default function AIScreen() {
             return (
                 <Animated.View entering={FadeInUp.springify()} style={[styles.messageBubble, styles.aiBubble, styles.cardBubble, {
                     backgroundColor: isDark ? 'rgba(255, 255, 255, 0.01)' : 'rgba(0,0,0,0.005)',
-                    borderColor: isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(14, 165, 233, 0.05)'
+                    borderColor: isDark ? 'rgba(218, 230, 247, 0.05)' : 'rgba(7, 8, 12, 0.05)'
                 }]}>
                     {/* Subtle gradient overlay */}
                     <LinearGradient
-                        colors={isDark ? ['rgba(56, 189, 248, 0.02)', 'transparent'] : ['rgba(14, 165, 233, 0.01)', 'transparent']}
+                        colors={isDark ? ['rgba(218, 230, 247, 0.02)', 'transparent'] : ['rgba(7, 8, 12, 0.01)', 'transparent']}
                         style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
                     />
                     <View style={styles.cardHeader}>
@@ -388,8 +391,8 @@ export default function AIScreen() {
                     <Text style={[styles.insightScore, { color: theme.colors.text.primary }]}>{insight.score}</Text>
                     <View style={styles.insightStatusRow}>
                         <Text style={[styles.insightStatus, { color: theme.colors.primary.DEFAULT }]}>{insight.status}</Text>
-                        <View style={[styles.trendBadge, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)' }]}>
-                            <Ionicons name="trending-up" size={12} color="#10B981" />
+                        <View style={[styles.trendBadge, { backgroundColor: isDark ? 'rgba(154, 167, 189, 0.15)' : 'rgba(154, 167, 189, 0.1)' }]}>
+                            <Ionicons name="trending-up" size={12} color="#9AA7BD" />
                             <Text style={styles.trendText}>{insight.trend}</Text>
                         </View>
                     </View>
@@ -403,22 +406,22 @@ export default function AIScreen() {
             return (
                 <Animated.View entering={FadeInUp.springify()} style={[styles.messageBubble, styles.aiBubble, styles.cardBubble, {
                     backgroundColor: isDark ? 'rgba(255, 255, 255, 0.01)' : 'rgba(0,0,0,0.005)',
-                    borderColor: isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(14, 165, 233, 0.05)'
+                    borderColor: isDark ? 'rgba(218, 230, 247, 0.05)' : 'rgba(7, 8, 12, 0.05)'
                 }]}>
                     <LinearGradient
-                        colors={isDark ? ['rgba(139, 92, 246, 0.02)', 'transparent'] : ['rgba(139, 92, 246, 0.01)', 'transparent']}
+                        colors={isDark ? ['rgba(154, 167, 189, 0.02)', 'transparent'] : ['rgba(154, 167, 189, 0.01)', 'transparent']}
                         style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
                     />
                     <View style={styles.cardHeader}>
-                        <View style={[styles.cardHeaderIcon, { backgroundColor: isDark ? 'rgba(139, 92, 246, 0.05)' : 'rgba(139, 92, 246, 0.02)' }]}>
-                            <Feather name="eye" size={14} color="#8B5CF6" />
+                        <View style={[styles.cardHeaderIcon, { backgroundColor: isDark ? 'rgba(154, 167, 189, 0.05)' : 'rgba(154, 167, 189, 0.02)' }]}>
+                            <Feather name="eye" size={14} color="#9AA7BD" />
                         </View>
                         <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>TRUTH ANALYSIS</Text>
                     </View>
 
                     <View style={styles.analysisSection}>
-                        <View style={[styles.analysisLabelBadge, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.05)' : 'rgba(16, 185, 129, 0.02)' }]}>
-                            <Text style={[styles.analysisLabel, { color: '#10B981' }]}>ESSENCE</Text>
+                        <View style={[styles.analysisLabelBadge, { backgroundColor: isDark ? 'rgba(154, 167, 189, 0.05)' : 'rgba(154, 167, 189, 0.02)' }]}>
+                            <Text style={[styles.analysisLabel, { color: '#9AA7BD' }]}>ESSENCE</Text>
                         </View>
                         <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{analysis.essence}</Text>
                     </View>
@@ -429,8 +432,8 @@ export default function AIScreen() {
                         <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{analysis.manipulation}</Text>
                     </View>
                     <View style={styles.analysisSection}>
-                        <View style={[styles.analysisLabelBadge, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(56, 189, 248, 0.02)' }]}>
-                            <Text style={[styles.analysisLabel, { color: '#38BDF8' }]}>REAL VALUE</Text>
+                        <View style={[styles.analysisLabelBadge, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.05)' : 'rgba(218, 230, 247, 0.02)' }]}>
+                            <Text style={[styles.analysisLabel, { color: theme.colors.primary.DEFAULT }]}>REAL VALUE</Text>
                         </View>
                         <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{analysis.realValue}</Text>
                     </View>
@@ -472,15 +475,15 @@ export default function AIScreen() {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
             <SafeAreaView style={styles.safeArea}>
                 {/* Premium Header */}
-                <View style={[styles.header, { backgroundColor: theme.colors.background.primary }]}>
+                <View style={[styles.header, { backgroundColor: pageBg(theme.colors.background.primary) }]}>
                     <PulseGlow />
                     <View style={styles.headerContent}>
                         <View style={[styles.headerIconContainer, {
-                            backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(14, 165, 233, 0.08)',
-                            borderColor: isDark ? 'rgba(56, 189, 248, 0.25)' : 'rgba(14, 165, 233, 0.2)'
+                            backgroundColor: isDark ? 'rgba(218, 230, 247, 0.1)' : 'rgba(7, 8, 12, 0.08)',
+                            borderColor: isDark ? 'rgba(218, 230, 247, 0.25)' : 'rgba(7, 8, 12, 0.2)'
                         }]}>
                             <MaterialCommunityIcons name="robot-excited" size={22} color={theme.colors.primary.DEFAULT} />
                         </View>
@@ -490,7 +493,7 @@ export default function AIScreen() {
                         </View>
                     </View>
                     <View style={styles.headerStatusWrapper}>
-                        <View style={[styles.headerStatusDot, { backgroundColor: '#10B981' }]} />
+                        <View style={[styles.headerStatusDot, { backgroundColor: '#9AA7BD' }]} />
                         {Platform.OS === 'web' ? (
                             // @ts-ignore
                             <div className="status-pulse-anim" style={{
@@ -498,7 +501,7 @@ export default function AIScreen() {
                                 width: 14,
                                 height: 14,
                                 borderRadius: 7,
-                                backgroundColor: isDark ? 'rgba(16, 185, 129, 0.4)' : 'rgba(16, 185, 129, 0.25)',
+                                backgroundColor: isDark ? 'rgba(154, 167, 189, 0.4)' : 'rgba(154, 167, 189, 0.25)',
                                 zIndex: 1,
                             }} />
                         ) : null}
@@ -518,7 +521,7 @@ export default function AIScreen() {
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-                    style={[styles.keyboardArea, { backgroundColor: theme.colors.background.primary }]}
+                    style={[styles.keyboardArea, { backgroundColor: pageBg(theme.colors.background.primary) }]}
                 >
                     {/* Example Prompt Suggestions */}
                     {showSuggestions && messages.length <= 1 && (
@@ -552,8 +555,8 @@ export default function AIScreen() {
                                 style={[
                                     styles.toolButton,
                                     selectedTool === tool.key && [styles.toolButtonActive, {
-                                        backgroundColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.1)',
-                                        borderColor: isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(14, 165, 233, 0.2)'
+                                        backgroundColor: isDark ? 'rgba(218, 230, 247, 0.15)' : 'rgba(7, 8, 12, 0.1)',
+                                        borderColor: isDark ? 'rgba(218, 230, 247, 0.3)' : 'rgba(7, 8, 12, 0.2)'
                                     }]
                                 ]}
                                 onPress={() => handleToolSelect(tool.key)}
@@ -650,21 +653,22 @@ const styles = StyleSheet.create({
     headerIconContainer: {
         width: 44,
         height: 44,
-        borderRadius: 14,
+        ...pixelClip(4),
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        letterSpacing: 0.5,
+        fontFamily: FONT.display,
+        fontSize: 24,
+        letterSpacing: 1,
+        textTransform: 'uppercase',
     },
     headerSubtitle: {
-        fontSize: 11,
-        fontWeight: '600',
-        letterSpacing: 0.5,
-        marginTop: 1,
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 1.6,
+        marginTop: 2,
         textTransform: 'uppercase',
     },
     headerStatusWrapper: {
@@ -683,7 +687,7 @@ const styles = StyleSheet.create({
     },
     // ===== INTRO CARD =====
     introCard: {
-        borderRadius: 24,
+        ...pixelClip(6),
         borderWidth: 1,
         padding: 24,
         marginBottom: 28,
@@ -699,7 +703,7 @@ const styles = StyleSheet.create({
     introIconContainer: {
         width: 44,
         height: 44,
-        borderRadius: 14,
+        ...pixelClip(4),
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
@@ -750,7 +754,7 @@ const styles = StyleSheet.create({
     },
     messageBubble: {
         padding: 14,
-        borderRadius: 20,
+        ...pixelClip(5),
         marginBottom: 12,
         maxWidth: '88%',
     },
@@ -785,7 +789,7 @@ const styles = StyleSheet.create({
         width: '95%',
         maxWidth: '100%',
         borderWidth: 1,
-        borderRadius: 20,
+        ...pixelClip(5),
         padding: 20,
         overflow: 'hidden',
     },
@@ -808,14 +812,14 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         paddingHorizontal: 14,
         paddingVertical: 10,
-        borderRadius: 20,
+        ...pixelClip(5),
         backgroundColor: 'rgba(255,255,255,0.04)',
     },
     typingDot: {
         width: 7,
         height: 7,
         borderRadius: 3.5,
-        backgroundColor: 'rgba(56, 189, 248, 0.8)',
+        backgroundColor: 'rgba(218, 230, 247, 0.8)',
         marginHorizontal: 2,
     },
     // ===== TOOL SELECTOR =====
@@ -830,7 +834,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 7,
         paddingHorizontal: 14,
-        borderRadius: 20,
+        ...pixelClip(5),
         backgroundColor: 'rgba(255,255,255,0.04)',
         gap: 6,
         borderWidth: 1,
@@ -855,7 +859,7 @@ const styles = StyleSheet.create({
     },
     inputWrapper: {
         flex: 1,
-        borderRadius: 24,
+        ...pixelClip(6),
         borderWidth: 1,
         overflow: 'hidden',
     },
@@ -867,7 +871,7 @@ const styles = StyleSheet.create({
     sendButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -884,21 +888,20 @@ const styles = StyleSheet.create({
     cardHeaderIcon: {
         width: 28,
         height: 28,
-        borderRadius: 8,
+        ...pixelClip(2),
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(56, 189, 248, 0.15)',
+        backgroundColor: 'rgba(218, 230, 247, 0.15)',
     },
     cardTitle: {
+        fontFamily: FONT.techBold,
         fontSize: 11,
-        fontWeight: '800',
         letterSpacing: 2,
     },
     insightScore: {
-        fontSize: 56,
-        fontWeight: '800',
+        fontFamily: FONT.lcd,
+        fontSize: 64,
         marginBottom: 2,
-        letterSpacing: -2,
     },
     insightStatusRow: {
         flexDirection: 'row',
@@ -907,8 +910,8 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     insightStatus: {
-        fontSize: 16,
-        fontWeight: '700',
+        fontFamily: FONT.display,
+        fontSize: 20,
         textTransform: 'uppercase',
         letterSpacing: 1,
     },
@@ -918,12 +921,12 @@ const styles = StyleSheet.create({
         gap: 3,
         paddingHorizontal: 8,
         paddingVertical: 3,
-        borderRadius: 10,
+        ...pixelClip(2),
     },
     trendText: {
-        color: '#10B981',
-        fontSize: 12,
-        fontWeight: '700',
+        color: '#9AA7BD',
+        fontFamily: FONT.techBold,
+        fontSize: 11,
     },
     cardText: {
         fontSize: 14,
@@ -936,12 +939,12 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         paddingHorizontal: 8,
         paddingVertical: 3,
-        borderRadius: 6,
+        ...pixelClip(2),
         marginBottom: 6,
     },
     analysisLabel: {
+        fontFamily: FONT.techBold,
         fontSize: 9,
-        fontWeight: '800',
         letterSpacing: 1.5,
         textTransform: 'uppercase',
     },
@@ -951,10 +954,10 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
     },
     suggestionsTitle: {
-        fontSize: 11,
-        fontWeight: '700',
+        fontFamily: FONT.tech,
+        fontSize: 10,
         marginBottom: 10,
-        letterSpacing: 1.5,
+        letterSpacing: 2,
         textTransform: 'uppercase',
     },
     suggestionsGrid: {
@@ -967,7 +970,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 12,
         paddingHorizontal: 16,
-        borderRadius: 18,
+        ...pixelClip(4),
         borderWidth: 1,
         gap: 12,
         width: '48%',
@@ -977,7 +980,7 @@ const styles = StyleSheet.create({
     suggestionIconContainer: {
         width: 32,
         height: 32,
-        borderRadius: 10,
+        ...pixelClip(2),
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -988,12 +991,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     suggestionText: {
+        fontFamily: FONT.sansBold,
         fontSize: 13,
-        fontWeight: '700',
     },
     suggestionDesc: {
-        fontSize: 10,
-        fontWeight: '500',
-        marginTop: 1,
+        fontFamily: FONT.tech,
+        fontSize: 9,
+        letterSpacing: 0.8,
+        marginTop: 2,
+        textTransform: 'uppercase',
     },
 });

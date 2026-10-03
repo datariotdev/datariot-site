@@ -9,8 +9,9 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { LinearGradient } from 'expo-linear-gradient';
+import { pixelClip } from '@design-system/pixel';
 
 interface MoreOptionsModalProps {
     visible: boolean;
@@ -64,17 +65,17 @@ export function MoreOptionsModal({ visible, onClose, onDeepDive }: MoreOptionsMo
                                 styles.optionCard,
                                 {
                                     backgroundColor: isDark 
-                                        ? (pressed ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255,255,255,0.03)') 
-                                        : (pressed ? 'rgba(14, 165, 233, 0.08)' : 'rgba(0,0,0,0.02)'),
-                                    borderColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.15)'
+                                        ? (pressed ? 'rgba(218, 230, 247, 0.12)' : 'rgba(255,255,255,0.03)') 
+                                        : (pressed ? 'rgba(7, 8, 12, 0.08)' : 'rgba(0,0,0,0.02)'),
+                                    borderColor: isDark ? 'rgba(218, 230, 247, 0.15)' : 'rgba(7, 8, 12, 0.15)'
                                 }
                             ]}
                         >
                             <LinearGradient
-                                colors={isDark ? ['rgba(56, 189, 248, 0.05)', 'transparent'] : ['rgba(14, 165, 233, 0.03)', 'transparent']}
+                                colors={isDark ? ['rgba(218, 230, 247, 0.05)', 'transparent'] : ['rgba(7, 8, 12, 0.03)', 'transparent']}
                                 style={StyleSheet.absoluteFillObject}
                             />
-                            <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.1)' }]}>
+                            <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.15)' : 'rgba(7, 8, 12, 0.1)' }]}>
                                 <MaterialCommunityIcons name="brain" size={24} color={theme.colors.primary.DEFAULT} />
                             </View>
                             <View style={styles.optionDetails}>
@@ -143,14 +144,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
-        borderRadius: 20,
+        ...pixelClip(5),
         borderWidth: 1,
         overflow: 'hidden',
     },
     iconWrapper: {
         width: 44,
         height: 44,
-        borderRadius: 12,
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 16,

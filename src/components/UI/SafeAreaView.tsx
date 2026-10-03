@@ -2,6 +2,7 @@ import React from 'react';
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, ViewProps } from 'react-native';
 import { useTheme } from '../Theme/ThemeProvider';
+import { pageBg } from '@design-system/surface';
 
 interface SafeAreaViewProps extends ViewProps {
     children: React.ReactNode;
@@ -11,7 +12,7 @@ interface SafeAreaViewProps extends ViewProps {
 export function SafeAreaView({ children, style, edges, ...props }: SafeAreaViewProps) {
     const { theme } = useTheme();
     return (
-        <RNSafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }, style]} edges={edges} {...props}>
+        <RNSafeAreaView style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }, style]} edges={edges} {...props}>
             {children}
         </RNSafeAreaView>
     );

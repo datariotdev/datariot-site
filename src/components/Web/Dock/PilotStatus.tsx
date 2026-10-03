@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { MONO, useDockSurface } from './DockModule';
+import { pixelClip } from '@design-system/pixel';
 
 export interface Objective {
     id: string;
@@ -50,7 +51,7 @@ export const PilotStatus = ({
                         {
                             borderColor: accent,
                             backgroundColor: hovered
-                                ? (isDark ? 'rgba(217, 228, 255, 0.16)' : 'rgba(76, 110, 245, 0.12)')
+                                ? (isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.12)')
                                 : 'transparent',
                         },
                     ]}
@@ -69,7 +70,7 @@ export const PilotStatus = ({
             {/* Identity */}
             <View style={styles.identityRow}>
                 <LinearGradient
-                    colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
+                    colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.avatar}
@@ -95,9 +96,9 @@ export const PilotStatus = ({
             {/* Tier meter — the unfilled track is a dimmer step of the same ramp,
                 so the whole bar reads as one scale rather than fill-on-gray. */}
             <View style={styles.meterBlock}>
-                <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.14)' }]}>
+                <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)' }]}>
                     <LinearGradient
-                        colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
+                        colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={[styles.meterFill, { width: `${progress * 100}%` }]}
@@ -160,7 +161,7 @@ export const PilotStatus = ({
 
 const styles = StyleSheet.create({
     card: {
-        borderRadius: 12,
+        ...pixelClip(3),
         borderWidth: 1,
         padding: 14,
     },
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     },
     connectBtn: {
         height: 34,
-        borderRadius: 8,
+        ...pixelClip(2),
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
     avatar: {
         width: 36,
         height: 36,
-        borderRadius: 10,
+        ...pixelClip(2),
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
         gap: 3,
         paddingHorizontal: 6,
         paddingVertical: 3,
-        borderRadius: 5,
+        ...pixelClip(2),
         borderWidth: 1,
     },
     streakText: {
@@ -270,7 +271,7 @@ const styles = StyleSheet.create({
     checkbox: {
         width: 14,
         height: 14,
-        borderRadius: 4,
+        ...pixelClip(2),
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',

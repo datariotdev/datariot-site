@@ -100,6 +100,30 @@
                 }
             ],
             "destination": "/xyz.html"
+        },
+        {
+            "source": "/",
+            "destination": "/xyz.html"
+        },
+        {
+            "source": "/_expo/:path*",
+            "destination": "/datariot-xyz/_expo/:path*"
+        },
+        {
+            "source": "/assets/:path*",
+            "destination": "/datariot-xyz/assets/:path*"
+        },
+        {
+            "source": "/favicon.ico",
+            "destination": "/datariot-xyz/favicon.ico"
+        },
+        {
+            "source": "/metadata.json",
+            "destination": "/datariot-xyz/metadata.json"
+        },
+        {
+            "source": "/:path*",
+            "destination": "/xyz.html"
         }
     ]
 }

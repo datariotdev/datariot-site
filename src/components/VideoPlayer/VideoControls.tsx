@@ -6,6 +6,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 interface VideoControlsProps {
     isPlaying: boolean;
@@ -31,7 +33,7 @@ interface VideoControlsProps {
     onFollow: () => void;
 }
 
-const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime: number, duration: number, onSeek?: (value: number) => void }) => {
+export const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime: number, duration: number, onSeek?: (value: number) => void }) => {
     const [isSeeking, setIsSeeking] = useState(false);
     const [seekValue, setSeekValue] = useState(0);
     const trackHeightAnim = useRef(new Animated.Value(2)).current; // Initial ultra thin height
@@ -100,7 +102,7 @@ const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime:
                     value={isSeeking ? seekValue : currentTime}
                     minimumTrackTintColor="transparent"
                     maximumTrackTintColor="transparent"
-                    thumbTintColor="#FFFFFF" // Making thumb visible definitively
+                    thumbTintColor="#DAE6F7" // Making thumb visible definitively
                     onSlidingStart={handleSlidingStart}
                     onValueChange={handleValueChange}
                     onSlidingComplete={handleSlidingComplete}
@@ -215,7 +217,7 @@ export function VideoControls({
                     <View style={styles.leftActions}>
                         <Pressable onPress={() => { animateLike(); onLike(); }} style={styles.actionButton}>
                             <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-                                <Text style={[styles.actionIcon, { color: isLiked ? '#D9E4FF' : 'white' }]}>✦</Text>
+                                <Text style={[styles.actionIcon, { color: isLiked ? '#DAE6F7' : 'white' }]}>✦</Text>
                             </Animated.View>
                             <Text style={styles.actionLabel}>Like</Text>
                             <Text style={styles.actionCount}>{formatCount(likes)}</Text>
@@ -283,7 +285,7 @@ export function VideoControls({
     );
 }
 
-function formatCount(count: number): string {
+export function formatCount(count: number): string {
     if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
     if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
     return count.toString();
@@ -316,18 +318,18 @@ const styles = StyleSheet.create({
     avatarContainerLive: {
         borderWidth: 2,
         borderColor: '#FF0050',
-        borderRadius: 22,
+        ...pixelClip(6),
         padding: 2,
     },
     avatar: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
     },
     avatarLive: {
         width: 36,
         height: 36,
-        borderRadius: 18,
+        ...pixelClip(3),
     },
     avatarPlaceholder: {
         backgroundColor: theme.colors.surface.DEFAULT,
@@ -370,7 +372,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     hashtag: {
-        color: '#0EA5E9',
+        color: '#DAE6F7',
         fontFamily: theme.typography.fontFamilies.bold,
     },
 
@@ -393,8 +395,8 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     actionIconActive: {
-        color: '#0EA5E9',
-        textShadowColor: 'rgba(14, 165, 233, 0.8)',
+        color: '#DAE6F7',
+        textShadowColor: 'rgba(218, 230, 247, 0.8)',
         textShadowOffset: { width: 0, height: 0 },
         textShadowRadius: 10,
     },
@@ -415,7 +417,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 40,
         backgroundColor: 'rgba(255,255,255,0.1)',
-        borderRadius: 20, // Rounded pill look
+        ...pixelClip(4), // Rounded pill look
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
         marginLeft: 16,
@@ -431,8 +433,8 @@ const styles = StyleSheet.create({
     sendIcon: {
         width: 24,
         height: 24,
-        borderRadius: 12, // Circular button look
-        backgroundColor: '#D9E4FF',
+        ...pixelClip(3), // Circular button look
+        backgroundColor: '#DAE6F7',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -463,28 +465,25 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 2,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: 'rgba(218, 230, 247, 0.22)',
     },
     trackFill: {
         position: 'absolute',
         top: 14,
         left: 0,
         height: 2,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         zIndex: 1,
-        shadowColor: '#D9E4FF',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.8,
-        shadowRadius: 4,
     },
     timeWrapper: {
         justifyContent: 'center',
         height: 32,
     },
     timeText: {
-        color: '#FFFFFF',
-        fontFamily: theme.typography.fontFamilies.bold,
-        fontSize: 11,
+        color: '#DAE6F7',
+        fontFamily: FONT.tech,
+        fontSize: 10,
+        letterSpacing: 0.6,
         textAlign: 'right',
         minWidth: 80,
         textShadowColor: 'rgba(0, 0, 0, 0.9)',

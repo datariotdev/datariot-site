@@ -9,6 +9,9 @@ import { useChats } from '../../lib/supabase/hooks/useChats';
 import { supabase } from '../../lib/supabase/client';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { useTheme } from '../../components/Theme/ThemeProvider';
+import { pageBg } from '@design-system/surface';
+import { FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 interface Profile {
     id: string;
@@ -145,35 +148,47 @@ export default function InboxScreen() {
             {/* Focus Mode & Calls Header */}
             <View style={styles.topControls}>
                 <TouchableOpacity
-                    style={[styles.focusButton, { backgroundColor: isDark ? '#FFFFFF' : theme.colors.text.primary }, isFocusMode && [styles.focusButtonActive, { backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.1)' }]]}
+                    style={[
+                        styles.focusButton,
+                        pixelClip(3),
+                        isFocusMode
+                            ? { backgroundColor: 'transparent', borderColor: theme.colors.primary.DEFAULT }
+                            : { backgroundColor: theme.colors.primary.DEFAULT, borderColor: theme.colors.primary.DEFAULT },
+                    ]}
                     onPress={() => setIsFocusMode(!isFocusMode)}
                 >
                     <Ionicons
                         name={isFocusMode ? "moon" : "sunny"}
-                        size={16}
-                        color={isFocusMode ? theme.colors.background.primary : theme.colors.background.primary}
+                        size={14}
+                        color={isFocusMode ? theme.colors.text.primary : theme.colors.primary.onPrimary}
                     />
-                    <Text style={[styles.focusText, { color: isDark ? '#000' : theme.colors.background.primary }, isFocusMode && [styles.focusTextActive, { color: theme.colors.text.primary }]]}>
-                        {isFocusMode ? "Focus On" : "Focus Off"}
+                    <Text style={[styles.focusText, { color: isFocusMode ? theme.colors.text.primary : theme.colors.primary.onPrimary }]}>
+                        {isFocusMode ? "FOCUS ON" : "FOCUS OFF"}
                     </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.callsButton} disabled>
-                    <Ionicons name="call" size={20} color={theme.colors.primary.DEFAULT} />
+                <TouchableOpacity
+                    style={[styles.callsButton, pixelClip(3), { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)' }]}
+                    disabled
+                >
+                    <Ionicons name="call" size={18} color={theme.colors.text.secondary} />
                 </TouchableOpacity>
             </View>
 
             {/* Title & Search Button */}
             <View style={styles.titleRow}>
-                <Text style={[styles.pageTitle, { color: theme.colors.text.primary }]}>Messages</Text>
-                <TouchableOpacity style={[styles.searchButton, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} onPress={() => setIsSearching(!isSearching)}>
-                    <Ionicons name={isSearching ? "close" : "search"} size={22} color={theme.colors.text.primary} />
+                <Text style={[styles.pageTitle, { color: theme.colors.text.primary }]}>MESSAGES</Text>
+                <TouchableOpacity
+                    style={[styles.searchButton, pixelClip(3), { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)' }]}
+                    onPress={() => setIsSearching(!isSearching)}
+                >
+                    <Ionicons name={isSearching ? "close" : "search"} size={20} color={theme.colors.text.primary} />
                 </TouchableOpacity>
             </View>
 
             {/* Search Bar */}
             {isSearching && (
-                <View style={[styles.searchContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }]}>
+                <View style={[styles.searchContainer, pixelClip(4), { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.05)' : 'rgba(255, 255, 255, 0.7)', borderColor: isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)' }]}>
                     <Ionicons name="search" size={20} color={theme.colors.text.muted} style={styles.searchIcon} />
                     <TextInput
                         style={[styles.searchInput, { color: theme.colors.text.primary }]}
@@ -190,7 +205,7 @@ export default function InboxScreen() {
             {!isSearching && (
                 <>
                     {/* AI Section */}
-                    <Text style={[styles.sectionTitle, { color: theme.colors.text.secondary }]}>ASSISTANT</Text>
+                    <Text style={[styles.sectionTitle, { color: theme.colors.text.muted }]}>[ ASSISTANT ]</Text>
                     <ChatItem
                         {...AI_BOT}
                         onPress={() => handleChatPress(AI_BOT.id)}
@@ -202,7 +217,7 @@ export default function InboxScreen() {
 
     if (isSearching) {
         return (
-            <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
+            <SafeAreaView style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]} edges={['top']}>
                 {renderHeader()}
                 {searchLoading ? (
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -215,15 +230,15 @@ export default function InboxScreen() {
                         contentContainerStyle={styles.listContainer}
                         ListEmptyComponent={
                             searchQuery.length >= 2 ? (
-                                <Text style={[styles.emptyText, { color: theme.colors.text.muted }]}>No users found</Text>
+                                <Text style={[styles.emptyText, { color: theme.colors.text.muted }]}>[ NO USERS FOUND ]</Text>
                             ) : (
-                                <Text style={[styles.emptyText, { color: theme.colors.text.muted }]}>Type at least 2 characters to search</Text>
+                                <Text style={[styles.emptyText, { color: theme.colors.text.muted }]}>[ TYPE AT LEAST 2 CHARACTERS ]</Text>
                             )
                         }
                         renderItem={({ item }) => (
-                            <TouchableOpacity style={[styles.userItem, { borderBottomColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} onPress={() => startChat(item)}>
-                                <View style={[styles.avatar, { backgroundColor: theme.colors.primary.DEFAULT }]}>
-                                    <Text style={styles.avatarText}>
+                            <TouchableOpacity style={[styles.userItem, { borderBottomColor: isDark ? 'rgba(218, 230, 247, 0.1)' : 'rgba(7, 8, 12, 0.1)' }]} onPress={() => startChat(item)}>
+                                <View style={[styles.avatar, pixelClip(4), { backgroundColor: theme.colors.primary.DEFAULT }]}>
+                                    <Text style={[styles.avatarText, { color: theme.colors.primary.onPrimary }]}>
                                         {(item.display_name || item.username)[0].toUpperCase()}
                                     </Text>
                                 </View>
@@ -240,15 +255,15 @@ export default function InboxScreen() {
     }
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]} edges={['top']}>
             <FlatList
                 data={chats}
                 keyExtractor={(item) => item.chat_id || item.id}
                 ListHeaderComponent={renderHeader}
                 ListEmptyComponent={
                     <View style={{ padding: 20, alignItems: 'center' }}>
-                        <Text style={{ color: theme.colors.text.muted }}>
-                            {loading ? 'Loading chats...' : 'No conversations yet.'}
+                        <Text style={{ color: theme.colors.text.muted, fontFamily: FONT.tech, fontSize: 11, letterSpacing: 1.6 }}>
+                            {loading ? '[ LOADING CHATS... ]' : '[ NO CONVERSATIONS YET ]'}
                         </Text>
                     </View>
                 }
@@ -283,30 +298,19 @@ const styles = StyleSheet.create({
     focusButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF',
-        paddingVertical: 6,
+        paddingVertical: 7,
         paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    focusButtonActive: {
-        backgroundColor: 'rgba(0,0,0,0.8)',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)',
     },
     focusText: {
-        marginLeft: 6,
-        fontWeight: '600',
-        fontSize: 12,
-        color: '#000',
-    },
-    focusTextActive: {
-        color: '#FFF',
+        marginLeft: 7,
+        fontFamily: FONT.techMedium,
+        fontSize: 11,
+        letterSpacing: 1.2,
     },
     callsButton: {
         width: 36,
         height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(217, 228, 255, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -319,13 +323,12 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     pageTitle: {
-        fontSize: 34,
-        fontWeight: '800',
-        letterSpacing: -0.5,
+        fontFamily: FONT.display,
+        fontSize: 38,
+        letterSpacing: 1.5,
     },
     searchButton: {
         padding: 10,
-        borderRadius: 20,
     },
     searchContainer: {
         flexDirection: 'row',
@@ -334,7 +337,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         paddingHorizontal: 16,
         height: 48,
-        borderRadius: 24,
+        borderWidth: 1,
     },
     searchIcon: {
         marginRight: 8,
@@ -344,13 +347,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     sectionTitle: {
-        fontSize: 12,
-        fontWeight: '800',
+        fontFamily: FONT.tech,
+        fontSize: 10,
         paddingHorizontal: 24,
         marginTop: 10,
         marginBottom: 12,
-        letterSpacing: 1.5,
-        opacity: 0.6,
+        letterSpacing: 2,
     },
     // Removed thoughts styles
     fab: {
@@ -360,7 +362,7 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000000',
@@ -374,7 +376,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     emptyText: {
-        color: 'rgba(255,255,255,0.5)',
+        fontFamily: FONT.tech,
+        fontSize: 11,
+        letterSpacing: 1.6,
         textAlign: 'center',
         marginTop: 20,
     },
@@ -388,16 +392,14 @@ const styles = StyleSheet.create({
     avatar: {
         width: 48,
         height: 48,
-        borderRadius: 24,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
     },
     avatarText: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: FONT.display,
+        fontSize: 22,
     },
     userInfo: {
         flex: 1,

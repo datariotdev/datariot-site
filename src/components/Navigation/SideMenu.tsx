@@ -13,8 +13,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { useTheme } from '../Theme/ThemeProvider';
 import { supabase } from '../../lib/supabase/client';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { LinearGradient } from 'expo-linear-gradient';
+import { pixelClip } from '@design-system/pixel';
 
 
 interface SideMenuProps {
@@ -137,7 +138,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                 )}
                 {/* Subtle Gradient Overlay for depth */}
                 <LinearGradient
-                    colors={['rgba(217, 228, 255, 0.1)', 'transparent']}
+                    colors={['rgba(218, 230, 247, 0.1)', 'transparent']}
                     style={StyleSheet.absoluteFill}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
@@ -152,7 +153,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <View style={{ position: 'relative', width: 26, height: 26, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
                         {/* Blue 'Ice' Tone Overlay */}
-                        <View style={{ position: 'absolute', width: 28, height: 28, backgroundColor: 'rgba(56, 189, 248, 0.15)', borderRadius: 14 }} />
+                        <View style={{ position: 'absolute', width: 28, height: 28, backgroundColor: 'rgba(218, 230, 247, 0.15)', borderRadius: 14 }} />
                         <RNImage
                             source={require('../../../assets/logo.jpg')}
                             style={{ width: 22, height: 22, borderRadius: 11 }}
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(255,255,255,0.1)',
-        borderRadius: 22,
+        ...pixelClip(4),
     },
     logoText: {
         color: 'white',
@@ -315,7 +316,7 @@ const styles = StyleSheet.create({
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         marginLeft: 15,
         marginTop: 5,
     },
@@ -337,21 +338,21 @@ const styles = StyleSheet.create({
         width: 140,
         height: 80,
         marginRight: 15,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
     },
     mediaGradient: {
         flex: 1,
         justifyContent: 'space-between',
         padding: 12,
-        borderRadius: 16,
+        ...pixelClip(4),
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
     },
     mediaIconPlaceholder: {
         width: 24,
         height: 24,
-        borderRadius: 12,
+        ...pixelClip(3),
         backgroundColor: 'rgba(255,255,255,0.1)',
         justifyContent: 'center',
         alignItems: 'center',
@@ -374,7 +375,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.05)',
         paddingHorizontal: 30,
         paddingVertical: 15,
-        borderRadius: 100, // Pill shape dock
+        ...pixelClip(6), // Pill shape dock
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
     },
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.1)',
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 20,
+        ...pixelClip(5),
         gap: 8,
     },
     themeToggleText: {

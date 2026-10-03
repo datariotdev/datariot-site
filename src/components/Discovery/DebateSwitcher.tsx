@@ -1,15 +1,14 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     withSpring,
     useSharedValue,
-    withTiming,
-    interpolateColor
 } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 interface DebateSwitcherProps {
     activeTab: string;
@@ -22,51 +21,59 @@ const TABS = [
     { id: 'dives', label: 'DIVES', icon: 'search' },
 ];
 
+/**
+ * Segmented switch in the info site's idiom: a hairline track with stepped
+ * corners and a solid accent slab that slides to the active segment. The slab
+ * is sized from the track's measured width, not the window's — the page column
+ * is narrower than the window on desktop.
+ */
 export const DebateSwitcher: React.FC<DebateSwitcherProps> = ({ activeTab, onTabChange }) => {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
-    const { width } = useWindowDimensions();
-    const CONTAINER_WIDTH = width - 32;
-    const TAB_WIDTH = (CONTAINER_WIDTH - 8) / TABS.length;
+    const [trackWidth, setTrackWidth] = useState(0);
+    const tabWidth = trackWidth > 0 ? (trackWidth - 8) / TABS.length : 0;
 
-    const activeIndex = TABS.findIndex(t => t.id === activeTab);
-    const translateX = useSharedValue(activeIndex * TAB_WIDTH);
+    const activeIndex = Math.max(0, TABS.findIndex(t => t.id === activeTab));
+    const translateX = useSharedValue(activeIndex * tabWidth);
 
     React.useEffect(() => {
-        translateX.value = withSpring(activeIndex * TAB_WIDTH, {
+        translateX.value = withSpring(activeIndex * tabWidth, {
             damping: 20,
             stiffness: 90,
         });
-    }, [activeIndex, TAB_WIDTH]);
+    }, [activeIndex, tabWidth]);
 
     const slidingIndicatorStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: translateX.value }],
     }));
 
+    const accent = theme.colors.primary.DEFAULT;
+    const onAccent = theme.colors.primary.onPrimary;
+
     return (
         <View style={styles.container}>
-            <View style={[
-                styles.content,
-                {
-                    backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
-                    borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-                }
-            ]}>
-                {/* Animated Background Pill */}
-                <Animated.View style={[
-                    styles.activePill,
-                    { width: TAB_WIDTH },
-                    slidingIndicatorStyle
-                ]}>
-                    <BlurView intensity={isDark ? 30 : 50} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill}>
-                        <View style={[
-                            StyleSheet.absoluteFill,
-                            { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.8)' }
-                        ]} />
-                    </BlurView>
-                </Animated.View>
+            <View
+                onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+                style={[
+                    styles.content,
+                    {
+                        backgroundColor: isDark ? 'rgba(218, 230, 247, 0.04)' : 'rgba(255, 255, 255, 0.6)',
+                        borderColor: isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)',
+                    },
+                ]}
+            >
+                {/* Sliding accent slab */}
+                {tabWidth > 0 && (
+                    <Animated.View
+                        style={[
+                            styles.activePill,
+                            { width: tabWidth, backgroundColor: accent },
+                            slidingIndicatorStyle,
+                        ]}
+                    />
+                )}
 
-                {TABS.map((tab, index) => {
+                {TABS.map((tab) => {
                     const isActive = activeTab === tab.id;
                     return (
                         <Pressable
@@ -77,13 +84,12 @@ export const DebateSwitcher: React.FC<DebateSwitcherProps> = ({ activeTab, onTab
                             <Ionicons
                                 name={tab.icon as any}
                                 size={14}
-                                color={isActive ? (isDark ? '#FFF' : theme.colors.primary.DEFAULT) : 'rgba(128,128,128,0.5)'}
+                                color={isActive ? onAccent : theme.colors.text.muted}
                                 style={styles.tabIcon}
                             />
                             <Text style={[
                                 styles.tabText,
-                                { color: isActive ? theme.colors.text.primary : theme.colors.text.secondary },
-                                isActive && styles.activeTabText
+                                { color: isActive ? onAccent : theme.colors.text.secondary },
                             ]}>
                                 {tab.label}
                             </Text>
@@ -102,7 +108,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flexDirection: 'row',
-        borderRadius: 20,
+        ...pixelClip(5),
         padding: 4,
         borderWidth: 1,
         position: 'relative',
@@ -114,15 +120,7 @@ const styles = StyleSheet.create({
         top: 4,
         bottom: 4,
         left: 4,
-        borderRadius: 16,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
+        ...pixelClip(4),
     },
     tab: {
         flex: 1,
@@ -133,14 +131,11 @@ const styles = StyleSheet.create({
         zIndex: 2,
     },
     tabIcon: {
-        marginRight: 6,
+        marginRight: 7,
     },
     tabText: {
-        fontSize: 10,
-        fontWeight: '800',
-        letterSpacing: 1,
-    },
-    activeTabText: {
-        // fontWeight: '900',
+        fontFamily: FONT.techMedium,
+        fontSize: 10.5,
+        letterSpacing: 1.4,
     },
 });

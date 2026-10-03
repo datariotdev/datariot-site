@@ -4,15 +4,19 @@ import { Ionicons } from '@expo/vector-icons';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming, withSpring } from 'react-native-reanimated';
 import { useTheme } from '../Theme/ThemeProvider';
 import { Post } from '@lib/supabase/hooks/usePosts';
+import { FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 interface DebateCardProps {
     item: Post;
     onPress?: () => void;
     onDelete?: (id: string) => void;
     isOwnPost?: boolean;
+    /** Outer spacing override, for laying cards out in columns. */
+    style?: any;
 }
 
-export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardProps) {
+export function DebateCard({ item, onPress, onDelete, isOwnPost, style }: DebateCardProps) {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
     const deleteScale = useSharedValue(1);
@@ -38,20 +42,22 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
             onPress={onPress}
             style={({ pressed }) => [
                 styles.card,
+                pixelClip(6),
                 {
-                    backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                    backgroundColor: isDark ? 'rgba(218, 230, 247, 0.03)' : 'rgba(255, 255, 255, 0.6)',
+                    borderColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)',
                 },
+                style,
                 pressed && { opacity: 0.8 }
             ]}
         >
             <View style={styles.header}>
                 <View style={styles.authorRow}>
-                    <View style={[styles.avatar, { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }]}>
+                    <View style={[styles.avatar, pixelClip(3), { borderColor: isDark ? 'rgba(218, 230, 247, 0.25)' : 'rgba(7, 8, 12, 0.2)' }]}>
                         {item.authorAvatar ? (
                             <Image source={{ uri: item.authorAvatar }} style={styles.avatarImage} />
                         ) : (
-                            <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>
+                            <Text style={[styles.avatarText, { color: theme.colors.text.primary, fontFamily: FONT.display }]}>
                                 {item.authorName ? item.authorName[0].toUpperCase() : '?'}
                             </Text>
                         )}
@@ -65,9 +71,9 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                 </View>
 
                 {item.isAiAssisted && (
-                    <View style={[styles.aiBadge, { backgroundColor: theme.colors.primary.DEFAULT }]}>
-                        <Ionicons name="sparkles" size={12} color="#FFF" />
-                        <Text style={[styles.aiBadgeText, { color: '#FFF' }]}>LOGIC ORACLE</Text>
+                    <View style={[styles.aiBadge, pixelClip(2), { backgroundColor: theme.colors.primary.DEFAULT }]}>
+                        <Ionicons name="sparkles" size={12} color={theme.colors.primary.onPrimary} />
+                        <Text style={[styles.aiBadgeText, { color: theme.colors.primary.onPrimary }]}>LOGIC ORACLE</Text>
                     </View>
                 )}
 
@@ -76,6 +82,7 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                         onPress={handleDeletePress}
                         style={({ pressed }) => ([
                             styles.deleteButton,
+                            pixelClip(3),
                             { backgroundColor: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.1)' },
                             pressed && { opacity: 0.7 }
                         ])}
@@ -90,8 +97,8 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
             <View style={styles.body}>
                 <View style={styles.bodyContentRow}>
                     <View style={styles.textContent}>
-                        <View style={[styles.thesisBadge, { backgroundColor: isDark ? 'rgba(0, 102, 255, 0.15)' : 'rgba(0, 102, 255, 0.1)' }]}>
-                            <Text style={[styles.thesisBadgeText, { color: theme.colors.primary.DEFAULT }]}>THESIS</Text>
+                        <View style={[styles.thesisBadge, pixelClip(2), { borderColor: isDark ? 'rgba(218, 230, 247, 0.3)' : 'rgba(7, 8, 12, 0.3)' }]}>
+                            <Text style={[styles.thesisBadgeText, { color: theme.colors.primary.DEFAULT }]}>[ THESIS ]</Text>
                         </View>
                         <Text style={[styles.content, { color: theme.colors.text.primary }]} numberOfLines={3}>
                             {item.content}
@@ -99,13 +106,13 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                     </View>
 
                     {(item.videoUrl || item.imageUrl) && (
-                        <View style={styles.mediaPreview}>
+                        <View style={[styles.mediaPreview, pixelClip(4)]}>
                             <Image
                                 source={{ uri: item.imageUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&q=80' }}
                                 style={styles.thumbnail}
                             />
                             {item.videoUrl && (
-                                <View style={styles.videoIconOverlay}>
+                                <View style={[styles.videoIconOverlay, pixelClip(2)]}>
                                     <Ionicons name="play" size={16} color="#FFFFFF" />
                                 </View>
                             )}
@@ -117,8 +124,8 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                 {item.logicStats && (
                     <View style={styles.logicBalanceContainer}>
                         <View style={styles.logicLabels}>
-                            <Text style={styles.logicLabelText}>FOR</Text>
-                            <Text style={[styles.logicLabelText, { textAlign: 'right' }]}>AGAINST</Text>
+                            <Text style={[styles.logicLabelText, { color: theme.colors.text.muted }]}>FOR</Text>
+                            <Text style={[styles.logicLabelText, { textAlign: 'right', color: theme.colors.text.muted }]}>AGAINST</Text>
                         </View>
                         <View style={styles.balanceTrack}>
                             <View
@@ -126,7 +133,7 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                                     styles.balanceFill,
                                     {
                                         width: `${item.logicStats.forPercentage}%`,
-                                        backgroundColor: '#00C853'
+                                        backgroundColor: theme.colors.primary.DEFAULT
                                     }
                                 ]}
                             />
@@ -135,14 +142,14 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                                     styles.balanceFill,
                                     {
                                         width: `${100 - item.logicStats.forPercentage}%`,
-                                        backgroundColor: '#D50000'
+                                        backgroundColor: isDark ? '#5F6B82' : '#9AA7BD'
                                     }
                                 ]}
                             />
                         </View>
                         <View style={styles.logicScores}>
                             <Text style={[styles.logicScoreText, { color: theme.colors.primary.DEFAULT }]}>{item.logicStats.forScore}</Text>
-                            <Text style={[styles.logicScoreText, { textAlign: 'right', color: theme.colors.primary.DEFAULT }]}>{item.logicStats.againstScore}</Text>
+                            <Text style={[styles.logicScoreText, { textAlign: 'right', color: theme.colors.text.secondary }]}>{item.logicStats.againstScore}</Text>
                         </View>
                     </View>
                 )}
@@ -173,17 +180,10 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
 
 const styles = StyleSheet.create({
     card: {
-        marginBottom: 16,
-        borderRadius: 24,
+        marginBottom: 14,
         marginHorizontal: 16,
         padding: 4,
         borderWidth: 1,
-        // Shadow for depth
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-        elevation: 5,
     },
     header: {
         flexDirection: 'row',
@@ -200,7 +200,6 @@ const styles = StyleSheet.create({
     avatar: {
         width: 40,
         height: 40,
-        borderRadius: 20,
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -209,11 +208,9 @@ const styles = StyleSheet.create({
     avatarImage: {
         width: '100%',
         height: '100%',
-        borderRadius: 20,
     },
     avatarText: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: 20,
     },
     authorInfo: {
         marginLeft: 12,
@@ -230,9 +227,9 @@ const styles = StyleSheet.create({
     },
     deleteButton: {
         padding: 8,
-        borderRadius: 20,
     },
     body: {
+        flexGrow: 1,
         paddingHorizontal: 16,
         paddingBottom: 16,
     },
@@ -240,13 +237,13 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 8,
-        marginBottom: 8,
+        borderWidth: 1,
+        marginBottom: 10,
     },
     thesisBadgeText: {
+        fontFamily: FONT.tech,
         fontSize: 10,
-        fontWeight: '900',
-        letterSpacing: 1,
+        letterSpacing: 1.6,
     },
     content: {
         fontSize: 16,
@@ -285,7 +282,6 @@ const styles = StyleSheet.create({
     mediaPreview: {
         width: 80,
         height: 100,
-        borderRadius: 12,
         overflow: 'hidden',
         backgroundColor: 'rgba(0,0,0,0.1)',
         position: 'relative',
@@ -299,7 +295,6 @@ const styles = StyleSheet.create({
         top: 4,
         right: 4,
         backgroundColor: 'rgba(0,0,0,0.5)',
-        borderRadius: 10,
         padding: 4,
     },
     logicBalanceContainer: {
@@ -311,13 +306,13 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     logicLabelText: {
+        fontFamily: FONT.tech,
         fontSize: 10,
-        fontWeight: '900',
+        letterSpacing: 1.6,
         color: 'rgba(255,255,255,0.4)',
     },
     balanceTrack: {
         height: 6,
-        borderRadius: 3,
         flexDirection: 'row',
         overflow: 'hidden',
         backgroundColor: 'rgba(255,255,255,0.05)',
@@ -331,23 +326,22 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     logicScoreText: {
+        fontFamily: FONT.tech,
         fontSize: 11,
-        fontWeight: '700',
-        color: '#D9E4FF',
+        color: '#DAE6F7',
     },
     aiBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 8,
         gap: 4,
     },
     aiBadgeText: {
+        fontFamily: FONT.techBold,
         fontSize: 9,
-        fontWeight: '900',
-        color: '#000',
-        letterSpacing: 0.5,
+        color: '#07080C',
+        letterSpacing: 1,
     },
 });

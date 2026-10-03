@@ -219,7 +219,7 @@ export const FullScreenPlayer = forwardRef<FullScreenPlayerHandle, FullScreenPla
                     )}
                     {isLoading && (
                         <View style={styles.centerOverlay}>
-                            <ActivityIndicator size="large" color="#D9E4FF" />
+                            <ActivityIndicator size="large" color="#DAE6F7" />
                         </View>
                     )}
                     {hasError && (
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     retryButton: {
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         paddingHorizontal: 24,
         paddingVertical: 10,
         borderRadius: 20,

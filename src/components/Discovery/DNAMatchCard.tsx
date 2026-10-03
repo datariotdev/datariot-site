@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { BlurView } from '@components/UI/BlurView';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { theme } from '../../design-system/theme';
+import { theme, ICE, INK } from '../../design-system/theme';
+import { FONT } from '../../design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 interface DNAMatchCardProps {
     creator: {
@@ -35,7 +37,7 @@ export const DNAMatchCard: React.FC<DNAMatchCardProps> = ({ creator, onPress }) 
                 />
 
                 <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.5)', '#000814']}
+                    colors={['transparent', 'rgba(7,8,12,0.55)', '#07080C']}
                     locations={[0, 0.4, 1]}
                     style={StyleSheet.absoluteFill}
                 />
@@ -43,12 +45,12 @@ export const DNAMatchCard: React.FC<DNAMatchCardProps> = ({ creator, onPress }) 
                 <View style={styles.content}>
                     <View style={styles.topRow}>
                         <View style={styles.matchBadge}>
-                            <BlurView intensity={30} tint="light" style={StyleSheet.absoluteFill} />
-                            <MaterialCommunityIcons name="molecule" size={16} color={theme.colors.primary.light} />
+                            <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
+                            <MaterialCommunityIcons name="molecule" size={16} color={ICE} />
                             <Text style={styles.matchText}>{creator.matchPercent}% DNA MATCH</Text>
                         </View>
 
-                        <View style={styles.interestBadge}>
+                        <View style={[styles.interestBadge, pixelClip(2)]}>
                             <Text style={styles.interestText}>{creator.topInterest.toUpperCase()}</Text>
                         </View>
                     </View>
@@ -69,16 +71,16 @@ export const DNAMatchCard: React.FC<DNAMatchCardProps> = ({ creator, onPress }) 
                                 </View>
                             </View>
 
-                            <Pressable style={styles.exploreButton} onPress={onPress}>
+                            <Pressable style={[styles.exploreButton, pixelClip(4)]} onPress={onPress}>
                                 <Text style={styles.exploreButtonText}>EXPLORE DNA</Text>
-                                <Ionicons name="arrow-forward" size={16} color="#000" />
+                                <Ionicons name="arrow-forward" size={16} color={INK} />
                             </Pressable>
                         </View>
                     </View>
                 </View>
 
                 <View style={styles.dnaDecoration}>
-                    <MaterialCommunityIcons name="dna" size={120} color="rgba(217, 228, 255, 0.1)" />
+                    <MaterialCommunityIcons name="dna" size={120} color="rgba(218, 230, 247, 0.1)" />
                 </View>
             </Pressable>
         </Animated.View>
@@ -89,10 +91,11 @@ const styles = StyleSheet.create({
     container: {
         height: 380,
         marginHorizontal: 16,
-        borderRadius: 24,
+        ...pixelClip(6),
         overflow: 'hidden',
-        backgroundColor: '#000',
-        ...theme.shadows.lg,
+        backgroundColor: '#07080C',
+        borderWidth: 1,
+        borderColor: 'rgba(218, 230, 247, 0.14)',
     },
     card: {
         flex: 1,
@@ -113,37 +116,37 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 12,
         paddingVertical: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
+        borderColor: 'rgba(218, 230, 247, 0.3)',
         gap: 6,
     },
     matchText: {
-        color: '#FFF',
-        fontFamily: theme.typography.fontFamilies.bold,
+        color: '#DAE6F7',
+        fontFamily: FONT.techBold,
         fontSize: 10,
         letterSpacing: 1.5,
     },
     interestBadge: {
-        backgroundColor: theme.colors.primary.DEFAULT,
+        backgroundColor: '#DAE6F7',
         paddingHorizontal: 12,
         paddingVertical: 5,
-        borderRadius: 2, // More modular look
     },
     interestText: {
-        color: '#FFF',
-        fontFamily: theme.typography.fontFamilies.bold,
+        color: '#07080C',
+        fontFamily: FONT.techBold,
         fontSize: 10,
+        letterSpacing: 1,
     },
     bottomInfo: {
         gap: 6,
     },
     username: {
-        color: '#FFF',
-        fontFamily: theme.typography.fontFamilies.bold,
-        fontSize: 26,
-        letterSpacing: -0.5,
+        color: '#EEF2FA',
+        fontFamily: FONT.display,
+        fontSize: 30,
+        letterSpacing: 0.6,
     },
     bio: {
         color: 'rgba(255,255,255,0.7)',
@@ -174,20 +177,16 @@ const styles = StyleSheet.create({
     exploreButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: theme.colors.primary.DEFAULT,
+        backgroundColor: '#DAE6F7',
         paddingHorizontal: 18,
         paddingVertical: 10,
-        borderRadius: 4, // Modular look
         gap: 8,
-        shadowColor: theme.colors.primary.DEFAULT,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.4,
-        shadowRadius: 8,
     },
     exploreButtonText: {
-        color: '#FFF',
-        fontFamily: theme.typography.fontFamilies.bold,
-        fontSize: 12,
+        color: '#07080C',
+        fontFamily: FONT.techBold,
+        fontSize: 11,
+        letterSpacing: 1,
     },
     dnaDecoration: {
         position: 'absolute',

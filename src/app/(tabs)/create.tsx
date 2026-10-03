@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, TouchableOpacity,
-    Platform, ScrollView, ActivityIndicator, Alert
+    Platform, ScrollView, ActivityIndicator, Alert, Pressable
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
@@ -10,6 +10,10 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from '../../components/UI/SafeAreaView';
 import { useTheme } from '../../components/Theme/ThemeProvider';
+import { pageBg } from '@design-system/surface';
+import { Button } from '@components/UI/Button';
+import { FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
 
 function ActionCard({
     onPress,
@@ -26,65 +30,50 @@ function ActionCard({
 }) {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
+    const [hovered, setHovered] = useState(false);
 
-    const bg = isDark ? '#111318' : '#FFFFFF';
-    const borderCol = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    const accent = theme.colors.primary.DEFAULT;
+    const onAccent = theme.colors.primary.onPrimary;
+    const hairline = isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)';
+
+    // Primary: the logo colour as a solid slab (the info site's CTA). Secondary: a hairline box.
+    const fg = isPrimary ? onAccent : theme.colors.text.primary;
+    const sub = isPrimary ? onAccent : theme.colors.text.secondary;
+    const tile = isPrimary
+        ? onAccent
+        : isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)';
 
     return (
-        <TouchableOpacity
-            activeOpacity={0.8}
+        <Pressable
             onPress={onPress}
+            onHoverIn={() => setHovered(true)}
+            onHoverOut={() => setHovered(false)}
             style={[
                 styles.card,
+                pixelClip(6),
                 isPrimary
-                    ? { backgroundColor: '#D9E4FF', shadowColor: '#D9E4FF', shadowOpacity: 0.15 }
-                    : { backgroundColor: bg, borderColor: borderCol, borderWidth: 1 }
+                    ? { backgroundColor: accent, borderColor: accent, opacity: hovered ? 0.92 : 1 }
+                    : {
+                        backgroundColor: isDark ? 'rgba(218, 230, 247, 0.04)' : 'rgba(255, 255, 255, 0.6)',
+                        borderColor: hovered ? accent : hairline,
+                    },
+                hovered && { transform: [{ translateY: -3 }] },
             ]}
         >
             <View style={styles.cardHeader}>
-                <View style={[
-                    styles.iconCircle,
-                    isPrimary
-                        ? { backgroundColor: '#FFFFFF' }
-                        : { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }
-                ]}>
-                    <Ionicons
-                        name={icon}
-                        size={28}
-                        color={isPrimary ? '#000000' : theme.colors.text.primary}
-                    />
+                <View style={[styles.iconTile, pixelClip(4), { backgroundColor: tile }]}>
+                    <Ionicons name={icon} size={26} color={isPrimary ? accent : theme.colors.text.primary} />
                 </View>
-                <View style={[
-                    styles.arrowCircle,
-                    isPrimary
-                        ? { backgroundColor: 'rgba(0,0,0,0.05)' }
-                        : { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }
-                ]}>
-                    <Feather
-                        name="arrow-up-right"
-                        size={18}
-                        color={isPrimary ? '#000000' : theme.colors.text.primary}
-                    />
-                </View>
+                <Feather name="arrow-up-right" size={20} color={fg} />
             </View>
 
             <View style={styles.cardFooter}>
-                <Text style={[
-                    styles.cardTitle,
-                    { fontFamily: theme.typography.fontFamilies.bold },
-                    isPrimary ? { color: '#000000' } : { color: theme.colors.text.primary }
-                ]}>
-                    {title}
-                </Text>
-                <Text style={[
-                    styles.cardSubtitle,
-                    { fontFamily: theme.typography.fontFamilies.regular },
-                    isPrimary ? { color: 'rgba(0,0,0,0.6)' } : { color: theme.colors.text.secondary }
-                ]}>
-                    {subtitle}
+                <Text style={[styles.cardTitle, { color: fg, fontFamily: FONT.display }]}>{title.toUpperCase()}</Text>
+                <Text style={[styles.cardSubtitle, { color: sub, fontFamily: FONT.tech, opacity: isPrimary ? 0.7 : 1 }]}>
+                    {subtitle.toUpperCase()}
                 </Text>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 }
 
@@ -93,7 +82,7 @@ export default function CreateScreen() {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
-    const bg = theme.colors.background.primary;
+    const bg = pageBg(theme.colors.background.primary);
     const fg = theme.colors.text.primary;
 
     const pickVideo = async () => {
@@ -128,12 +117,15 @@ export default function CreateScreen() {
                 <StatusBar style={isDark ? 'light' : 'dark'} />
                 <View style={[styles.root, styles.center]}>
                     <Ionicons name="lock-closed" size={48} color={fg} style={{ marginBottom: 20 }} />
-                    <Text style={[styles.lockTitle, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
+                    <Text style={[styles.lockTitle, { color: fg, fontFamily: theme.typography.fontFamilies.display }]}>
                         Sign in
                     </Text>
                     <Text style={[styles.lockSub, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.regular }]}>
                         Required to create content
                     </Text>
+                    <View style={{ marginTop: 28 }}>
+                        <Button title="Sign in" size="large" onPress={() => router.push('/auth/login')} />
+                    </View>
                 </View>
             </SafeAreaView>
         );
@@ -143,17 +135,18 @@ export default function CreateScreen() {
         <SafeAreaView style={styles.root}>
             <StatusBar style={isDark ? 'light' : 'dark'} />
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+              <View style={styles.column}>
 
                 {/* HERO */}
                 <View style={styles.heroBox}>
-                    <View style={styles.heroLine} />
-                    <Text style={[styles.heroText, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
+                    <View style={[styles.heroLine, { backgroundColor: theme.colors.primary.DEFAULT }]} />
+                    <Text style={[styles.heroText, { color: fg, fontFamily: theme.typography.fontFamilies.display }]}>
                         CREATE
                     </Text>
-                    <Text style={[styles.heroText, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
+                    <Text style={[styles.heroText, { color: fg, fontFamily: theme.typography.fontFamilies.display }]}>
                         SOMETHING
                     </Text>
-                    <Text style={[styles.heroText, { color: isDark ? '#D9E4FF' : theme.colors.primary.DEFAULT, fontFamily: theme.typography.fontFamilies.brand }]}>
+                    <Text style={[styles.heroText, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.display }]}>
                         NEW
                     </Text>
                 </View>
@@ -179,11 +172,12 @@ export default function CreateScreen() {
 
                 {/* FOOTER TEXT */}
                 <View style={styles.footerWrap}>
-                    <Text style={[styles.footerText, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.mono }]}>
-                        {`DESIGN SYSTEM\nB/W/BLU`}
+                    <Text style={[styles.footerText, { color: theme.colors.text.muted, fontFamily: FONT.tech }]}>
+                        {`[ DATARIOT ]\n[ ICE / INK ]`}
                     </Text>
                 </View>
 
+              </View>
             </ScrollView>
         </SafeAreaView>
     );
@@ -193,6 +187,7 @@ const styles = StyleSheet.create({
     root: { flex: 1 },
     center: { justifyContent: 'center', alignItems: 'center' },
     scrollContent: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 60, flexGrow: 1 },
+    column: { width: '100%', maxWidth: 720, alignSelf: 'center' },
 
     // Lock screen
     lockTitle: { fontSize: 24, fontWeight: '900', textTransform: 'uppercase', letterSpacing: -0.5 },
@@ -200,54 +195,46 @@ const styles = StyleSheet.create({
 
     // Hero
     heroBox: { marginBottom: 40, marginTop: 10 },
-    heroLine: { width: 40, height: 4, backgroundColor: '#D9E4FF', marginBottom: 24 },
+    heroLine: { width: 40, height: 4, backgroundColor: '#DAE6F7', marginBottom: 24 },
     heroText: {
-        fontSize: Platform.OS === 'web' ? 44 : 38,
-        fontWeight: '900',
+        fontSize: Platform.OS === 'web' ? 48 : 38,
+        fontWeight: '400',
         textTransform: 'uppercase',
-        letterSpacing: -1,
-        lineHeight: Platform.OS === 'web' ? 50 : 44,
+        letterSpacing: 1,
+        lineHeight: Platform.OS === 'web' ? 54 : 44,
     },
 
     // Cards
     cardsContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        flexWrap: 'wrap',
         gap: 16,
         marginBottom: 24,
     },
     card: {
-        width: '45%',
-        maxWidth: 300,
-        borderRadius: 24,
-        padding: 24,
-        minHeight: 180,
+        flexGrow: 1,
+        flexBasis: 260,
+        maxWidth: 340,
+        padding: 22,
+        minHeight: 190,
         justifyContent: 'space-between',
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 12,
-        backgroundColor: 'rgba(255,255,255,0.08)',
-        borderColor: 'rgba(255,255,255,0.12)',
         borderWidth: 1,
+        // @ts-ignore — web-only
+        cursor: 'pointer',
+        // @ts-ignore — web-only
+        transition: 'transform 0.2s ease, border-color 0.2s ease, opacity 0.2s ease',
     },
 
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-    iconCircle: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+    iconTile: {
+        width: 54,
+        height: 54,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    arrowCircle: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cardFooter: { gap: 6, marginTop: 20 },
-    cardTitle: { fontSize: 22, fontWeight: '800', letterSpacing: -0.5 },
-    cardSubtitle: { fontSize: 14, fontWeight: '500' },
+    cardFooter: { gap: 8, marginTop: 24 },
+    cardTitle: { fontSize: 24, letterSpacing: 0.8 },
+    cardSubtitle: { fontSize: 10, letterSpacing: 1.6 },
 
     // Footer
     footerWrap: { marginTop: 40, alignItems: 'flex-start' },

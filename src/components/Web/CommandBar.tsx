@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../Theme/ThemeProvider';
+import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
+import { deckColumn, TOPBAR_HEIGHT } from '../Layout/metrics';
 
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
 export interface CommandTab {
     key: string;
@@ -42,11 +44,12 @@ const Segment = ({
             onHoverOut={() => setHovered(false)}
             style={[
                 styles.segment,
+                pixelClip(3),
                 {
                     backgroundColor: isActive
-                        ? (isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(76, 110, 245, 0.09)')
+                        ? accent
                         : hovered
-                            ? (isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)')
+                            ? (isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)')
                             : 'transparent',
                 },
             ]}
@@ -57,10 +60,10 @@ const Segment = ({
                     styles.segmentText,
                     {
                         color: isActive
-                            ? theme.colors.text.primary
+                            ? theme.colors.primary.onPrimary
                             : hovered
-                                ? theme.colors.text.secondary
-                                : theme.colors.text.muted,
+                                ? theme.colors.text.primary
+                                : theme.colors.text.secondary,
                         fontFamily: MONO,
                     },
                 ]}
@@ -69,20 +72,11 @@ const Segment = ({
             </Text>
 
             {tab.hint ? (
-                <Text style={[styles.segmentHint, { color: isActive ? accent : theme.colors.text.muted, fontFamily: MONO }]}>
+                <Text style={[styles.segmentHint, { color: isActive ? theme.colors.primary.onPrimary : theme.colors.text.muted, fontFamily: MONO }]}>
                     {tab.hint}
                 </Text>
             ) : null}
 
-            {/* Active underline — replaces the pill, kills the tab-bar look */}
-            {isActive && (
-                <LinearGradient
-                    colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.segmentUnderline}
-                />
-            )}
         </Pressable>
     );
 };
@@ -110,14 +104,15 @@ export const HudButton = ({
             accessibilityLabel={label}
             style={[
                 styles.hudButton,
+                pixelClip(3),
                 {
                     borderColor: active
                         ? theme.colors.primary.DEFAULT
                         : hovered
-                            ? (isDark ? 'rgba(217, 228, 255, 0.3)' : 'rgba(76, 110, 245, 0.3)')
+                            ? (isDark ? 'rgba(218, 230, 247, 0.3)' : 'rgba(7, 8, 12, 0.3)')
                             : (isDark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.09)'),
                     backgroundColor: active
-                        ? (isDark ? 'rgba(217, 228, 255, 0.13)' : 'rgba(76, 110, 245, 0.10)')
+                        ? (isDark ? 'rgba(218, 230, 247, 0.13)' : 'rgba(7, 8, 12, 0.10)')
                         : hovered
                             ? (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.035)')
                             : 'transparent',
@@ -138,11 +133,12 @@ export const CommandBar = ({ tabs, activeKey, onTabPress, actions, readout = [] 
             style={[
                 styles.bar,
                 {
-                    backgroundColor: isDark ? '#0A0B11' : '#FBFBFD',
-                    borderBottomColor: isDark ? 'rgba(217, 228, 255, 0.09)' : 'rgba(0, 0, 0, 0.07)',
+                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.78)' : 'rgba(250, 252, 255, 0.80)',
+                    borderBottomColor: isDark ? 'rgba(218, 230, 247, 0.10)' : 'rgba(7, 8, 12, 0.10)',
                 },
             ]}
         >
+            <View style={styles.inner}>
             {/* Segmented command group */}
             <View style={styles.segments}>
                 {tabs.map((tab) => (
@@ -161,7 +157,7 @@ export const CommandBar = ({ tabs, activeKey, onTabPress, actions, readout = [] 
             {readout.length > 0 && (
                 <View style={styles.readout}>
                     <View style={styles.liveDotWrap}>
-                        <View style={[styles.liveDot, { backgroundColor: '#34D399' }]} />
+                        <View style={[styles.liveDot, { backgroundColor: theme.colors.primary.DEFAULT }]} />
                         {Platform.OS === 'web' ? (
                             /* @ts-ignore web-only element */
                             <div
@@ -171,7 +167,7 @@ export const CommandBar = ({ tabs, activeKey, onTabPress, actions, readout = [] 
                                     width: 6,
                                     height: 6,
                                     borderRadius: 3,
-                                    backgroundColor: 'rgba(52, 211, 153, 0.6)',
+                                    backgroundColor: isDark ? 'rgba(218, 230, 247, 0.6)' : 'rgba(7, 8, 12, 0.45)',
                                 }}
                             />
                         ) : null}
@@ -194,6 +190,7 @@ export const CommandBar = ({ tabs, activeKey, onTabPress, actions, readout = [] 
             )}
 
             {actions ? <View style={styles.actions}>{actions}</View> : null}
+            </View>
         </View>
     );
 };
@@ -207,13 +204,13 @@ export const LiveTicker = ({ items }: { items: string[] }) => {
     const shell = [
         styles.ticker,
         {
-            borderBottomColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(0, 0, 0, 0.06)',
-            backgroundColor: isDark ? '#0C0D14' : '#F6F6FA',
+            borderBottomColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.08)',
+            backgroundColor: isDark ? 'rgba(8, 9, 13, 0.55)' : 'rgba(250, 252, 255, 0.6)',
         },
     ];
 
     const badge = (
-        <View style={[styles.tickerBadge, { borderColor: 'rgba(248, 113, 113, 0.5)' }]}>
+        <View style={[styles.tickerBadge, pixelClip(2), { borderColor: 'rgba(248, 113, 113, 0.5)' }]}>
             <View style={[styles.liveDot, { backgroundColor: '#F87171' }]} />
             <Text style={[styles.tickerBadgeText, { color: '#F87171', fontFamily: MONO }]}>LIVE</Text>
         </View>
@@ -264,7 +261,17 @@ export const LiveTicker = ({ items }: { items: string[] }) => {
     return (
         <View style={shell}>
             {badge}
-            <View style={styles.tickerViewport}>
+            {/* A marquee cut dead at both ends reads as broken text rather than as
+                something in motion. A mask fades it into whatever is behind. */}
+            <View
+                style={[
+                    styles.tickerViewport,
+                    {
+                        maskImage: 'linear-gradient(to right, transparent, #000 34px, #000 calc(100% - 34px), transparent)',
+                        WebkitMaskImage: 'linear-gradient(to right, transparent, #000 34px, #000 calc(100% - 34px), transparent)',
+                    } as any,
+                ]}
+            >
                 {/* @ts-ignore web-only element */}
                 <div
                     className="dr-ticker"
@@ -274,22 +281,6 @@ export const LiveTicker = ({ items }: { items: string[] }) => {
                     {run(0)}
                     {run(1)}
                 </div>
-                {/* A marquee cut dead at both ends reads as broken text rather
-                    than as something in motion. */}
-                <LinearGradient
-                    pointerEvents="none"
-                    colors={[isDark ? '#0C0D14' : '#F6F6FA', 'transparent']}
-                    start={{ x: 0, y: 0.5 }}
-                    end={{ x: 1, y: 0.5 }}
-                    style={[styles.tickerFade, { left: 0 }]}
-                />
-                <LinearGradient
-                    pointerEvents="none"
-                    colors={['transparent', isDark ? '#0C0D14' : '#F6F6FA']}
-                    start={{ x: 0, y: 0.5 }}
-                    end={{ x: 1, y: 0.5 }}
-                    style={[styles.tickerFade, { right: 0 }]}
-                />
             </View>
         </View>
     );
@@ -297,12 +288,16 @@ export const LiveTicker = ({ items }: { items: string[] }) => {
 
 const styles = StyleSheet.create({
     bar: {
-        flexDirection: 'row',
-        alignItems: 'stretch',
-        height: 54,
-        paddingHorizontal: 20,
+        height: TOPBAR_HEIGHT,
         borderBottomWidth: 1,
         zIndex: 20,
+    },
+    // The bar's band runs the full width of the deck; what is on it sits on the same column as the content below.
+    inner: {
+        ...deckColumn,
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'stretch',
     },
     segments: {
         flexDirection: 'row',
@@ -311,8 +306,11 @@ const styles = StyleSheet.create({
     segment: {
         flexDirection: 'row',
         alignItems: 'center',
+        alignSelf: 'center',
+        height: 30,
+        marginRight: 4,
         gap: 7,
-        paddingHorizontal: 18,
+        paddingHorizontal: 14,
         position: 'relative',
         // @ts-ignore
         transition: 'background-color 0.18s ease',
@@ -320,9 +318,8 @@ const styles = StyleSheet.create({
         cursor: 'pointer',
     },
     segmentText: {
-        fontSize: 11,
+        fontSize: 10.5,
         letterSpacing: 2,
-        fontWeight: '700',
     },
     segmentHint: {
         fontSize: 8,
@@ -369,7 +366,6 @@ const styles = StyleSheet.create({
     hudButton: {
         width: 34,
         height: 34,
-        borderRadius: 8,
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -395,7 +391,6 @@ const styles = StyleSheet.create({
         gap: 5,
         paddingHorizontal: 7,
         paddingVertical: 2,
-        borderRadius: 4,
         borderWidth: 1,
     },
     tickerBadgeText: {
@@ -407,13 +402,6 @@ const styles = StyleSheet.create({
         flex: 1,
         overflow: 'hidden',
         position: 'relative',
-    },
-    tickerFade: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        width: 34,
-        zIndex: 2,
     },
     tickerStatic: {
         flexDirection: 'row',

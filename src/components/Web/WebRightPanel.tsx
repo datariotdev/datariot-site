@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -6,14 +6,14 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { DockModule, MONO, useDockSurface } from './Dock/DockModule';
 import { PilotStatus, Objective } from './Dock/PilotStatus';
-import { SignalTile } from './Dock/SignalTile';
+import { pixelClip } from '@design-system/pixel';
+import { DOCK_PAD, TOPBAR_HEIGHT } from '../Layout/metrics';
 
 /* ------------------------------------------------------------------------- *
  * PLACEHOLDER DATA
  * Everything below is display-only and needs wiring to real sources:
  *   pilot stats  -> profiles / ratings table
  *   objectives   -> daily quest state
- *   signal series-> hourly view or event counts for the last 24h
  *   trending     -> an aggregate query, same one /discover should use
  * Each is a plain value so swapping in a hook is a one-line change.
  * ------------------------------------------------------------------------- */
@@ -29,15 +29,6 @@ const OBJECTIVES: Objective[] = [
     { id: 'argue', label: 'Post 1 argument', done: 1, total: 1 },
     { id: 'streak', label: 'Keep the streak alive', done: 0, total: 1 },
 ];
-
-/** 24 hourly buckets, oldest first. */
-const SIGNAL_SERIES = [
-    380, 410, 340, 300, 270, 250, 290, 360,
-    520, 640, 700, 660, 720, 810, 780, 690,
-    740, 880, 960, 1040, 1180, 1120, 1260, 1340,
-];
-const SIGNAL_TOTAL = SIGNAL_SERIES.reduce((a, b) => a + b, 0);
-const SIGNAL_DELTA_PCT = 18;
 
 const TRENDING = [
     { icon: 'music' as const, title: 'Music of the Week', views: '2.3M', delta: 14 },
@@ -78,16 +69,10 @@ export const WebRightPanel = () => {
 
     const callsign = user ? (user.user_metadata?.username || user.email?.split('@')[0] || 'pilot') : null;
 
-    const bucketLabel = useMemo(
-        () => (i: number, total: number) => {
-            const hoursAgo = total - 1 - i;
-            return hoursAgo === 0 ? 'NOW' : `-${hoursAgo}H`;
-        },
-        []
-    );
-
     return (
         <View style={styles.container}>
+            {/* Header band: the same height as the bar over the deck, so the hairline runs straight across */}
+            <View style={[styles.header, { borderBottomColor: isDark ? 'rgba(218, 230, 247, 0.10)' : 'rgba(7, 8, 12, 0.10)' }]}>
             {/* Terminal-prompt search */}
             <View
                 style={[
@@ -97,7 +82,7 @@ export const WebRightPanel = () => {
                         borderColor: isSearchFocused ? accent : cardBorder,
                     },
                     isSearchFocused && {
-                        shadowColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                        shadowColor: isDark ? '#DAE6F7' : '#07080C',
                         shadowOffset: { width: 0, height: 0 },
                         shadowOpacity: isDark ? 0.25 : 0.12,
                         shadowRadius: 16,
@@ -130,7 +115,9 @@ export const WebRightPanel = () => {
                     </View>
                 )}
             </View>
+            </View>
 
+            <View style={styles.body}>
             {/* Pilot */}
             <DockModule
                 title="PILOT"
@@ -151,25 +138,6 @@ export const WebRightPanel = () => {
                     tierSpan={PILOT_TIER_SPAN}
                     streakDays={PILOT_STREAK_DAYS}
                     objectives={OBJECTIVES}
-                />
-            </DockModule>
-
-            {/* Platform activity */}
-            <DockModule
-                title="SIGNAL"
-                right={
-                    <Text style={[styles.moduleMeta, { color: theme.colors.text.muted, fontFamily: MONO }]}>24H</Text>
-                }
-            >
-                <SignalTile
-                    label="Arena activity"
-                    value={SIGNAL_TOTAL}
-                    deltaPct={SIGNAL_DELTA_PCT}
-                    deltaPeriod="vs yesterday"
-                    series={SIGNAL_SERIES}
-                    startLabel="-24H"
-                    endLabel="NOW"
-                    bucketLabel={bucketLabel}
                 />
             </DockModule>
 
@@ -222,12 +190,12 @@ export const WebRightPanel = () => {
                     </View>
                 }
             >
-                <View style={[styles.challengeCard, { borderColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.2)', backgroundColor: cardBg }]}>
+                <View style={[styles.challengeCard, { borderColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.2)', backgroundColor: cardBg }]}>
                     <View style={[styles.cardBracket, styles.cbTL, { borderColor: accent }]} pointerEvents="none" />
                     <View style={[styles.cardBracket, styles.cbBR, { borderColor: accent }]} pointerEvents="none" />
 
                     <LinearGradient
-                        colors={isDark ? ['rgba(217, 228, 255, 0.09)', 'transparent'] : ['rgba(76, 110, 245, 0.07)', 'transparent']}
+                        colors={isDark ? ['rgba(218, 230, 247, 0.09)', 'transparent'] : ['rgba(7, 8, 12, 0.07)', 'transparent']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={StyleSheet.absoluteFillObject}
@@ -253,9 +221,9 @@ export const WebRightPanel = () => {
                     </Text>
 
                     <View style={styles.meterRow}>
-                        <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(76, 110, 245, 0.14)' }]}>
+                        <View style={[styles.meterTrack, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)' }]}>
                             <LinearGradient
-                                colors={isDark ? ['#D9E4FF', '#7DE2FF'] : ['#4C6EF5', '#7DA2FF']}
+                                colors={isDark ? ['#DAE6F7', '#B7C2D6'] : ['#07080C', '#3A4252']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
                                 style={[styles.meterFill, { width: '62%' }]}
@@ -273,8 +241,8 @@ export const WebRightPanel = () => {
                             {
                                 borderColor: accent,
                                 backgroundColor: hovered
-                                    ? (isDark ? 'rgba(217, 228, 255, 0.18)' : 'rgba(76, 110, 245, 0.14)')
-                                    : (isDark ? 'rgba(217, 228, 255, 0.08)' : 'rgba(76, 110, 245, 0.06)'),
+                                    ? (isDark ? 'rgba(218, 230, 247, 0.18)' : 'rgba(7, 8, 12, 0.14)')
+                                    : (isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)'),
                             },
                         ]}
                     >
@@ -299,6 +267,7 @@ export const WebRightPanel = () => {
                     ))}
                 </View>
                 <Text style={[styles.copyright, { color: theme.colors.text.muted, fontFamily: MONO }]}>© 2026 DATARIOT</Text>
+            </View>
             </View>
         </View>
     );
@@ -329,7 +298,7 @@ const CollectionItem = ({
                 styles.collectionItem,
                 {
                     borderColor: isHovered
-                        ? (isDark ? 'rgba(217, 228, 255, 0.25)' : 'rgba(76, 110, 245, 0.3)')
+                        ? (isDark ? 'rgba(218, 230, 247, 0.25)' : 'rgba(7, 8, 12, 0.3)')
                         : (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'),
                     backgroundColor: isHovered
                         ? (isDark ? 'rgba(255, 255, 255, 0.045)' : 'rgba(0, 0, 0, 0.03)')
@@ -341,7 +310,7 @@ const CollectionItem = ({
                 {String(index).padStart(2, '0')}
             </Text>
 
-            <View style={[styles.collectionIcon, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(76, 110, 245, 0.08)' }]}>
+            <View style={[styles.collectionIcon, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.07)' : 'rgba(7, 8, 12, 0.08)' }]}>
                 <Feather name={iconName} size={12} color={accent} />
             </View>
 
@@ -366,15 +335,24 @@ const styles = StyleSheet.create({
     container: {
         paddingBottom: 40,
     },
+    header: {
+        height: TOPBAR_HEIGHT,
+        justifyContent: 'center',
+        paddingHorizontal: DOCK_PAD,
+        borderBottomWidth: 1,
+    },
+    body: {
+        paddingHorizontal: DOCK_PAD,
+        paddingTop: 8,
+    },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        height: 42,
-        borderRadius: 9,
+        height: 36,
+        ...pixelClip(2),
         borderWidth: 1,
         paddingHorizontal: 12,
         gap: 9,
-        marginBottom: 30,
         // @ts-ignore
         transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
     },
@@ -391,7 +369,7 @@ const styles = StyleSheet.create({
     keyHint: {
         width: 18,
         height: 18,
-        borderRadius: 4,
+        ...pixelClip(2),
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -424,7 +402,7 @@ const styles = StyleSheet.create({
         gap: 11,
         paddingVertical: 9,
         paddingHorizontal: 11,
-        borderRadius: 9,
+        ...pixelClip(2),
         borderWidth: 1,
         // @ts-ignore
         transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -439,7 +417,7 @@ const styles = StyleSheet.create({
     collectionIcon: {
         width: 26,
         height: 26,
-        borderRadius: 7,
+        ...pixelClip(2),
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -482,7 +460,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
     challengeCard: {
-        borderRadius: 12,
+        ...pixelClip(3),
         borderWidth: 1,
         padding: 16,
         overflow: 'hidden',
@@ -553,7 +531,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 7,
         height: 38,
-        borderRadius: 8,
+        ...pixelClip(2),
         borderWidth: 1,
         // @ts-ignore
         transition: 'background-color 0.2s ease',

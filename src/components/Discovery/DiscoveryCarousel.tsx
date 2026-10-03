@@ -1,26 +1,35 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
 import { Video } from '../../lib/supabase/hooks/useVideos';
+import { fadeRight, pixelClip } from '@design-system/pixel';
+import { ICE } from '@design-system/theme';
+import { TECH_FONT } from '@design-system/fonts';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
 const CARD_WIDTH = isWeb ? 252 : SCREEN_WIDTH * 0.75;
 const CARD_HEIGHT = CARD_WIDTH * 1.32;
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+const MONO = TECH_FONT;
 
 interface DiscoveryCarouselProps {
     videos: Video[];
     onSelect: (id: string) => void;
 }
 
-const Card = ({ item, index, onSelect }: { item: Video; index: number; onSelect: () => void }) => {
+const Card = ({ item, index, onSelect, width = CARD_WIDTH, height = CARD_HEIGHT }: {
+    item: Video;
+    index: number;
+    onSelect: () => void;
+    width?: number;
+    height?: number;
+}) => {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
     const [hovered, setHovered] = useState(false);
-    const accent = theme.colors.primary.DEFAULT;
+    const accent = ICE; // drawn over a dark scrim in both themes
 
     return (
         <Pressable
@@ -30,11 +39,13 @@ const Card = ({ item, index, onSelect }: { item: Video; index: number; onSelect:
             style={[
                 styles.card,
                 {
+                    width,
+                    height,
                     borderColor: hovered
-                        ? (isDark ? 'rgba(217, 228, 255, 0.4)' : 'rgba(76, 110, 245, 0.4)')
-                        : (isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'),
+                        ? (isDark ? 'rgba(218, 230, 247, 0.5)' : 'rgba(7, 8, 12, 0.6)')
+                        : (isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.14)'),
                     transform: [{ translateY: hovered ? -5 : 0 }],
-                    shadowColor: isDark ? '#000' : '#6B7FCC',
+                    shadowColor: isDark ? '#000' : '#3A4252',
                     shadowOpacity: hovered ? 0.5 : 0.22,
                     shadowRadius: hovered ? 26 : 12,
                     shadowOffset: { width: 0, height: hovered ? 12 : 5 },
@@ -71,7 +82,7 @@ const Card = ({ item, index, onSelect }: { item: Video; index: number; onSelect:
 
             {/* Match badge */}
             <View style={styles.topRow} pointerEvents="none">
-                <View style={[styles.matchBadge, { borderColor: 'rgba(52, 211, 153, 0.5)' }]}>
+                <View style={[styles.matchBadge, pixelClip(2), { borderColor: 'rgba(218, 230, 247, 0.5)' }]}>
                     <View style={styles.matchDot} />
                     <Text style={[styles.matchText, { fontFamily: MONO }]}>{item.dnaMatch || 90}%</Text>
                 </View>
@@ -82,7 +93,7 @@ const Card = ({ item, index, onSelect }: { item: Video; index: number; onSelect:
 
             {/* Rationale slides in on hover instead of sitting there permanently */}
             {hovered && (
-                <View style={[styles.rationaleBox, { borderColor: isDark ? 'rgba(217, 228, 255, 0.25)' : 'rgba(76, 110, 245, 0.3)' }]} pointerEvents="none">
+                <View style={[styles.rationaleBox, { borderColor: isDark ? 'rgba(218, 230, 247, 0.25)' : 'rgba(7, 8, 12, 0.3)' }]} pointerEvents="none">
                     <Text style={[styles.rationaleText, { fontFamily: MONO }]} numberOfLines={3}>
                         {item.dnaRationale || 'Matches your interest in high-tech content'}
                     </Text>
@@ -108,8 +119,36 @@ const Card = ({ item, index, onSelect }: { item: Video; index: number; onSelect:
 };
 
 export const DiscoveryCarousel: React.FC<DiscoveryCarouselProps> = ({ videos, onSelect }) => {
+    const { width: screenWidth } = useWindowDimensions();
+    const desktop = isWeb && screenWidth > 768;
+    const [measured, setMeasured] = useState(0);
+
+    // On desktop the picks are a fixed row that fills the column exactly (four
+    // across, three when the column is narrow) instead of a strip that is cut
+    // off at the right edge.
+    if (desktop) {
+        const GAP = 16;
+        const W = measured || screenWidth - 460;
+        const n = W >= 880 ? 4 : 3;
+        const cardW = (W - GAP * (n - 1)) / n;
+        const cardH = Math.round(cardW * 1.3);
+        return (
+            <View
+                style={{ flexDirection: 'row', gap: GAP, paddingVertical: 8 }}
+                onLayout={(e) => {
+                    const w = Math.round(e.nativeEvent.layout.width);
+                    if (w && Math.abs(w - measured) > 1) setMeasured(w);
+                }}
+            >
+                {videos.slice(0, n).map((item, index) => (
+                    <Card key={`${item.id}-${index}`} item={item} index={index} onSelect={() => onSelect(item.id)} width={cardW} height={cardH} />
+                ))}
+            </View>
+        );
+    }
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, fadeRight(48)]}>
             <FlatList
                 data={videos}
                 renderItem={({ item, index }) => (
@@ -138,7 +177,7 @@ const styles = StyleSheet.create({
     card: {
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
-        borderRadius: 14,
+        borderRadius: 8,
         borderWidth: 1,
         overflow: 'hidden',
         backgroundColor: '#0B0C11',
@@ -172,18 +211,17 @@ const styles = StyleSheet.create({
         gap: 5,
         paddingHorizontal: 7,
         paddingVertical: 3,
-        borderRadius: 4,
         borderWidth: 1,
-        backgroundColor: 'rgba(6, 30, 22, 0.7)',
+        backgroundColor: 'rgba(7, 8, 12, 0.78)',
     },
     matchDot: {
         width: 5,
         height: 5,
         borderRadius: 3,
-        backgroundColor: '#34D399',
+        backgroundColor: '#DAE6F7',
     },
     matchText: {
-        color: '#34D399',
+        color: '#DAE6F7',
         fontSize: 8.5,
         fontWeight: '700',
         letterSpacing: 0.8,

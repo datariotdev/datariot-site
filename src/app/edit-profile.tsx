@@ -21,10 +21,20 @@ import { supabase } from '@lib/supabase/client';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
+import { TECH_FONT } from '@design-system/fonts';
+import { pixelClip } from '@design-system/pixel';
+import { pageBg } from '@design-system/surface';
+import { useTheme } from '../components/Theme/ThemeProvider';
 
 export default function Page() {
     const router = useRouter();
     const { user } = useAuth();
+    const { theme: appTheme, mode } = useTheme();
+    const isDark = mode === 'dark';
+    const accent = appTheme.colors.primary.DEFAULT;
+    const onAccent = appTheme.colors.primary.onPrimary;
+    const hairline = isDark ? 'rgba(218, 230, 247, 0.16)' : 'rgba(7, 8, 12, 0.16)';
+    const fieldBg = isDark ? 'rgba(218, 230, 247, 0.05)' : 'rgba(255, 255, 255, 0.7)';
     const [loading, setLoading] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingHeader, setUploadingHeader] = useState(false);
@@ -258,24 +268,24 @@ export default function Page() {
         }
     };
 
-    const monoFont = { fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' };
+    const monoFont = { fontFamily: TECH_FONT };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
+        <SafeAreaView style={[styles.container, { backgroundColor: pageBg(appTheme.colors.background.primary) }]}>
+            <View style={[styles.header, { borderBottomColor: hairline }]}>
                 <Pressable onPress={() => router.back()} style={styles.cancelButton}>
-                    <Text style={[styles.cancelText, monoFont]}>[ CANCEL ]</Text>
+                    <Text style={[styles.cancelText, monoFont, { color: appTheme.colors.text.secondary }]}>[ CANCEL ]</Text>
                 </Pressable>
-                <Text style={[styles.headerTitle, monoFont]}>[ EDIT PROFILE ]</Text>
+                <Text numberOfLines={1} style={[styles.headerTitle, monoFont, { color: appTheme.colors.text.primary }]}>[ EDIT PROFILE ]</Text>
                 <Pressable
                     onPress={updateProfile}
-                    style={[styles.saveButton, loading && styles.disabledButton]}
+                    style={[styles.saveButton, { backgroundColor: accent }, loading && styles.disabledButton]}
                     disabled={loading}
                 >
                     {(loading || uploadingAvatar || uploadingHeader) ? (
-                        <ActivityIndicator color="white" size="small" />
+                        <ActivityIndicator color={onAccent} size="small" />
                     ) : (
-                        <Text style={[styles.saveText, monoFont]}>[ SAVE ]</Text>
+                        <Text style={[styles.saveText, monoFont, { color: onAccent }]}>[ SAVE ]</Text>
                     )}
                 </Pressable>
             </View>
@@ -285,6 +295,7 @@ export default function Page() {
                 style={{ flex: 1 }}
             >
                 <ScrollView contentContainerStyle={styles.content}>
+                  <View style={styles.column}>
                     {/* Header Image Section */}
                     <View style={styles.headerImageSection}>
                         <Pressable onPress={() => pickImage('header')} style={styles.headerImageContainer} disabled={uploadingHeader}>
@@ -299,7 +310,7 @@ export default function Page() {
                                 </View>
                             ) : (
                                 <View style={[styles.headerImage, styles.placeholderHeader]}>
-                                    <Ionicons name="image-outline" size={40} color="rgba(255,255,255,0.5)" />
+                                    <Ionicons name="image-outline" size={40} color={appTheme.colors.text.muted} />
                                 </View>
                             )}
                             <View style={styles.editIconOverlay}>
@@ -315,8 +326,8 @@ export default function Page() {
                                 {avatarPreview ? (
                                     <Image source={{ uri: avatarPreview }} style={styles.avatar} />
                                 ) : (
-                                    <View style={[styles.avatar, styles.placeholderAvatar]}>
-                                        <Text style={[styles.avatarPlaceholderText, monoFont]}>
+                                    <View style={[styles.avatar, styles.placeholderAvatar, { backgroundColor: accent }]}>
+                                        <Text style={[styles.avatarPlaceholderText, monoFont, { color: onAccent }]}>
                                             {displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                                         </Text>
                                     </View>
@@ -327,8 +338,8 @@ export default function Page() {
                                     </View>
                                 )}
                             </View>
-                            <View style={styles.editAvatarOverlay}>
-                                <Ionicons name="camera" size={16} color="white" />
+                            <View style={[styles.editAvatarOverlay, { backgroundColor: accent }]}>
+                                <Ionicons name="camera" size={16} color={onAccent} />
                             </View>
                         </Pressable>
                     </View>
@@ -336,42 +347,43 @@ export default function Page() {
                     {/* Form Fields */}
                     <View style={styles.form}>
                         <View style={styles.inputGroup}>
-                            <Text style={[styles.label, monoFont]}>&gt; DISPLAY NAME</Text>
+                            <Text style={[styles.label, monoFont, { color: appTheme.colors.text.secondary }]}>&gt; DISPLAY NAME</Text>
                             <TextInput
-                                style={[styles.input, monoFont]}
+                                style={[styles.input, monoFont, { color: appTheme.colors.text.primary, backgroundColor: fieldBg, borderColor: hairline }]}
                                 value={displayName}
                                 onChangeText={setDisplayName}
                                 placeholder="Enter display name"
-                                placeholderTextColor={theme.colors.text.secondary}
+                                placeholderTextColor={appTheme.colors.text.muted}
                             />
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={[styles.label, monoFont]}>&gt; USERNAME</Text>
+                            <Text style={[styles.label, monoFont, { color: appTheme.colors.text.secondary }]}>&gt; USERNAME</Text>
                             <TextInput
-                                style={[styles.input, monoFont]}
+                                style={[styles.input, monoFont, { color: appTheme.colors.text.primary, backgroundColor: fieldBg, borderColor: hairline }]}
                                 value={username}
                                 onChangeText={setUsername}
                                 placeholder="Enter username"
-                                placeholderTextColor={theme.colors.text.secondary}
+                                placeholderTextColor={appTheme.colors.text.muted}
                                 autoCapitalize="none"
                             />
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={[styles.label, monoFont]}>&gt; BIO</Text>
+                            <Text style={[styles.label, monoFont, { color: appTheme.colors.text.secondary }]}>&gt; BIO</Text>
                             <TextInput
-                                style={[styles.input, styles.textArea, monoFont]}
+                                style={[styles.input, styles.textArea, monoFont, { color: appTheme.colors.text.primary, backgroundColor: fieldBg, borderColor: hairline }]}
                                 value={bio}
                                 onChangeText={setBio}
                                 placeholder="Write something about yourself..."
-                                placeholderTextColor={theme.colors.text.secondary}
+                                placeholderTextColor={appTheme.colors.text.muted}
                                 multiline
                                 numberOfLines={4}
                                 textAlignVertical="top"
                             />
                         </View>
                     </View>
+                  </View>
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -381,7 +393,11 @@ export default function Page() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.colors.background.primary,
+    },
+    column: {
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
     },
     header: {
         flexDirection: 'row',
@@ -390,32 +406,30 @@ const styles = StyleSheet.create({
         paddingHorizontal: theme.spacing.lg,
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.1)',
     },
     headerTitle: {
-        fontSize: 18,
+        flexShrink: 1,
+        fontSize: 14,
         fontWeight: 'bold',
-        color: 'white',
+        letterSpacing: 0.4,
+        textAlign: 'center',
     },
     cancelButton: {
         padding: 8,
     },
     cancelText: {
-        color: theme.colors.text.secondary,
-        fontSize: 16,
+        fontSize: 14,
     },
     saveButton: {
         padding: 8,
-        backgroundColor: theme.colors.primary.DEFAULT,
-        borderRadius: 20,
+        ...pixelClip(3),
         paddingHorizontal: 16,
         minWidth: 70,
         alignItems: 'center',
     },
     saveText: {
-        color: 'white',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: 13,
     },
     content: {
         paddingBottom: 40,
@@ -446,7 +460,7 @@ const styles = StyleSheet.create({
         right: 8,
         backgroundColor: 'rgba(0,0,0,0.6)',
         padding: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     avatarSection: {
         position: 'absolute',
@@ -460,7 +474,7 @@ const styles = StyleSheet.create({
     avatar: {
         width: 100,
         height: 100,
-        borderRadius: 50,
+        ...pixelClip(6),
         borderWidth: 4,
         borderColor: theme.colors.background.primary,
     },
@@ -472,7 +486,6 @@ const styles = StyleSheet.create({
     avatarPlaceholderText: {
         fontSize: 40,
         fontWeight: 'bold',
-        color: 'white',
     },
     editAvatarOverlay: {
         position: 'absolute',
@@ -480,7 +493,7 @@ const styles = StyleSheet.create({
         right: 0,
         backgroundColor: theme.colors.primary.DEFAULT,
         padding: 6,
-        borderRadius: 15,
+        ...pixelClip(4),
         borderWidth: 2,
         borderColor: theme.colors.background.primary,
     },
@@ -492,19 +505,16 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     label: {
-        color: theme.colors.text.secondary,
-        fontSize: 14,
+        fontSize: 12,
         marginBottom: 8,
         fontWeight: '600',
+        letterSpacing: 1.2,
     },
     input: {
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        borderRadius: 12,
+        ...pixelClip(4),
         padding: 16,
-        color: 'white',
-        fontSize: 16,
+        fontSize: 15,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
     },
     textArea: {
         minHeight: 100,

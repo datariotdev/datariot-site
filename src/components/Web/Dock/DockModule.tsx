@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTheme } from '../../Theme/ThemeProvider';
+import { TECH_FONT } from '@design-system/fonts';
 
-export const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+export const MONO = TECH_FONT;
 
 /** A dock module: label, hairline rule out to the edge, optional right-hand status. */
 export const DockModule = ({
@@ -25,7 +26,7 @@ export const DockModule = ({
                 <Text style={[styles.title, { color: theme.colors.text.secondary, fontFamily: MONO }]}>
                     {title}
                 </Text>
-                <View style={[styles.rule, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(0,0,0,0.09)' }]} />
+                <View style={[styles.rule, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(0,0,0,0.09)' }]} />
                 {right}
             </View>
             {children}
@@ -44,8 +45,8 @@ export const useDockSurface = () => {
         /** Opaque — charts need a known surface colour to draw rings and gaps against. */
         surface: isDark ? '#0B0C11' : '#FFFFFF',
         cardBg: isDark ? 'rgba(15, 17, 24, 0.75)' : 'rgba(255, 255, 255, 0.9)',
-        cardBorder: isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(0, 0, 0, 0.07)',
-        hairline: isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(0,0,0,0.09)',
+        cardBorder: isDark ? 'rgba(218, 230, 247, 0.10)' : 'rgba(0, 0, 0, 0.07)',
+        hairline: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(0,0,0,0.09)',
     };
 };
 

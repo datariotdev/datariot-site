@@ -11,6 +11,9 @@ import { VIDEO_CATEGORIES, CATEGORY_DISPLAY_NAMES, VideoCategory } from '../lib/
 import { supabase } from '../lib/supabase/client';
 import { generateDebateSeed, generateVideoAnalysis, DebateSeed } from '../lib/ai/client';
 import { useTheme } from '../components/Theme/ThemeProvider';
+import { pageBg } from '@design-system/surface';
+import { pixelClip } from '@design-system/pixel';
+import { FONT } from '@design-system/fonts';
 
 const showAlert = (title: string, message: string) => {
     if (Platform.OS === 'web') {
@@ -314,13 +317,13 @@ export default function PublishScreen() {
     const isVideoSelection = !!videoUri;
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: pageBg(theme.colors.background.primary) }]} edges={['top']}>
             <Stack.Screen options={{ headerShown: false }} />
 
             {/* Header */}
             <View style={[styles.header, { borderBottomColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Text style={[styles.cancelText, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium }]}>Cancel</Text>
+                    <Text style={[styles.cancelText, { color: theme.colors.text.secondary, fontFamily: FONT.tech }]}>[ CANCEL ]</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={handlePost}
@@ -328,19 +331,19 @@ export default function PublishScreen() {
                     style={[
                         styles.postButton,
                         {
-                            backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                            backgroundColor: isDark ? '#DAE6F7' : '#07080C',
                         },
                         (uploading || isVerifying || (isVideoSelection && verificationStatus !== 'verified')) && styles.disabledButton
                     ]}
                 >
                     {uploading ? (
-                        <ActivityIndicator color={isDark ? '#000000' : '#ffffff'} size="small" />
+                        <ActivityIndicator color={isDark ? '#07080C' : '#ffffff'} size="small" />
                     ) : (
                         <Text style={[
                             styles.postButtonText,
                             {
-                                color: isDark ? '#000000' : '#ffffff',
-                                fontFamily: theme.typography.fontFamilies.bold
+                                color: isDark ? '#07080C' : '#ffffff',
+                                fontFamily: FONT.techBold
                             }
                         ]}>Post</Text>
                     )}
@@ -351,7 +354,7 @@ export default function PublishScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}
             >
-                <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100 }}>
+                <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100, width: '100%', maxWidth: 720, alignSelf: 'center' }}>
                     {/* User Info (Optional) */}
                     <View style={styles.userInfo}>
                         <View style={[
@@ -375,7 +378,7 @@ export default function PublishScreen() {
                                 color: theme.colors.text.primary,
                                 fontFamily: theme.typography.fontFamilies.regular,
                                 // @ts-ignore - Web outline reset
-                                outlineStyle: 'none',
+                                outlineStyle: 'none' as any, // web-only; RN's types only know solid/dotted/dashed
                                 outlineWidth: 0,
                             }
                         ]}
@@ -392,8 +395,8 @@ export default function PublishScreen() {
                         style={[
                             styles.aiSuggestBtn,
                             {
-                                backgroundColor: isDark ? 'rgba(217, 228, 255, 0.08)' : 'rgba(76, 110, 245, 0.06)',
-                                borderColor: isDark ? 'rgba(217, 228, 255, 0.15)' : 'rgba(76, 110, 245, 0.12)',
+                                backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.06)',
+                                borderColor: isDark ? 'rgba(218, 230, 247, 0.15)' : 'rgba(7, 8, 12, 0.12)',
                                 borderWidth: 1,
                             },
                             suggesting && { opacity: 0.7 }
@@ -402,13 +405,13 @@ export default function PublishScreen() {
                         disabled={suggesting}
                     >
                         {suggesting ? (
-                            <ActivityIndicator size="small" color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                            <ActivityIndicator size="small" color={isDark ? '#DAE6F7' : '#07080C'} />
                         ) : (
                             <>
-                                <Ionicons name="sparkles" size={16} color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                                <Ionicons name="sparkles" size={16} color={isDark ? '#DAE6F7' : '#07080C'} />
                                 <Text style={[
                                     styles.aiSuggestText,
-                                    { color: isDark ? '#D9E4FF' : '#4C6EF5', fontFamily: theme.typography.fontFamilies.bold }
+                                    { color: isDark ? '#DAE6F7' : '#07080C', fontFamily: theme.typography.fontFamilies.bold }
                                 ]}>
                                     AI Logic Oracle: Extract Thesis
                                 </Text>
@@ -436,7 +439,7 @@ export default function PublishScreen() {
                             {/* Verification Overlay */}
                             {isVerifying && (
                                 <View style={styles.verificationOverlay}>
-                                    <ActivityIndicator size="large" color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                                    <ActivityIndicator size="large" color={isDark ? '#DAE6F7' : '#07080C'} />
                                     <Text style={[styles.verificationText, { fontFamily: theme.typography.fontFamilies.medium }]}>Verifying AI Content...</Text>
                                 </View>
                             )}
@@ -490,17 +493,17 @@ export default function PublishScreen() {
                                 onPress={isPlaying ? stopSound : playSound}
                                 style={[
                                     styles.playButton,
-                                    { backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }
+                                    { backgroundColor: isDark ? '#DAE6F7' : '#07080C' }
                                 ]}
                             >
                                 <Ionicons name={isPlaying ? "pause" : "play"} size={24} color={isDark ? '#000000' : '#ffffff'} />
                             </TouchableOpacity>
                             <View style={styles.audioWaveform}>
-                                <View style={[styles.bar, { height: 12, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
-                                <View style={[styles.bar, { height: 20, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
-                                <View style={[styles.bar, { height: 16, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
-                                <View style={[styles.bar, { height: 24, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
-                                <View style={[styles.bar, { height: 10, backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5' }]} />
+                                <View style={[styles.bar, { height: 12, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
+                                <View style={[styles.bar, { height: 20, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
+                                <View style={[styles.bar, { height: 16, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
+                                <View style={[styles.bar, { height: 24, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
+                                <View style={[styles.bar, { height: 10, backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]} />
                             </View>
                             <TouchableOpacity style={styles.deleteAudio} onPress={() => {
                                 setAudioUri(null);
@@ -527,8 +530,8 @@ export default function PublishScreen() {
                                                 borderWidth: 1,
                                             },
                                             selectedCategory === cat && {
-                                                backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5',
-                                                borderColor: isDark ? '#D9E4FF' : '#4C6EF5',
+                                                backgroundColor: isDark ? '#DAE6F7' : '#07080C',
+                                                borderColor: isDark ? '#DAE6F7' : '#07080C',
                                             }
                                         ]}
                                     >
@@ -555,12 +558,12 @@ export default function PublishScreen() {
 
                 {/* TOOLBAR */}
                 {!isVideoSelection && (
-                    <View style={[styles.toolbar, { backgroundColor: theme.colors.background.primary, borderTopColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }]}>
+                    <View style={[styles.toolbar, { backgroundColor: 'transparent', borderTopColor: isDark ? 'rgba(218, 230, 247, 0.14)' : 'rgba(7, 8, 12, 0.14)' }]}>
                         <TouchableOpacity
                             style={[styles.toolbarButton, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)' }]}
                             onPress={pickImage}
                         >
-                            <Ionicons name="image-outline" size={24} color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                            <Ionicons name="image-outline" size={24} color={isDark ? '#DAE6F7' : '#07080C'} />
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -575,16 +578,16 @@ export default function PublishScreen() {
                             <MaterialIcons
                                 name="mic"
                                 size={24}
-                                color={isRecording ? "#FFF" : (isDark ? '#D9E4FF' : '#4C6EF5')}
+                                color={isRecording ? "#FFF" : (isDark ? '#DAE6F7' : '#07080C')}
                             />
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.toolbarButton, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)' }]}>
-                            <MaterialIcons name="poll" size={24} color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                            <MaterialIcons name="poll" size={24} color={isDark ? '#DAE6F7' : '#07080C'} />
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.toolbarButton, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)' }]}>
-                            <Ionicons name="location-outline" size={24} color={isDark ? '#D9E4FF' : '#4C6EF5'} />
+                            <Ionicons name="location-outline" size={24} color={isDark ? '#DAE6F7' : '#07080C'} />
                         </TouchableOpacity>
 
                         {isRecording && (
@@ -608,9 +611,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderBottomWidth: 1,
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
     },
     cancelText: {
-        fontSize: 16,
+        fontSize: 13,
+        letterSpacing: 0.6,
     },
     headerTitle: {
         fontSize: 16,
@@ -622,7 +629,7 @@ const styles = StyleSheet.create({
     postButton: {
         paddingHorizontal: 20,
         paddingVertical: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     disabledButton: {
         opacity: 0.5,
@@ -643,7 +650,7 @@ const styles = StyleSheet.create({
     avatarPlaceholder: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -666,7 +673,7 @@ const styles = StyleSheet.create({
     mediaPreview: {
         marginHorizontal: 20,
         height: 250,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
         position: 'relative',
         marginTop: 10,
@@ -687,7 +694,7 @@ const styles = StyleSheet.create({
     categoryChip: {
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 20,
+        ...pixelClip(5),
     },
     categoryChipText: {
         fontSize: 14,
@@ -702,7 +709,7 @@ const styles = StyleSheet.create({
         right: 10,
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 4,
+        ...pixelClip(2),
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
@@ -716,14 +723,14 @@ const styles = StyleSheet.create({
     imagePreviewContainer: {
         marginHorizontal: 20,
         marginTop: 10,
-        borderRadius: 16,
+        ...pixelClip(4),
         overflow: 'hidden',
     },
     imagePreview: {
         width: '100%',
         height: 300,
         resizeMode: 'cover',
-        borderRadius: 16,
+        ...pixelClip(4),
     },
     removeMedia: {
         position: 'absolute',
@@ -732,7 +739,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.6)',
         width: 32,
         height: 32,
-        borderRadius: 16,
+        ...pixelClip(3),
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -743,12 +750,12 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginTop: 20,
         padding: 12,
-        borderRadius: 16,
+        ...pixelClip(4),
     },
     playButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        ...pixelClip(3),
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
@@ -775,11 +782,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 12,
         borderTopWidth: 1,
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
     },
     toolbarButton: {
         width: 44,
         height: 44,
-        borderRadius: 22,
+        ...pixelClip(4),
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 8,
@@ -831,7 +841,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 12,
+        ...pixelClip(3),
         marginHorizontal: 20,
         marginTop: 8,
         gap: 8,

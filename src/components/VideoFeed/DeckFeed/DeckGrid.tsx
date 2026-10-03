@@ -2,6 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { DeckCard, CardScale } from './DeckCard';
 import type { Video } from '../../../lib/supabase/hooks/useVideos';
+import { deckColumn } from '../../Layout/metrics';
 
 const GAP = 16;
 
@@ -115,10 +116,12 @@ export const DeckGrid = ({
             initialNumToRender={3}
             maxToRenderPerBatch={2}
             windowSize={5}
+            // The list itself stays full width, so the wheel scrolls over the
+            // margins as well; the column is the content container.
             contentContainerStyle={{
+                ...deckColumn,
                 paddingTop: contentPaddingTop,
                 paddingBottom: contentPaddingBottom,
-                paddingHorizontal: 28,
             }}
         />
     );
