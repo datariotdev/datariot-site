@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, TouchableOpacity,
-    Platform, ScrollView, ActivityIndicator, Alert
+    Platform, ScrollView, ActivityIndicator, Alert, useWindowDimensions
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
@@ -95,6 +95,11 @@ export default function CreateScreen() {
 
     const bg = theme.colors.background.primary;
     const fg = theme.colors.text.primary;
+    // Syncopate is a wide face: "SOMETHING" at a fixed 44px was wider than a phone
+    // and broke mid-word ("SOMETHIN / G"). Size the three lines to the screen.
+    const { width: winWidth } = useWindowDimensions();
+    const heroSize = Math.max(26, Math.min(Platform.OS === 'web' ? 44 : 38, Math.floor((winWidth - 48) / 8.6)));
+    const heroStyle = { fontSize: heroSize, lineHeight: Math.round(heroSize * 1.15) };
 
     const pickVideo = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -147,13 +152,13 @@ export default function CreateScreen() {
                 {/* HERO */}
                 <View style={styles.heroBox}>
                     <View style={styles.heroLine} />
-                    <Text style={[styles.heroText, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
+                    <Text numberOfLines={1} style={[styles.heroText, heroStyle, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
                         CREATE
                     </Text>
-                    <Text style={[styles.heroText, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
+                    <Text numberOfLines={1} style={[styles.heroText, heroStyle, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
                         SOMETHING
                     </Text>
-                    <Text style={[styles.heroText, { color: isDark ? '#D9E4FF' : theme.colors.primary.DEFAULT, fontFamily: theme.typography.fontFamilies.brand }]}>
+                    <Text numberOfLines={1} style={[styles.heroText, heroStyle, { color: isDark ? '#D9E4FF' : theme.colors.primary.DEFAULT, fontFamily: theme.typography.fontFamilies.brand }]}>
                         NEW
                     </Text>
                 </View>

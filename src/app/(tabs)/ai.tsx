@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, KeyboardAvoidingView, Platform, FlatList, Modal, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, KeyboardAvoidingView, Keyboard, Platform, FlatList, Modal, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,6 +7,7 @@ import Animated, { FadeIn, FadeInDown, FadeInUp, useSharedValue, useAnimatedStyl
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { generateVideoAnalysis, chatWithAI, generateDailyInsight, VideoAnalysis, DailyInsight } from '../../lib/ai/client';
+import { TAB_BAR_HEIGHT } from '../../lib/constants/layout';
 
 const { width } = Dimensions.get('window');
 
@@ -239,6 +240,16 @@ export default function AIScreen() {
         }
     ]);
     const [inputText, setInputText] = useState('');
+    // The tab bar floats over this screen, so the input has to sit above it. It
+    // hides itself while the keyboard is up, and then the old padding is right.
+    const [keyboardOpen, setKeyboardOpen] = useState(false);
+    useEffect(() => {
+        const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+        const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+        const show = Keyboard.addListener(showEvt, () => setKeyboardOpen(true));
+        const hide = Keyboard.addListener(hideEvt, () => setKeyboardOpen(false));
+        return () => { show.remove(); hide.remove(); };
+    }, []);
     const [loading, setLoading] = useState(false);
     const [selectedTool, setSelectedTool] = useState<ToolType>('chat');
 
@@ -573,7 +584,7 @@ export default function AIScreen() {
                     </View>
 
                     {/* Input Area — always editable */}
-                    <View style={[styles.inputContainer, { borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                    <View style={[styles.inputContainer, { borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }, !keyboardOpen && { paddingBottom: TAB_BAR_HEIGHT + 8 }]}>
                         <View style={[styles.inputWrapper, {
                             backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
                             borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'

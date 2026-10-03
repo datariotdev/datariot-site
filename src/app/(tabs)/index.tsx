@@ -54,6 +54,7 @@ const HomeScreen = () => {
         loading,
         loadMore,
         toggleLike,
+        toggleSave,
         toggleFollow,
     } = useVideos({
         type: activeTab,
@@ -67,7 +68,7 @@ const HomeScreen = () => {
 
     const handleSelectVideo = (videoId: string) => setSelectedVideoId(videoId);
     const handleComment = (videoId: string) => setCommentsVideoId(videoId);
-    const handleSave = (videoId: string) => console.log('Save:', videoId);
+    const handleSave = (videoId: string) => toggleSave(videoId);
 
     const handleMore = (videoId: string) => {
         const vid = videos.find(v => v.id === videoId);
@@ -255,6 +256,16 @@ const HomeScreen = () => {
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
             <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+                {/* The chrome floats over a scrolling page. Without a scrim the cards'
+                    text ran straight through the tabs and the filter pills. */}
+                <LinearGradient
+                    pointerEvents="none"
+                    colors={isDark
+                        ? ['rgba(8, 9, 13, 0.98)', 'rgba(8, 9, 13, 0.95)', 'rgba(8, 9, 13, 0)']
+                        : ['rgba(248, 248, 250, 0.98)', 'rgba(248, 248, 250, 0.95)', 'rgba(248, 248, 250, 0)']}
+                    locations={[0, 0.84, 1]}
+                    style={[styles.topScrim, { height: feedPaddingTop + 16 }]}
+                />
                 <View style={styles.topNavContent} pointerEvents="box-none">
                     <View style={styles.leftActionsContainer}>
                         <Pressable
@@ -379,6 +390,12 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 10,
+    },
+    topScrim: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
     },
     topNavContent: {
         height: 44,

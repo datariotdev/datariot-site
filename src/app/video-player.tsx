@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
@@ -7,12 +7,16 @@ import { theme } from '@design-system/theme';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
+import { CommentsModal } from '../components/VideoFeed/CommentsModal';
+import { MoreOptionsModal } from '../components/VideoFeed/MoreOptionsModal';
+import { DeepDiveModal } from '../components/VideoFeed/DeepDiveModal';
 
 export default function VideoPlayerScreen() {
     const isFocused = useIsFocused();
     const params = useLocalSearchParams<{
         type: FeedType;
         userId?: string;
+        savedBy?: string;
         hashtag?: string;
         searchQuery?: string;
         initialVideoId?: string;
@@ -31,6 +35,7 @@ export default function VideoPlayerScreen() {
     const cleanSearchQuery = getStringParam(params.searchQuery);
     const cleanHashtag = getStringParam(params.hashtag);
     const cleanUserId = getStringParam(params.userId);
+    const cleanSavedBy = getStringParam(params.savedBy);
     const cleanType = (getStringParam(params.type) || 'trending') as FeedType;
     const cleanSort = getStringParam(params.sort) as 'recent' | 'popular' | undefined;
     const initialVideoId = getStringParam(params.initialVideoId);
@@ -42,10 +47,12 @@ export default function VideoPlayerScreen() {
         loading,
         loadMore,
         toggleLike,
+        toggleSave,
         toggleFollow
     } = useVideos({
         type: cleanType,
         userId: cleanUserId,
+        savedBy: cleanSavedBy,
         hashtag: cleanHashtag,
         searchQuery: cleanSearchQuery,
         sort: cleanSort
@@ -62,17 +69,26 @@ export default function VideoPlayerScreen() {
         }
     };
 
-    const handleComment = (videoId: string) => {
-        console.log('Comment on:', videoId);
-    };
+    // Comments and the more-options sheet were console.log stubs here, so opening a
+    // video from a profile left both buttons dead. Same modals as the home feed.
+    const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
+    const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
+    const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
 
-    const handleSave = (videoId: string) => {
-        console.log('Save:', videoId);
-    };
+    const handleComment = (videoId: string) => setCommentsVideoId(videoId);
+
+    const handleSave = (videoId: string) => toggleSave(videoId);
 
     const handleMore = (videoId: string) => {
-        console.log('More options:', videoId);
+        const vid = videos.find(v => v.id === videoId);
+        if (vid) setMoreOptionsVideo(vid);
     };
+
+    const isFeedActive =
+        isFocused &&
+        commentsVideoId === null &&
+        moreOptionsVideo === null &&
+        deepDiveVideo === null;
 
     // Filter videos to start from the initialVideoId if provided
     // Ideally, we would scroll to the index, but filtering/reordering might be easier for now
@@ -114,7 +130,7 @@ export default function VideoPlayerScreen() {
 
             <CoubClassicFeed
                 videos={videos}
-                isScreenFocused={isFocused}
+                isScreenFocused={isFeedActive}
                 onEndReached={loadMore}
                 onLike={toggleLike}
                 onComment={handleComment}
@@ -123,6 +139,22 @@ export default function VideoPlayerScreen() {
                 onFollow={toggleFollow}
                 onSelect={(id) => console.log('Selected:', id)}
                 initialScrollIndex={initialScrollIndex}
+            />
+
+            <CommentsModal
+                visible={!!commentsVideoId}
+                videoId={commentsVideoId}
+                onClose={() => setCommentsVideoId(null)}
+            />
+            <MoreOptionsModal
+                visible={moreOptionsVideo !== null}
+                onClose={() => setMoreOptionsVideo(null)}
+                onDeepDive={() => setDeepDiveVideo(moreOptionsVideo)}
+            />
+            <DeepDiveModal
+                visible={deepDiveVideo !== null}
+                video={deepDiveVideo}
+                onClose={() => setDeepDiveVideo(null)}
             />
 
             {/* Back Button Overlay */}

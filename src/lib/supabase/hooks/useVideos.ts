@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../client';
 import { useAuth } from './useAuth';
 import { encodeVideoUrl } from '../../utils/url';
+import { promptSignIn } from '../../utils/promptSignIn';
 
 export interface Video {
     id: string;
@@ -42,9 +43,13 @@ interface UseVideosProps {
     hashtag?: string;
     category?: string;
     sort?: 'recent' | 'popular';
+    /** Only the videos this user has saved, newest save first. */
+    savedBy?: string;
+    /** false leaves the hook idle (the profile's Saved tab loads only when opened). */
+    enabled?: boolean;
 }
 
-export function useVideos({ type, userId, searchQuery, hashtag, category, sort = 'recent' }: UseVideosProps) {
+export function useVideos({ type, userId, searchQuery, hashtag, category, sort = 'recent', savedBy, enabled = true }: UseVideosProps) {
     const { user } = useAuth();
     const [videos, setVideos] = useState<Video[]>([]);
     const [loading, setLoading] = useState(true);
@@ -52,7 +57,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
-    const formatVideo = useCallback((video: any, profile?: any, isLiked: boolean = false): Video => {
+    const formatVideo = useCallback((video: any, profile?: any, isLiked: boolean = false, isSaved: boolean = false): Video => {
         const authorName = profile?.display_name || profile?.username || profile?.nickname || 'Unknown';
 
         // Sanitize title: remove Russian strings and specific placeholders
@@ -79,7 +84,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             views: video.views_count || video.views || 0,
             shares: video.shares_count || video.shares || 0,
             isLiked: isLiked,
-            isSaved: false,
+            isSaved,
             isFollowing: false,
             thumbnailUrl: video.thumbnail_url || video.thumbnail || `https://picsum.photos/seed/${video.id}/800/1200`,
             category: video.category || null,
@@ -90,13 +95,33 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     }, []);
 
     const fetchVideos = useCallback(async (pageNum: number, isRefresh: boolean = false) => {
-        if (!supabase) {
+        if (!supabase || !enabled) {
             setLoading(false);
             setRefreshing(false);
             return;
         }
         try {
             if (!isRefresh) setLoading(true);
+
+            // Saved tab: the ids come from save_actions, in the order they were saved
+            let pageSavedIds: string[] | null = null;
+            if (savedBy) {
+                const { data: savedRows, error: savedError } = await supabase
+                    .from('save_actions')
+                    .select('video_id')
+                    .eq('user_id', savedBy)
+                    .order('created_at', { ascending: false });
+                if (savedError) throw savedError;
+                const allSaved = (savedRows || []).map((r: any) => r.video_id as string);
+                const ids = allSaved.slice(pageNum * 12, (pageNum + 1) * 12);
+                if (ids.length === 0) {
+                    if (isRefresh) setVideos([]);
+                    setHasMore(false);
+                    return;
+                }
+                pageSavedIds = ids;
+                setHasMore((pageNum + 1) * 12 < allSaved.length);
+            }
 
             // 1. Fetch videos - Increased range to fetch more in case many are filtered out
             let query = supabase
@@ -114,6 +139,10 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
 
             if (userId) {
                 query = query.eq('user_id', userId);
+            }
+
+            if (pageSavedIds) {
+                query = query.in('id', pageSavedIds);
             }
 
             if (hashtag) {
@@ -174,6 +203,23 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 return new Set<string>();
             })();
 
+            const fetchSavedPromise = (async () => {
+                if (user && videoData.length > 0) {
+                    const { data: savedData } = await supabase
+                        .from('save_actions')
+                        .select('video_id')
+                        .eq('user_id', user.id)
+                        .in('video_id', videoIds);
+
+                    const savedSet = new Set<string>();
+                    if (savedData) {
+                        savedData.forEach((r: any) => savedSet.add(r.video_id));
+                    }
+                    return savedSet;
+                }
+                return new Set<string>();
+            })();
+
             // Fetch Logic Stats (Who's Winning) for these videos
             const fetchLogicStatsPromise = (async () => {
                 const urls = videoData.map((v: any) => v.url || v.s3_url).filter(Boolean);
@@ -223,9 +269,10 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 return finalMap;
             })();
 
-            const [profilesMap, likedVideoIds, videoLogicMap] = await Promise.all([
+            const [profilesMap, likedVideoIds, savedVideoIds, videoLogicMap] = await Promise.all([
                 fetchProfilesPromise,
                 fetchLikesPromise,
+                fetchSavedPromise,
                 fetchLogicStatsPromise
             ]);
 
@@ -241,7 +288,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
 
             const formattedVideos = videoData
                 .map((v: any) => {
-                    const formatted = formatVideo(v, profilesMap[v.user_id], likedVideoIds.has(v.id));
+                    const formatted = formatVideo(v, profilesMap[v.user_id], likedVideoIds.has(v.id), savedVideoIds.has(v.id));
                     const videoUrl = v.url || v.s3_url;
                     if (videoUrl && videoLogicMap[videoUrl]) {
                         formatted.logicStats = videoLogicMap[videoUrl];
@@ -274,20 +321,25 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 console.log('[useVideos] Fetched URLs:', formattedVideos.map((v: Video) => v.videoUrl));
             }
 
+            if (pageSavedIds) {
+                // newest save first, as the ids came back (hasMore was set above)
+                formattedVideos.sort((a: Video, b: Video) => pageSavedIds!.indexOf(a.id) - pageSavedIds!.indexOf(b.id));
+            } else {
+                setHasMore(videoData.length === 12);
+            }
+
             if (isRefresh) {
                 setVideos(formattedVideos);
             } else {
                 setVideos(prev => [...prev, ...formattedVideos]);
             }
-
-            setHasMore(videoData.length === 12);
         } catch (error) {
             console.error('Error fetching videos:', error);
         } finally {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [userId, searchQuery, hashtag, category, user, formatVideo, sort]);
+    }, [userId, searchQuery, hashtag, category, user, formatVideo, sort, savedBy, enabled]);
 
     useEffect(() => {
         // console.log('useVideos component mounted or dependencies changed.');
@@ -310,7 +362,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     };
 
     const toggleLike = async (videoId: string) => {
-        if (!user) return;
+        if (!user) { promptSignIn('like videos'); return; }
 
         const videoIndex = videos.findIndex(v => v.id === videoId);
         if (videoIndex === -1) return;
@@ -347,8 +399,43 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
         }
     };
 
+    const toggleSave = async (videoId: string) => {
+        if (!user) { promptSignIn('save videos'); return; }
+
+        const current = videos.find(v => v.id === videoId);
+        if (!current) return;
+        const wasSaved = current.isSaved;
+
+        // Optimistic, and reverted from the latest list rather than a stale copy
+        const apply = (saved: boolean) => setVideos(prev => prev.map(v => v.id === videoId
+            ? { ...v, isSaved: saved, saved: saved ? v.saved + 1 : Math.max(0, v.saved - 1) }
+            : v));
+        apply(!wasSaved);
+
+        try {
+            if (!supabase) return;
+            if (wasSaved) {
+                const { error } = await supabase
+                    .from('save_actions')
+                    .delete()
+                    .eq('user_id', user.id)
+                    .eq('video_id', videoId);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase
+                    .from('save_actions')
+                    .insert({ user_id: user.id, video_id: videoId });
+                if (error) throw error;
+            }
+        } catch (error) {
+            console.error('Error toggling save:', error);
+            apply(wasSaved);
+        }
+    };
+
     const toggleFollow = async (userIdToFollow: string) => {
-        if (!user || user.id === userIdToFollow) return;
+        if (user && user.id === userIdToFollow) return;
+        if (!user) { promptSignIn('follow creators'); return; }
 
         const isFollowing = videos.some(v => v.authorId === userIdToFollow && v.isFollowing);
 
@@ -384,6 +471,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
         loadMore,
         refresh,
         toggleLike,
+        toggleSave,
         toggleFollow,
     };
 }

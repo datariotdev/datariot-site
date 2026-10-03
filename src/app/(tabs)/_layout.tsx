@@ -6,6 +6,7 @@ import { View, Dimensions, Platform, useWindowDimensions, StyleSheet } from 'rea
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { BlurView } from 'expo-blur';
+import { TAB_BAR_HEIGHT } from '../../lib/constants/layout';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -45,7 +46,7 @@ const TabLayout = () => {
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: Platform.OS === 'ios' ? 88 : 64,
+                        height: TAB_BAR_HEIGHT,
                         backgroundColor: 'transparent',
                         borderWidth: 0,
                         borderTopWidth: 0,
@@ -58,7 +59,34 @@ const TabLayout = () => {
                         shadowRadius: 0,
                         paddingBottom: Platform.OS === 'ios' ? 24 : 8,
                     },
-                    tabBarBackground: () => null,
+                    // The bar floats over every screen. With nothing behind it the icons
+                    // sat on top of cards, lists and the AI chat's input; a blurred scrim
+                    // and a hairline keep it readable and tappable over any content.
+                    tabBarBackground: () => (
+                        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+                            <BlurView
+                                intensity={isDark ? 45 : 60}
+                                tint={isDark ? 'dark' : 'light'}
+                                style={StyleSheet.absoluteFill}
+                            />
+                            <View
+                                style={[
+                                    StyleSheet.absoluteFill,
+                                    { backgroundColor: isDark ? 'rgba(8, 9, 13, 0.78)' : 'rgba(255, 255, 255, 0.82)' },
+                                ]}
+                            />
+                            <View
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    height: StyleSheet.hairlineWidth,
+                                    backgroundColor: isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)',
+                                }}
+                            />
+                        </View>
+                    ),
                     tabBarLabelStyle: {
                         display: 'none',
                     },

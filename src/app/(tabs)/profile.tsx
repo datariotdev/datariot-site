@@ -406,6 +406,13 @@ export default function ProfileScreen() {
         loading: loadingVideos,
     } = useVideos({ type: 'user', userId: user?.id });
 
+    // The Saved tab was a static "No saved items". It lists what the bookmark
+    // button saved, and only loads once the tab is opened.
+    const {
+        videos: savedVideos,
+        loading: loadingSaved,
+    } = useVideos({ type: 'user', savedBy: user?.id, enabled: activeTab === 'saved' && !!user });
+
     const {
         posts,
         loading: loadingPosts,
@@ -639,6 +646,13 @@ export default function ProfileScreen() {
         <ProfileVideoGridItem item={item} onPress={() => navigateToVideo(item.id, index)} isDark={isDark} />
     );
 
+    const navigateToSavedVideo = (videoId: string, idx: number) => {
+        router.push({
+            pathname: '/video-player',
+            params: { type: 'user', savedBy: user?.id, initialVideoId: videoId }
+        });
+    };
+
     const navigateToVideoById = (videoId: string, idx: number) => {
         router.push({
             pathname: '/video-player',
@@ -696,6 +710,19 @@ export default function ProfileScreen() {
             return null;
         }
 
+        if (activeTab === 'saved') {
+            if (loadingSaved && savedVideos.length === 0) {
+                return (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator color={theme.colors.primary.DEFAULT} />
+                    </View>
+                );
+            }
+            if (savedVideos.length > 0) {
+                return <EssenceGrid videos={savedVideos} onPress={navigateToSavedVideo} isDark={isDark} />;
+            }
+        }
+
         // Default empty state (Saved)
         return (
             <View style={styles.emptyState}>
@@ -706,6 +733,9 @@ export default function ProfileScreen() {
                 />
                 <Text style={[styles.emptyStateText, { color: theme.colors.text.secondary }]}>
                     No saved items
+                </Text>
+                <Text style={[styles.emptyStateText, { color: theme.colors.text.muted, fontSize: 13, marginTop: 6 }]}>
+                    Tap the bookmark on a video to keep it here.
                 </Text>
             </View>
         );

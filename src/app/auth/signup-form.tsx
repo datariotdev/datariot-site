@@ -109,12 +109,13 @@ export default function SignupFormScreen() {
                         <Pressable
                             style={({ pressed }) => [
                                 styles.googleButton,
-                                pressed && styles.buttonPressed
+                                { opacity: 0.5 }
                             ]}
-                            onPress={() => {/* TODO: Google Auth */ }}
+                            disabled
+                            accessibilityState={{ disabled: true }}
                         >
                             <AntDesign name="google" size={20} color="#D9E4FF" style={styles.googleIcon} />
-                            <Text style={styles.googleButtonText}>Continue with Google</Text>
+                            <Text style={styles.googleButtonText}>Google sign-in · soon</Text>
                         </Pressable>
                     </View>
                 </View>

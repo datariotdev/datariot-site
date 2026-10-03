@@ -97,12 +97,13 @@ export default function WelcomeScreen() {
                             style={({ pressed }) => [
                                 styles.googleButton,
                                 { backgroundColor: isDark ? '#FFFFFF' : '#F1F5F9' },
-                                pressed && styles.buttonPressed
+                                { opacity: 0.5 }
                             ]}
-                            onPress={() => {/* TODO: Google Auth */ }}
+                            disabled
+                            accessibilityState={{ disabled: true }}
                         >
                             <AntDesign name="google" size={20} color="#D9E4FF" style={styles.googleIcon} />
-                            <Text style={styles.googleButtonText}>Continue with Google</Text>
+                            <Text style={styles.googleButtonText}>Google sign-in · soon</Text>
                         </Pressable>
                     </View>
                 </View>
