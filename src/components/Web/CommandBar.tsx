@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { useTheme } from '../Theme/ThemeProvider';
 import { TECH_FONT } from '@design-system/fonts';
 import { pixelClip } from '@design-system/pixel';
+import { deckColumn, TOPBAR_HEIGHT } from '../Layout/metrics';
 
 const MONO = TECH_FONT;
 
@@ -137,6 +138,7 @@ export const CommandBar = ({ tabs, activeKey, onTabPress, actions, readout = [] 
                 },
             ]}
         >
+            <View style={styles.inner}>
             {/* Segmented command group */}
             <View style={styles.segments}>
                 {tabs.map((tab) => (
@@ -188,6 +190,7 @@ export const CommandBar = ({ tabs, activeKey, onTabPress, actions, readout = [] 
             )}
 
             {actions ? <View style={styles.actions}>{actions}</View> : null}
+            </View>
         </View>
     );
 };
@@ -285,12 +288,16 @@ export const LiveTicker = ({ items }: { items: string[] }) => {
 
 const styles = StyleSheet.create({
     bar: {
-        flexDirection: 'row',
-        alignItems: 'stretch',
-        height: 54,
-        paddingHorizontal: 20,
+        height: TOPBAR_HEIGHT,
         borderBottomWidth: 1,
         zIndex: 20,
+    },
+    // The bar's band runs the full width of the deck; what is on it sits on the same column as the content below.
+    inner: {
+        ...deckColumn,
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'stretch',
     },
     segments: {
         flexDirection: 'row',

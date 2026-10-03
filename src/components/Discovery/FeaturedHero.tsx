@@ -72,9 +72,13 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
     // width now depends on whether the instrument dock is mounted.
     const [measuredWidth, setMeasuredWidth] = useState(0);
     const containerWidth = isWeb ? (measuredWidth || screenWidth - 460) : screenWidth;
-    const cardWidth = isWeb ? Math.max(200, (containerWidth - 32) / 3) : containerWidth;
+    // On desktop the row is three cards that exactly fill the column: no
+    // scroller, nothing running off the right edge.
+    const items = isWeb ? featuredVideos.slice(0, 3) : featuredVideos;
+    const GAP = 16;
+    const cardWidth = isWeb ? Math.max(200, (containerWidth - GAP * (items.length - 1)) / items.length) : containerWidth;
     const cardHeight = isWeb ? cardWidth * 0.78 : cardWidth;
-    const scrollInterval = isWeb ? cardWidth + 16 : cardWidth;
+    const scrollInterval = isWeb ? cardWidth + GAP : cardWidth;
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -101,7 +105,7 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
                     {
                         width: cardWidth,
                         height: cardHeight,
-                        marginRight: isWeb ? 16 : 0,
+                        marginRight: isWeb && index < items.length - 1 ? GAP : 0,
                         borderColor: isHovered ? 'rgba(218, 230, 247, 0.6)' : 'rgba(218, 230, 247, 0.14)',
                         transform: [{ translateY: isHovered && isWeb ? -4 : 0 }],
                     }
@@ -213,29 +217,39 @@ export const FeaturedHero = ({ featuredVideos, onVideoPress }: FeaturedHeroProps
 
     return (
         <View
-            style={[styles.container, { paddingHorizontal: 0 }, isWeb && fadeRight(48)]}
+            style={[styles.container, { paddingHorizontal: 0 }]}
             onLayout={(e) => {
                 const w = e.nativeEvent.layout.width;
                 if (w && Math.abs(w - measuredWidth) > 1) setMeasuredWidth(w);
             }}
         >
-            <ScrollView
-                horizontal
-                pagingEnabled={!isWeb}
-                showsHorizontalScrollIndicator={false}
-                nestedScrollEnabled={true}
-                onMomentumScrollEnd={handleScrollEnd}
-                scrollEventThrottle={16}
-                snapToInterval={scrollInterval}
-                snapToAlignment="start"
-                decelerationRate="fast"
-            >
-                {featuredVideos.map((item, index) => (
-                    <React.Fragment key={`${item.id}-${index}`}>
-                        {renderFeaturedItem(item, index)}
-                    </React.Fragment>
-                ))}
-            </ScrollView>
+            {isWeb ? (
+                <View style={{ flexDirection: 'row' }}>
+                    {items.map((item, index) => (
+                        <React.Fragment key={`${item.id}-${index}`}>
+                            {renderFeaturedItem(item, index)}
+                        </React.Fragment>
+                    ))}
+                </View>
+            ) : (
+                <ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    nestedScrollEnabled={true}
+                    onMomentumScrollEnd={handleScrollEnd}
+                    scrollEventThrottle={16}
+                    snapToInterval={scrollInterval}
+                    snapToAlignment="start"
+                    decelerationRate="fast"
+                >
+                    {items.map((item, index) => (
+                        <React.Fragment key={`${item.id}-${index}`}>
+                            {renderFeaturedItem(item, index)}
+                        </React.Fragment>
+                    ))}
+                </ScrollView>
+            )}
 
             {/* Pagination Dots - Square */}
             {!isWeb && featuredVideos.length > 1 && (

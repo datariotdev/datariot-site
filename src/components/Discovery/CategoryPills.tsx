@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, Text, StyleSheet, Pressable, View, Platform } from 'react-native';
 import { useTheme } from '../Theme/ThemeProvider';
 import { TECH_FONT } from '@design-system/fonts';
+import { fadeRight } from '@design-system/pixel';
 
 const MONO = TECH_FONT;
 
@@ -9,9 +10,13 @@ interface CategoryPillsProps {
     categories: string[];
     activeCategory: string | null;
     onCategoryPress: (category: string) => void;
+    /** The "FILTER //" gutter label. On by default. */
+    showLabel?: boolean;
+    /** Horizontal padding of the row, for lining it up with a column. */
+    inset?: number;
 }
 
-export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: CategoryPillsProps) => {
+export const CategoryPills = ({ categories, activeCategory, onCategoryPress, showLabel = true, inset = 16 }: CategoryPillsProps) => {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
@@ -19,10 +24,12 @@ export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: C
         <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.scrollStyle}
-            contentContainerStyle={styles.container}
+            style={[styles.scrollStyle, fadeRight(36)]}
+            contentContainerStyle={[styles.container, { paddingHorizontal: inset }]}
         >
-            <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>
+            {showLabel && (
+                <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>
+            )}
             {categories.map((category) => (
                 <Chip
                     key={category}

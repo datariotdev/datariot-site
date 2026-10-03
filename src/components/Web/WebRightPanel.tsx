@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -6,15 +6,14 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { DockModule, MONO, useDockSurface } from './Dock/DockModule';
 import { PilotStatus, Objective } from './Dock/PilotStatus';
-import { SignalTile } from './Dock/SignalTile';
 import { pixelClip } from '@design-system/pixel';
+import { DOCK_PAD, TOPBAR_HEIGHT } from '../Layout/metrics';
 
 /* ------------------------------------------------------------------------- *
  * PLACEHOLDER DATA
  * Everything below is display-only and needs wiring to real sources:
  *   pilot stats  -> profiles / ratings table
  *   objectives   -> daily quest state
- *   signal series-> hourly view or event counts for the last 24h
  *   trending     -> an aggregate query, same one /discover should use
  * Each is a plain value so swapping in a hook is a one-line change.
  * ------------------------------------------------------------------------- */
@@ -30,15 +29,6 @@ const OBJECTIVES: Objective[] = [
     { id: 'argue', label: 'Post 1 argument', done: 1, total: 1 },
     { id: 'streak', label: 'Keep the streak alive', done: 0, total: 1 },
 ];
-
-/** 24 hourly buckets, oldest first. */
-const SIGNAL_SERIES = [
-    380, 410, 340, 300, 270, 250, 290, 360,
-    520, 640, 700, 660, 720, 810, 780, 690,
-    740, 880, 960, 1040, 1180, 1120, 1260, 1340,
-];
-const SIGNAL_TOTAL = SIGNAL_SERIES.reduce((a, b) => a + b, 0);
-const SIGNAL_DELTA_PCT = 18;
 
 const TRENDING = [
     { icon: 'music' as const, title: 'Music of the Week', views: '2.3M', delta: 14 },
@@ -79,16 +69,10 @@ export const WebRightPanel = () => {
 
     const callsign = user ? (user.user_metadata?.username || user.email?.split('@')[0] || 'pilot') : null;
 
-    const bucketLabel = useMemo(
-        () => (i: number, total: number) => {
-            const hoursAgo = total - 1 - i;
-            return hoursAgo === 0 ? 'NOW' : `-${hoursAgo}H`;
-        },
-        []
-    );
-
     return (
         <View style={styles.container}>
+            {/* Header band: the same height as the bar over the deck, so the hairline runs straight across */}
+            <View style={[styles.header, { borderBottomColor: isDark ? 'rgba(218, 230, 247, 0.10)' : 'rgba(7, 8, 12, 0.10)' }]}>
             {/* Terminal-prompt search */}
             <View
                 style={[
@@ -131,7 +115,9 @@ export const WebRightPanel = () => {
                     </View>
                 )}
             </View>
+            </View>
 
+            <View style={styles.body}>
             {/* Pilot */}
             <DockModule
                 title="PILOT"
@@ -152,25 +138,6 @@ export const WebRightPanel = () => {
                     tierSpan={PILOT_TIER_SPAN}
                     streakDays={PILOT_STREAK_DAYS}
                     objectives={OBJECTIVES}
-                />
-            </DockModule>
-
-            {/* Platform activity */}
-            <DockModule
-                title="SIGNAL"
-                right={
-                    <Text style={[styles.moduleMeta, { color: theme.colors.text.muted, fontFamily: MONO }]}>24H</Text>
-                }
-            >
-                <SignalTile
-                    label="Arena activity"
-                    value={SIGNAL_TOTAL}
-                    deltaPct={SIGNAL_DELTA_PCT}
-                    deltaPeriod="vs yesterday"
-                    series={SIGNAL_SERIES}
-                    startLabel="-24H"
-                    endLabel="NOW"
-                    bucketLabel={bucketLabel}
                 />
             </DockModule>
 
@@ -301,6 +268,7 @@ export const WebRightPanel = () => {
                 </View>
                 <Text style={[styles.copyright, { color: theme.colors.text.muted, fontFamily: MONO }]}>© 2026 DATARIOT</Text>
             </View>
+            </View>
         </View>
     );
 };
@@ -367,15 +335,24 @@ const styles = StyleSheet.create({
     container: {
         paddingBottom: 40,
     },
+    header: {
+        height: TOPBAR_HEIGHT,
+        justifyContent: 'center',
+        paddingHorizontal: DOCK_PAD,
+        borderBottomWidth: 1,
+    },
+    body: {
+        paddingHorizontal: DOCK_PAD,
+        paddingTop: 8,
+    },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        height: 42,
+        height: 36,
         ...pixelClip(2),
         borderWidth: 1,
         paddingHorizontal: 12,
         gap: 9,
-        marginBottom: 30,
         // @ts-ignore
         transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
     },

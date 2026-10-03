@@ -18,7 +18,8 @@ import { MosaicFeed } from '../../components/VideoFeed/MosaicFeed/MosaicFeed';
 import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideoModal';
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
-import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
+import { CommandBar, HudButton, CommandTab } from '../../components/Web/CommandBar';
+import { deckColumn } from '../../components/Layout/metrics';
 import { TECH_FONT } from '@design-system/fonts';
 import { pageBg } from '@design-system/surface';
 import { pixelClip } from '@design-system/pixel';
@@ -30,13 +31,6 @@ const TABS: CommandTab[] = [
     { key: 'ai', label: 'ARENA', hint: 'BETA' },
     { key: 'trending', label: 'FEED' },
     { key: 'following', label: 'CIRCLE' },
-];
-
-const TICKER_ITEMS = [
-    'ARENA OPEN — CHALLENGE ANY USER TO A LIVE DEBATE',
-    'WEEKLY MISSION: SLOW MOTION — 5,000 XP POOL',
-    'NEW: DNA MATCHING NOW RANKS YOUR FEED',
-    '1,248 PILOTS ENROLLED THIS CYCLE',
 ];
 
 const HomeScreen = () => {
@@ -202,7 +196,6 @@ const HomeScreen = () => {
                     tabs={TABS}
                     activeKey={activeTab}
                     onTabPress={(key) => setActiveTab(key as FeedType)}
-                    readout={['SIGNAL NOMINAL', '2.4K ONLINE', 'LAT 12MS']}
                     actions={
                         <>
                             <HudButton
@@ -226,22 +219,16 @@ const HomeScreen = () => {
                     }
                 />
 
-                <LiveTicker items={TICKER_ITEMS} />
-
                 {activeTab === 'trending' && (
-                    <View
-                        style={[
-                            styles.filterRow,
-                            {
-                                backgroundColor: isDark ? '#0A0B11' : '#FBFBFD',
-                                borderBottomColor: isDark ? 'rgba(218, 230, 247, 0.07)' : 'rgba(0,0,0,0.06)',
-                            },
-                        ]}
-                    >
+                    // Same column as the bar and the feed, no band of its own: the
+                    // chips sit on the page like everything else.
+                    <View style={styles.filterRow}>
                         <CategoryPills
                             categories={['All', ...VIDEO_CATEGORIES]}
                             activeCategory={activeCategory || 'All'}
                             onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
+                            showLabel={false}
+                            inset={0}
                         />
                     </View>
                 )}
@@ -385,9 +372,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     filterRow: {
-        height: 46,
+        ...deckColumn,
+        height: 56,
         justifyContent: 'center',
-        borderBottomWidth: 1,
         zIndex: 18,
     },
     deckBody: {

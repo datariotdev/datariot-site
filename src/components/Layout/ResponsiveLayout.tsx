@@ -5,6 +5,7 @@ import { WebRightPanel } from '../Web/WebRightPanel';
 import { GlobalWebStyles } from '../UI/GlobalWebStyles';
 import { usePathname } from 'expo-router';
 import { useTheme } from '../Theme/ThemeProvider';
+import { DOCK_WIDTH } from './metrics';
 
 interface ResponsiveLayoutProps {
     children: React.ReactNode;
@@ -12,7 +13,6 @@ interface ResponsiveLayoutProps {
 
 /** Below this the right dock folds away and the deck takes the full width. */
 const DOCK_BREAKPOINT = 1280;
-const DOCK_WIDTH = 340;
 
 export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     const { width } = useWindowDimensions();
@@ -66,12 +66,14 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
             <WebSidebar />
 
             <View style={[styles.content, { paddingLeft: RAIL_WIDTH }]}>
-                {/* Deck — the main working surface */}
-                <View style={styles.deckColumn}>
+                {/* Deck — the main working surface. With the dock it simply fills
+                    what the rail and the dock leave, and the screen centres its own
+                    column inside that; without it, pages are capped and centred. */}
+                <View style={[styles.deckColumn, !showRightPanel && styles.deckCapped]}>
                     <View style={styles.deckInner}>{children}</View>
                 </View>
 
-                {/* Instrument dock */}
+                {/* Instrument dock: flush with the window's right edge */}
                 {showRightPanel && (
                     <View
                         style={[
@@ -110,10 +112,12 @@ const styles = StyleSheet.create({
     },
     deckColumn: {
         flex: 1,
-        maxWidth: 1180,
         position: 'relative',
         // @ts-ignore — web-only
         overflowY: 'auto',
+    },
+    deckCapped: {
+        maxWidth: 1180,
     },
     deckInner: {
         flex: 1,
@@ -121,9 +125,6 @@ const styles = StyleSheet.create({
     },
     dockColumn: {
         borderLeftWidth: 1,
-        paddingTop: 24,
-        paddingLeft: 24,
-        paddingRight: 12,
         // @ts-ignore — web-only
         overflowY: 'auto',
     },
