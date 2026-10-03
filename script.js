@@ -399,9 +399,10 @@ function initializeScripts() {
                     end: "bottom top",
                     scrub: 1
                 },
+                // no blur here: a scrubbed filter re-rendered the whole hero
+                // through a 10px blur on every frame of the scroll
                 y: 120,
-                opacity: 0,
-                filter: "blur(10px)"
+                opacity: 0
             });
         }
 
@@ -591,20 +592,17 @@ window.addEventListener('load', () => {
         }, 5000);
     }
 
-    // Spawn Floating 3D Video Cards to emphasize "Short Video Platform".
-    // Built lazily the first time their section is on screen, and paused
-    // whenever it leaves, so they are not a permanent gsap ticker.
+    // Floating video cards behind the waitlist, placed the first time their
+    // section comes on screen. They used to drift and turn in 3D forever;
+    // held still they read the same, and nothing recomposites them per frame.
     if (!isMobile && !prefersReducedMotion && typeof gsap !== 'undefined') {
         const targetSections = [document.querySelector('.section--screens'), document.querySelector('.section--beta')];
 
         targetSections.forEach(sec => {
             if (!sec) return;
-            const tweens = [];
             let built = false;
             const gate = new IntersectionObserver((entries) => {
-                const onScreen = entries[0].isIntersecting;
-                if (onScreen && !built) { built = true; build(); }
-                tweens.forEach(t => onScreen ? t.play() : t.pause());
+                if (entries[0].isIntersecting && !built) { built = true; build(); gate.disconnect(); }
             }, { rootMargin: '150px 0px' });
             gate.observe(sec);
             function build() {
@@ -630,18 +628,6 @@ window.addEventListener('load', () => {
                     opacity: gsap.utils.random(0.3, 0.7)
                 });
 
-                // Continuous drifting and rotating
-                tweens.push(gsap.to(card, {
-                    y: "-=200",
-                    x: "+=random(-80, 80)",
-                    rotationX: "+=random(-40, 40)",
-                    rotationY: "+=random(-50, 50)",
-                    rotationZ: "+=random(-15, 15)",
-                    duration: gsap.utils.random(12, 22),
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut"
-                }));
             }
             }
         });

@@ -5,13 +5,34 @@
    of the clip spilling into the screen. Section 01 lays out a reel of short
    clips that each make one point, built from real frames in the app and
    explainers filmed as screen recordings; slide 04 takes a vote; between
-   them a camera-spider reels the clip with a point up into its web. The
-   spider and the web are pixel canvases; everything else is DOM and CSS.
+   them a camera-spider reels the clip with a point up into its web; 06's
+   globe turns. The spider, the web and the globe are pixel canvases;
+   everything else is DOM and CSS.
    ========================================================================== */
 (function () {
     'use strict';
 
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Does this machine draw the page in software? Firefox on Linux without a
+    // blessed GPU driver, virtual machines and old laptops composite on the
+    // CPU, where every moving layer costs a full repaint of its area. They
+    // get html.gfx-lite: the same page with the per-frame extras switched
+    // off (style.css, PERFORMANCE). The tells: no WebGL context without a
+    // "major performance caveat", or a renderer that names a software
+    // rasteriser.
+    var gfxLite = (function () {
+        try {
+            var gl = document.createElement('canvas').getContext('webgl', { failIfMajorPerformanceCaveat: true });
+            if (!gl) return true;
+            var info = gl.getExtension('WEBGL_debug_renderer_info');
+            var name = String(info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+            var lose = gl.getExtension('WEBGL_lose_context');
+            if (lose) lose.loseContext();
+            return /swiftshader|llvmpipe|softpipe|software|basic render|lavapipe/i.test(name);
+        } catch (e) { return true; }
+    })();
+    if (gfxLite) document.documentElement.classList.add('gfx-lite');
 
     function esc(s) {
         return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
@@ -28,7 +49,9 @@
         var show = document.getElementById('heroPhone') || app;
         var video = app.querySelector('video');
         var canvas = app.querySelector('.hx-app__amb');
-        var ctx = canvas && canvas.getContext('2d');
+        // the clip's light follows the clip only where blurs are cheap; on a
+        // software compositor the blurred poster under it stands in
+        var ctx = canvas && !gfxLite && canvas.getContext('2d');
         var bar = app.querySelector('.hx-app__bar i');
         var time = app.querySelector('[data-time]');
         var like = app.querySelector('.hx-app__act--like');
@@ -110,8 +133,9 @@
                 var shown = Math.round(scan);
                 if (shown !== lastScan) scanN.textContent = lastScan = shown;
             }
-            // the clip's light, a few times a second, into a tiny blurred canvas
-            if (ctx && now - lastAmb > 90 && video.readyState >= 2) {
+            // the clip's light, four times a second, into a tiny blurred canvas
+            // (each new frame re-runs the blur over the whole screen)
+            if (ctx && now - lastAmb > 250 && video.readyState >= 2) {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 lastAmb = now;
                 if (!app.classList.contains('is-live')) app.classList.add('is-live');
@@ -247,8 +271,9 @@
         }
         if (c.kind === 'inset') {
             // a landscape clip in a vertical frame: the picture in the middle,
-            // its own light blurred behind it
-            return '<span class="reel-card__amb" style="background-image:url(\'' + c.img + '\')"></span>' +
+            // its own light behind it, blurred ahead of time (-amb.jpg) so the
+            // moving reel carries no live filter
+            return '<span class="reel-card__amb" style="background-image:url(\'' + c.img.replace(/\.jpg$/, '-amb.jpg') + '\')"></span>' +
                 '<img class="reel-card__inset" src="' + c.img + '" alt="" loading="lazy" decoding="async">';
         }
         if (c.kind === 'chat') {
@@ -462,7 +487,7 @@
         var web = new Raster(wctx), spi = new Raster(sctx);
 
         // ----- the noise rushing past -----
-        var TAGS = ['RAGE BAIT', 'NO SOURCE', 'JUST VIBES', 'RATIO', '47S OF NOTHING', 'CLICKBAIT', 'HOT TAKE', 'BOT SWARM', 'RECYCLED', 'NO POINT', 'ENGAGEMENT BAIT', 'FAKE CLAIM'];
+        var TAGS = ['RAGE BAIT', 'NO SOURCE', 'JUST VIBES', 'RATIO', '47S OF NOTHING', 'CLICKBAIT', 'HOT TAKE', 'NO POINT'];
         var noise = [];
         TAGS.forEach(function (tag, i) {
             var el = document.createElement('div');
@@ -660,8 +685,8 @@
             var dt = Math.min(0.05, (now - (last || now)) / 1000);
             last = now;
             var rect = sec.getBoundingClientRect(), rt = rect.top, goal = target(rect);
-            // once the story has settled the legs only idle: thirty frames a second is plenty
-            if (!reduced && Math.abs(goal - p) < 0.0005 && now - drawn < 32) { if (visible) raf = requestAnimationFrame(frame); return; }
+            // once the story has settled the legs only idle: twenty frames a second is plenty
+            if (!reduced && Math.abs(goal - p) < 0.0005 && now - drawn < 48) { if (visible) raf = requestAnimationFrame(frame); return; }
             drawn = now;
             if (!reduced) p += (goal - p) * (1 - Math.pow(0.86, dt * 60));
             var t = reduced ? 0 : (now - t0) / 1000;
@@ -728,11 +753,125 @@
         }, { rootMargin: '100px 0px' }).observe(sec);
     }
 
+    // ---------- 06: the globe, in pixels ----------
+    // It used to be three.js: four thousand WebGL points behind a 600 KB
+    // library that blocked the page, and on a machine that runs WebGL in
+    // software, the slowest thing on it. Now it is a 2D canvas at half
+    // resolution, one 2px cell per dot, in the logo's black (ice in the dark
+    // theme), with replies flying between cities. 24 frames a second while
+    // it is on screen, nothing when it is not, one still frame for reduced
+    // motion.
+    function initGlobe() {
+        var box = document.getElementById('canvas-3d-globe');
+        if (!box) return;
+        var cv = document.createElement('canvas');
+        cv.className = 'gnet__globe';
+        cv.setAttribute('aria-hidden', 'true');
+        box.appendChild(cv);
+        var ctx = cv.getContext('2d');
+        if (!ctx) return;
+
+        var CELL = 2, W = 0, H = 0, R = 0;
+        var N = window.innerWidth < 768 ? 700 : 1100, pts = [], g = Math.PI * (3 - Math.sqrt(5)), i;
+        for (i = 0; i < N; i++) {
+            var y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = g * i;
+            pts.push([Math.cos(th) * r, y, Math.sin(th) * r]);
+        }
+        function ll(lat, lon) {
+            var a = lat * Math.PI / 180, b = lon * Math.PI / 180;
+            return [Math.cos(a) * Math.sin(b), Math.sin(a), Math.cos(a) * Math.cos(b)];
+        }
+        var CITY = {
+            lagos: ll(6.5, 3.4), warsaw: ll(52.2, 21.0), saopaulo: ll(-23.5, -46.6), lisbon: ll(38.7, -9.1),
+            jakarta: ll(-6.2, 106.8), berlin: ll(52.5, 13.4), newyork: ll(40.7, -74.0), london: ll(51.5, -0.1),
+            mumbai: ll(19.1, 72.9), tokyo: ll(35.7, 139.7)
+        };
+        var ROUTES = [['lagos', 'warsaw', 0], ['saopaulo', 'lisbon', 0.5], ['newyork', 'london', 0.95], ['mumbai', 'berlin', 0.25], ['jakarta', 'tokyo', 0.7]];
+
+        function rot(p, ay, ax) {
+            var cy = Math.cos(ay), sy = Math.sin(ay), cx = Math.cos(ax), sx = Math.sin(ax);
+            var x = p[0] * cy + p[2] * sy, z = -p[0] * sy + p[2] * cy;
+            return [x, p[1] * cx - z * sx, p[1] * sx + z * cx];
+        }
+        function slerp(a, b, u) {
+            var d = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2])), om = Math.acos(d), so = Math.sin(om) || 1;
+            var k1 = Math.sin((1 - u) * om) / so, k2 = Math.sin(u * om) / so;
+            return [a[0] * k1 + b[0] * k2, a[1] * k1 + b[1] * k2, a[2] * k1 + b[2] * k2];
+        }
+        function resize() {
+            W = Math.max(1, Math.round(box.clientWidth / CELL));
+            H = Math.max(1, Math.round(box.clientHeight / CELL));
+            cv.width = W; cv.height = H;
+            cv.style.width = W * CELL + 'px';
+            cv.style.height = H * CELL + 'px';
+            R = Math.min(W, H) * 0.41;
+        }
+
+        function draw(t) {
+            var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+            var ay = 2.75 + t * 0.2, ax = -0.38, cx = W / 2, cy = H * 0.53, k, q;
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = dark ? '#DAE6F7' : '#07080C';
+            for (k = 0; k < N; k++) {
+                q = rot(pts[k], ay, ax);
+                if (q[2] < -0.05) continue;
+                ctx.globalAlpha = q[2] > 0.3 ? 1 : 0.4;
+                ctx.fillRect(Math.round(cx + q[0] * R), Math.round(cy - q[1] * R), q[2] > 0.62 ? 2 : 1, q[2] > 0.62 ? 2 : 1);
+            }
+            ctx.globalAlpha = 1;
+            // a reply crossing the map: a dotted arc that draws out and then lets go of its tail
+            ROUTES.forEach(function (rt) {
+                var u = (t * 0.32 + rt[2]) % 1.7;
+                if (u > 1.5) return;
+                var A = CITY[rt[0]], B = CITY[rt[1]], from = Math.max(0, (u - 0.9) / 0.6), to = Math.min(1, u), STEPS = 40;
+                for (var s = Math.floor(from * STEPS); s <= Math.floor(to * STEPS); s++) {
+                    var v = s / STEPS, p = slerp(A, B, v), lift = 1 + 0.14 * Math.sin(Math.PI * v);
+                    var w = rot([p[0] * lift, p[1] * lift, p[2] * lift], ay, ax);
+                    if (w[2] < 0 || (s & 1)) continue;
+                    ctx.fillRect(Math.round(cx + w[0] * R) - 1, Math.round(cy - w[1] * R) - 1, 2, 2);
+                }
+            });
+            // cities: hollow squares that beat on the half second
+            Object.keys(CITY).forEach(function (name, n) {
+                q = rot(CITY[name], ay, ax);
+                if (q[2] < 0.1) return;
+                var x = Math.round(cx + q[0] * R), y = Math.round(cy - q[1] * R), big = (Math.floor(t * 2) + n) % 4 === 0 ? 1 : 0;
+                ctx.fillRect(x - 3 - big, y - 3 - big, 7 + big * 2, 7 + big * 2);
+                ctx.clearRect(x - 1 - big, y - 1 - big, 3 + big * 2, 3 + big * 2);
+            });
+        }
+
+        resize();
+        window.addEventListener('resize', function () { resize(); draw(reduced ? 0 : (performance.now() - t0) / 1000); });
+        var t0 = performance.now(), raf = 0, last = 0, on = false;
+        function frame(now) {
+            raf = 0;
+            if (!on || document.hidden) return;
+            raf = requestAnimationFrame(frame);
+            if (now - last < 41) return;
+            last = now;
+            draw((now - t0) / 1000);
+        }
+        draw(0);
+        if (reduced || !('IntersectionObserver' in window)) return;
+        new IntersectionObserver(function (entries) {
+            on = entries[0].isIntersecting;
+            if (on && !raf) raf = requestAnimationFrame(frame);
+        }, { rootMargin: '80px 0px' }).observe(box);
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden && on && !raf) raf = requestAnimationFrame(frame);
+        });
+        // the theme toggle repaints the globe at once, not on its next tick
+        new MutationObserver(function () { draw((performance.now() - t0) / 1000); })
+            .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+
     function boot() {
         try { initPhone(); } catch (e) { console.warn('feed: phone', e); }
         try { initReel(); } catch (e) { console.warn('feed: reel', e); }
         try { initArena(); } catch (e) { console.warn('feed: arena', e); }
         try { initCatch(); } catch (e) { console.warn('feed: catch', e); }
+        try { initGlobe(); } catch (e) { console.warn('feed: globe', e); }
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();

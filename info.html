@@ -36,7 +36,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=5.3.0" />
+    <link rel="stylesheet" href="style.css?v=5.4.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -565,7 +565,7 @@
         </header>
 
         <!-- HERO SECTION -->
-        <section class="section section--hero hero--shimmer" id="hero">
+        <section class="section section--hero hero--shimmer" id="hero" data-inview>
             <div class="hero__background-layer">
                 <div id="canvas-3d-hero"></div>
                 <!-- Geex-Style Spinning Elements -->
@@ -811,7 +811,7 @@
         </section>
 
         <!-- HOW IT WORKS SECTION -->
-        <section class="section section--features section--3d-features" id="features">
+        <section class="section section--features section--3d-features" id="features" data-inview>
             <!-- the logo's black, dissolving into the page at both edges -->
             <div class="px-screen" aria-hidden="true"></div>
             <div class="section__container">
@@ -1208,7 +1208,7 @@
              a point and reels it up into its web. clips.js draws the spider
              and the web; without script it is the last frame, held.
              ============================================================ -->
-        <section class="catch" id="catch" aria-labelledby="catchTitle">
+        <section class="catch" id="catch" aria-labelledby="catchTitle" data-inview>
             <div class="px-screen px-screen--into-next" aria-hidden="true"></div>
             <div class="catch__pin">
                 <div class="catch__feed" aria-hidden="true"></div>
@@ -1521,7 +1521,7 @@
         </section>
 
         <!-- BETA SECTION — REDESIGNED -->
-        <section class="section section--beta" id="beta">
+        <section class="section section--beta" id="beta" data-inview>
             <div class="beta-bg-glows">
                 <div class="beta-glow beta-glow--1"></div>
                 <div class="beta-glow beta-glow--2"></div>
@@ -1583,7 +1583,7 @@
         </section>
 
         <!-- 08 — FAQ -->
-        <section class="section faq" id="faq">
+        <section class="section faq" id="faq" data-inview>
             <div class="faq__inner">
                 <div class="faq__head">
                     <span class="faq__tag">[ 08 &mdash; FAQ ]</span>
@@ -1635,7 +1635,7 @@
         </section>
 
         <!-- FOOTER: the logo's screen, black with ice, dissolving in from the page -->
-        <footer class="foot">
+        <footer class="foot" data-inview>
             <div class="px-screen" aria-hidden="true"></div>
             <div class="foot__inner">
                 <div class="foot__top">
@@ -1701,15 +1701,14 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script defer src="https://unpkg.com/split-type"></script>
-    <!-- 3D Scripts Restored -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script defer src="3d-fx.js?v=5.3.0"></script>
+    <!-- no three.js: the one 3D scene left, the globe in 06, is a pixel
+         canvas in clips.js now, and the 600 KB library blocked the page -->
     <!-- slide 05's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=5.3.0"></script>
+    <script defer src="pixel-field.js?v=5.4.0"></script>
 
     <!-- the feed: the hero phone and the reel in 01 -->
-    <script defer src="clips.js?v=5.3.0"></script>
-    <script defer src="script.js?v=5.3.0"></script>
+    <script defer src="clips.js?v=5.4.0"></script>
+    <script defer src="script.js?v=5.4.0"></script>
 </body>
 
 </html>

@@ -6,12 +6,15 @@
    is a whole cell, so a 1920x1080 screen is a 640x360 render.
 
    Plain WebGL, no three.js, with its own budget: it renders only while the
-   slide is on screen and the tab is visible, 30 frames a second (every
-   frame while the page scrolls), and holds time still under
-   prefers-reduced-motion. Without WebGL the CSS navy fill stays and the
-   slide still reads. The dithered dissolve at the slide's top and bottom
-   edges is a CSS mask, so it moves with the page on the compositor
-   instead of trailing a frame behind.
+   slide is on screen and the tab is visible, at most 30 frames a second,
+   and holds time still under prefers-reduced-motion. Where WebGL runs in
+   software (the browser says so through failIfMajorPerformanceCaveat:
+   Firefox on Linux without a GPU driver, VMs, old laptops) the field drops
+   to 6px cells and 8 frames a second, and the quiet zone behind the
+   headline becomes a CSS shade, so it never has to redraw to follow the
+   scroll. Without WebGL the CSS fill stays and the slide still reads. The
+   dithered dissolve at the slide's top and bottom edges is a CSS mask, so
+   it moves with the page on the compositor.
    ========================================================================= */
 (() => {
     const section = document.getElementById('ai-core');
@@ -19,9 +22,23 @@
     const canvas = field && field.querySelector('canvas');
     if (!canvas) return;
 
-    const CELL = 3;          // CSS px per field pixel
-    const FRAME_MS = 1000 / 30;
     const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+    // Is WebGL running in software? Three tells: the browser refuses a
+    // context that would carry a major performance caveat, the renderer
+    // names a software rasteriser, or (checked after the first frame) a
+    // frame simply takes too long. Any of them selects the light version.
+    const SOFT = /swiftshader|llvmpipe|softpipe|software|basic render|lavapipe/i;
+    let lite = false;
+    try {
+        const probe = document.createElement('canvas').getContext('webgl', { failIfMajorPerformanceCaveat: true });
+        lite = !probe;
+        const lose = probe && probe.getExtension('WEBGL_lose_context');
+        if (lose) lose.loseContext();
+    } catch (e) { lite = true; }
+
+    let CELL = lite ? 6 : 3;          // CSS px per field pixel
+    let FRAME_MS = 1000 / (lite ? 8 : 30);
 
     let gl = null;
     try {
@@ -35,6 +52,11 @@
         });
     } catch (e) { gl = null; }
     if (!gl) return;
+    if (!lite) {
+        const info = gl.getExtension('WEBGL_debug_renderer_info');
+        const name = info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+        if (SOFT.test(String(name))) lite = true, CELL = 6, FRAME_MS = 1000 / 8;
+    }
 
     // One height function, shared by both stages: the vertex stage displaces
     // the mesh with it, the fragment stage lights every pixel from its slope.
@@ -158,7 +180,7 @@
     });
 
     // the surface: a grid in [0,1]^2, spread over the view frustum in the shader
-    const NX = 150, NZ = 110;
+    const NX = lite ? 80 : 150, NZ = lite ? 60 : 110;
     const grid = new Float32Array((NX + 1) * (NZ + 1) * 2);
     let k = 0;
     for (let j = 0; j <= NZ; j++) {
@@ -257,8 +279,12 @@
 
     // ---- the quiet zone behind the headline --------------------------------
     const intro = section.querySelector('.aic-intro');
+    // in the light version, and when time stands still, the field does not
+    // redraw as the page scrolls, so a CSS shade keeps the headline quiet
+    let cssCalm = lite || reduced;
+    if (cssCalm) section.classList.add('is-field-lite');
     function calm() {
-        if (!intro) { gl.uniform4f(u.uCalm, -1e4, -1e4, -1e4, -1e4); return; }
+        if (!intro || cssCalm) { gl.uniform4f(u.uCalm, -1e4, -1e4, -1e4, -1e4); return; }
         const c = canvas.getBoundingClientRect(), r = intro.getBoundingClientRect();
         const pad = 10;
         gl.uniform4f(u.uCalm,
@@ -290,17 +316,17 @@
     }
 
     // ---- budget -------------------------------------------------------------
-    let visible = false, armed = false, lost = false, moved = false, last = 0, prev = 0;
+    let visible = false, armed = false, lost = false, last = 0, prev = 0;
 
     function tick(now) {
         armed = false;
         if (!visible || document.hidden || lost) { prev = 0; return; }
         arm();
-        // 30fps is plenty for the drift, but while the page scrolls every
-        // frame is drawn, or the quiet zone would trail the headline
-        if (now - last < FRAME_MS - 2 && !moved) return;
-        moved = false;
-        clock += prev ? Math.min(0.1, (now - prev) / 1000) : 0;
+        // the drift is slow: 30 frames a second at most, scrolling or not
+        // (drawing every scroll frame doubled the cost for a quiet zone
+        // that trails the headline by one frame at most)
+        if (now - last < FRAME_MS - 2) return;
+        clock += prev ? Math.min(0.2, (now - prev) / 1000) : 0;
         prev = now;
         last = now;
         draw();
@@ -312,8 +338,8 @@
         requestAnimationFrame(reduced ? still : tick);
     }
 
-    // reduced motion: time stands still, but the frame still has to follow
-    // the page (the quiet zone moves with the copy) and the viewport size
+    // reduced motion: time stands still; a frame is drawn when the slide
+    // comes into view and when the viewport changes size
     function still() {
         armed = false;
         if (!lost) draw();
@@ -331,11 +357,6 @@
 
     document.addEventListener('visibilitychange', () => { if (!document.hidden && visible) arm(); });
     window.addEventListener('resize', () => { if (visible) arm(); }, { passive: true });
-    window.addEventListener('scroll', () => {
-        if (!visible) return;
-        moved = true;
-        arm();
-    }, { passive: true });
 
     canvas.addEventListener('webglcontextlost', (e) => {
         e.preventDefault();
@@ -343,6 +364,19 @@
         field.classList.remove('is-live');
     });
 
+    // the first frame doubles as a stopwatch: if the GPU (or the CPU standing
+    // in for one) needs more than 12ms for it, go light from here on
+    const t0 = performance.now();
     draw();
+    gl.finish();
+    if (!lite && performance.now() - t0 > 12) {
+        lite = true;
+        CELL = 6;
+        FRAME_MS = 1000 / 8;
+        cols = rows = 0;            // force the buffer to the new cell size
+        cssCalm = true;
+        section.classList.add('is-field-lite');
+        draw();
+    }
     field.classList.add('is-live');
 })();
