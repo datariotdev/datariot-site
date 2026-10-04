@@ -2,6 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../client';
 import { useAuth } from './useAuth';
 
+console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+console.log('!!! USE_MESSAGES_HOOK_LOADED_VERSION_DEBUG_01 !!!');
+console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+
 export interface ChatMessage {
     id: string;
     chat_id: string;
@@ -187,9 +191,8 @@ export function useMessages(chatId: string) {
         }
     };
 
-    /** Resolves to true once the message is stored, false when it could not be sent. */
-    const sendMessage = async (content: string, mediaUrl: string | null = null, mediaType: string | null = null): Promise<boolean> => {
-        if (!user || !activeChatId) return false;
+    const sendMessage = async (content: string, mediaUrl: string | null = null, mediaType: string | null = null) => {
+        if (!user || !activeChatId) return;
 
         let workingChatId = activeChatId;
 
@@ -251,12 +254,11 @@ export function useMessages(chatId: string) {
                 sender: 'me',
                 time: new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             } : m));
-            return true;
+
         } catch (error) {
             console.error('Error sending message completely:', error);
             // Revert optimistic on fail
             setMessages(prev => prev.filter(m => m.id !== tempId));
-            return false;
         }
     };
 

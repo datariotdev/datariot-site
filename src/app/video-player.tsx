@@ -1,91 +1,158 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
+import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
+import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
+import { theme } from '@design-system/theme';
+import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useVideos, FeedType } from '../lib/supabase/hooks/useVideos';
-import { FeedStage } from '../components/Feed/FeedStage';
-import { IconButton } from '../components/core/IconButton';
-import { EmptyState } from '../components/core/EmptyState';
+import { useIsFocused } from '@react-navigation/native';
 
-const clean = (param: string | string[] | undefined) => {
-    if (!param || param === 'undefined') return undefined;
-    const val = Array.isArray(param) ? param[0] : param;
-    return val === '' ? undefined : val;
-};
-
-/**
- * One clip, full screen, with the feed it came from carrying on underneath it:
- * from a profile, a saved list, a search result, or a shared link. The clip you
- * opened is always first, wherever it falls in that feed.
- */
 export default function VideoPlayerScreen() {
+    const isFocused = useIsFocused();
     const params = useLocalSearchParams<{
-        type?: FeedType;
+        type: FeedType;
         userId?: string;
-        savedBy?: string;
         hashtag?: string;
         searchQuery?: string;
-        category?: string;
         initialVideoId?: string;
         sort?: 'recent' | 'popular';
     }>();
 
     const router = useRouter();
-    const isFocused = useIsFocused();
     const insets = useSafeAreaInsets();
 
-    const feed = useVideos({
-        type: (clean(params.type) || 'trending') as FeedType,
-        userId: clean(params.userId),
-        savedBy: clean(params.savedBy),
-        hashtag: clean(params.hashtag),
-        searchQuery: clean(params.searchQuery),
-        category: clean(params.category),
-        sort: clean(params.sort) as 'recent' | 'popular' | undefined,
-        pinnedId: clean(params.initialVideoId),
-    });
-
-    const goBack = () => {
-        if (router.canGoBack()) router.back();
-        else router.replace('/(tabs)');
+    const getStringParam = (param: string | string[] | undefined) => {
+        if (!param || param === "undefined") return undefined;
+        const val = Array.isArray(param) ? param[0] : param;
+        return val === "" ? undefined : val;
     };
 
+    const cleanSearchQuery = getStringParam(params.searchQuery);
+    const cleanHashtag = getStringParam(params.hashtag);
+    const cleanUserId = getStringParam(params.userId);
+    const cleanType = (getStringParam(params.type) || 'trending') as FeedType;
+    const cleanSort = getStringParam(params.sort) as 'recent' | 'popular' | undefined;
+    const initialVideoId = getStringParam(params.initialVideoId);
+
+    console.log("VideoPlayerScreen clean params:", { cleanType, cleanSearchQuery, cleanHashtag, cleanUserId, cleanSort, initialVideoId });
+
+    const {
+        videos,
+        loading,
+        loadMore,
+        toggleLike,
+        toggleFollow
+    } = useVideos({
+        type: cleanType,
+        userId: cleanUserId,
+        hashtag: cleanHashtag,
+        searchQuery: cleanSearchQuery,
+        sort: cleanSort
+    });
+
+    console.log(`VideoPlayerScreen loaded ${videos.length} videos. loading: ${loading}`);
+
+    // Handle back navigation
+    const handleBack = () => {
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.replace('/(tabs)');
+        }
+    };
+
+    const handleComment = (videoId: string) => {
+        console.log('Comment on:', videoId);
+    };
+
+    const handleSave = (videoId: string) => {
+        console.log('Save:', videoId);
+    };
+
+    const handleMore = (videoId: string) => {
+        console.log('More options:', videoId);
+    };
+
+    // Filter videos to start from the initialVideoId if provided
+    // Ideally, we would scroll to the index, but filtering/reordering might be easier for now
+    // Or we rely on VerticalFeed to handle initialScrollIndex (not implemented there yet)
+    // For now, let's just show the feed as returned.
+    // TODO: Implement initialScrollIndex in VerticalFeed if needed for exact positioning.
+
+    if (loading && videos.length === 0) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
+            </View>
+        );
+    }
+
+    if (!loading && videos.length === 0) {
+        return (
+            <View style={styles.loadingContainer}>
+                <Text style={{ color: 'white' }}>Video not found</Text>
+                <TouchableOpacity onPress={handleBack} style={{ marginTop: 20, padding: 10, backgroundColor: theme.colors.primary.DEFAULT, borderRadius: 8 }}>
+                    <Text style={{ color: 'white' }}>Go Back</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    // Identify start index based on initialVideoId
+    let initialScrollIndex = 0;
+    if (initialVideoId && videos.length > 0) {
+        const foundIdx = videos.findIndex(v => v.id === initialVideoId);
+        if (foundIdx !== -1) {
+            initialScrollIndex = foundIdx;
+        }
+    }
+
     return (
-        <View style={styles.root}>
-            <FeedStage
-                videos={feed.videos}
-                loading={feed.loading}
-                hasMore={feed.hasMore}
-                refreshing={feed.refreshing}
-                onRefresh={feed.refresh}
-                onEndReached={feed.loadMore}
-                toggleLike={feed.toggleLike}
-                likeOnly={feed.likeOnly}
-                toggleSave={feed.toggleSave}
-                toggleFollow={feed.toggleFollow}
-                focused={isFocused}
-                topInset={insets.top + 48}
-                bottomInset={insets.bottom}
-                empty={
-                    <EmptyState
-                        icon="film-outline"
-                        title="This video isn't available"
-                        body="It may have been removed, or the link is out of date."
-                        actionLabel="Go back"
-                        onAction={goBack}
-                    />
-                }
+        <View style={styles.container}>
+            <Stack.Screen options={{ headerShown: false }} />
+
+            <CoubClassicFeed
+                videos={videos}
+                isScreenFocused={isFocused}
+                onEndReached={loadMore}
+                onLike={toggleLike}
+                onComment={handleComment}
+                onSave={handleSave}
+                onMore={handleMore}
+                onFollow={toggleFollow}
+                onSelect={(id) => console.log('Selected:', id)}
+                initialScrollIndex={initialScrollIndex}
             />
 
-            <View style={[styles.back, { top: insets.top + 2 }]} pointerEvents="box-none">
-                <IconButton variant="glass" name="chevron-back" size={22} label="Back" onPress={goBack} />
-            </View>
+            {/* Back Button Overlay */}
+            <TouchableOpacity
+                style={[styles.backButton, { top: insets.top + 10 }]}
+                onPress={handleBack}
+            >
+                <Feather name="arrow-left" size={24} color="white" />
+            </TouchableOpacity>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    root: { flex: 1, backgroundColor: '#000' },
-    back: { position: 'absolute', left: 6, zIndex: 50 },
+    container: {
+        flex: 1,
+        backgroundColor: '#000',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#000',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 20,
+        zIndex: 10,
+        padding: 8,
+        borderRadius: 20,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+    }
 });

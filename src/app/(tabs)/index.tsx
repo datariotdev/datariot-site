@@ -4,7 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
 import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
+import { useRouter } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { SideMenu } from '../../components/Navigation/SideMenu';
 import { useIsFocused } from '@react-navigation/native';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { CommentsModal } from '../../components/VideoFeed/CommentsModal';
@@ -17,7 +19,6 @@ import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideo
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
 import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
-import { MobileHome } from '../../components/Feed/MobileHome';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -34,11 +35,13 @@ const TICKER_ITEMS = [
     '1,248 PILOTS ENROLLED THIS CYCLE',
 ];
 
-const DesktopHome = () => {
+const HomeScreen = () => {
+    const router = useRouter();
     const isFocused = useIsFocused();
     const insets = useSafeAreaInsets();
     const [activeTab, setActiveTab] = useState<FeedType>('trending');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [viewMode, setViewMode] = useState<ViewMode>(Platform.OS === 'web' ? 'classic' : 'mosaic');
     const { theme, mode, toggleTheme } = useTheme();
     const isDark = mode === 'dark';
@@ -51,7 +54,6 @@ const DesktopHome = () => {
         loading,
         loadMore,
         toggleLike,
-        toggleSave,
         toggleFollow,
     } = useVideos({
         type: activeTab,
@@ -65,7 +67,7 @@ const DesktopHome = () => {
 
     const handleSelectVideo = (videoId: string) => setSelectedVideoId(videoId);
     const handleComment = (videoId: string) => setCommentsVideoId(videoId);
-    const handleSave = (videoId: string) => toggleSave(videoId);
+    const handleSave = (videoId: string) => console.log('Save:', videoId);
 
     const handleMore = (videoId: string) => {
         const vid = videos.find(v => v.id === videoId);
@@ -247,7 +249,113 @@ const DesktopHome = () => {
         );
     }
 
-    return null;
+    /* ---------------- Mobile: original floating chrome ---------------- */
+    return (
+        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+            <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+
+            <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+                <View style={styles.topNavContent} pointerEvents="box-none">
+                    <View style={styles.leftActionsContainer}>
+                        <Pressable
+                            style={[
+                                styles.roundButton,
+                                {
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
+                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                },
+                            ]}
+                            onPress={() => setIsMenuOpen(true)}
+                        >
+                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <Feather name="menu" size={22} color={theme.colors.text.primary} />
+                        </Pressable>
+                    </View>
+
+                    <View style={styles.pillContainer}>
+                        <BlurView
+                            intensity={70}
+                            tint={isDark ? 'dark' : 'light'}
+                            style={[
+                                styles.pillBlur,
+                                {
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : 'rgba(255, 255, 255, 0.8)',
+                                    borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
+                                },
+                            ]}
+                        >
+                            {TABS.map((tab) => (
+                                <TabButton
+                                    key={tab.key}
+                                    theme={theme}
+                                    label={tab.label}
+                                    isActive={activeTab === tab.key}
+                                    onPress={() => setActiveTab(tab.key as FeedType)}
+                                    isDark={isDark}
+                                />
+                            ))}
+                        </BlurView>
+                    </View>
+
+                    <View style={styles.rightActionsContainer}>
+                        <Pressable
+                            style={[
+                                styles.roundButton,
+                                {
+                                    backgroundColor: viewMode === 'mosaic'
+                                        ? theme.colors.primary.DEFAULT
+                                        : (isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)'),
+                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                    marginRight: 8,
+                                },
+                            ]}
+                            onPress={() => setViewMode(viewMode === 'mosaic' ? 'classic' : 'mosaic')}
+                        >
+                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <Ionicons
+                                name={viewMode === 'mosaic' ? 'grid' : 'apps'}
+                                size={22}
+                                color={viewMode === 'mosaic' ? '#000' : theme.colors.text.primary}
+                            />
+                        </Pressable>
+
+                        <Pressable
+                            style={[
+                                styles.roundButton,
+                                {
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
+                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                },
+                            ]}
+                            onPress={() => router.push('/profile')}
+                        >
+                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <Feather name="user" size={22} color={theme.colors.text.primary} />
+                        </Pressable>
+                    </View>
+
+                    {/* The row bleeds 16px past the nav padding on both sides.
+                        Sizing it from the window width overflowed the column
+                        and put a horizontal scrollbar on the page (#9). */}
+                    {activeTab === 'trending' && (
+                        <View style={[styles.categoryFiltersContainer, { left: -16, right: -16 }]}>
+                            <CategoryPills
+                                categories={['All', ...VIDEO_CATEGORIES]}
+                                activeCategory={activeCategory || 'All'}
+                                onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
+                            />
+                        </View>
+                    )}
+                </View>
+            </View>
+
+            {feed}
+
+            <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+
+            {modals}
+        </View>
+    );
 };
 
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
@@ -271,12 +379,6 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 10,
-    },
-    topScrim: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
     },
     topNavContent: {
         height: 44,
@@ -400,10 +502,47 @@ const styles = StyleSheet.create({
     },
 });
 
-const HomeScreen = () => {
-    const { width } = useWindowDimensions();
-    const isDesktop = Platform.OS === 'web' && width > 768;
-    return isDesktop ? <DesktopHome /> : <MobileHome />;
+const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
+    const [isHovered, setIsHovered] = React.useState(false);
+    return (
+        <Pressable
+            onPress={onPress}
+            onHoverIn={() => setIsHovered(true)}
+            onHoverOut={() => setIsHovered(false)}
+            style={[
+                styles.tabButton,
+                isHovered && !isActive && {
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                },
+            ]}
+        >
+            {isActive && (
+                <View style={[StyleSheet.absoluteFill, { padding: 2 }]}>
+                    <LinearGradient
+                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.tabIndicatorBackground}
+                    />
+                </View>
+            )}
+            <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={[
+                    styles.tabText,
+                    { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium },
+                    isActive && {
+                        color: isDark ? '#000000' : '#FFFFFF',
+                        fontFamily: theme.typography.fontFamilies.bold,
+                        fontWeight: '800',
+                    },
+                ]}
+            >
+                {label}
+            </Text>
+        </Pressable>
+    );
 };
 
 export default HomeScreen;

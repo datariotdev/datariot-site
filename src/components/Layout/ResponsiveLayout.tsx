@@ -6,7 +6,6 @@ import { GlobalWebStyles } from '../UI/GlobalWebStyles';
 import { HudBackdrop } from '../UI/HudBackdrop';
 import { usePathname } from 'expo-router';
 import { useTheme } from '../Theme/ThemeProvider';
-import { MAX_CONTENT_WIDTH } from '../../lib/constants/layout';
 
 interface ResponsiveLayoutProps {
     children: React.ReactNode;
@@ -40,11 +39,7 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     ].includes(pathname);
 
     // The right dock is a home-feed instrument only, and only when there's room
-    const isHome = pathname === '/' || pathname === '/index';
-    const showRightPanel = isHome && width >= DOCK_BREAKPOINT;
-
-    // Home is the wide deck; every other screen is a phone screen and keeps a phone's width
-    const body = isHome ? children : <View style={styles.phoneColumn}>{children}</View>;
+    const showRightPanel = (pathname === '/' || pathname === '/index') && width >= DOCK_BREAKPOINT;
 
     if (!showSidebar) {
         return (
@@ -52,7 +47,7 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
                 <GlobalWebStyles />
                 <HudBackdrop isDark={isDark} />
                 <View style={[styles.content, { maxWidth: '100%', paddingHorizontal: 24 }]}>
-                    <View style={styles.fullWidthColumn}>{body}</View>
+                    <View style={styles.fullWidthColumn}>{children}</View>
                 </View>
             </View>
         );
@@ -69,7 +64,7 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
             <View style={[styles.content, { paddingLeft: RAIL_WIDTH }]}>
                 {/* Deck — the main working surface */}
                 <View style={styles.deckColumn}>
-                    <View style={styles.deckInner}>{body}</View>
+                    <View style={styles.deckInner}>{children}</View>
                 </View>
 
                 {/* Instrument dock */}
@@ -107,12 +102,6 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         maxWidth: 1300,
-        alignSelf: 'center',
-    },
-    phoneColumn: {
-        flex: 1,
-        width: '100%',
-        maxWidth: MAX_CONTENT_WIDTH,
         alignSelf: 'center',
     },
     deckColumn: {

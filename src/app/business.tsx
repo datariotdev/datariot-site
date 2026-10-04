@@ -337,9 +337,6 @@ const styles = StyleSheet.create({
     root: {
         flex: 1,
         backgroundColor: '#000000',
-        // the decorative blobs bleed past the edges; without this the page
-        // was wider than a phone (530px on a 390px screen) and panned sideways
-        overflow: 'hidden',
     },
     safeArea: {
         flex: 1,

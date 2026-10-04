@@ -105,9 +105,7 @@ export default function RootLayout() {
         <ThemeProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <SafeAreaProvider>
-                    {/* Every screen draws its own header; without this edit-profile, business
-                        and user/[id] showed a white bar with the raw route name above it. */}
-                    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#08090D' } }}>
+                    <Stack screenOptions={{ contentStyle: { backgroundColor: '#08090D' } }}>
                         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                         <Stack.Screen name="auth" options={{ headerShown: false }} />
                         <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
