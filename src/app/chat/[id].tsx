@@ -1,30 +1,107 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator, Modal, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useMessages } from '../../lib/supabase/hooks/useMessages';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useMessages, ChatMessage } from '../../lib/supabase/hooks/useMessages';
 import { supabase } from '../../lib/supabase/client';
-import { useTheme } from '../../components/Theme/ThemeProvider';
+import { usePalette } from '../../design-system/palette';
+import { Avatar } from '../../components/UI/Avatar';
+
+const RUN_GAP_MS = 5 * 60 * 1000;
+
+function dayLabel(iso: string) {
+    const d = new Date(iso);
+    const now = new Date();
+    const startOf = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    const days = Math.round((startOf(now) - startOf(d)) / 86400000);
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    return d.toLocaleDateString([], { day: 'numeric', month: 'short', year: d.getFullYear() === now.getFullYear() ? undefined : 'numeric' });
+}
+
+interface Row {
+    message: ChatMessage;
+    day?: string;
+    startsRun: boolean;
+    endsRun: boolean;
+}
+
+/** Group neighbours from the same person into runs, and mark where a new day begins. */
+function toRows(messages: ChatMessage[]): Row[] {
+    return messages.map((message, i) => {
+        const prev = messages[i - 1];
+        const next = messages[i + 1];
+        const at = new Date(message.created_at).getTime();
+        const sameAsPrev = !!prev && prev.sender === message.sender && at - new Date(prev.created_at).getTime() < RUN_GAP_MS;
+        const sameAsNext = !!next && next.sender === message.sender && new Date(next.created_at).getTime() - at < RUN_GAP_MS;
+        const day = !prev || dayLabel(prev.created_at) !== dayLabel(message.created_at) ? dayLabel(message.created_at) : undefined;
+        return { message, day, startsRun: !sameAsPrev || !!day, endsRun: !sameAsNext };
+    });
+}
+
+/** Full-screen playback for a received clip. Mounted only while open. */
+function VideoViewer({ url, onClose }: { url: string; onClose: () => void }) {
+    const insets = useSafeAreaInsets();
+    const player = useVideoPlayer(url, pl => {
+        pl.loop = false;
+        pl.play();
+    });
+    return (
+        <Modal visible animationType="fade" onRequestClose={onClose} statusBarTranslucent>
+            <View style={{ flex: 1, backgroundColor: '#000' }}>
+                <VideoView player={player} style={{ flex: 1, width: '100%', height: '100%' }} contentFit="contain" nativeControls />
+                <Pressable
+                    onPress={onClose}
+                    accessibilityLabel="Close video"
+                    style={{ position: 'absolute', top: insets.top + 8, left: 14, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                    <Ionicons name="close" size={22} color="#FFF" />
+                </Pressable>
+            </View>
+        </Modal>
+    );
+}
 
 export default function ChatScreen() {
-    const { id, name } = useLocalSearchParams();
+    const { id, name, userId } = useLocalSearchParams<{ id: string; name?: string; userId?: string }>();
     const router = useRouter();
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
-    const [inputText, setInputText] = useState('');
-    const { messages, loading, error, sendMessage } = useMessages(id as string);
-    const [uploading, setUploading] = useState(false);
-    const flatListRef = React.useRef<FlatList>(null);
     const insets = useSafeAreaInsets();
+    const p = usePalette();
+
+    const { messages, loading, error, sendMessage } = useMessages(id as string);
+    const [inputText, setInputText] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const [avatar, setAvatar] = useState<string | null>(null);
+    const [playing, setPlaying] = useState<string | null>(null);
+    const listRef = useRef<FlatList<Row>>(null);
+    const placed = useRef(false);
+
+    const title = (Array.isArray(name) ? name[0] : name) || 'Chat';
+    const rows = useMemo(() => toRows(messages), [messages]);
+    const canSend = !!inputText.trim();
+
+    // Their photo for the header, when we know who they are
+    useEffect(() => {
+        if (!supabase || !userId) return;
+        let cancelled = false;
+        supabase.from('profiles').select('avatar_url').eq('id', userId).maybeSingle().then(({ data }: { data: { avatar_url?: string | null } | null }) => {
+            if (!cancelled) setAvatar(data?.avatar_url ?? null);
+        });
+        return () => { cancelled = true; };
+    }, [userId]);
+
+    const toEnd = (animated: boolean) => listRef.current?.scrollToEnd({ animated });
+    const goBack = () => (router.canGoBack() ? router.back() : router.replace('/inbox'));
+    const openProfile = () => { if (userId) router.push(`/user/${userId}` as any); };
 
     const handleSend = async () => {
-        if (!inputText.trim()) return;
-        const textToSend = inputText;
+        const text = inputText.trim();
+        if (!text) return;
         setInputText('');
-        await sendMessage(textToSend);
+        await sendMessage(text);
     };
 
     const attachMedia = async () => {
@@ -33,7 +110,6 @@ export default function ChatScreen() {
             allowsEditing: true,
             quality: 1,
         });
-
         if (!result.canceled && result.assets && result.assets.length > 0) {
             await uploadMedia(result.assets[0].uri);
         }
@@ -47,275 +123,197 @@ export default function ChatScreen() {
 
             const fileExt = uri.split('.').pop() || 'mp4';
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-            const filePath = `${id}/${fileName}`; // folder for chat
+            const filePath = `${id}/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('chat-media')
-                .upload(filePath, blob, {
-                    contentType: `video/${fileExt === 'mov' ? 'quicktime' : fileExt}`
-                });
-
+                .upload(filePath, blob, { contentType: `video/${fileExt === 'mov' ? 'quicktime' : fileExt}` });
             if (uploadError) throw uploadError;
 
             const { data } = supabase.storage.from('chat-media').getPublicUrl(filePath);
-
             await sendMessage('Sent a video', data.publicUrl, 'video');
-
-        } catch (error) {
-            console.error('Upload Error: ', error);
+        } catch (e) {
+            console.error('Upload Error: ', e);
+            if (Platform.OS === 'web') window.alert('The video could not be sent. Try again.');
+            else Alert.alert('Video not sent', 'Check your connection and try again.');
         } finally {
             setUploading(false);
         }
     };
 
-    return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <LinearGradient
-                colors={isDark ? ['#000000', '#000000'] : ['#FFFFFF', '#FFFFFF']}
-                style={StyleSheet.absoluteFill}
-            />
-            <Stack.Screen options={{ headerShown: false }} />
-            <SafeAreaView style={styles.safeArea} edges={['top']}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-                    style={{ flex: 1 }}
-                >
-                    {/* Header */}
-                    <View style={[styles.header, { borderBottomWidth: 0 }]}>
-                        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                            <Ionicons name="chevron-back" size={24} color={theme.colors.primary.light} />
-                        </TouchableOpacity>
-                        <View style={styles.headerInfo}>
-                            <Text style={[styles.headerTitle, { color: theme.colors.primary.light }]}>{name || 'Chat'}</Text>
-                            <Text style={[styles.headerStatus, { color: theme.colors.primary.DEFAULT }]}>SYSTEM.ONLINE</Text>
-                        </View>
-                        <TouchableOpacity style={[styles.headerAction, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.1)' : 'rgba(217, 228, 255, 0.05)' }]}>
-                            <Ionicons name="call" size={22} color={theme.colors.primary.light} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.headerAction, { marginLeft: 8, backgroundColor: isDark ? 'rgba(217, 228, 255, 0.1)' : 'rgba(217, 228, 255, 0.05)' }]}>
-                            <Ionicons name="videocam" size={24} color={theme.colors.primary.light} />
-                        </TouchableOpacity>
-                    </View>
+    const renderRow = ({ item }: { item: Row }) => {
+        const { message: m, day, startsRun, endsRun } = item;
+        const mine = m.sender === 'me';
 
-                    {/* Messages */}
-                    {error ? (
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-                            <Ionicons name="alert-circle-outline" size={48} color="#FFFFFF" />
-                            <Text style={{ color: '#FFF', textAlign: 'center', marginTop: 12, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }}>{error}</Text>
-                            <TouchableOpacity
-                                onPress={() => router.replace('/inbox')}
-                                style={{ marginTop: 20, padding: 12, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, borderWidth: 1, borderColor: theme.colors.primary.light }}
-                            >
-                                <Text style={{ color: theme.colors.primary.light, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }}>[ RETURN_TO_SYSTEM ]</Text>
-                            </TouchableOpacity>
+        return (
+            <View>
+                {day ? (
+                    <View style={styles.dayWrap}>
+                        <View style={[styles.dayPill, { backgroundColor: p.soft }]}>
+                            <Text style={[styles.dayText, { color: p.sub, fontFamily: p.fonts.medium }]}>{day}</Text>
                         </View>
+                    </View>
+                ) : null}
+
+                <View style={[styles.line, { alignItems: mine ? 'flex-end' : 'flex-start', marginTop: day ? 0 : startsRun ? 14 : 3 }]}>
+                    {m.media_url ? (
+                        <Pressable
+                            onPress={() => setPlaying(m.media_url)}
+                            accessibilityLabel="Play video"
+                            style={[styles.video, { backgroundColor: p.cardHigh, borderColor: p.border }]}
+                        >
+                            <View style={[styles.playDisc, { backgroundColor: p.accent }]}>
+                                <Ionicons name="play" size={22} color={p.onAccent} style={{ marginLeft: 2 }} />
+                            </View>
+                            <Text style={[styles.videoLabel, { color: p.sub, fontFamily: p.fonts.medium }]}>Video message</Text>
+                        </Pressable>
                     ) : (
-                        <FlatList
-                            ref={flatListRef}
-                            data={messages}
-                            keyExtractor={item => item.id}
-                            contentContainerStyle={styles.messageList}
-                            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                            onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                            ListEmptyComponent={loading ? <ActivityIndicator color={theme.colors.primary.light} style={{ marginTop: 50 }} /> : null}
-                            renderItem={({ item }) => (
-                                <View style={[
-                                    styles.messageBubble,
-                                    item.sender === 'me' ? styles.myBubble : styles.theirBubble,
-                                    item.media_url ? styles.mediaBubble : null
-                                ]}>
-                                    {item.media_url ? (
-                                        <View style={styles.videoPlaceholder}>
-                                            <Ionicons name="play-circle" size={48} color={theme.colors.primary.DEFAULT} />
-                                            <Text style={{ color: '#FFFFFF', marginTop: 8 }}>Video Message</Text>
-                                        </View>
-                                    ) : (
-                                        item.sender === 'me' ? (
-                                            <View style={[styles.myBubbleContent, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.15)' : 'rgba(217, 228, 255, 0.1)', borderColor: theme.colors.primary.light }]}>
-                                                <Text style={[styles.messageTextMy, { color: theme.colors.primary.light }]}>{item.content}</Text>
-                                            </View>
-                                        ) : (
-                                            <View style={[styles.theirBubbleContent, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)' }]}>
-                                                <Text style={[styles.messageTextTheir, { color: theme.colors.text.primary }]}>{item.content}</Text>
-                                            </View>
-                                        )
-                                    )}
-                                    <Text style={styles.messageTime}>{item.time}</Text>
-                                </View>
-                            )}
-                        />
-                    )}
-
-                    {/* Input */}
-                    <View style={[styles.floatingInputWrapper, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-                        <View style={[styles.floatingInputContainer, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.05)' : 'rgba(217, 228, 255, 0.05)' }]}>
-                            <TouchableOpacity style={styles.attachButton} onPress={attachMedia} disabled={uploading}>
-                                {uploading ? (
-                                    <ActivityIndicator size="small" color={theme.colors.primary.light} />
-                                ) : (
-                                    <Ionicons name="add-circle" size={28} color={theme.colors.primary.light} />
-                                )}
-                            </TouchableOpacity>
-                            <TextInput
-                                style={[styles.input, { color: theme.colors.primary.light }]}
-                                placeholder="> MESSAGE..."
-                                placeholderTextColor="rgba(217, 228, 255, 0.5)"
-                                value={inputText}
-                                onChangeText={setInputText}
-                                multiline
-                            />
-                            <TouchableOpacity onPress={handleSend} style={styles.sendButtonContainer}>
-                                <View style={[styles.sendButton, { backgroundColor: theme.colors.primary.light }]}>
-                                    <Ionicons name="arrow-up" size={20} color="#000" />
-                                </View>
-                            </TouchableOpacity>
+                        <View
+                            style={[
+                                styles.bubble,
+                                mine ? { backgroundColor: p.accent } : { backgroundColor: p.card, borderWidth: 1, borderColor: p.border },
+                                endsRun && (mine ? styles.tailRight : styles.tailLeft),
+                            ]}
+                        >
+                            <Text selectable style={[styles.msgText, { color: mine ? p.onAccent : p.text, fontFamily: p.fonts.regular }]}>{m.content}</Text>
                         </View>
+                    )}
+                    {endsRun ? <Text style={[styles.time, { color: p.faint, fontFamily: p.fonts.regular }]}>{m.time}</Text> : null}
+                </View>
+            </View>
+        );
+    };
+
+    return (
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { backgroundColor: p.bg }]}>
+            <Stack.Screen options={{ headerShown: false }} />
+
+            <View style={[styles.header, { paddingTop: insets.top + 6, borderBottomColor: p.border }]}>
+                <Pressable onPress={goBack} hitSlop={8} accessibilityLabel="Back" style={styles.back}>
+                    <Ionicons name="chevron-back" size={26} color={p.text} />
+                </Pressable>
+                <Pressable onPress={openProfile} disabled={!userId} style={styles.who}>
+                    <Avatar uri={avatar} name={title} size={38} />
+                    <View style={{ flexShrink: 1 }}>
+                        <Text numberOfLines={1} style={[styles.whoName, { color: p.text, fontFamily: p.fonts.bold }]}>{title}</Text>
+                        {userId ? <Text style={[styles.whoSub, { color: p.faint, fontFamily: p.fonts.regular }]}>View profile</Text> : null}
                     </View>
-                </KeyboardAvoidingView>
-            </SafeAreaView>
-        </View>
+                </Pressable>
+                <View style={{ width: 44 }} />
+            </View>
+
+            {error ? (
+                <View style={styles.center}>
+                    <Ionicons name="alert-circle-outline" size={40} color={p.sub} />
+                    <Text style={[styles.emptyTitle, { color: p.text, fontFamily: p.fonts.bold }]}>This chat did not load</Text>
+                    <Text style={[styles.emptySub, { color: p.sub, fontFamily: p.fonts.regular }]}>{error}</Text>
+                    <Pressable onPress={goBack} style={[styles.cta, { backgroundColor: p.accent }]}>
+                        <Text style={[styles.ctaText, { color: p.onAccent, fontFamily: p.fonts.semibold }]}>Back to messages</Text>
+                    </Pressable>
+                </View>
+            ) : loading && rows.length === 0 ? (
+                <View style={styles.center}><ActivityIndicator color={p.sub} /></View>
+            ) : rows.length === 0 ? (
+                <View style={styles.center}>
+                    <Avatar uri={avatar} name={title} size={84} />
+                    <Text style={[styles.emptyTitle, { color: p.text, fontFamily: p.fonts.bold }]}>Say hi to {title}</Text>
+                    <Text style={[styles.emptySub, { color: p.sub, fontFamily: p.fonts.regular }]}>Your messages will show up here.</Text>
+                </View>
+            ) : (
+                <FlatList
+                    ref={listRef}
+                    data={rows}
+                    keyExtractor={r => r.message.id}
+                    renderItem={renderRow}
+                    contentContainerStyle={styles.list}
+                    showsVerticalScrollIndicator={false}
+                    keyboardDismissMode="interactive"
+                    keyboardShouldPersistTaps="handled"
+                    onContentSizeChange={() => {
+                        // Land on the latest message without animating the first time
+                        toEnd(placed.current);
+                        placed.current = true;
+                    }}
+                />
+            )}
+
+            <View style={[styles.composer, { borderTopColor: p.border, paddingBottom: Math.max(insets.bottom, 12) }]}>
+                <Pressable
+                    onPress={attachMedia}
+                    disabled={uploading}
+                    accessibilityLabel="Send a video"
+                    style={[styles.round, { backgroundColor: p.card, borderColor: p.border, borderWidth: 1 }]}
+                >
+                    {uploading ? <ActivityIndicator size="small" color={p.sub} /> : <Ionicons name="add" size={24} color={p.text} />}
+                </Pressable>
+
+                <TextInput
+                    value={inputText}
+                    onChangeText={setInputText}
+                    placeholder="Message"
+                    placeholderTextColor={p.faint}
+                    multiline
+                    numberOfLines={1}
+                    maxLength={4000}
+                    style={[
+                        styles.input,
+                        { backgroundColor: p.card, borderColor: p.border, color: p.text, fontFamily: p.fonts.regular },
+                        Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null,
+                    ]}
+                    onFocus={() => setTimeout(() => toEnd(true), 120)}
+                />
+
+                <Pressable
+                    onPress={handleSend}
+                    disabled={!canSend}
+                    accessibilityLabel="Send"
+                    style={[styles.round, canSend ? { backgroundColor: p.accent } : { backgroundColor: p.card, borderColor: p.border, borderWidth: 1 }]}
+                >
+                    <Ionicons name="arrow-up" size={21} color={canSend ? p.onAccent : p.faint} />
+                </Pressable>
+            </View>
+
+            {playing ? <VideoViewer url={playing} onClose={() => setPlaying(null)} /> : null}
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    safeArea: {
-        flex: 1,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.1)',
-    },
-    backButton: {
-        padding: 8,
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        borderRadius: 20,
-    },
-    headerInfo: {
-        flex: 1,
-        marginLeft: 12,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        letterSpacing: 1,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-        textTransform: 'uppercase',
-    },
-    headerStatus: {
-        fontSize: 11,
-        fontWeight: 'bold',
-        marginTop: 2,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-        letterSpacing: 1,
-    },
-    headerAction: {
-        padding: 10,
-        backgroundColor: 'rgba(217, 228, 255, 0.1)',
-        borderRadius: 20,
-    },
-    messageList: {
-        padding: 16,
-        paddingBottom: 20, // Reduced padding since input is not floating over it anymore
-        gap: 16,
-    },
-    messageBubble: {
-        maxWidth: '82%',
-    },
-    myBubble: {
-        alignSelf: 'flex-end',
-    },
-    theirBubble: {
-        alignSelf: 'flex-start',
-    },
-    myBubbleContent: {
-        padding: 12,
-        paddingHorizontal: 16,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        borderBottomLeftRadius: 16,
-        borderBottomRightRadius: 4,
-    },
-    theirBubbleContent: {
-        padding: 12,
-        paddingHorizontal: 16,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        borderBottomRightRadius: 16,
-        borderBottomLeftRadius: 4,
-    },
-    mediaBubble: {
-        padding: 4,
-    },
-    videoPlaceholder: {
-        width: 240,
-        height: 180,
-        backgroundColor: '#000',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 20,
-        overflow: 'hidden',
-    },
-    messageTextMy: {
-        fontSize: 14,
-        lineHeight: 20,
-        fontWeight: '600',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    },
-    messageTextTheir: {
-        fontSize: 14,
-        lineHeight: 20,
-        fontWeight: '500',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    },
-    messageTime: {
-        color: 'rgba(255, 255, 255, 0.4)',
-        fontSize: 10,
-        marginTop: 6,
-        paddingHorizontal: 4,
-        fontWeight: 'bold',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-        letterSpacing: 0.5,
-    },
-    floatingInputWrapper: {
-        paddingHorizontal: 16,
-        paddingTop: 8,
-    },
-    floatingInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 6,
-        borderRadius: 8,
-    },
-    attachButton: {
-        padding: 8,
-        marginHorizontal: 4,
-    },
+    root: { flex: 1 },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6, paddingBottom: 8, borderBottomWidth: StyleSheet.hairlineWidth },
+    back: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+    who: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, minHeight: 44 },
+    whoName: { fontSize: 16 },
+    whoSub: { fontSize: 11.5, marginTop: 1 },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, gap: 8 },
+    emptyTitle: { fontSize: 18, marginTop: 10 },
+    emptySub: { fontSize: 14.5, textAlign: 'center' },
+    cta: { marginTop: 14, height: 44, paddingHorizontal: 24, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+    ctaText: { fontSize: 14.5 },
+    list: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, flexGrow: 1 },
+    dayWrap: { alignItems: 'center', marginTop: 20, marginBottom: 8 },
+    dayPill: { paddingHorizontal: 12, height: 24, borderRadius: 12, justifyContent: 'center' },
+    dayText: { fontSize: 11.5 },
+    line: { gap: 4 },
+    bubble: { maxWidth: '80%', paddingHorizontal: 15, paddingVertical: 10, borderRadius: 20 },
+    tailRight: { borderBottomRightRadius: 6 },
+    tailLeft: { borderBottomLeftRadius: 6 },
+    msgText: { fontSize: 15.5, lineHeight: 21 },
+    time: { fontSize: 11, marginHorizontal: 4 },
+    video: { width: 230, height: 150, borderRadius: 20, borderWidth: 1, alignItems: 'center', justifyContent: 'center', gap: 10 },
+    playDisc: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center' },
+    videoLabel: { fontSize: 12.5 },
+    composer: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, paddingHorizontal: 12, paddingTop: 10, borderTopWidth: StyleSheet.hairlineWidth },
+    round: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
     input: {
         flex: 1,
-        paddingHorizontal: 8,
-        paddingVertical: 12,
-        fontSize: 14,
-        maxHeight: 100,
-        fontWeight: 'bold',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    },
-    sendButtonContainer: {
-        padding: 4,
-    },
-    sendButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
+        minHeight: 44,
+        maxHeight: 120,
+        borderRadius: 22,
+        borderWidth: 1,
+        paddingHorizontal: 18,
+        paddingTop: Platform.OS === 'ios' ? 12 : 9,
+        paddingBottom: Platform.OS === 'ios' ? 12 : 9,
+        fontSize: 16,
     },
 });

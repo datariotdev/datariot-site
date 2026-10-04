@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Switch, TextInput, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons, Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, StyleSheet, FlatList, Pressable, TextInput, ActivityIndicator, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import { ChatItem } from '../../components/UI/ChatItem';
+import { Avatar } from '../../components/UI/Avatar';
 import { useRouter } from 'expo-router';
 import { useChats } from '../../lib/supabase/hooks/useChats';
 import { supabase } from '../../lib/supabase/client';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
-import { useTheme } from '../../components/Theme/ThemeProvider';
+import { usePalette } from '../../design-system/palette';
 
 interface Profile {
     id: string;
@@ -17,21 +18,21 @@ interface Profile {
     avatar_url: string | null;
 }
 
-// Mock Data
+/** Orvelis lives at the top of the list; it is a tool, not a person, so it carries no unread count. */
 const AI_BOT = {
     id: 'ai-bot',
-    name: 'Orvelis AI',
-    message: 'I can help you analyze that improved engagement strategy.',
-    time: 'Now',
+    name: 'Orvelis',
+    message: 'Ask anything, or test an argument.',
+    time: '',
     isAi: true,
-    unreadCount: 3,
 };
 
-// Removed mock THOUGHTS
 export default function InboxScreen() {
     const router = useRouter();
     const { user } = useAuth();
-    const [isFocusMode, setIsFocusMode] = useState(false);
+    const p = usePalette();
+    const insets = useSafeAreaInsets();
+    const tabBarHeight = useBottomTabBarHeight();
     const { chats, loading } = useChats();
 
     // Search state
@@ -46,7 +47,7 @@ export default function InboxScreen() {
         } else {
             setFoundUsers([]);
         }
-    }, [searchQuery]);
+    }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const searchUsers = async (query: string) => {
         if (!user) return;
@@ -76,7 +77,6 @@ export default function InboxScreen() {
             let chatId = existingChat?.chat_id;
 
             if (!chatId) {
-                // Determine a consistent chat ID structure or attempt creation
                 const { data: newChat, error: createError } = await supabase
                     .from('chats')
                     .insert({ type: 'direct' })
@@ -86,8 +86,7 @@ export default function InboxScreen() {
                 if (createError) throw createError;
                 chatId = newChat.id;
 
-                // Attempt to insert participants one by one to avoid total failure if one is blocked by RLS
-                // First, add yourself (should usually work due to RLS)
+                // Add yourself first (usually allowed), then the other person (may be blocked by RLS)
                 const { error: selfError } = await supabase
                     .from('chat_participants')
                     .insert({ chat_id: chatId, user_id: user.id });
@@ -96,7 +95,6 @@ export default function InboxScreen() {
                     console.error('Error adding self as participant:', selfError.message);
                 }
 
-                // Then try to add the other person
                 const { error: otherError } = await supabase
                     .from('chat_participants')
                     .insert({ chat_id: chatId, user_id: targetUser.id });
@@ -106,7 +104,6 @@ export default function InboxScreen() {
                 }
             }
 
-            // Close search and go to chat
             setIsSearching(false);
             setSearchQuery('');
             router.push({
@@ -116,7 +113,7 @@ export default function InboxScreen() {
 
         } catch (error) {
             console.error('Error starting chat:', error);
-            // Fallback: If creation completely fails, use the targetUser ID to let useMessages try its fallback
+            // If creation completely fails, use the user's id and let useMessages try its fallback
             setIsSearching(false);
             setSearchQuery('');
             router.push({
@@ -137,279 +134,134 @@ export default function InboxScreen() {
         }
     };
 
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+    const closeSearch = () => {
+        setIsSearching(false);
+        setSearchQuery('');
+    };
 
-    const renderHeader = () => (
+    const header = (
         <View>
-            {/* Focus Mode & Calls Header */}
-            <View style={styles.topControls}>
-                <TouchableOpacity
-                    style={[styles.focusButton, { backgroundColor: isDark ? '#FFFFFF' : theme.colors.text.primary }, isFocusMode && [styles.focusButtonActive, { backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.1)' }]]}
-                    onPress={() => setIsFocusMode(!isFocusMode)}
+            <View style={[styles.titleRow, { paddingTop: insets.top + 12 }]}>
+                <Text style={[styles.title, { color: p.text, fontFamily: p.fonts.bold }]}>{isSearching ? 'New message' : 'Messages'}</Text>
+                <Pressable
+                    onPress={isSearching ? closeSearch : () => setIsSearching(true)}
+                    hitSlop={8}
+                    accessibilityLabel={isSearching ? 'Close search' : 'Find someone to message'}
+                    style={[styles.roundBtn, { backgroundColor: p.card, borderColor: p.border }]}
                 >
-                    <Ionicons
-                        name={isFocusMode ? "moon" : "sunny"}
-                        size={16}
-                        color={isFocusMode ? theme.colors.background.primary : theme.colors.background.primary}
-                    />
-                    <Text style={[styles.focusText, { color: isDark ? '#000' : theme.colors.background.primary }, isFocusMode && [styles.focusTextActive, { color: theme.colors.text.primary }]]}>
-                        {isFocusMode ? "Focus On" : "Focus Off"}
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.callsButton} disabled>
-                    <Ionicons name="call" size={20} color={theme.colors.primary.DEFAULT} />
-                </TouchableOpacity>
+                    <Ionicons name={isSearching ? 'close' : 'create-outline'} size={20} color={p.text} />
+                </Pressable>
             </View>
 
-            {/* Title & Search Button */}
-            <View style={styles.titleRow}>
-                <Text style={[styles.pageTitle, { color: theme.colors.text.primary }]}>Messages</Text>
-                <TouchableOpacity style={[styles.searchButton, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} onPress={() => setIsSearching(!isSearching)}>
-                    <Ionicons name={isSearching ? "close" : "search"} size={22} color={theme.colors.text.primary} />
-                </TouchableOpacity>
-            </View>
-
-            {/* Search Bar */}
-            {isSearching && (
-                <View style={[styles.searchContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }]}>
-                    <Ionicons name="search" size={20} color={theme.colors.text.muted} style={styles.searchIcon} />
+            {isSearching ? (
+                <View style={[styles.search, { backgroundColor: p.card, borderColor: p.border }]}>
+                    <Ionicons name="search" size={18} color={p.faint} />
                     <TextInput
-                        style={[styles.searchInput, { color: theme.colors.text.primary }]}
-                        placeholder="Search users to chat..."
-                        placeholderTextColor={theme.colors.text.muted}
+                        style={[styles.searchInput, { color: p.text, fontFamily: p.fonts.regular }, Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null]}
+                        placeholder="Search by username"
+                        placeholderTextColor={p.faint}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                         autoCapitalize="none"
+                        autoCorrect={false}
                         autoFocus
                     />
                 </View>
-            )}
-
-            {!isSearching && (
-                <>
-                    {/* AI Section */}
-                    <Text style={[styles.sectionTitle, { color: theme.colors.text.secondary }]}>ASSISTANT</Text>
-                    <ChatItem
-                        {...AI_BOT}
-                        onPress={() => handleChatPress(AI_BOT.id)}
-                    />
-                </>
+            ) : (
+                <ChatItem {...AI_BOT} onPress={() => handleChatPress(AI_BOT.id)} />
             )}
         </View>
     );
 
     if (isSearching) {
         return (
-            <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
-                {renderHeader()}
+            <View style={[styles.container, { backgroundColor: p.bg }]}>
+                {header}
                 {searchLoading ? (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <ActivityIndicator color={theme.colors.primary.DEFAULT} />
-                    </View>
+                    <View style={{ paddingTop: 40 }}><ActivityIndicator color={p.sub} /></View>
                 ) : (
                     <FlatList
                         data={foundUsers}
                         keyExtractor={(item) => item.id}
-                        contentContainerStyle={styles.listContainer}
+                        keyboardShouldPersistTaps="handled"
+                        contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
                         ListEmptyComponent={
-                            searchQuery.length >= 2 ? (
-                                <Text style={[styles.emptyText, { color: theme.colors.text.muted }]}>No users found</Text>
-                            ) : (
-                                <Text style={[styles.emptyText, { color: theme.colors.text.muted }]}>Type at least 2 characters to search</Text>
-                            )
+                            <Text style={[styles.hint, { color: p.faint, fontFamily: p.fonts.regular }]}>
+                                {searchQuery.length >= 2 ? 'No one with that username.' : 'Type at least 2 letters of a username.'}
+                            </Text>
                         }
                         renderItem={({ item }) => (
-                            <TouchableOpacity style={[styles.userItem, { borderBottomColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} onPress={() => startChat(item)}>
-                                <View style={[styles.avatar, { backgroundColor: theme.colors.primary.DEFAULT }]}>
-                                    <Text style={styles.avatarText}>
-                                        {(item.display_name || item.username)[0].toUpperCase()}
-                                    </Text>
+                            <Pressable
+                                onPress={() => startChat(item)}
+                                style={({ pressed }) => [styles.userRow, pressed && { backgroundColor: p.soft }]}
+                            >
+                                <Avatar uri={item.avatar_url} name={item.display_name || item.username} size={48} />
+                                <View style={{ flex: 1 }}>
+                                    <Text style={[styles.userName, { color: p.text, fontFamily: p.fonts.semibold }]}>{item.display_name || item.username}</Text>
+                                    <Text style={[styles.userHandle, { color: p.sub, fontFamily: p.fonts.regular }]}>@{item.username}</Text>
                                 </View>
-                                <View style={styles.userInfo}>
-                                    <Text style={[styles.displayName, { color: theme.colors.text.primary }]}>{item.display_name || item.username}</Text>
-                                    <Text style={[styles.username, { color: theme.colors.text.secondary }]}>@{item.username}</Text>
+                                <View style={[styles.pill, { backgroundColor: p.accent }]}>
+                                    <Text style={[styles.pillText, { color: p.onAccent, fontFamily: p.fonts.semibold }]}>Message</Text>
                                 </View>
-                            </TouchableOpacity>
+                            </Pressable>
                         )}
                     />
                 )}
-            </SafeAreaView>
+            </View>
         );
     }
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
+        <View style={[styles.container, { backgroundColor: p.bg }]}>
             <FlatList
                 data={chats}
                 keyExtractor={(item) => item.chat_id || item.id}
-                ListHeaderComponent={renderHeader}
+                ListHeaderComponent={header}
                 ListEmptyComponent={
-                    <View style={{ padding: 20, alignItems: 'center' }}>
-                        <Text style={{ color: theme.colors.text.muted }}>
-                            {loading ? 'Loading chats...' : 'No conversations yet.'}
-                        </Text>
-                    </View>
+                    loading ? (
+                        <View style={{ paddingTop: 40 }}><ActivityIndicator color={p.sub} /></View>
+                    ) : (
+                        <View style={styles.empty}>
+                            <View style={[styles.emptyIcon, { backgroundColor: p.card, borderColor: p.border }]}>
+                                <Ionicons name="chatbubble-ellipses-outline" size={26} color={p.sub} />
+                            </View>
+                            <Text style={[styles.emptyTitle, { color: p.text, fontFamily: p.fonts.bold }]}>No conversations yet</Text>
+                            <Text style={[styles.emptySub, { color: p.sub, fontFamily: p.fonts.regular }]}>
+                                Find a creator whose video made you think and say so.
+                            </Text>
+                            <Pressable onPress={() => setIsSearching(true)} style={({ pressed }) => [styles.cta, { backgroundColor: p.accent }, pressed && { opacity: 0.8 }]}>
+                                <Text style={[styles.ctaText, { color: p.onAccent, fontFamily: p.fonts.semibold }]}>Find someone</Text>
+                            </Pressable>
+                        </View>
+                    )
                 }
                 renderItem={({ item }) => (
-                    <ChatItem
-                        {...item}
-                        onPress={() => handleChatPress(item.chat_id, item.name)}
-                    />
+                    <ChatItem {...item} onPress={() => handleChatPress(item.chat_id, item.name)} />
                 )}
-                contentContainerStyle={styles.listContent}
+                contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
                 showsVerticalScrollIndicator={false}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    listContent: {
-        paddingBottom: 100,
-    },
-    topControls: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 10,
-        marginBottom: 10,
-    },
-    focusButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    focusButtonActive: {
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)',
-    },
-    focusText: {
-        marginLeft: 6,
-        fontWeight: '600',
-        fontSize: 12,
-        color: '#000',
-    },
-    focusTextActive: {
-        color: '#FFF',
-    },
-    callsButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(217, 228, 255, 0.1)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    titleRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        marginBottom: 20,
-        marginTop: 10,
-    },
-    pageTitle: {
-        fontSize: 34,
-        fontWeight: '800',
-        letterSpacing: -0.5,
-    },
-    searchButton: {
-        padding: 10,
-        borderRadius: 20,
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 20,
-        marginBottom: 20,
-        paddingHorizontal: 16,
-        height: 48,
-        borderRadius: 24,
-    },
-    searchIcon: {
-        marginRight: 8,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 16,
-    },
-    sectionTitle: {
-        fontSize: 12,
-        fontWeight: '800',
-        paddingHorizontal: 24,
-        marginTop: 10,
-        marginBottom: 12,
-        letterSpacing: 1.5,
-        opacity: 0.6,
-    },
-    // Removed thoughts styles
-    fab: {
-        position: 'absolute',
-        bottom: 90,
-        right: 24,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: '#D9E4FF',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 5,
-    },
-    // Search List Styles
-    listContainer: {
-        paddingHorizontal: 20,
-    },
-    emptyText: {
-        color: 'rgba(255,255,255,0.5)',
-        textAlign: 'center',
-        marginTop: 20,
-    },
-    userItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.05)',
-    },
-    avatar: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: '#D9E4FF',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 12,
-    },
-    avatarText: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    userInfo: {
-        flex: 1,
-    },
-    displayName: {
-        color: '#FFF',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    username: {
-        color: 'rgba(255,255,255,0.6)',
-        fontSize: 14,
-        marginTop: 2,
-    },
+    container: { flex: 1 },
+    titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 14 },
+    title: { fontSize: 32, letterSpacing: -0.8 },
+    roundBtn: { width: 42, height: 42, borderRadius: 21, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+    search: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, marginHorizontal: 20, marginBottom: 10, paddingHorizontal: 16, borderRadius: 24, borderWidth: 1 },
+    searchInput: { flex: 1, height: '100%', fontSize: 16, padding: 0 },
+    hint: { textAlign: 'center', fontSize: 14, paddingTop: 36, paddingHorizontal: 30 },
+    userRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 20, paddingVertical: 11 },
+    userName: { fontSize: 16 },
+    userHandle: { fontSize: 13.5, marginTop: 1 },
+    pill: { height: 34, paddingHorizontal: 16, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+    pillText: { fontSize: 13 },
+    empty: { alignItems: 'center', paddingHorizontal: 40, paddingTop: 44 },
+    emptyIcon: { width: 60, height: 60, borderRadius: 30, borderWidth: 1, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
+    emptyTitle: { fontSize: 18 },
+    emptySub: { fontSize: 14.5, lineHeight: 21, textAlign: 'center', marginTop: 6 },
+    cta: { marginTop: 20, height: 44, paddingHorizontal: 24, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+    ctaText: { fontSize: 14.5 },
 });
