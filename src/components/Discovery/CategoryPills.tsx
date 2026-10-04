@@ -3,6 +3,8 @@ import { ScrollView, Text, StyleSheet, Pressable, View, Platform } from 'react-n
 import { useTheme } from '../Theme/ThemeProvider';
 
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+// On the phone the filters are soft pills; the desktop deck keeps its instrument look
+const SOFT = Platform.OS !== 'web';
 
 interface CategoryPillsProps {
     categories: string[];
@@ -21,7 +23,7 @@ export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: C
             style={styles.scrollStyle}
             contentContainerStyle={styles.container}
         >
-            <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>
+            {SOFT ? null : <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>}
             {categories.map((category) => (
                 <Chip
                     key={category}
@@ -51,6 +53,35 @@ const Chip = ({
 }) => {
     const [isHovered, setIsHovered] = React.useState(false);
     const accent = theme.colors.primary.DEFAULT;
+
+    if (SOFT) {
+        return (
+            <Pressable
+                onPress={onPress}
+                style={[
+                    styles.softChip,
+                    {
+                        backgroundColor: isActive
+                            ? (isDark ? accent : '#1E2A55')
+                            : (isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(30, 42, 85, 0.08)'),
+                    },
+                ]}
+            >
+                <Text
+                    allowFontScaling={false}
+                    style={[
+                        styles.softText,
+                        {
+                            fontFamily: isActive ? theme.typography.fontFamilies.semibold : theme.typography.fontFamilies.medium,
+                            color: isActive ? (isDark ? '#08090D' : '#FFFFFF') : (isDark ? 'rgba(217, 228, 255, 0.78)' : '#44507A'),
+                        },
+                    ]}
+                >
+                    {category}
+                </Text>
+            </Pressable>
+        );
+    }
 
     return (
         <Pressable
@@ -120,6 +151,17 @@ const styles = StyleSheet.create({
         letterSpacing: 1.8,
         marginRight: 4,
         opacity: 0.8,
+    },
+    softChip: {
+        height: 34,
+        paddingHorizontal: 16,
+        borderRadius: 999,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    softText: {
+        fontSize: 13,
+        includeFontPadding: false,
     },
     chip: {
         height: 30,
