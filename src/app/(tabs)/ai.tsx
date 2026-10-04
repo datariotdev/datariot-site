@@ -1,999 +1,594 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, KeyboardAvoidingView, Platform, FlatList, Modal, ScrollView, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeIn, FadeInDown, FadeInUp, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, withDelay, Easing } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Pressable,
+    TextInput,
+    FlatList,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+    Keyboard,
+    Animated,
+    Share,
+    ActivityIndicator,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { generateVideoAnalysis, chatWithAI, generateDailyInsight, VideoAnalysis, DailyInsight } from '../../lib/ai/client';
+import { chatWithAI, analyzeArgument, ArgumentAnalysis } from '../../lib/ai/client';
 
-const { width } = Dimensions.get('window');
+type Mode = 'chat' | 'analyze';
+type IconName = keyof typeof Ionicons.glyphMap;
 
-type ToolType = 'chat' | 'insight' | 'analyze';
+interface Topic {
+    q: string;
+    tag: string;
+    forPoint: string;
+    againstPoint: string;
+}
 
 interface Message {
     id: string;
-    role: 'user' | 'system' | 'assistant';
+    role: 'user' | 'assistant';
+    kind: 'text' | 'analysis' | 'topic';
     content: string;
-    type?: 'text' | 'analysis' | 'insight';
-    data?: any;
+    data?: ArgumentAnalysis | Topic;
 }
 
-// Generate unique IDs
-let _msgIdCounter = 0;
-const uniqueId = () => `msg_${Date.now()}_${++_msgIdCounter}`;
+const STORAGE_KEY = '@datariot_ai_chat_v2';
+const KEEP = 40;
 
-// Example prompts for first-time users
-const EXAMPLE_PROMPTS = [
-    { iconType: 'material', iconName: 'lightning-bolt', color: '#A5C6FF', text: 'Daily insight', tool: 'insight' as ToolType, desc: 'Focus reading' },
-    { iconType: 'material', iconName: 'microscope', color: '#10B981', text: 'Analyze content', tool: 'analyze' as ToolType, desc: 'Truth scan' },
-    { iconType: 'material', iconName: 'brain', color: '#8B5CF6', text: 'What can you do?', tool: 'chat' as ToolType, desc: 'Capabilities' },
-    { iconType: 'feather', iconName: 'lightbulb', color: '#EC4899', text: 'Tell me something interesting', tool: 'chat' as ToolType, desc: 'Random insight' },
+let seq = 0;
+const uid = () => `m_${Date.now()}_${++seq}`;
+
+/** Questions worth arguing about, one per day. A fixed list: it works offline and never invents anything. */
+const TOPICS: Topic[] = [
+    { q: 'Is remote work better than the office?', tag: 'Work', forPoint: 'Fewer interruptions, more hours of real focus.', againstPoint: 'Ideas spark in hallway conversations.' },
+    { q: 'Should social media require ID verification?', tag: 'Tech', forPoint: 'Real names cut harassment and bots.', againstPoint: 'Anonymity protects dissidents and the vulnerable.' },
+    { q: 'Should schools ban smartphones?', tag: 'Society', forPoint: 'Phones fragment attention and fuel bullying.', againstPoint: 'Bans skip skills kids need and push the problem home.' },
+    { q: 'Is a four-day work week realistic?', tag: 'Work', forPoint: 'Trials show the same output in fewer hours.', againstPoint: 'Many jobs cannot compress their hours.' },
+    { q: 'Can an AI ever be truly creative?', tag: 'Tech', forPoint: 'Novel combinations are what creativity is.', againstPoint: 'Without experience or intent it only remixes.' },
+    { q: 'Should voting be mandatory?', tag: 'Society', forPoint: 'Results then represent everyone.', againstPoint: 'Forced votes add noise, not wisdom.' },
+    { q: 'Does free will exist?', tag: 'Philosophy', forPoint: 'We experience choosing, and it changes what we do.', againstPoint: 'Brains follow physics; choices are consequences.' },
+    { q: 'Is nuclear power the answer to climate change?', tag: 'Energy', forPoint: 'Reliable low-carbon power at scale.', againstPoint: 'Cost, waste and builds that take decades.' },
+    { q: 'Should university be free?', tag: 'Education', forPoint: 'Talent should not depend on family money.', againstPoint: 'Someone pays, and free tuition tends to favour the already advantaged.' },
+    { q: 'Is space exploration worth the money?', tag: 'Science', forPoint: 'It drives technology and a future beyond Earth.', againstPoint: 'Problems at home need that funding first.' },
+    { q: 'Should AI art be allowed in competitions?', tag: 'Art', forPoint: 'Tools always changed art; judge the result.', againstPoint: 'It devalues the human craft being rewarded.' },
+    { q: 'Is it ethical to eat meat?', tag: 'Ethics', forPoint: 'It can be done responsibly and humans are omnivores.', againstPoint: 'Animal suffering outweighs our taste.' },
+    { q: 'Should billionaires exist?', tag: 'Economy', forPoint: 'Concentrated wealth funds bold bets that help everyone.', againstPoint: 'Extreme wealth buys extreme political power.' },
+    { q: 'Is cancel culture justice or mob rule?', tag: 'Society', forPoint: 'It gives the powerless a way to hold the powerful to account.', againstPoint: 'No trial, no proportion, no way back.' },
 ];
 
-// Animated typing dots component
-const TypingIndicator = () => {
-    const dot1 = useSharedValue(0.3);
-    const dot2 = useSharedValue(0.3);
-    const dot3 = useSharedValue(0.3);
+const todaysTopic = (): Topic => TOPICS[Math.floor(Date.now() / 86400000) % TOPICS.length];
 
-    useEffect(() => {
-        dot1.value = withRepeat(
-            withSequence(
-                withTiming(1, { duration: 400 }),
-                withTiming(0.3, { duration: 400 })
-            ), -1, false
-        );
-        dot2.value = withRepeat(
-            withSequence(
-                withDelay(150, withTiming(1, { duration: 400 })),
-                withTiming(0.3, { duration: 400 })
-            ), -1, false
-        );
-        dot3.value = withRepeat(
-            withSequence(
-                withDelay(300, withTiming(1, { duration: 400 })),
-                withTiming(0.3, { duration: 400 })
-            ), -1, false
-        );
-    }, []);
+const QUICK: { icon: IconName; title: string; sub: string; mode: Mode; prefill: string }[] = [
+    { icon: 'search-outline', title: 'Find the flaw', sub: 'Spot weak logic in any argument', mode: 'analyze', prefill: '' },
+    { icon: 'git-compare-outline', title: 'Argue the other side', sub: 'The strongest case against your view', mode: 'chat', prefill: 'Make the strongest case against this view: ' },
+    { icon: 'bulb-outline', title: 'Explain it simply', sub: 'Any idea, with one clear example', mode: 'chat', prefill: 'Explain this simply, with one good example: ' },
+    { icon: 'create-outline', title: 'Sharpen my thesis', sub: 'Turn a rough idea into a debate-ready claim', mode: 'chat', prefill: 'Help me turn this into a sharp one-sentence thesis for a debate: ' },
+];
 
-    const style1 = useAnimatedStyle(() => ({ opacity: dot1.value, transform: [{ scale: 0.8 + dot1.value * 0.4 }] }));
-    const style2 = useAnimatedStyle(() => ({ opacity: dot2.value, transform: [{ scale: 0.8 + dot2.value * 0.4 }] }));
-    const style3 = useAnimatedStyle(() => ({ opacity: dot3.value, transform: [{ scale: 0.8 + dot3.value * 0.4 }] }));
+const FOLLOW_UPS = ['Go deeper', 'Give a counterexample', 'Make it shorter'];
 
+/** Bold (**x**) and bullet lines: all the formatting the answers use. */
+function Markdown({ text, color, accent }: { text: string; color: string; accent: string }) {
+    const { theme } = useTheme();
+    const fonts = theme.typography.fontFamilies;
     return (
-        <View style={styles.typingContainer}>
-            <View style={styles.typingBubble}>
-                <MaterialCommunityIcons name="robot-excited-outline" size={14} color="rgba(255,255,255,0.4)" style={{ marginRight: 8 }} />
-                <Animated.View style={[styles.typingDot, style1]} />
-                <Animated.View style={[styles.typingDot, style2]} />
-                <Animated.View style={[styles.typingDot, style3]} />
-            </View>
+        <View style={{ gap: 7 }}>
+            {text.split('\n').map((line, i) => {
+                if (!line.trim()) return <View key={i} style={{ height: 3 }} />;
+                const bullet = /^\s*([-•*]|\d+\.)\s+/.test(line);
+                const body = line.replace(/^\s*([-•*]|\d+\.)\s+/, '');
+                const parts = body.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+                return (
+                    <View key={i} style={{ flexDirection: 'row', gap: 10 }}>
+                        {bullet ? <View style={[styles.bulletDot, { backgroundColor: accent }]} /> : null}
+                        <Text style={[styles.body, { color, fontFamily: fonts.regular, flex: 1 }]}>
+                            {parts.map((part, j) =>
+                                part.startsWith('**') && part.endsWith('**')
+                                    ? <Text key={j} style={{ fontFamily: fonts.semibold }}>{part.slice(2, -2)}</Text>
+                                    : part,
+                            )}
+                        </Text>
+                    </View>
+                );
+            })}
         </View>
     );
-};
+}
 
-// Glow pulse for the header icon
-const PulseGlow = () => {
-    const pulse = useSharedValue(0.4);
-
+/** Three dots that breathe while the answer is on its way. */
+function Typing({ color }: { color: string }) {
+    const dots = useRef([0, 1, 2].map(() => new Animated.Value(0.3))).current;
     useEffect(() => {
-        pulse.value = withRepeat(
-            withSequence(
-                withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
-                withTiming(0.4, { duration: 2000, easing: Easing.inOut(Easing.ease) })
-            ), -1, false
+        const loops = dots.map((d, i) =>
+            Animated.loop(
+                Animated.sequence([
+                    Animated.delay(i * 140),
+                    Animated.timing(d, { toValue: 1, duration: 360, useNativeDriver: true }),
+                    Animated.timing(d, { toValue: 0.3, duration: 360, useNativeDriver: true }),
+                ]),
+            ),
         );
-    }, []);
-
-    const glowStyle = useAnimatedStyle(() => ({
-        opacity: pulse.value * 0.6,
-        transform: [{ scale: 0.9 + pulse.value * 0.2 }],
-    }));
-
+        loops.forEach(l => l.start());
+        return () => loops.forEach(l => l.stop());
+    }, [dots]);
     return (
-        <Animated.View style={[styles.headerGlow, glowStyle]}>
-            <LinearGradient
-                colors={['rgba(217, 228, 255, 0.3)', 'rgba(217, 228, 255, 0.08)', 'transparent']}
-                style={StyleSheet.absoluteFill}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-            />
-        </Animated.View>
+        <View style={{ flexDirection: 'row', gap: 5, paddingVertical: 10 }}>
+            {dots.map((d, i) => <Animated.View key={i} style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: color, opacity: d }} />)}
+        </View>
     );
-};
-
-const SuggestionChip = ({ prompt, isDark, theme, onPress }: { prompt: any, isDark: boolean, theme: any, onPress: () => void }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <Pressable
-            style={({ pressed }: any) => [
-                styles.suggestionChip,
-                {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.65)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                },
-                isHovered && {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.95)',
-                    borderColor: prompt.color,
-                    transform: [{ scale: 1.02 }],
-                    shadowColor: prompt.color,
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: isDark ? 0.2 : 0.08,
-                    shadowRadius: 12,
-                },
-                pressed && {
-                    opacity: 0.7,
-                }
-            ]}
-            onPress={onPress}
-            onHoverIn={() => setIsHovered(true)}
-            onHoverOut={() => setIsHovered(false)}
-        >
-            <View style={[
-                styles.suggestionIconContainer,
-                {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)',
-                },
-                isHovered && {
-                    backgroundColor: `${prompt.color}15`,
-                    borderColor: `${prompt.color}35`,
-                }
-            ]}>
-                {prompt.iconType === 'feather' ? (
-                    <Feather name={prompt.iconName as any} size={15} color={prompt.color} />
-                ) : prompt.iconType === 'ionicon' ? (
-                    <Ionicons name={prompt.iconName as any} size={15} color={prompt.color} />
-                ) : (
-                    <MaterialCommunityIcons name={prompt.iconName as any} size={17} color={prompt.color} />
-                )}
-            </View>
-            <View style={styles.suggestionTextWrap}>
-                <Text style={[styles.suggestionText, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}>{prompt.text}</Text>
-                <Text style={[styles.suggestionDesc, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.regular }]}>{prompt.desc}</Text>
-            </View>
-        </Pressable>
-    );
-};
-
-const AIIntroCard = ({ theme, isDark }: { theme: any, isDark: boolean }) => {
-    return (
-        <Animated.View 
-            entering={FadeInDown.duration(400).springify()}
-            style={[
-                styles.introCard,
-                {
-                    backgroundColor: isDark ? 'rgba(14, 16, 23, 0.4)' : 'rgba(255, 255, 255, 0.45)',
-                    borderColor: isDark ? 'rgba(217, 228, 255, 0.08)' : 'rgba(107, 127, 204, 0.12)',
-                }
-            ]}
-        >
-            {/* Ambient subtle flare background */}
-            <LinearGradient
-                colors={isDark ? ['rgba(217, 228, 255, 0.01)', 'transparent'] : ['rgba(107, 127, 204, 0.01)', 'transparent']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFillObject}
-            />
-
-            <View style={styles.introHeader}>
-                <View style={[
-                    styles.introIconContainer,
-                    {
-                        backgroundColor: isDark ? 'rgba(217, 228, 255, 0.01)' : 'rgba(107, 127, 204, 0.02)',
-                        borderColor: isDark ? 'rgba(217, 228, 255, 0.05)' : 'rgba(107, 127, 204, 0.08)',
-                    }
-                ]}>
-                    <MaterialCommunityIcons name="brain" size={22} color={theme.colors.primary.DEFAULT} />
-                </View>
-                <View style={styles.introHeaderText}>
-                    <Text style={[styles.introTitle, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}>
-                        ORVELIS COGNITIVE CORE
-                    </Text>
-                    <Text style={[styles.introSubtitle, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.tech }]}>
-                        SECURE SYNAPSE NODE // V1.0.0
-                    </Text>
-                </View>
-            </View>
-
-            <Text style={[styles.introDesc, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.regular }]}>
-                Engineered at the intersection of media forensics and high-fidelity intelligence synthesis. Orvelis is designed to stress-test concepts through strategic dialogue, analyze narrative parameters, and generate deep cognitive focus insight readings in real-time.
-            </Text>
-
-            <View style={[styles.introDivider, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)' }]} />
-
-            <View style={styles.introMetaRow}>
-                <View style={styles.introMetaCol}>
-                    <Text style={[styles.introMetaLabel, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.tech }]}>
-                        STRATEGIC DEPTH
-                    </Text>
-                    <Text style={[styles.introMetaVal, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.semibold }]}>
-                        SYNTHETIC COGNITION
-                    </Text>
-                </View>
-                <View style={styles.introMetaCol}>
-                    <Text style={[styles.introMetaLabel, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.tech }]}>
-                        SYNC STATUS
-                    </Text>
-                    <Text style={[styles.introMetaVal, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.semibold }]}>
-                        ⚡ REAL-TIME LATENCY
-                    </Text>
-                </View>
-            </View>
-        </Animated.View>
-    );
-};
+}
 
 export default function AIScreen() {
-    // Chat State
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 'init',
-            role: 'assistant',
-            content: "Welcome to the synapse. Select an analysis module below or introduce a query to initiate dialogue.",
-            type: 'text'
-        }
-    ]);
-    const [inputText, setInputText] = useState('');
+    const { theme, mode: themeMode } = useTheme();
+    const isDark = themeMode === 'dark';
+    const fonts = theme.typography.fontFamilies;
+    const router = useRouter();
+    const insets = useSafeAreaInsets();
+    const tabBarHeight = useBottomTabBarHeight();
+
+    // Palette: black / the logo's ice, with the logo's ice or ink as the one accent
+    const c = {
+        bg: theme.colors.background.primary,
+        card: isDark ? '#0E1017' : '#FFFFFF',
+        cardHigh: isDark ? '#161922' : '#EEF3FC',
+        border: isDark ? 'rgba(217, 228, 255, 0.09)' : 'rgba(7, 8, 12, 0.07)',
+        text: isDark ? '#F1F2F5' : '#07080C',
+        sub: isDark ? 'rgba(241, 242, 245, 0.62)' : 'rgba(7, 8, 12, 0.62)',
+        faint: isDark ? 'rgba(241, 242, 245, 0.38)' : 'rgba(7, 8, 12, 0.42)',
+        accent: isDark ? '#D9E4FF' : '#07080C',
+        onAccent: isDark ? '#07080C' : '#DAE6F7',
+        soft: isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(7, 8, 12, 0.06)',
+    };
+
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [loaded, setLoaded] = useState(false);
+    const [input, setInput] = useState('');
+    const [mode, setMode] = useState<Mode>('chat');
     const [loading, setLoading] = useState(false);
-    const [selectedTool, setSelectedTool] = useState<ToolType>('chat');
+    const [keyboardOpen, setKeyboardOpen] = useState(false);
+    const listRef = useRef<FlatList<Message>>(null);
+    const inputRef = useRef<TextInput>(null);
 
-    // Onboarding State
-    const [showSuggestions, setShowSuggestions] = useState(true);
-
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
-
-    // Refs
-    const flatListRef = useRef<FlatList>(null);
-
-    const scrollToBottom = useCallback(() => {
-        setTimeout(() => {
-            flatListRef.current?.scrollToEnd({ animated: true });
-        }, 150);
+    // Keep the conversation between visits
+    useEffect(() => {
+        AsyncStorage.getItem(STORAGE_KEY)
+            .then(raw => { if (raw) setMessages(JSON.parse(raw)); })
+            .catch(() => { })
+            .finally(() => setLoaded(true));
     }, []);
 
-    const handleExamplePrompt = (prompt: typeof EXAMPLE_PROMPTS[0]) => {
-        setShowSuggestions(false);
-        setSelectedTool(prompt.tool);
+    const commit = useCallback((next: Message[]) => {
+        const trimmed = next.slice(-KEEP);
+        setMessages(trimmed);
+        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed)).catch(() => { });
+    }, []);
 
-        if (prompt.tool === 'chat') {
-            // Immediately send as a message
-            const userMsg: Message = { id: uniqueId(), role: 'user', content: prompt.text, type: 'text' };
-            setMessages(prev => [...prev, userMsg]);
-            setLoading(true);
-            scrollToBottom();
+    // The tab bar floats over this screen and steps aside while the keyboard is up
+    useEffect(() => {
+        const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+        const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+        const show = Keyboard.addListener(showEvt, () => setKeyboardOpen(true));
+        const hide = Keyboard.addListener(hideEvt, () => setKeyboardOpen(false));
+        return () => { show.remove(); hide.remove(); };
+    }, []);
 
-            const history = messages.map(m => ({ role: m.role, content: m.content }));
-            chatWithAI(prompt.text, history).then(response => {
-                setMessages(prev => [...prev, {
-                    id: uniqueId(),
-                    role: 'assistant',
-                    content: response,
-                    type: 'text'
-                }]);
-            }).catch(console.error).finally(() => {
-                setLoading(false);
-                scrollToBottom();
-            });
-        } else {
-            handleToolSelect(prompt.tool);
-        }
-    };
+    const toEnd = useCallback((animated = true) => {
+        setTimeout(() => listRef.current?.scrollToEnd({ animated }), 80);
+    }, []);
 
-    const handleSendMessage = async () => {
-        if (!inputText.trim()) return;
+    /** `shown` is what the person sees as their message; `prompt` is what the model gets, when it differs. */
+    const ask = async (shown: string, prompt?: string, base: Message[] = messages) => {
+        const text = shown.trim();
+        if (!text || loading) return;
 
-        // Hide suggestions after first message
-        setShowSuggestions(false);
-
-        const userMsg: Message = { id: uniqueId(), role: 'user', content: inputText, type: 'text' };
-        setMessages(prev => [...prev, userMsg]);
-        const textToSend = inputText;
-        setInputText('');
+        const mine: Message = { id: uid(), role: 'user', kind: 'text', content: text };
+        const withMine = [...base, mine];
+        commit(withMine);
+        setInput('');
         setLoading(true);
-        scrollToBottom();
+        toEnd();
 
         try {
-            const history = messages.map(m => ({ role: m.role, content: m.content }));
-            const response = await chatWithAI(textToSend, history);
-
-            setMessages(prev => [...prev, {
-                id: uniqueId(),
-                role: 'assistant',
-                content: response,
-                type: 'text'
-            }]);
+            const history = base.filter(m => m.kind === 'text').slice(-12).map(m => ({ role: m.role, content: m.content }));
+            const answer = await chatWithAI(prompt || text, history);
+            commit([...withMine, { id: uid(), role: 'assistant', kind: 'text', content: answer }]);
         } catch (e) {
             console.error(e);
-            setMessages(prev => [...prev, {
-                id: uniqueId(),
-                role: 'assistant',
-                content: "Connection disrupted. I'm operating in local mode — try again or ask me something I can handle offline.",
-                type: 'text'
-            }]);
+            commit([...withMine, { id: uid(), role: 'assistant', kind: 'text', content: "I couldn't reach my reasoning just now. Try again in a moment." }]);
         } finally {
             setLoading(false);
-            scrollToBottom();
+            toEnd();
         }
     };
 
-    const handleToolSelect = async (tool: ToolType) => {
-        setSelectedTool(tool);
-        setShowSuggestions(false);
+    const analyze = async (text: string) => {
+        const body = text.trim();
+        if (!body || loading) return;
 
-        if (tool === 'insight') {
-            setLoading(true);
-            scrollToBottom();
-            try {
-                const insight = await generateDailyInsight();
-                setMessages(prev => [...prev, {
-                    id: uniqueId(),
-                    role: 'assistant',
-                    content: 'Daily Insight Generated',
-                    type: 'insight',
-                    data: insight
-                }]);
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
-                scrollToBottom();
-            }
-        } else if (tool === 'analyze') {
-            setLoading(true);
-            scrollToBottom();
-            try {
-                const analysis = await generateVideoAnalysis();
-                setMessages(prev => [...prev, {
-                    id: uniqueId(),
-                    role: 'assistant',
-                    content: 'Analysis Complete',
-                    type: 'analysis',
-                    data: analysis
-                }]);
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
-                scrollToBottom();
-            }
+        const mine: Message = { id: uid(), role: 'user', kind: 'text', content: body };
+        const withMine = [...messages, mine];
+        commit(withMine);
+        setInput('');
+        setLoading(true);
+        toEnd();
+
+        try {
+            const result = await analyzeArgument(body);
+            commit([...withMine, { id: uid(), role: 'assistant', kind: 'analysis', content: result.claim, data: result }]);
+        } catch (e) {
+            console.error(e);
+            commit([...withMine, { id: uid(), role: 'assistant', kind: 'text', content: "I couldn't analyze that just now: Orvelis can't be reached. Check your connection and send it again." }]);
+        } finally {
+            setLoading(false);
+            toEnd();
         }
-        // For 'chat', just switch tool — don't trigger anything
     };
 
-    const renderMessage = ({ item }: { item: Message }) => {
-        if (item.type === 'insight') {
-            const insight = item.data as DailyInsight;
-            return (
-                <Animated.View entering={FadeInUp.springify()} style={[styles.messageBubble, styles.aiBubble, styles.cardBubble, {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.01)' : 'rgba(0,0,0,0.005)',
-                    borderColor: isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(14, 165, 233, 0.05)'
-                }]}>
-                    {/* Subtle gradient overlay */}
-                    <LinearGradient
-                        colors={isDark ? ['rgba(56, 189, 248, 0.02)', 'transparent'] : ['rgba(14, 165, 233, 0.01)', 'transparent']}
-                        style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
-                    />
-                    <View style={styles.cardHeader}>
-                        <View style={styles.cardHeaderIcon}>
-                            <MaterialCommunityIcons name="lightning-bolt" size={16} color={theme.colors.primary.DEFAULT} />
-                        </View>
-                        <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>DAILY INSIGHT</Text>
-                    </View>
-                    <Text style={[styles.insightScore, { color: theme.colors.text.primary }]}>{insight.score}</Text>
-                    <View style={styles.insightStatusRow}>
-                        <Text style={[styles.insightStatus, { color: theme.colors.primary.DEFAULT }]}>{insight.status}</Text>
-                        <View style={[styles.trendBadge, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)' }]}>
-                            <Ionicons name="trending-up" size={12} color="#10B981" />
-                            <Text style={styles.trendText}>{insight.trend}</Text>
-                        </View>
-                    </View>
-                    <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{insight.message}</Text>
-                </Animated.View>
-            );
-        }
+    const send = () => (mode === 'analyze' ? analyze(input) : ask(input));
 
-        if (item.type === 'analysis') {
-            const analysis = item.data as VideoAnalysis;
-            return (
-                <Animated.View entering={FadeInUp.springify()} style={[styles.messageBubble, styles.aiBubble, styles.cardBubble, {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.01)' : 'rgba(0,0,0,0.005)',
-                    borderColor: isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(14, 165, 233, 0.05)'
-                }]}>
-                    <LinearGradient
-                        colors={isDark ? ['rgba(139, 92, 246, 0.02)', 'transparent'] : ['rgba(139, 92, 246, 0.01)', 'transparent']}
-                        style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
-                    />
-                    <View style={styles.cardHeader}>
-                        <View style={[styles.cardHeaderIcon, { backgroundColor: isDark ? 'rgba(139, 92, 246, 0.05)' : 'rgba(139, 92, 246, 0.02)' }]}>
-                            <Feather name="eye" size={14} color="#8B5CF6" />
-                        </View>
-                        <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>TRUTH ANALYSIS</Text>
-                    </View>
+    const startFrom = (q: typeof QUICK[number]) => {
+        setMode(q.mode);
+        setInput(q.prefill);
+        setTimeout(() => inputRef.current?.focus(), 60);
+    };
 
-                    <View style={styles.analysisSection}>
-                        <View style={[styles.analysisLabelBadge, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.05)' : 'rgba(16, 185, 129, 0.02)' }]}>
-                            <Text style={[styles.analysisLabel, { color: '#10B981' }]}>ESSENCE</Text>
-                        </View>
-                        <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{analysis.essence}</Text>
-                    </View>
-                    <View style={styles.analysisSection}>
-                        <View style={[styles.analysisLabelBadge, { backgroundColor: isDark ? 'rgba(239, 68, 68, 0.05)' : 'rgba(239, 68, 68, 0.02)' }]}>
-                            <Text style={[styles.analysisLabel, { color: '#EF4444' }]}>MANIPULATION</Text>
-                        </View>
-                        <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{analysis.manipulation}</Text>
-                    </View>
-                    <View style={styles.analysisSection}>
-                        <View style={[styles.analysisLabelBadge, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(56, 189, 248, 0.02)' }]}>
-                            <Text style={[styles.analysisLabel, { color: '#38BDF8' }]}>REAL VALUE</Text>
-                        </View>
-                        <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{analysis.realValue}</Text>
-                    </View>
-                </Animated.View>
-            );
-        }
+    const showTopic = () => {
+        commit([...messages, { id: uid(), role: 'assistant', kind: 'topic', content: todaysTopic().q, data: todaysTopic() }]);
+        toEnd();
+    };
 
-        // Regular text messages
-        const isUser = item.role === 'user';
-        return (
-            <Animated.View entering={FadeIn.duration(300)}>
-                <View style={[
-                    styles.messageBubble,
-                    isUser
-                        ? [styles.userBubble, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }]
-                        : styles.aiBubble
-                ]}>
-                    {!isUser && (
-                        <View style={styles.aiMessageHeader}>
-                            <View style={[styles.aiMessageDot, { backgroundColor: theme.colors.primary.DEFAULT }]} />
-                            <Text style={[styles.aiMessageLabel, { color: theme.colors.text.muted }]}>ORVELIS</Text>
-                        </View>
-                    )}
-                    <Text style={[
-                        styles.messageText,
-                        { color: isUser ? theme.colors.text.primary : theme.colors.text.secondary }
-                    ]}>{item.content}</Text>
-                </View>
-            </Animated.View>
+    const argueTopic = (t: Topic) => {
+        setMode('chat');
+        ask(
+            `Let's debate: ${t.q}`,
+            `Let's debate this question: "${t.q}". Open with the strongest short case for ONE side, then ask me which side I take. Once I answer, argue the opposite of whatever I choose, keep each reply under 120 words, and name any weak logic in my replies.`,
+            messages,
         );
     };
 
-    const getPlaceholder = () => {
-        switch (selectedTool) {
-            case 'insight': return "Ask about your insight...";
-            case 'analyze': return "Ask about the analysis...";
-            default: return "Ask Orvelis anything...";
-        }
+    const startDebate = (thesis: string) => router.push({ pathname: '/publish', params: { thesis } });
+
+    const reset = () => {
+        commit([]);
+        setInput('');
+        setMode('chat');
     };
 
-    return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <SafeAreaView style={styles.safeArea}>
-                {/* Premium Header */}
-                <View style={[styles.header, { backgroundColor: theme.colors.background.primary }]}>
-                    <PulseGlow />
-                    <View style={styles.headerContent}>
-                        <View style={[styles.headerIconContainer, {
-                            backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(14, 165, 233, 0.08)',
-                            borderColor: isDark ? 'rgba(56, 189, 248, 0.25)' : 'rgba(14, 165, 233, 0.2)'
-                        }]}>
-                            <MaterialCommunityIcons name="robot-excited" size={22} color={theme.colors.primary.DEFAULT} />
+    const empty = loaded && messages.length === 0;
+    const canSend = !!input.trim() && !loading;
+    const lastIsAnswer = messages.length > 0 && messages[messages.length - 1].role === 'assistant' && messages[messages.length - 1].kind === 'text';
+
+    const TopicCard = ({ topic, compact }: { topic: Topic; compact?: boolean }) => (
+        <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+            <View style={styles.cardTop}>
+                <View style={styles.row}>
+                    <Ionicons name="flame-outline" size={16} color={c.accent} />
+                    <Text style={[styles.label, { color: c.sub, fontFamily: fonts.medium }]}>Today&apos;s question</Text>
+                </View>
+                <View style={[styles.tag, { backgroundColor: c.soft }]}>
+                    <Text style={[styles.tagText, { color: c.sub, fontFamily: fonts.medium }]}>{topic.tag}</Text>
+                </View>
+            </View>
+            <Text style={[styles.topicQ, { color: c.text, fontFamily: fonts.bold }]}>{topic.q}</Text>
+            <View style={{ gap: 8, marginTop: 14 }}>
+                <View style={styles.sideRow}>
+                    <Text style={[styles.sideLabel, { color: c.accent, fontFamily: fonts.semibold }]}>For</Text>
+                    <Text style={[styles.sideText, { color: c.sub, fontFamily: fonts.regular }]}>{topic.forPoint}</Text>
+                </View>
+                <View style={styles.sideRow}>
+                    <Text style={[styles.sideLabel, { color: c.sub, fontFamily: fonts.semibold }]}>Against</Text>
+                    <Text style={[styles.sideText, { color: c.sub, fontFamily: fonts.regular }]}>{topic.againstPoint}</Text>
+                </View>
+            </View>
+            <View style={[styles.buttons, compact && { marginTop: 14 }]}>
+                <Pressable onPress={() => argueTopic(topic)} style={({ pressed }) => [styles.primaryBtn, { backgroundColor: c.accent }, pressed && { opacity: 0.8 }]}>
+                    <Ionicons name="chatbubble-ellipses-outline" size={16} color={c.onAccent} />
+                    <Text style={[styles.btnText, { color: c.onAccent, fontFamily: fonts.semibold }]}>Argue it with me</Text>
+                </Pressable>
+                <Pressable onPress={() => startDebate(topic.q)} style={({ pressed }) => [styles.ghostBtn, { borderColor: c.border }, pressed && { opacity: 0.7 }]}>
+                    <Text style={[styles.btnText, { color: c.text, fontFamily: fonts.semibold }]}>Start a debate</Text>
+                </Pressable>
+            </View>
+        </View>
+    );
+
+    const renderMessage = ({ item }: { item: Message }) => {
+        if (item.kind === 'topic') return <View style={styles.msg}><TopicCard topic={item.data as Topic} compact /></View>;
+
+        if (item.kind === 'analysis') {
+            const a = item.data as ArgumentAnalysis;
+            return (
+                <View style={styles.msg}>
+                    <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+                        <View style={styles.row}>
+                            <Ionicons name="search-outline" size={16} color={c.accent} />
+                            <Text style={[styles.label, { color: c.sub, fontFamily: fonts.medium }]}>Argument check</Text>
                         </View>
-                        <View>
-                            <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>Orvelis</Text>
-                            <Text style={[styles.headerSubtitle, { color: theme.colors.text.muted }]}>AI Core • Online</Text>
-                        </View>
-                    </View>
-                    <View style={styles.headerStatusWrapper}>
-                        <View style={[styles.headerStatusDot, { backgroundColor: '#10B981' }]} />
-                        {Platform.OS === 'web' ? (
-                            // @ts-ignore
-                            <div className="status-pulse-anim" style={{
-                                position: 'absolute',
-                                width: 14,
-                                height: 14,
-                                borderRadius: 7,
-                                backgroundColor: isDark ? 'rgba(16, 185, 129, 0.4)' : 'rgba(16, 185, 129, 0.25)',
-                                zIndex: 1,
-                            }} />
+
+                        <Text style={[styles.sectionTitle, { color: c.faint, fontFamily: fonts.medium }]}>The claim</Text>
+                        <Text style={[styles.claim, { color: c.text, fontFamily: fonts.semibold }]}>{a.claim}</Text>
+
+                        {a.weakSpots.length > 0 ? (
+                            <>
+                                <Text style={[styles.sectionTitle, { color: c.faint, fontFamily: fonts.medium }]}>Weak spots</Text>
+                                <View style={{ gap: 8 }}>
+                                    {a.weakSpots.map((w, i) => (
+                                        <View key={i} style={{ flexDirection: 'row', gap: 10 }}>
+                                            <View style={[styles.bulletDot, { backgroundColor: c.accent }]} />
+                                            <Text style={[styles.body, { color: c.sub, fontFamily: fonts.regular, flex: 1 }]}>{w}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </>
                         ) : null}
+
+                        {a.counter ? (
+                            <>
+                                <Text style={[styles.sectionTitle, { color: c.faint, fontFamily: fonts.medium }]}>Strongest counter</Text>
+                                <Text style={[styles.body, { color: c.sub, fontFamily: fonts.regular }]}>{a.counter}</Text>
+                            </>
+                        ) : null}
+
+                        {a.improve ? (
+                            <View style={[styles.tip, { backgroundColor: c.soft }]}>
+                                <Ionicons name="trending-up-outline" size={16} color={c.accent} />
+                                <Text style={[styles.body, { color: c.text, fontFamily: fonts.regular, flex: 1 }]}>
+                                    <Text style={{ fontFamily: fonts.semibold }}>Make it stronger: </Text>{a.improve}
+                                </Text>
+                            </View>
+                        ) : null}
+
+                        <View style={styles.buttons}>
+                            <Pressable onPress={() => startDebate(a.claim)} style={({ pressed }) => [styles.ghostBtn, { borderColor: c.border }, pressed && { opacity: 0.7 }]}>
+                                <Text style={[styles.btnText, { color: c.text, fontFamily: fonts.semibold }]}>Debate this claim</Text>
+                            </Pressable>
+                            <Pressable
+                                onPress={() => Share.share({ message: `${a.claim}\n\nWeak spots:\n${a.weakSpots.map(w => `- ${w}`).join('\n')}\n\nStrongest counter: ${a.counter}` }).catch(() => { })}
+                                hitSlop={8}
+                                accessibilityLabel="Share this analysis"
+                                style={styles.iconBtn}
+                            >
+                                <Ionicons name="share-outline" size={19} color={c.sub} />
+                            </Pressable>
+                        </View>
                     </View>
                 </View>
+            );
+        }
 
-                <FlatList
-                    ref={flatListRef}
-                    data={messages}
-                    keyExtractor={item => item.id}
-                    contentContainerStyle={styles.chatList}
-                    ListHeaderComponent={<AIIntroCard theme={theme} isDark={isDark} />}
-                    renderItem={renderMessage}
-                    showsVerticalScrollIndicator={false}
-                />
+        if (item.role === 'user') {
+            return (
+                <View style={[styles.msg, { alignItems: 'flex-end' }]}>
+                    <View style={[styles.mine, { backgroundColor: c.accent }]}>
+                        <Text style={[styles.body, { color: c.onAccent, fontFamily: fonts.regular }]}>{item.content}</Text>
+                    </View>
+                </View>
+            );
+        }
 
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-                    style={[styles.keyboardArea, { backgroundColor: theme.colors.background.primary }]}
+        return (
+            <View style={styles.msg}>
+                <View style={styles.row}>
+                    <View style={[styles.miniMark, { backgroundColor: c.soft }]}>
+                        <Ionicons name="sparkles" size={11} color={c.accent} />
+                    </View>
+                    <Text style={[styles.label, { color: c.sub, fontFamily: fonts.medium }]}>Orvelis</Text>
+                </View>
+                <View style={{ marginTop: 8, paddingRight: 8 }}>
+                    <Markdown text={item.content} color={c.text} accent={c.accent} />
+                </View>
+                <Pressable
+                    onPress={() => Share.share({ message: item.content }).catch(() => { })}
+                    hitSlop={10}
+                    accessibilityLabel="Share this answer"
+                    style={{ alignSelf: 'flex-start', marginTop: 10, padding: 2 }}
                 >
-                    {/* Example Prompt Suggestions */}
-                    {showSuggestions && messages.length <= 1 && (
-                        <Animated.View entering={FadeInDown.delay(300).springify()} style={styles.suggestionsContainer}>
-                            <Text style={[styles.suggestionsTitle, { color: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)' }]}>Quick Start</Text>
-                            <View style={styles.suggestionsGrid}>
-                                {EXAMPLE_PROMPTS.map((prompt, index) => (
-                                    <SuggestionChip
-                                        key={index}
-                                        prompt={prompt}
-                                        isDark={isDark}
-                                        theme={theme}
-                                        onPress={() => handleExamplePrompt(prompt)}
-                                    />
-                                ))}
-                            </View>
-                        </Animated.View>
-                    )}
+                    <Ionicons name="share-outline" size={16} color={c.faint} />
+                </Pressable>
+            </View>
+        );
+    };
 
-                    {loading && <TypingIndicator />}
+    const footer = (
+        <View>
+            {loading ? <Typing color={c.sub} /> : null}
+            {!loading && lastIsAnswer ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingTop: 6 }}>
+                    {FOLLOW_UPS.map(f => (
+                        <Pressable key={f} onPress={() => ask(f)} style={({ pressed }) => [styles.followUp, { borderColor: c.border, backgroundColor: c.card }, pressed && { opacity: 0.7 }]}>
+                            <Text style={[styles.followUpText, { color: c.text, fontFamily: fonts.medium }]}>{f}</Text>
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            ) : null}
+        </View>
+    );
 
-                    {/* Tool Selector */}
-                    <View style={styles.toolSelector}>
-                        {([
-                            { key: 'chat' as ToolType, icon: 'chatbubble-ellipses-outline', label: 'Chat' },
-                            { key: 'insight' as ToolType, icon: 'bulb-outline', label: 'Insight' },
-                            { key: 'analyze' as ToolType, icon: 'scan-outline', label: 'Analyze' },
-                        ] as const).map(tool => (
-                            <TouchableOpacity
-                                key={tool.key}
-                                style={[
-                                    styles.toolButton,
-                                    selectedTool === tool.key && [styles.toolButtonActive, {
-                                        backgroundColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.1)',
-                                        borderColor: isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(14, 165, 233, 0.2)'
-                                    }]
-                                ]}
-                                onPress={() => handleToolSelect(tool.key)}
-                                activeOpacity={0.7}
+    return (
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { backgroundColor: c.bg }]}>
+            <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+                <View style={styles.row}>
+                    <View style={[styles.mark, { backgroundColor: c.accent }]}>
+                        <Ionicons name="sparkles" size={18} color={c.onAccent} />
+                    </View>
+                    <View>
+                        <Text style={[styles.title, { color: c.text, fontFamily: fonts.bold }]}>Orvelis</Text>
+                        <Text style={[styles.subtitle, { color: c.sub, fontFamily: fonts.regular }]}>Your partner for sharper thinking</Text>
+                    </View>
+                </View>
+                {messages.length > 0 ? (
+                    <Pressable onPress={reset} hitSlop={10} accessibilityLabel="New chat" style={[styles.newChat, { backgroundColor: c.card, borderColor: c.border }]}>
+                        <Ionicons name="create-outline" size={18} color={c.text} />
+                    </Pressable>
+                ) : null}
+            </View>
+
+            {empty ? (
+                <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.emptyContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+                    <Text style={[styles.hero, { color: c.text, fontFamily: fonts.bold }]}>What are we thinking through?</Text>
+                    <Text style={[styles.heroSub, { color: c.sub, fontFamily: fonts.regular }]}>
+                        Test an argument, see the other side, or turn a rough idea into a claim worth debating.
+                    </Text>
+
+                    <View style={{ marginTop: 22 }}><TopicCard topic={todaysTopic()} /></View>
+
+                    <Text style={[styles.sectionTitle, { color: c.faint, fontFamily: fonts.medium, marginTop: 26 }]}>Try</Text>
+                    <View style={styles.grid}>
+                        {QUICK.map(q => (
+                            <Pressable
+                                key={q.title}
+                                onPress={() => startFrom(q)}
+                                style={({ pressed }) => [styles.quick, { backgroundColor: c.card, borderColor: c.border }, pressed && { opacity: 0.75 }]}
                             >
-                                <Ionicons
-                                    name={tool.icon as any}
-                                    size={18}
-                                    color={selectedTool === tool.key ? theme.colors.primary.DEFAULT : theme.colors.text.muted}
-                                />
-                                <Text style={[
-                                    styles.toolText,
-                                    selectedTool === tool.key && { color: theme.colors.primary.DEFAULT }
-                                ]}>{tool.label}</Text>
-                            </TouchableOpacity>
+                                <View style={[styles.quickIcon, { backgroundColor: c.soft }]}>
+                                    <Ionicons name={q.icon} size={19} color={c.accent} />
+                                </View>
+                                <Text style={[styles.quickTitle, { color: c.text, fontFamily: fonts.semibold }]}>{q.title}</Text>
+                                <Text style={[styles.quickSub, { color: c.sub, fontFamily: fonts.regular }]}>{q.sub}</Text>
+                            </Pressable>
                         ))}
                     </View>
+                </ScrollView>
+            ) : (
+                <FlatList
+                    ref={listRef}
+                    data={messages}
+                    keyExtractor={m => m.id}
+                    renderItem={renderMessage}
+                    ListFooterComponent={footer}
+                    contentContainerStyle={styles.chat}
+                    showsVerticalScrollIndicator={false}
+                    keyboardDismissMode="interactive"
+                    keyboardShouldPersistTaps="handled"
+                    onContentSizeChange={() => toEnd(false)}
+                />
+            )}
 
-                    {/* Input Area — always editable */}
-                    <View style={[styles.inputContainer, { borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
-                        <View style={[styles.inputWrapper, {
-                            backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
-                            borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
-                        }]}>
-                            <TextInput
-                                style={[styles.input, { color: theme.colors.text.primary }]}
-                                placeholder={getPlaceholder()}
-                                placeholderTextColor={theme.colors.text.muted}
-                                value={inputText}
-                                onChangeText={setInputText}
-                                onSubmitEditing={handleSendMessage}
-                                returnKeyType="send"
-                                multiline={false}
-                            />
-                        </View>
-                        <TouchableOpacity
-                            onPress={handleSendMessage}
-                            style={[
-                                styles.sendButton,
-                                {
-                                    backgroundColor: inputText.trim()
-                                        ? theme.colors.primary.DEFAULT
-                                        : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
-                                }
-                            ]}
-                            disabled={!inputText.trim()}
-                            activeOpacity={0.7}
-                        >
-                            <Ionicons
-                                name="arrow-up"
-                                size={20}
-                                color={inputText.trim() ? '#FFFFFF' : theme.colors.text.muted}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </KeyboardAvoidingView>
-            </SafeAreaView>
-        </View>
+            <View style={[styles.composer, { backgroundColor: c.bg, borderTopColor: c.border, paddingBottom: keyboardOpen ? 10 : tabBarHeight + 8 }]}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.modes}>
+                    {([
+                        { key: 'chat' as Mode, icon: 'chatbubble-ellipses-outline' as IconName, label: 'Chat' },
+                        { key: 'analyze' as Mode, icon: 'search-outline' as IconName, label: 'Check argument' },
+                    ]).map(m => {
+                        const on = mode === m.key;
+                        return (
+                            <Pressable
+                                key={m.key}
+                                onPress={() => { setMode(m.key); setTimeout(() => inputRef.current?.focus(), 40); }}
+                                style={[styles.modeChip, { backgroundColor: on ? c.accent : c.soft }]}
+                            >
+                                <Ionicons name={m.icon} size={14} color={on ? c.onAccent : c.sub} />
+                                <Text style={[styles.modeText, { color: on ? c.onAccent : c.sub, fontFamily: on ? fonts.semibold : fonts.medium }]}>{m.label}</Text>
+                            </Pressable>
+                        );
+                    })}
+                    <Pressable onPress={showTopic} style={[styles.modeChip, { backgroundColor: c.soft }]}>
+                        <Ionicons name="flame-outline" size={14} color={c.sub} />
+                        <Text style={[styles.modeText, { color: c.sub, fontFamily: fonts.medium }]}>Today&apos;s question</Text>
+                    </Pressable>
+                </ScrollView>
+
+                <View style={styles.inputRow}>
+                    <TextInput
+                        ref={inputRef}
+                        value={input}
+                        onChangeText={setInput}
+                        placeholder={mode === 'analyze' ? 'Paste an argument or a claim to check' : 'Ask Orvelis anything'}
+                        placeholderTextColor={c.faint}
+                        style={[
+                            styles.input,
+                            { backgroundColor: c.card, borderColor: c.border, color: c.text, fontFamily: fonts.regular },
+                            Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null,
+                        ]}
+                        multiline
+                        numberOfLines={1}
+                        maxLength={mode === 'analyze' ? 4000 : 2000}
+                        returnKeyType="send"
+                        blurOnSubmit
+                        onSubmitEditing={send}
+                    />
+                    <Pressable
+                        onPress={send}
+                        disabled={!canSend}
+                        accessibilityLabel="Send"
+                        style={[styles.send, canSend ? { backgroundColor: c.accent } : { backgroundColor: c.card, borderColor: c.border, borderWidth: 1 }]}
+                    >
+                        {loading ? <ActivityIndicator size="small" color={c.sub} /> : <Ionicons name="arrow-up" size={20} color={canSend ? c.onAccent : c.faint} />}
+                    </Pressable>
+                </View>
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    safeArea: {
-        flex: 1,
-    },
-    // ===== HEADER =====
-    header: {
-        paddingHorizontal: 20,
-        paddingTop: Platform.OS === 'ios' ? 8 : 16,
-        paddingBottom: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: 'rgba(255,255,255,0.06)',
-        overflow: 'hidden',
-    },
-    headerGlow: {
-        position: 'absolute',
-        top: -40,
-        left: '30%',
-        width: 200,
-        height: 120,
-        borderRadius: 100,
-    },
-    headerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-    },
-    headerIconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 14,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        letterSpacing: 0.5,
-    },
-    headerSubtitle: {
-        fontSize: 11,
-        fontWeight: '600',
-        letterSpacing: 0.5,
-        marginTop: 1,
-        textTransform: 'uppercase',
-    },
-    headerStatusWrapper: {
-        width: 14,
-        height: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        marginRight: 4,
-    },
-    headerStatusDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        zIndex: 2,
-    },
-    // ===== INTRO CARD =====
-    introCard: {
-        borderRadius: 24,
-        borderWidth: 1,
-        padding: 24,
-        marginBottom: 28,
-        position: 'relative',
-        overflow: 'hidden',
-    },
-    introHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 16,
-        marginBottom: 16,
-    },
-    introIconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-    },
-    introHeaderText: {
-        flex: 1,
-    },
-    introTitle: {
-        fontSize: 12,
-        letterSpacing: 2,
-    },
-    introSubtitle: {
-        fontSize: 8,
-        letterSpacing: 1.5,
-        marginTop: 3,
-    },
-    introDesc: {
-        fontSize: 13,
-        lineHeight: 20,
-        letterSpacing: 0.2,
-    },
-    introDivider: {
-        height: 1,
-        marginVertical: 18,
-    },
-    introMetaRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 16,
-    },
-    introMetaCol: {
-        flex: 1,
-    },
-    introMetaLabel: {
-        fontSize: 8,
-        letterSpacing: 1.5,
-        marginBottom: 4,
-    },
-    introMetaVal: {
-        fontSize: 10,
-        letterSpacing: 0.5,
-    },
-    // ===== CHAT LIST =====
-    chatList: {
-        paddingHorizontal: 16,
-        paddingBottom: 16,
-        paddingTop: 16,
-    },
-    messageBubble: {
-        padding: 14,
-        borderRadius: 20,
-        marginBottom: 12,
-        maxWidth: '88%',
-    },
-    userBubble: {
-        alignSelf: 'flex-end',
-        borderBottomRightRadius: 6,
-    },
-    aiBubble: {
-        backgroundColor: 'transparent',
-        alignSelf: 'flex-start',
-        borderBottomLeftRadius: 6,
-        paddingHorizontal: 4,
-    },
-    aiMessageHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        marginBottom: 6,
-    },
-    aiMessageDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-    },
-    aiMessageLabel: {
-        fontSize: 10,
-        fontWeight: '700',
-        letterSpacing: 1.5,
-        textTransform: 'uppercase',
-    },
-    cardBubble: {
-        width: '95%',
-        maxWidth: '100%',
-        borderWidth: 1,
-        borderRadius: 20,
-        padding: 20,
-        overflow: 'hidden',
-    },
-    messageText: {
-        fontSize: 15,
-        lineHeight: 22,
-    },
-    // ===== KEYBOARD AREA =====
-    keyboardArea: {
-        width: '100%',
-    },
-    // ===== TYPING INDICATOR =====
-    typingContainer: {
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-    },
-    typingBubble: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'flex-start',
-        paddingHorizontal: 14,
-        paddingVertical: 10,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.04)',
-    },
-    typingDot: {
-        width: 7,
-        height: 7,
-        borderRadius: 3.5,
-        backgroundColor: 'rgba(56, 189, 248, 0.8)',
-        marginHorizontal: 2,
-    },
-    // ===== TOOL SELECTOR =====
-    toolSelector: {
-        flexDirection: 'row',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        gap: 8,
-    },
-    toolButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 7,
-        paddingHorizontal: 14,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.04)',
-        gap: 6,
-        borderWidth: 1,
-        borderColor: 'transparent',
-    },
-    toolButtonActive: {
-        // Dynamic styles applied inline
-    },
-    toolText: {
-        color: 'rgba(255, 255, 255, 0.45)',
-        fontSize: 13,
-        fontWeight: '600',
-    },
-    // ===== INPUT =====
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 12,
-        paddingBottom: Platform.OS === 'ios' ? 34 : 24,
-        gap: 8,
-        borderTopWidth: StyleSheet.hairlineWidth,
-    },
-    inputWrapper: {
-        flex: 1,
-        borderRadius: 24,
-        borderWidth: 1,
-        overflow: 'hidden',
-    },
+    root: { flex: 1 },
+    row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 12 },
+    mark: { width: 40, height: 40, borderRadius: 13, alignItems: 'center', justifyContent: 'center', marginRight: 4 },
+    title: { fontSize: 20, letterSpacing: -0.3 },
+    subtitle: { fontSize: 12.5, marginTop: 1 },
+    newChat: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+
+    emptyContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 28 },
+    hero: { fontSize: 28, lineHeight: 34, letterSpacing: -0.6 },
+    heroSub: { fontSize: 15, lineHeight: 22, marginTop: 8 },
+    sectionTitle: { fontSize: 12.5, letterSpacing: 0.4, marginTop: 18, marginBottom: 8 },
+    grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+    quick: { width: '48.4%', padding: 14, borderRadius: 18, borderWidth: 1, minHeight: 124 },
+    quickIcon: { width: 34, height: 34, borderRadius: 11, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+    quickTitle: { fontSize: 14.5 },
+    quickSub: { fontSize: 12.5, lineHeight: 17, marginTop: 3 },
+
+    card: { padding: 18, borderRadius: 22, borderWidth: 1 },
+    cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    label: { fontSize: 13 },
+    tag: { paddingHorizontal: 10, height: 24, borderRadius: 12, justifyContent: 'center' },
+    tagText: { fontSize: 11.5 },
+    topicQ: { fontSize: 21, lineHeight: 27, letterSpacing: -0.4, marginTop: 14 },
+    sideRow: { flexDirection: 'row', gap: 10 },
+    sideLabel: { width: 54, fontSize: 13 },
+    sideText: { flex: 1, fontSize: 13.5, lineHeight: 19 },
+    buttons: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
+    primaryBtn: { flex: 1, height: 44, borderRadius: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+    ghostBtn: { height: 44, paddingHorizontal: 18, borderRadius: 22, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+    btnText: { fontSize: 14 },
+    iconBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginLeft: 'auto' },
+
+    chat: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 18, flexGrow: 1 },
+    msg: { marginTop: 18 },
+    mine: { maxWidth: '84%', paddingHorizontal: 16, paddingVertical: 11, borderRadius: 20, borderBottomRightRadius: 6 },
+    body: { fontSize: 15, lineHeight: 22 },
+    miniMark: { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+    bulletDot: { width: 5, height: 5, borderRadius: 3, marginTop: 9 },
+    claim: { fontSize: 17, lineHeight: 24, letterSpacing: -0.2 },
+    tip: { flexDirection: 'row', gap: 10, padding: 12, borderRadius: 14, marginTop: 16, alignItems: 'flex-start' },
+    followUp: { paddingHorizontal: 14, height: 34, borderRadius: 17, borderWidth: 1, justifyContent: 'center' },
+    followUpText: { fontSize: 13 },
+
+    composer: { paddingHorizontal: 14, paddingTop: 10, borderTopWidth: StyleSheet.hairlineWidth, gap: 10 },
+    modes: { flexDirection: 'row', gap: 8, paddingRight: 8 },
+    modeChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 32, borderRadius: 16 },
+    modeText: { fontSize: 12.5 },
+    inputRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
     input: {
-        paddingHorizontal: 18,
-        paddingVertical: Platform.OS === 'ios' ? 12 : 10,
-        fontSize: 15,
-    },
-    sendButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    // ===== CARD STYLES =====
-    cardHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: 16,
-        paddingBottom: 12,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: 'rgba(255,255,255,0.08)',
-    },
-    cardHeaderIcon: {
-        width: 28,
-        height: 28,
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(56, 189, 248, 0.15)',
-    },
-    cardTitle: {
-        fontSize: 11,
-        fontWeight: '800',
-        letterSpacing: 2,
-    },
-    insightScore: {
-        fontSize: 56,
-        fontWeight: '800',
-        marginBottom: 2,
-        letterSpacing: -2,
-    },
-    insightStatusRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: 12,
-    },
-    insightStatus: {
-        fontSize: 16,
-        fontWeight: '700',
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-    },
-    trendBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 3,
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 10,
-    },
-    trendText: {
-        color: '#10B981',
-        fontSize: 12,
-        fontWeight: '700',
-    },
-    cardText: {
-        fontSize: 14,
-        lineHeight: 21,
-    },
-    analysisSection: {
-        marginBottom: 14,
-    },
-    analysisLabelBadge: {
-        alignSelf: 'flex-start',
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 6,
-        marginBottom: 6,
-    },
-    analysisLabel: {
-        fontSize: 9,
-        fontWeight: '800',
-        letterSpacing: 1.5,
-        textTransform: 'uppercase',
-    },
-    // ===== SUGGESTION CHIPS =====
-    suggestionsContainer: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-    },
-    suggestionsTitle: {
-        fontSize: 11,
-        fontWeight: '700',
-        marginBottom: 10,
-        letterSpacing: 1.5,
-        textTransform: 'uppercase',
-    },
-    suggestionsGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
-    },
-    suggestionChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        borderRadius: 18,
-        borderWidth: 1,
-        gap: 12,
-        width: '48%',
-        // @ts-ignore
-        transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
-    },
-    suggestionIconContainer: {
-        width: 32,
-        height: 32,
-        borderRadius: 10,
-        borderWidth: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        // @ts-ignore
-        transition: 'all 0.2s ease',
-    },
-    suggestionTextWrap: {
         flex: 1,
+        minHeight: 46,
+        maxHeight: 120,
+        borderRadius: 23,
+        borderWidth: 1,
+        paddingHorizontal: 18,
+        paddingTop: Platform.OS === 'ios' ? 13 : 10,
+        paddingBottom: Platform.OS === 'ios' ? 13 : 10,
+        fontSize: 16,
     },
-    suggestionText: {
-        fontSize: 13,
-        fontWeight: '700',
-    },
-    suggestionDesc: {
-        fontSize: 10,
-        fontWeight: '500',
-        marginTop: 1,
-    },
+    send: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
 });

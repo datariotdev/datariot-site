@@ -23,12 +23,13 @@ const showAlert = (title: string, message: string) => {
 export default function PublishScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const { videoUri, trimStart, trimEnd, debateId, side } = params;
+    const { videoUri, trimStart, trimEnd, debateId, side, thesis } = params;
     const { user } = useAuth();
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
-    const [caption, setCaption] = useState('');
+    // A thesis can arrive prefilled, e.g. from Orvelis
+    const [caption, setCaption] = useState(typeof thesis === 'string' ? thesis : '');
     const [selectedCategory, setSelectedCategory] = useState<VideoCategory | null>(null);
     const [uploading, setUploading] = useState(false);
 

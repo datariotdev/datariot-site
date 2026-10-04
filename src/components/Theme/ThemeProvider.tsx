@@ -44,12 +44,13 @@ const lightColors = {
         glowStrong: 'rgba(76, 110, 245, 0.25)',
         glowSubtle: 'rgba(76, 110, 245, 0.05)',
     },
+    // The logo's ice (#DAE6F7) is the light theme's ground, as it is on the website
     background: {
-        primary: '#F8F8FA',
-        DEFAULT: '#F8F8FA',
-        secondary: '#F0F0F4',
-        tertiary: '#E8E8EE',
-        web: '#F8F8FA',
+        primary: '#DAE6F7',
+        DEFAULT: '#DAE6F7',
+        secondary: '#E6EEFA',
+        tertiary: '#CBDAF0',
+        web: '#DAE6F7',
         webSecondary: '#FFFFFF',
         paper: '#FFFFFF',
     },

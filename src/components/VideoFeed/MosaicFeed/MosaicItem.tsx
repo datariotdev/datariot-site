@@ -83,7 +83,7 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
             <View style={styles.card}>
                 {/* Brand backdrop: shows while a clip loads and when it cannot play */}
                 <LinearGradient
-                    colors={isDark ? ['#1B2442', '#0E1325'] : ['#E4ECFF', '#CBD9FF']}
+                    colors={isDark ? ['#1A1C24', '#0D0E13'] : ['#F2F6FD', '#C4D5F0']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFill}
@@ -108,7 +108,7 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
 
                 {/* Soft navy fade so the text reads without a hard black slab */}
                 <LinearGradient
-                    colors={['rgba(8,10,22,0)', 'rgba(8,10,22,0.25)', 'rgba(8,10,22,0.88)']}
+                    colors={['rgba(8,9,13,0)', 'rgba(8,9,13,0.3)', 'rgba(8,9,13,0.9)']}
                     locations={[0.35, 0.6, 1]}
                     style={StyleSheet.absoluteFill}
                 />
@@ -154,9 +154,9 @@ const styles = StyleSheet.create({
         borderRadius: 22,
         borderWidth: 1,
         overflow: 'hidden',
-        shadowColor: '#0A1030',
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.35,
+        shadowOpacity: 0.25,
         shadowRadius: 12,
         elevation: 6,
     },

@@ -224,11 +224,61 @@ export async function generateVideoAnalysis(): Promise<VideoAnalysis> {
     }
 }
 
+export interface ArgumentAnalysis {
+    claim: string;
+    weakSpots: string[];
+    counter: string;
+    improve: string;
+}
+
+/**
+ * Breaks down a piece of reasoning the person pasted in. Unlike the chat, there is no
+ * canned offline answer here: an analysis of nothing would only look like one, so when
+ * no model can be reached this throws and the screen says so.
+ */
+export async function analyzeArgument(text: string): Promise<ArgumentAnalysis> {
+    const systemPrompt = "You are Orvelis, a sharp but fair debate coach on Datariot. You find the real weak points in reasoning without being rude. Output valid JSON only.";
+    const userPrompt = `Analyze this argument:\n"""${text.slice(0, 4000)}"""\nReturn JSON with keys: claim (the core claim in one sentence), weakSpots (array of 2 to 4 short strings; each names a logical fallacy or unsupported leap and says where it happens), counter (the strongest counter-argument in 1 to 2 sentences), improve (one concrete way to make the argument stronger). Reply in the same language as the argument.`;
+
+    const callClaude = async () => {
+        const raw = await fetchAnthropic(systemPrompt, userPrompt);
+        const jsonMatch = raw.match(/\{[\s\S]*\}/);
+        return jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(raw);
+    };
+
+    const callGPT = async () => {
+        if (!openAIKey || openAIKey === 'dummy-key') {
+            throw new Error('No OpenAI API key configured');
+        }
+        const completion = await getOpenAI().chat.completions.create({
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userPrompt }
+            ],
+            model: "gpt-4o",
+            response_format: { type: "json_object" }
+        });
+        const content = completion.choices[0].message.content;
+        if (!content) throw new Error('Empty answer');
+        return JSON.parse(content);
+    };
+
+    const data = await callAI(callGPT, callClaude, 'ArgumentAnalysis');
+    if (!data || typeof data.claim !== 'string') throw new Error('Unexpected answer shape');
+    return {
+        claim: data.claim,
+        weakSpots: Array.isArray(data.weakSpots) ? data.weakSpots.map(String) : [],
+        counter: String(data.counter || ''),
+        improve: String(data.improve || ''),
+    };
+}
+
 // Mock Response Generator (Offline Mode) — Enhanced
 function generateMockResponse(message: string): string {
     const lower = message.toLowerCase();
 
-    if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey') || lower.includes('привет') || lower.includes('здрав')) {
+    // whole words only: 'hi' used to match inside 'this' and 'should'
+    if (/\b(hello|hi|hey)\b/.test(lower) || lower.includes('привет') || lower.includes('здрав')) {
         return "Welcome back. I'm operating in local mode right now, but my core logic circuits are fully online. What's occupying your mind?";
     }
 

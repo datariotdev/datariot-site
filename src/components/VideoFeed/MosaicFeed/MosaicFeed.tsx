@@ -1,6 +1,5 @@
 import React, { useRef, useState, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, ViewToken, Dimensions, Platform } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MosaicItem } from './MosaicItem';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { Video } from '../../../lib/supabase/hooks/useVideos';
@@ -64,18 +63,6 @@ export function MosaicFeed({
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            {/* The platform's ice blue, as a deep night sky instead of flat black */}
-            <LinearGradient
-                colors={isDark ? ['#16203E', '#0D1226', '#08090D'] : ['#E9F0FF', '#F4F7FF', '#FFFFFF']}
-                locations={[0, 0.45, 1]}
-                style={StyleSheet.absoluteFill}
-                pointerEvents="none"
-            />
-            <LinearGradient
-                colors={isDark ? ['rgba(217, 228, 255, 0.07)', 'rgba(217, 228, 255, 0)'] : ['rgba(107, 127, 204, 0.14)', 'rgba(107, 127, 204, 0)']}
-                style={styles.glow}
-                pointerEvents="none"
-            />
             <FlatList
                 data={videos}
                 renderItem={renderItem}
@@ -84,7 +71,7 @@ export function MosaicFeed({
                         <Text style={[styles.headerTitle, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}>
                             Daily Synergy
                         </Text>
-                        <Text style={[styles.headerSub, { color: isDark ? 'rgba(217, 228, 255, 0.6)' : theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.regular }]}>
+                        <Text style={[styles.headerSub, { color: isDark ? 'rgba(217, 228, 255, 0.6)' : '#44507A', fontFamily: theme.typography.fontFamilies.regular }]}>
                             Curated for your Creator DNA
                         </Text>
                     </View>
@@ -115,13 +102,6 @@ export function MosaicFeed({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    glow: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 360,
     },
     header: {
         paddingHorizontal: 6,
