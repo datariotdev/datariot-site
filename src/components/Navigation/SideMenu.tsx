@@ -1,79 +1,120 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Linking, Animated, ScrollView, Switch, Image as RNImage, useWindowDimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, ScrollView, Linking, Platform, Image as RNImage } from 'react-native';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+    interpolate,
+    FadeInLeft
+} from 'react-native-reanimated';
 import { useRouter, usePathname } from 'expo-router';
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { Feather, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { useTheme } from '../Theme/ThemeProvider';
 import { supabase } from '../../lib/supabase/client';
-import { usePalette } from '../../design-system/palette';
-import { Avatar } from '../UI/Avatar';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 interface SideMenuProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-type IconName = keyof typeof Ionicons.glyphMap;
-
-/** Only places that exist. The old menu listed Rules, Leaderboard and Forum, which opened nothing. */
-const MENU_ITEMS: { title: string; icon: IconName; route: string; match: string[] }[] = [
-    { title: 'Home', icon: 'home-outline', route: '/', match: ['/', '/index'] },
-    { title: 'Explore', icon: 'compass-outline', route: '/discover', match: ['/discover'] },
-    { title: 'Create', icon: 'add-circle-outline', route: '/create', match: ['/create'] },
-    { title: 'Orvelis', icon: 'sparkles-outline', route: '/ai', match: ['/ai'] },
-    { title: 'Messages', icon: 'chatbubble-ellipses-outline', route: '/inbox', match: ['/inbox'] },
-    { title: 'Profile', icon: 'person-outline', route: '/profile', match: ['/profile'] },
-    { title: 'Settings', icon: 'settings-outline', route: '/settings', match: ['/settings'] },
+// Minimalist Menu Configuration
+const MENU_ITEMS = [
+    { title: 'DEBATE ARENA', route: '/(tabs)/index' },
+    { title: 'RULES', route: '/rules' },
+    { title: 'LEADERBOARD', route: '/leaderboard' },
+    { title: 'FORUM', route: '/forum' },
+    { title: 'SETTINGS', route: '/settings' },
 ];
 
 const SOCIAL_LINKS = [
-    { id: 'twitter', icon: 'twitter', url: 'https://twitter.com/datariot_xyz' },
-    { id: 'discord', icon: 'discord', url: 'https://discord.gg/KvBpEVrk2' },
-    { id: 'instagram', icon: 'instagram', url: 'https://instagram.com/datariot.xyz' },
+    { id: 'twitter', icon: 'twitter', url: 'https://twitter.com/datariot_xyz', color: '#FFFFFF' },
+    { id: 'discord', icon: 'discord', url: 'https://discord.gg/KvBpEVrk2', color: '#FFFFFF' },
+    { id: 'instagram', icon: 'instagram', url: 'https://instagram.com/datariot.xyz', color: '#FFFFFF' },
 ];
 
 export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     const router = useRouter();
     const pathname = usePathname();
     const insets = useSafeAreaInsets();
-    // The tab bar is drawn above this menu, so the footer has to sit clear of it
-    const tabBarHeight = useBottomTabBarHeight();
-    const { width } = useWindowDimensions();
     const { user, signOut } = useAuth();
-    const { toggleTheme } = useTheme();
-    const p = usePalette();
+    const { theme, mode, toggleTheme } = useTheme();
+    const [likedVideos, setLikedVideos] = useState<any[]>([]);
 
-    const panelWidth = Math.min(340, Math.round(width * 0.86));
-    const progress = useRef(new Animated.Value(0)).current;
-    const [mounted, setMounted] = useState(isOpen);
-    const [me, setMe] = useState<{ name: string; avatar: string | null } | null>(null);
+    const fetchLikedVideos = React.useCallback(async () => {
+        if (!user) return;
+        try {
+            const { data: likes, error } = await supabase
+                .from('likes')
+                .select(`
+                    video_id,
+                    videos (
+                        id,
+                        title,
+                        user_id,
+                        s3_url,
+                        url
+                    )
+                `)
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(4);
+
+            if (error) throw error;
+
+            const videos = likes.map((item: any) => ({
+                id: item.videos?.id,
+                title: item.videos?.title || 'Untitled',
+                url: item.videos?.url || item.videos?.s3_url,
+            })).filter((v: { id: string }) => v.id);
+
+            setLikedVideos(videos);
+
+        } catch (err) {
+            console.error('Error fetching liked videos for menu:', err);
+        }
+    }, [user]);
+
+    const progress = useSharedValue(0);
 
     useEffect(() => {
-        if (isOpen) setMounted(true);
-        Animated.timing(progress, { toValue: isOpen ? 1 : 0, duration: isOpen ? 260 : 200, useNativeDriver: true }).start(({ finished }) => {
-            if (finished && !isOpen) setMounted(false);
+        progress.value = withSpring(isOpen ? 1 : 0, {
+            damping: 20,
+            stiffness: 90,
         });
-    }, [isOpen, progress]);
 
-    // Who is signed in, for the card at the top
-    useEffect(() => {
-        if (!isOpen || !user || !supabase) return;
-        let cancelled = false;
-        supabase.from('profiles').select('username, display_name, avatar_url').eq('id', user.id).maybeSingle().then(({ data }: { data: any }) => {
-            if (cancelled) return;
-            setMe({
-                name: data?.display_name || data?.username || user.email?.split('@')[0] || 'You',
-                avatar: data?.avatar_url ?? null,
-            });
-        });
-        return () => { cancelled = true; };
-    }, [isOpen, user]);
+        if (isOpen && user) {
+            fetchLikedVideos();
+        }
+    }, [isOpen, user, fetchLikedVideos, progress]);
 
-    const go = (route: string) => {
-        onClose();
-        setTimeout(() => router.navigate(route as any), 180);
+
+    const containerStyle = useAnimatedStyle(() => {
+        const opacity = interpolate(progress.value, [0, 1], [0, 1]);
+        return {
+            opacity,
+            pointerEvents: isOpen ? 'auto' : 'none',
+        };
+    });
+
+    const contentStyle = useAnimatedStyle(() => {
+        const translateY = interpolate(progress.value, [0, 1], [50, 0]);
+        return {
+            transform: [{ translateY }],
+        };
+    });
+
+    const handleNavigation = (path?: string) => {
+        if (path) {
+            onClose();
+            setTimeout(() => {
+                router.push(path as any);
+            }, 300);
+        }
     };
 
     const handleSignOut = async () => {
@@ -81,128 +122,294 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         onClose();
     };
 
-    if (!mounted) return null;
-
-    const translateX = progress.interpolate({ inputRange: [0, 1], outputRange: [-panelWidth, 0] });
+    const openLink = (url: string) => {
+        Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+    };
 
     return (
-        <View style={styles.container} pointerEvents={isOpen ? 'auto' : 'none'}>
-            <Animated.View style={[StyleSheet.absoluteFill, { opacity: progress, backgroundColor: 'rgba(0, 0, 0, 0.55)' }]}>
-                <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" />
-            </Animated.View>
+        <Animated.View style={[styles.container, containerStyle]}>
+            {/* Blurry Background */}
+            <View style={StyleSheet.absoluteFill}>
+                {Platform.OS === 'ios' ? (
+                    <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+                ) : (
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(5, 5, 10, 0.95)' }]} />
+                )}
+                {/* Subtle Gradient Overlay for depth */}
+                <LinearGradient
+                    colors={['rgba(217, 228, 255, 0.1)', 'transparent']}
+                    style={StyleSheet.absoluteFill}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                />
+            </View>
 
-            <Animated.View
-                style={[
-                    styles.panel,
-                    { width: panelWidth, backgroundColor: p.bg, borderRightColor: p.border, paddingTop: insets.top + 14, paddingBottom: tabBarHeight + 10, transform: [{ translateX }] },
-                ]}
-            >
-                {/* Brand + close */}
-                <View style={styles.head}>
-                    <View style={styles.brand}>
-                        <RNImage source={require('../../../assets/logo.jpg')} style={styles.logo} />
-                        <Text style={[styles.brandText, { color: p.text, fontFamily: p.fonts.bold }]}>Datariot</Text>
-                    </View>
-                    <Pressable onPress={onClose} hitSlop={10} accessibilityLabel="Close menu" style={[styles.close, { backgroundColor: p.card, borderColor: p.border }]}>
-                        <Ionicons name="close" size={20} color={p.text} />
-                    </Pressable>
-                </View>
-
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 12 }}>
-                    {/* Account */}
-                    {user ? (
-                        <Pressable onPress={() => go('/profile')} style={({ pressed }) => [styles.account, { backgroundColor: p.card, borderColor: p.border }, pressed && { opacity: 0.8 }]}>
-                            <Avatar uri={me?.avatar} name={me?.name || user.email || ''} size={44} />
-                            <View style={{ flex: 1 }}>
-                                <Text numberOfLines={1} style={[styles.accName, { color: p.text, fontFamily: p.fonts.bold }]}>{me?.name || user.email?.split('@')[0]}</Text>
-                                <Text style={[styles.accSub, { color: p.sub, fontFamily: p.fonts.regular }]}>View profile</Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={18} color={p.faint} />
-                        </Pressable>
-                    ) : (
-                        <Pressable onPress={() => { onClose(); setTimeout(() => router.push('/auth/login'), 180); }} style={({ pressed }) => [styles.signIn, { backgroundColor: p.accent }, pressed && { opacity: 0.85 }]}>
-                            <Text style={[styles.signInText, { color: p.onAccent, fontFamily: p.fonts.semibold }]}>Sign in or create an account</Text>
-                        </Pressable>
-                    )}
-
-                    {/* Where to go */}
-                    <View style={styles.nav}>
-                        {MENU_ITEMS.map(item => {
-                            const active = item.match.includes(pathname);
-                            return (
-                                <Pressable
-                                    key={item.title}
-                                    onPress={() => go(item.route)}
-                                    style={({ pressed }) => [styles.item, active && { backgroundColor: p.soft }, pressed && { opacity: 0.7 }]}
-                                >
-                                    <Ionicons name={item.icon} size={22} color={active ? p.accent : p.sub} />
-                                    <Text style={[styles.itemText, { color: active ? p.text : p.sub, fontFamily: active ? p.fonts.bold : p.fonts.medium }]}>{item.title}</Text>
-                                    {active ? <View style={[styles.dot, { backgroundColor: p.accent }]} /> : null}
-                                </Pressable>
-                            );
-                        })}
-                    </View>
-                </ScrollView>
-
-                {/* Preferences and the way out */}
-                <View style={[styles.footer, { borderTopColor: p.border }]}>
-                    <View style={styles.row}>
-                        <Ionicons name="moon-outline" size={20} color={p.sub} />
-                        <Text style={[styles.rowText, { color: p.text, fontFamily: p.fonts.medium }]}>Dark mode</Text>
-                        <Switch
-                            value={p.isDark}
-                            onValueChange={() => toggleTheme()}
-                            trackColor={{ false: p.cardHigh, true: p.accent }}
-                            thumbColor={p.isDark ? p.onAccent : '#FFFFFF'}
-                            ios_backgroundColor={p.cardHigh}
+            {/* Header / Close */}
+            <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
+                <Pressable onPress={onClose} style={styles.closeButton}>
+                    <Feather name="x" size={32} color="white" />
+                </Pressable>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ position: 'relative', width: 26, height: 26, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
+                        {/* Blue 'Ice' Tone Overlay */}
+                        <View style={{ position: 'absolute', width: 28, height: 28, backgroundColor: 'rgba(56, 189, 248, 0.15)', borderRadius: 14 }} />
+                        <RNImage
+                            source={require('../../../assets/logo.jpg')}
+                            style={{ width: 22, height: 22, borderRadius: 11 }}
                         />
                     </View>
+                    <Text style={[styles.logoText, { color: theme.colors.primary.DEFAULT, fontFamily: theme.typography.fontFamilies.brand, letterSpacing: 1 }]}>DATARIOT</Text>
+                </View>
+            </View>
 
-                    <View style={styles.social}>
-                        {SOCIAL_LINKS.map(s => (
-                            <Pressable
-                                key={s.id}
-                                onPress={() => Linking.openURL(s.url).catch(() => { })}
-                                accessibilityLabel={s.id}
-                                style={[styles.socialBtn, { backgroundColor: p.card, borderColor: p.border }]}
+            <Animated.View style={[styles.content, contentStyle]}>
+
+                {/* Main Menu Links - Big Typography */}
+                <View style={styles.menuLinks}>
+                    {MENU_ITEMS.map((item, index) => {
+                        const isActive = pathname === item.route;
+                        return (
+                            <Animated.View
+                                key={item.title}
+                                entering={FadeInLeft.delay(100 + index * 50).duration(500)}
                             >
-                                <FontAwesome5 name={s.icon} size={17} color={p.text} />
+                                <Pressable
+                                    onPress={() => handleNavigation(item.route)}
+                                    style={({ pressed }) => [
+                                        styles.menuItem,
+                                        isActive && styles.menuItemActive,
+                                        pressed && { opacity: 0.5 }
+                                    ]}
+                                >
+                                    <Text style={[styles.menuItemText, isActive && styles.menuItemTextActive]}>
+                                        {item.title}
+                                    </Text>
+                                    {isActive && <View style={styles.activeDot} />}
+                                </Pressable>
+                            </Animated.View>
+                        );
+                    })}
+                </View>
+
+                {/* Liked Videos Strip */}
+                {likedVideos.length > 0 && (
+                    <Animated.View entering={FadeInLeft.delay(400).duration(500)} style={styles.mediaSection}>
+                        <Text style={styles.sectionLabel}>RECENTLY LIKED</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.mediaScroll}>
+                            {likedVideos.map((video, idx) => (
+                                <Pressable key={video.id} style={styles.mediaCard}>
+                                    <LinearGradient
+                                        colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.02)']}
+                                        style={styles.mediaGradient}
+                                    >
+                                        <View style={styles.mediaIconPlaceholder}>
+                                            <Feather name="play" size={12} color="white" />
+                                        </View>
+                                        <Text numberOfLines={1} style={styles.mediaTitle}>{video.title}</Text>
+                                    </LinearGradient>
+                                </Pressable>
+                            ))}
+                        </ScrollView>
+                    </Animated.View>
+                )}
+
+                {/* Theme Toggle & Footer Actions */}
+                <View style={styles.footer}>
+                    <View style={styles.themeToggleContainer}>
+                        <Pressable
+                            style={styles.themeToggleBtn}
+                            onPress={toggleTheme}
+                        >
+                            <Ionicons
+                                name={mode === 'dark' ? "moon" : "sunny"}
+                                size={18}
+                                color="white"
+                            />
+                            <Text style={styles.themeToggleText}>
+                                {mode === 'dark' ? "DARK MODE" : "LIGHT MODE"}
+                            </Text>
+                        </Pressable>
+                    </View>
+
+                    <View style={styles.socialRow}>
+                        {SOCIAL_LINKS.map(social => (
+                            <Pressable
+                                key={social.id}
+                                onPress={() => openLink(social.url)}
+                                style={styles.socialBtn}
+                            >
+                                <FontAwesome5 name={social.icon} size={20} color={social.color} />
                             </Pressable>
                         ))}
-                        <View style={{ flex: 1 }} />
-                        {user ? (
-                            <Pressable onPress={handleSignOut} hitSlop={8}>
-                                <Text style={[styles.signOut, { color: p.danger, fontFamily: p.fonts.semibold }]}>Log out</Text>
-                            </Pressable>
-                        ) : null}
                     </View>
+
+                    <Pressable onPress={handleSignOut} style={styles.signOutBtn}>
+                        <Text style={styles.signOutText}>SIGN OUT</Text>
+                    </Pressable>
+
+                    <Text style={styles.version}>v1.0.2</Text>
                 </View>
+
             </Animated.View>
-        </View>
+        </Animated.View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { ...StyleSheet.absoluteFillObject, zIndex: 100 },
-    panel: { position: 'absolute', top: 0, bottom: 0, left: 0, paddingHorizontal: 18, borderRightWidth: StyleSheet.hairlineWidth },
-    head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
-    brand: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    logo: { width: 34, height: 34, borderRadius: 10 },
-    brandText: { fontSize: 20, letterSpacing: -0.3 },
-    close: { width: 38, height: 38, borderRadius: 19, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-    account: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 18, borderWidth: 1 },
-    accName: { fontSize: 16 },
-    accSub: { fontSize: 12.5, marginTop: 1 },
-    signIn: { height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center' },
-    signInText: { fontSize: 14.5 },
-    nav: { marginTop: 14, gap: 2 },
-    item: { flexDirection: 'row', alignItems: 'center', gap: 14, height: 52, paddingHorizontal: 14, borderRadius: 14 },
-    itemText: { flex: 1, fontSize: 16.5 },
-    dot: { width: 6, height: 6, borderRadius: 3 },
-    footer: { paddingTop: 14, borderTopWidth: StyleSheet.hairlineWidth, gap: 14 },
-    row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 6 },
-    rowText: { flex: 1, fontSize: 15.5 },
-    social: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 2 },
-    socialBtn: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-    signOut: { fontSize: 14.5, paddingHorizontal: 6 },
+    container: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: 2000,
+    },
+    header: {
+        paddingHorizontal: 30,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 40,
+    },
+    closeButton: {
+        width: 44,
+        height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        borderRadius: 22,
+    },
+    logoText: {
+        color: 'white',
+        fontSize: 14,
+        fontWeight: '900',
+        letterSpacing: 4,
+    },
+    content: {
+        flex: 1,
+        paddingHorizontal: 0,
+    },
+    menuLinks: {
+        paddingHorizontal: 40,
+        marginBottom: 40,
+    },
+    menuItem: {
+        marginBottom: 24,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    menuItemActive: {
+        // Optional active state styling
+    },
+    menuItemText: {
+        fontSize: 32,
+        color: 'rgba(255,255,255,0.3)',
+        fontWeight: '200',
+        letterSpacing: -1,
+        fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif-thin',
+    },
+    menuItemTextActive: {
+        color: 'white',
+        fontWeight: '600',
+        // textShadowColor: 'rgba(255,255,255,0.5)',
+        // textShadowOffset: {width: 0, height: 0},
+        // textShadowRadius: 10,
+    },
+    activeDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#D9E4FF',
+        marginLeft: 15,
+        marginTop: 5,
+    },
+    sectionLabel: {
+        marginHorizontal: 40,
+        color: 'rgba(255,255,255,0.5)',
+        fontSize: 10,
+        fontWeight: '700',
+        letterSpacing: 2,
+        marginBottom: 20,
+    },
+    mediaSection: {
+        marginBottom: 40,
+    },
+    mediaScroll: {
+        paddingHorizontal: 40,
+    },
+    mediaCard: {
+        width: 140,
+        height: 80,
+        marginRight: 15,
+        borderRadius: 16,
+        overflow: 'hidden',
+    },
+    mediaGradient: {
+        flex: 1,
+        justifyContent: 'space-between',
+        padding: 12,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
+    },
+    mediaIconPlaceholder: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    mediaTitle: {
+        color: 'white',
+        fontSize: 10,
+        fontWeight: '600',
+        letterSpacing: 0.5,
+    },
+    footer: {
+        marginTop: 'auto',
+        paddingBottom: 50,
+        alignItems: 'center',
+    },
+    socialRow: {
+        flexDirection: 'row',
+        gap: 30,
+        marginBottom: 30,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        paddingHorizontal: 30,
+        paddingVertical: 15,
+        borderRadius: 100, // Pill shape dock
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+    },
+    socialBtn: {
+        opacity: 0.8,
+    },
+    signOutBtn: {
+        marginBottom: 15,
+    },
+    signOutText: {
+        color: 'rgba(255,100,100,0.8)',
+        fontSize: 12,
+        fontWeight: '700',
+        letterSpacing: 1,
+    },
+    version: {
+        color: 'rgba(255,255,255,0.2)',
+        fontSize: 10,
+    },
+    themeToggleContainer: {
+        marginBottom: 20,
+    },
+    themeToggleBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 20,
+        gap: 8,
+    },
+    themeToggleText: {
+        color: 'white',
+        fontSize: 12,
+        fontWeight: '700',
+        letterSpacing: 1,
+    },
 });

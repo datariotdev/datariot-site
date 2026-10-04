@@ -29,10 +29,6 @@ const TabLayout = () => {
     const isDark = mode === 'dark';
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
 
-    // Same two colours as the site: the logo's ice (dark) or ink (light) for what is selected
-    const accent = isDark ? '#D9E4FF' : '#07080C';
-    const onAccent = isDark ? '#07080C' : '#DAE6F7';
-
     return (
         <ResponsiveLayout>
             <Tabs
@@ -41,15 +37,15 @@ const TabLayout = () => {
                     // Let the layout's HUD backdrop show through instead of the
                     // navigator's default light scene background.
                     sceneStyle: { backgroundColor: 'transparent' },
-                    tabBarActiveTintColor: accent,
-                    tabBarInactiveTintColor: isDark ? 'rgba(241, 242, 245, 0.58)' : 'rgba(7, 8, 12, 0.52)',
+                    tabBarActiveTintColor: theme.colors.primary.DEFAULT,
+                    tabBarInactiveTintColor: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0,0,0,0.4)',
                     tabBarStyle: {
                         display: isDesktopWeb ? 'none' : 'flex',
                         position: 'absolute',
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: Platform.OS === 'ios' ? 88 : 68,
+                        height: Platform.OS === 'ios' ? 88 : 64,
                         backgroundColor: 'transparent',
                         borderWidth: 0,
                         borderTopWidth: 0,
@@ -60,29 +56,11 @@ const TabLayout = () => {
                         shadowColor: 'transparent',
                         shadowOffset: { width: 0, height: 0 },
                         shadowRadius: 0,
-                        paddingTop: 8,
-                        paddingBottom: Platform.OS === 'ios' ? 26 : 8,
+                        paddingBottom: Platform.OS === 'ios' ? 24 : 8,
                     },
-                    // A real surface under the icons: they used to float over the video and the text
-                    tabBarBackground: () => (
-                        <View
-                            style={[
-                                StyleSheet.absoluteFill,
-                                {
-                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.9)' : 'rgba(218, 230, 247, 0.93)',
-                                    borderTopWidth: StyleSheet.hairlineWidth,
-                                    borderTopColor: isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(7, 8, 12, 0.10)',
-                                },
-                            ]}
-                        >
-                            {Platform.OS === 'ios' ? <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} /> : null}
-                        </View>
-                    ),
-                    tabBarShowLabel: true,
+                    tabBarBackground: () => null,
                     tabBarLabelStyle: {
-                        fontSize: 10.5,
-                        marginTop: 3,
-                        fontFamily: theme.typography.fontFamilies.medium,
+                        display: 'none',
                     },
                     tabBarItemStyle: {
                         flex: 1,
@@ -95,12 +73,13 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="index"
                     options={{
-                        title: 'Home',
+                        title: '',
                         tabBarIcon: ({ focused, color }) => (
                             <MaterialCommunityIcons
                                 name={focused ? "home-variant" : "home-variant-outline"}
-                                size={25}
+                                size={24}
                                 color={color}
+                                style={{ opacity: focused ? 1 : 0.8 }}
                             />
                         ),
                     }}
@@ -108,7 +87,7 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="discover"
                     options={{
-                        title: 'Explore',
+                        title: '',
                         tabBarIcon: ({ focused, color }) => (
                             <Ionicons
                                 name={focused ? "navigate-circle" : "navigate-circle-outline"}
@@ -121,8 +100,7 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="create"
                     options={{
-                        title: 'Create',
-                        tabBarLabel: () => null,
+                        title: '',
                         tabBarIcon: ({ focused }) => (
                             <View style={{
                                 width: 44,
@@ -130,13 +108,17 @@ const TabLayout = () => {
                                 borderRadius: 22,
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: accent,
-                                marginTop: 2,
+                                backgroundColor: theme.colors.primary.DEFAULT,
+                                shadowColor: theme.colors.primary.DEFAULT,
+                                shadowOffset: { width: 0, height: 4 },
+                                shadowOpacity: 0.3,
+                                shadowRadius: 8,
+                                elevation: 4,
                             }}>
                                 <Feather
                                     name="plus"
-                                    size={24}
-                                    color={onAccent}
+                                    size={22}
+                                    color="#000000"
                                 />
                             </View>
                         ),
@@ -145,7 +127,7 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="ai"
                     options={{
-                        title: 'Orvelis',
+                        title: '',
                         tabBarIcon: ({ focused, color }) => (
                             <MaterialCommunityIcons
                                 name={focused ? "robot-excited" : "robot-excited-outline"}
@@ -158,12 +140,13 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="inbox"
                     options={{
-                        title: 'Messages',
+                        title: '',
                         tabBarIcon: ({ focused, color }) => (
                             <Ionicons
                                 name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"}
-                                size={25}
+                                size={24}
                                 color={color}
+                                style={{ opacity: focused ? 1 : 0.8 }}
                             />
                         ),
                     }}
