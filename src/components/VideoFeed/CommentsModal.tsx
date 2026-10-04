@@ -2,12 +2,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Modal,
     View,
-    Text,
     StyleSheet,
     TextInput,
     Pressable,
     FlatList,
-    Image,
     Animated,
     KeyboardAvoidingView,
     Platform,
@@ -15,10 +13,14 @@ import {
     Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useComments, Comment } from '@lib/supabase/hooks/useComments';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
-import { useTheme } from '../Theme/ThemeProvider';
+import { FONT, RADIUS, useUI } from '../../design-system/ui';
+import { Txt } from '../core/Txt';
+import { Avatar } from '../core/Avatar';
+import { Button } from '../core/Button';
 
 interface CommentsModalProps {
     visible: boolean;
@@ -28,123 +30,103 @@ interface CommentsModalProps {
 
 function CommentRow({
     comment,
-    isDark,
     isOwn,
     onLike,
     onReply,
     onDelete,
 }: {
     comment: Comment;
-    isDark: boolean;
     isOwn: boolean;
     onLike: (id: string) => void;
     onReply: (id: string, name: string) => void;
     onDelete: (id: string) => void;
 }) {
+    const { c } = useUI();
     const heartScale = useRef(new Animated.Value(1)).current;
 
     const handleLike = () => {
         Animated.sequence([
-            Animated.spring(heartScale, { toValue: 1.5, useNativeDriver: true, speed: 60, bounciness: 12 }),
+            Animated.spring(heartScale, { toValue: 1.4, useNativeDriver: true, speed: 60, bounciness: 12 }),
             Animated.spring(heartScale, { toValue: 1, useNativeDriver: true, speed: 60, bounciness: 8 }),
         ]).start();
         onLike(comment.id);
     };
 
     const handleDelete = () => {
-        Alert.alert('Delete comment', 'Are you sure?', [
+        Alert.alert('Delete comment', 'This can\'t be undone.', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => onDelete(comment.id) },
         ]);
     };
 
     return (
-        <View style={styles.commentRow}>
-            <Image
-                source={{ uri: comment.authorAvatar || `https://ui-avatars.com/api/?name=${comment.authorName}&background=222&color=fff` }}
-                style={styles.commentAvatar}
-            />
-            <View style={styles.commentBody}>
-                <View style={styles.commentBubble}>
-                    <Text style={[styles.commentAuthor, { color: isDark ? '#fff' : '#111' }]}>
-                        {comment.authorName}
-                    </Text>
-                    <Text style={[styles.commentText, { color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.8)' }]}>
-                        {comment.content}
-                    </Text>
+        <View style={styles.row}>
+            <Avatar uri={comment.authorAvatar} name={comment.authorName} size={34} />
+            <View style={styles.rowBody}>
+                <View style={styles.rowHead}>
+                    <Txt variant="callout" tone="secondary">{comment.authorName}</Txt>
+                    <Txt variant="caption" tone="tertiary">{comment.timestamp}</Txt>
                 </View>
-                <View style={styles.commentMeta}>
-                    <Text style={styles.commentTime}>{comment.timestamp}</Text>
-                    <Pressable onPress={() => onReply(comment.id, comment.authorName)} hitSlop={12}>
-                        <Text style={[styles.replyBtn]}>Reply</Text>
+                <Txt variant="body">{comment.content}</Txt>
+
+                <View style={styles.rowActions}>
+                    <Pressable onPress={() => onReply(comment.id, comment.authorName)} hitSlop={10}>
+                        <Txt variant="caption" tone="secondary">Reply</Txt>
                     </Pressable>
-                    <Pressable onPress={handleLike} style={[styles.commentLike, comment.isLiked && styles.commentLikePill]} hitSlop={16}>
-                        <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-                            <Text style={[styles.sparkle, comment.isLiked && { color: '#D9E4FF' }]}>✦</Text>
-                        </Animated.View>
-                        {comment.likes > 0 && (
-                            <Text style={[styles.commentLikeCount, comment.isLiked && { color: '#D9E4FF' }]}>
-                                {comment.likes}
-                            </Text>
-                        )}
-                    </Pressable>
-                    {isOwn && (
-                        <Pressable onPress={handleDelete} hitSlop={16} style={styles.deleteBtn}>
-                            <Ionicons name="trash-outline" size={17} color={isDark ? 'rgba(255,80,80,0.85)' : 'rgba(200,0,0,0.7)'} />
+                    {isOwn ? (
+                        <Pressable onPress={handleDelete} hitSlop={10}>
+                            <Txt variant="caption" tone="secondary">Delete</Txt>
                         </Pressable>
-                    )}
+                    ) : null}
                 </View>
 
-                {/* Replies */}
-                {comment.replies && comment.replies.length > 0 && (
-                    <View style={styles.repliesContainer}>
+                {comment.replies && comment.replies.length > 0 ? (
+                    <View style={styles.replies}>
                         {comment.replies.map(reply => (
-                            <View key={reply.id} style={styles.replyRow}>
-                                <Image
-                                    source={{ uri: reply.authorAvatar || `https://ui-avatars.com/api/?name=${reply.authorName}&background=333&color=fff` }}
-                                    style={styles.replyAvatar}
-                                />
-                                <View style={styles.commentBubble}>
-                                    <Text style={[styles.commentAuthor, { color: isDark ? '#fff' : '#111' }]}>
-                                        {reply.authorName}
-                                    </Text>
-                                    <Text style={[styles.commentText, { color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.75)' }]}>
-                                        {reply.content}
-                                    </Text>
+                            <View key={reply.id} style={styles.reply}>
+                                <Avatar uri={reply.authorAvatar} name={reply.authorName} size={24} />
+                                <View style={{ flex: 1 }}>
+                                    <Txt variant="callout" tone="secondary">{reply.authorName}</Txt>
+                                    <Txt variant="body">{reply.content}</Txt>
                                 </View>
                             </View>
                         ))}
                     </View>
-                )}
+                ) : null}
             </View>
+
+            <Pressable onPress={handleLike} hitSlop={12} style={styles.like} accessibilityRole="button" accessibilityLabel={comment.isLiked ? 'Unlike comment' : 'Like comment'}>
+                <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+                    <Ionicons
+                        name={comment.isLiked ? 'heart' : 'heart-outline'}
+                        size={19}
+                        color={comment.isLiked ? c.like : c.textTertiary}
+                    />
+                </Animated.View>
+                {comment.likes > 0 ? <Txt variant="micro" tone="secondary" style={{ marginTop: 2 }}>{comment.likes}</Txt> : null}
+            </Pressable>
         </View>
     );
 }
 
 export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps) {
-    const { mode } = useTheme();
-    const isDark = mode === 'dark';
+    const { c } = useUI();
+    const router = useRouter();
     const insets = useSafeAreaInsets();
     const { user } = useAuth();
     const { comments, loading, posting, fetchComments, postComment, toggleLikeComment, deleteComment } = useComments(videoId);
     const [text, setText] = useState('');
     const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
-    const slideAnim = useRef(new Animated.Value(0)).current;
     const inputRef = useRef<TextInput>(null);
 
     useEffect(() => {
         if (visible && videoId) {
             fetchComments();
-            Animated.spring(slideAnim, {
-                toValue: 1,
-                useNativeDriver: true,
-                speed: 14,
-                bounciness: 5,
-            }).start();
         } else {
-            slideAnim.setValue(0);
+            setText('');
+            setReplyTo(null);
         }
-    }, [visible, videoId]);
+    }, [visible, videoId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleReply = useCallback((id: string, name: string) => {
         setReplyTo({ id, name });
@@ -158,51 +140,52 @@ export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps)
         setReplyTo(null);
     };
 
-    const bg = isDark ? '#111' : '#f9f9f9';
-    const handleBg = isDark ? '#333' : '#ddd';
+    const signIn = () => {
+        onClose();
+        setTimeout(() => router.push('/auth/login'), 250);
+    };
+
+    const canSend = !!text.trim() && !!user && !posting;
 
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-            <View style={styles.modalContainer}>
-                <Pressable style={styles.backdrop} onPress={onClose} />
+            <View style={styles.modal}>
+                <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Close comments" />
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={[styles.sheet, { backgroundColor: bg }]}
-                    keyboardVerticalOffset={0}
+                    style={[styles.sheet, { backgroundColor: c.surface }]}
                 >
-                    {/* Handle bar */}
-                    <View style={[styles.handle, { backgroundColor: handleBg }]} />
+                    <View style={[styles.handle, { backgroundColor: c.hairline }]} />
 
-                    {/* Header */}
-                    <View style={styles.sheetHeader}>
-                        <Text style={[styles.sheetTitle, { color: isDark ? '#fff' : '#111' }]}>
-                            Comments
-                        </Text>
-                        <Pressable onPress={onClose} hitSlop={12}>
-                            <Ionicons name="close" size={22} color={isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'} />
+                    <View style={styles.header}>
+                        <Txt variant="headline">
+                            Comments{comments.length > 0 ? <Txt variant="headline" tone="tertiary">  {comments.length}</Txt> : null}
+                        </Txt>
+                        <Pressable onPress={onClose} hitSlop={14} accessibilityRole="button" accessibilityLabel="Close">
+                            <Ionicons name="close" size={22} color={c.textSecondary} />
                         </Pressable>
                     </View>
 
-                    {/* Comments list — flex:1 so it fills space and pushes input to bottom */}
-                    <View style={styles.listWrapper}>
+                    <View style={[styles.divider, { backgroundColor: c.hairline }]} />
+
+                    <View style={styles.list}>
                         {loading ? (
-                            <View style={styles.loader}>
-                                <ActivityIndicator color="#D9E4FF" />
+                            <View style={styles.center}>
+                                <ActivityIndicator color={c.textSecondary} />
                             </View>
                         ) : comments.length === 0 ? (
-                            <View style={styles.empty}>
-                                <Text style={[styles.emptyText, { color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)' }]}>
-                                    No comments yet. Be the first!
-                                </Text>
+                            <View style={styles.center}>
+                                <Ionicons name="chatbubble-ellipses-outline" size={30} color={c.textTertiary} />
+                                <Txt variant="headline" style={{ marginTop: 12 }}>No comments yet</Txt>
+                                <Txt variant="body" tone="secondary" style={{ marginTop: 4 }}>Start the conversation.</Txt>
                             </View>
                         ) : (
                             <FlatList
                                 data={comments}
-                                keyExtractor={c => c.id}
+                                keyExtractor={cm => cm.id}
                                 renderItem={({ item }) => (
                                     <CommentRow
                                         comment={item}
-                                        isDark={isDark}
                                         isOwn={item.authorId === user?.id}
                                         onLike={toggleLikeComment}
                                         onReply={handleReply}
@@ -211,57 +194,52 @@ export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps)
                                 )}
                                 contentContainerStyle={styles.listContent}
                                 showsVerticalScrollIndicator={false}
+                                keyboardShouldPersistTaps="handled"
                             />
                         )}
                     </View>
 
-                    {/* Reply indicator */}
-                    {replyTo && (
-                        <View style={[styles.replyIndicator, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.15)' : 'rgba(217, 228, 255, 0.08)' }]}>
-                            <Text style={styles.replyIndicatorText}>Replying to @{replyTo.name}</Text>
-                            <Pressable onPress={() => setReplyTo(null)} hitSlop={8}>
-                                <Ionicons name="close" size={16} color="rgba(217, 228, 255, 0.8)" />
+                    {replyTo ? (
+                        <View style={[styles.replying, { backgroundColor: c.surfaceHigh }]}>
+                            <Txt variant="caption" tone="secondary">Replying to @{replyTo.name}</Txt>
+                            <Pressable onPress={() => setReplyTo(null)} hitSlop={10}>
+                                <Ionicons name="close" size={16} color={c.textSecondary} />
                             </Pressable>
                         </View>
-                    )}
+                    ) : null}
 
-                    {/* Input row */}
-                    <View style={[styles.inputRow, { borderTopColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)', paddingBottom: insets.bottom + 8 }]}>
-                        <TextInput
-                            ref={inputRef}
-                            value={text}
-                            onChangeText={setText}
-                            placeholder={user ? 'Write a comment...' : 'Sign in to comment'}
-                            placeholderTextColor={isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}
-                            style={[
-                                styles.input,
-                                {
-                                    backgroundColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
-                                    color: isDark ? '#fff' : '#111',
-                                }
-                            ]}
-                            multiline
-                            maxLength={500}
-                            editable={!!user}
-                            returnKeyType="send"
-                            onSubmitEditing={handleSend}
-                        />
-                        <Pressable
-                            onPress={handleSend}
-                            disabled={posting || !text.trim() || !user}
-                            style={[
-                                styles.sendBtn,
-                                {
-                                    backgroundColor: text.trim() && user ? '#D9E4FF' : isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-                                }
-                            ]}
-                        >
-                            {posting ? (
-                                <ActivityIndicator size="small" color="#000" />
-                            ) : (
-                                <Ionicons name="arrow-up" size={18} color={text.trim() && user ? '#000' : isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'} />
-                            )}
-                        </Pressable>
+                    <View style={[styles.composer, { borderTopColor: c.hairline, paddingBottom: Math.max(insets.bottom, 10) }]}>
+                        {user ? (
+                            <>
+                                <TextInput
+                                    ref={inputRef}
+                                    value={text}
+                                    onChangeText={setText}
+                                    placeholder="Add a comment…"
+                                    placeholderTextColor={c.textTertiary}
+                                    style={[styles.input, { backgroundColor: c.surfaceHigh, color: c.text }]}
+                                    multiline
+                                    maxLength={500}
+                                    returnKeyType="send"
+                                    onSubmitEditing={handleSend}
+                                />
+                                <Pressable
+                                    onPress={handleSend}
+                                    disabled={!canSend}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Send comment"
+                                    style={[styles.send, { backgroundColor: canSend ? c.accent : c.surfaceHigh }]}
+                                >
+                                    {posting ? (
+                                        <ActivityIndicator size="small" color={c.onAccent} />
+                                    ) : (
+                                        <Ionicons name="arrow-up" size={19} color={canSend ? c.onAccent : c.textTertiary} />
+                                    )}
+                                </Pressable>
+                            </>
+                        ) : (
+                            <Button label="Sign in to comment" onPress={signIn} fullWidth />
+                        )}
                     </View>
                 </KeyboardAvoidingView>
             </View>
@@ -270,183 +248,34 @@ export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps)
 }
 
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'flex-end',
-    },
-    backdrop: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    sheet: {
-        height: '70%',
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-    },
-    listWrapper: {
-        flex: 1,
-    },
-    handle: {
-        width: 40,
-        height: 4,
-        borderRadius: 2,
-        alignSelf: 'center',
-        marginTop: 12,
-        marginBottom: 4,
-    },
-    sheetHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingVertical: 14,
-    },
-    sheetTitle: {
-        fontSize: 17,
-        fontWeight: '700',
-        letterSpacing: -0.3,
-    },
-    loader: {
-        padding: 40,
-        alignItems: 'center',
-    },
-    empty: {
-        padding: 40,
-        alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 15,
-    },
-    listContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 8,
-        gap: 4,
-    },
-    commentRow: {
-        flexDirection: 'row',
-        gap: 10,
-        paddingVertical: 8,
-    },
-    commentAvatar: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        flexShrink: 0,
-    },
-    commentBody: {
-        flex: 1,
-        gap: 4,
-    },
-    commentBubble: {
-        gap: 2,
-    },
-    commentAuthor: {
-        fontSize: 13,
-        fontWeight: '700',
-    },
-    commentText: {
-        fontSize: 14,
-        lineHeight: 20,
-    },
-    commentMeta: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
-    },
-    commentTime: {
-        fontSize: 12,
-        color: 'rgba(140,140,150,0.9)',
-    },
-    replyBtn: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#D9E4FF',
-    },
-    commentLike: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 3,
-        marginLeft: 'auto',
-        paddingHorizontal: 8,
-        paddingVertical: 5,
-        borderRadius: 12,
-    },
-    commentLikePill: {
-        backgroundColor: 'rgba(217, 228, 255, 0.1)',
-    },
-    sparkle: {
-        fontSize: 14,
-        color: 'rgba(150,150,160,0.8)',
-        fontWeight: '700',
-    },
-    commentLikeCount: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: 'rgba(140,140,150,0.9)',
-    },
-    repliesContainer: {
-        marginTop: 6,
-        gap: 8,
-        paddingLeft: 4,
-        borderLeftWidth: 2,
-        borderLeftColor: 'rgba(217, 228, 255, 0.2)',
-    },
-    replyRow: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    replyAvatar: {
-        width: 26,
-        height: 26,
-        borderRadius: 13,
-    },
-    replyIndicator: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        marginHorizontal: 16,
-        borderRadius: 10,
-        marginBottom: 4,
-    },
-    replyIndicatorText: {
-        fontSize: 13,
-        color: '#D9E4FF',
-        fontWeight: '600',
-    },
-    inputRow: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        gap: 10,
-        paddingHorizontal: 16,
-        paddingTop: 10,
-        paddingBottom: 8,
-        borderTopWidth: StyleSheet.hairlineWidth,
-    },
+    modal: { flex: 1, justifyContent: 'flex-end' },
+    backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
+    sheet: { height: '72%', borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, overflow: 'hidden' },
+    handle: { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginTop: 10 },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 14, paddingBottom: 14 },
+    divider: { height: StyleSheet.hairlineWidth },
+    list: { flex: 1 },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+    listContent: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12, gap: 18 },
+    row: { flexDirection: 'row', gap: 12 },
+    rowBody: { flex: 1, gap: 2 },
+    rowHead: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
+    rowActions: { flexDirection: 'row', gap: 18, marginTop: 6 },
+    replies: { marginTop: 12, gap: 12 },
+    reply: { flexDirection: 'row', gap: 10 },
+    like: { width: 34, alignItems: 'center', paddingTop: 2 },
+    replying: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 8 },
+    composer: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, paddingHorizontal: 16, paddingTop: 10, borderTopWidth: StyleSheet.hairlineWidth },
     input: {
         flex: 1,
-        borderRadius: 20,
+        minHeight: 42,
+        maxHeight: 110,
+        borderRadius: 21,
         paddingHorizontal: 16,
-        paddingVertical: 10,
+        paddingTop: Platform.OS === 'ios' ? 11 : 9,
+        paddingBottom: Platform.OS === 'ios' ? 11 : 9,
+        fontFamily: FONT.regular,
         fontSize: 15,
-        maxHeight: 100,
     },
-    sendBtn: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        marginBottom: 2,
-    },
-    deleteBtn: {
-        padding: 4,
-        marginLeft: 'auto',
-    },
+    send: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
 });

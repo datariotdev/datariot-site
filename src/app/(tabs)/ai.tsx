@@ -7,7 +7,7 @@ import Animated, { FadeIn, FadeInDown, FadeInUp, useSharedValue, useAnimatedStyl
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { generateVideoAnalysis, chatWithAI, generateDailyInsight, VideoAnalysis, DailyInsight } from '../../lib/ai/client';
-import { TAB_BAR_HEIGHT } from '../../lib/constants/layout';
+import { useTabBarHeight } from '../../lib/hooks/useTabBarHeight';
 
 const { width } = Dimensions.get('window');
 
@@ -240,6 +240,7 @@ export default function AIScreen() {
         }
     ]);
     const [inputText, setInputText] = useState('');
+    const tabBarHeight = useTabBarHeight();
     // The tab bar floats over this screen, so the input has to sit above it. It
     // hides itself while the keyboard is up, and then the old padding is right.
     const [keyboardOpen, setKeyboardOpen] = useState(false);
@@ -584,7 +585,7 @@ export default function AIScreen() {
                     </View>
 
                     {/* Input Area — always editable */}
-                    <View style={[styles.inputContainer, { borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }, !keyboardOpen && { paddingBottom: TAB_BAR_HEIGHT + 8 }]}>
+                    <View style={[styles.inputContainer, { borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }, !keyboardOpen && { paddingBottom: tabBarHeight + 8 }]}>
                         <View style={[styles.inputWrapper, {
                             backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
                             borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'

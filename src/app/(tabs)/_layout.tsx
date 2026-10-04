@@ -1,14 +1,19 @@
 import React, { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { setAudioModeAsync } from 'expo-audio';
-import { Feather, SimpleLineIcons, Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
-import { View, Dimensions, Platform, useWindowDimensions, StyleSheet } from 'react-native';
-import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
-import { useTheme } from '../../components/Theme/ThemeProvider';
+import { Ionicons } from '@expo/vector-icons';
+import { View, Platform, useWindowDimensions, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { TAB_BAR_HEIGHT } from '../../lib/constants/layout';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
+import { useUI } from '../../design-system/ui';
+import { TAB_BAR_BASE } from '../../lib/constants/layout';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+type IconName = keyof typeof Ionicons.glyphMap;
+
+const TabIcon = ({ outline, filled, focused, color }: { outline: IconName; filled: IconName; focused: boolean; color: string }) => (
+    <Ionicons name={focused ? filled : outline} size={25} color={color} />
+);
 
 const TabLayout = () => {
     useEffect(() => {
@@ -26,53 +31,50 @@ const TabLayout = () => {
     }, []);
 
     const { width } = useWindowDimensions();
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+    const insets = useSafeAreaInsets();
+    const { c, isDark } = useUI();
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
+    const bottomInset = Platform.OS === 'web' ? 0 : insets.bottom;
 
     return (
         <ResponsiveLayout>
             <Tabs
                 screenOptions={{
                     headerShown: false,
-                    // Let the layout's HUD backdrop show through instead of the
-                    // navigator's default light scene background.
+                    // Let the layout's backdrop show through instead of the navigator's scene colour.
                     sceneStyle: { backgroundColor: 'transparent' },
-                    tabBarActiveTintColor: theme.colors.primary.DEFAULT,
-                    tabBarInactiveTintColor: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0,0,0,0.4)',
+                    tabBarActiveTintColor: c.text,
+                    tabBarInactiveTintColor: isDark ? 'rgba(243, 244, 247, 0.42)' : 'rgba(11, 12, 16, 0.4)',
+                    tabBarShowLabel: false,
                     tabBarStyle: {
                         display: isDesktopWeb ? 'none' : 'flex',
+                        // Floats over every screen so the home feed can run edge to edge;
+                        // screens pad by useTabBarHeight().
                         position: 'absolute',
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: TAB_BAR_HEIGHT,
+                        height: TAB_BAR_BASE + bottomInset,
+                        paddingBottom: bottomInset,
                         backgroundColor: 'transparent',
-                        borderWidth: 0,
                         borderTopWidth: 0,
-                        borderTopColor: 'transparent',
-                        borderColor: 'transparent',
                         elevation: 0,
                         shadowOpacity: 0,
-                        shadowColor: 'transparent',
-                        shadowOffset: { width: 0, height: 0 },
-                        shadowRadius: 0,
-                        paddingBottom: Platform.OS === 'ios' ? 24 : 8,
                     },
-                    // The bar floats over every screen. With nothing behind it the icons
-                    // sat on top of cards, lists and the AI chat's input; a blurred scrim
-                    // and a hairline keep it readable and tappable over any content.
+                    tabBarItemStyle: { alignItems: 'center', justifyContent: 'center' },
+                    // A blurred scrim and a hairline: icons never sit directly on top of
+                    // cards, lists or a chat input, whatever scrolls underneath.
                     tabBarBackground: () => (
                         <View style={StyleSheet.absoluteFill} pointerEvents="none">
                             <BlurView
-                                intensity={isDark ? 45 : 60}
+                                intensity={isDark ? 50 : 60}
                                 tint={isDark ? 'dark' : 'light'}
                                 style={StyleSheet.absoluteFill}
                             />
                             <View
                                 style={[
                                     StyleSheet.absoluteFill,
-                                    { backgroundColor: isDark ? 'rgba(8, 9, 13, 0.78)' : 'rgba(255, 255, 255, 0.82)' },
+                                    { backgroundColor: isDark ? 'rgba(8, 9, 13, 0.8)' : 'rgba(255, 255, 255, 0.84)' },
                                 ]}
                             />
                             <View
@@ -82,72 +84,47 @@ const TabLayout = () => {
                                     left: 0,
                                     right: 0,
                                     height: StyleSheet.hairlineWidth,
-                                    backgroundColor: isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)',
+                                    backgroundColor: c.hairline,
                                 }}
                             />
                         </View>
                     ),
-                    tabBarLabelStyle: {
-                        display: 'none',
-                    },
-                    tabBarItemStyle: {
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    },
                     tabBarHideOnKeyboard: true,
                 }}
             >
                 <Tabs.Screen
                     name="index"
                     options={{
-                        title: '',
-                        tabBarIcon: ({ focused, color }) => (
-                            <MaterialCommunityIcons
-                                name={focused ? "home-variant" : "home-variant-outline"}
-                                size={24}
-                                color={color}
-                                style={{ opacity: focused ? 1 : 0.8 }}
-                            />
-                        ),
+                        title: 'Home',
+                        tabBarAccessibilityLabel: 'Home',
+                        tabBarIcon: ({ focused, color }) => <TabIcon outline="home-outline" filled="home" focused={focused} color={color} />,
                     }}
                 />
                 <Tabs.Screen
                     name="discover"
                     options={{
-                        title: '',
-                        tabBarIcon: ({ focused, color }) => (
-                            <Ionicons
-                                name={focused ? "navigate-circle" : "navigate-circle-outline"}
-                                size={24}
-                                color={color}
-                            />
-                        ),
+                        title: 'Explore',
+                        tabBarAccessibilityLabel: 'Explore',
+                        tabBarIcon: ({ focused, color }) => <TabIcon outline="search-outline" filled="search" focused={focused} color={color} />,
                     }}
                 />
                 <Tabs.Screen
                     name="create"
                     options={{
-                        title: '',
-                        tabBarIcon: ({ focused }) => (
-                            <View style={{
-                                width: 44,
-                                height: 44,
-                                borderRadius: 22,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: theme.colors.primary.DEFAULT,
-                                shadowColor: theme.colors.primary.DEFAULT,
-                                shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 8,
-                                elevation: 4,
-                            }}>
-                                <Feather
-                                    name="plus"
-                                    size={22}
-                                    color="#000000"
-                                />
+                        title: 'Create',
+                        tabBarAccessibilityLabel: 'Create',
+                        tabBarIcon: () => (
+                            <View
+                                style={{
+                                    width: 46,
+                                    height: 32,
+                                    borderRadius: 11,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: c.accent,
+                                }}
+                            >
+                                <Ionicons name="add" size={24} color={c.onAccent} />
                             </View>
                         ),
                     }}
@@ -155,34 +132,23 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="ai"
                     options={{
-                        title: '',
-                        tabBarIcon: ({ focused, color }) => (
-                            <MaterialCommunityIcons
-                                name={focused ? "robot-excited" : "robot-excited-outline"}
-                                size={24}
-                                color={color}
-                            />
-                        ),
+                        title: 'Orvelis',
+                        tabBarAccessibilityLabel: 'Orvelis AI',
+                        tabBarIcon: ({ focused, color }) => <TabIcon outline="sparkles-outline" filled="sparkles" focused={focused} color={color} />,
                     }}
                 />
                 <Tabs.Screen
                     name="inbox"
                     options={{
-                        title: '',
-                        tabBarIcon: ({ focused, color }) => (
-                            <Ionicons
-                                name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"}
-                                size={24}
-                                color={color}
-                                style={{ opacity: focused ? 1 : 0.8 }}
-                            />
-                        ),
+                        title: 'Messages',
+                        tabBarAccessibilityLabel: 'Messages',
+                        tabBarIcon: ({ focused, color }) => <TabIcon outline="chatbubble-outline" filled="chatbubble" focused={focused} color={color} />,
                     }}
                 />
                 <Tabs.Screen
                     name="profile"
                     options={{
-                        href: null, // This is the correct way in Expo Router to completely remove the tab
+                        href: null, // Reached from the avatar on Home and from Messages; not a tab of its own
                     }}
                 />
             </Tabs>

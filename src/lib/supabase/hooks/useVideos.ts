@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../client';
 import { useAuth } from './useAuth';
 import { encodeVideoUrl } from '../../utils/url';
@@ -22,7 +22,11 @@ export interface Video {
     isLiked: boolean;
     isSaved: boolean;
     isFollowing: boolean;
-    thumbnailUrl?: string; // Optional thumbnail URL
+    thumbnailUrl?: string; // Optional thumbnail URL (falls back to a random photo; fine for the old feeds)
+    /** The video's own thumbnail only, never the stand-in photo: new screens draw a quiet placeholder instead. */
+    posterUrl?: string;
+    createdAt?: string;
+    duration?: number;
     category?: string;
     dnaRationale?: string;
     isHighSynergy?: boolean;
@@ -47,17 +51,19 @@ interface UseVideosProps {
     savedBy?: string;
     /** false leaves the hook idle (the profile's Saved tab loads only when opened). */
     enabled?: boolean;
+    /** A video to put first, wherever it falls in the feed: a shared link, or the tile tapped in Explore. */
+    pinnedId?: string;
 }
 
-export function useVideos({ type, userId, searchQuery, hashtag, category, sort = 'recent', savedBy, enabled = true }: UseVideosProps) {
-    const { user } = useAuth();
+export function useVideos({ type, userId, searchQuery, hashtag, category, sort = 'recent', savedBy, enabled = true, pinnedId }: UseVideosProps) {
+    const { user, loading: authLoading } = useAuth();
     const [videos, setVideos] = useState<Video[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
-    const formatVideo = useCallback((video: any, profile?: any, isLiked: boolean = false, isSaved: boolean = false): Video => {
+    const formatVideo = useCallback((video: any, profile?: any, isLiked: boolean = false, isSaved: boolean = false, isFollowing: boolean = false): Video => {
         const authorName = profile?.display_name || profile?.username || profile?.nickname || 'Unknown';
 
         // Sanitize title: remove Russian strings and specific placeholders
@@ -85,8 +91,11 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             shares: video.shares_count || video.shares || 0,
             isLiked: isLiked,
             isSaved,
-            isFollowing: false,
+            isFollowing,
             thumbnailUrl: video.thumbnail_url || video.thumbnail || `https://picsum.photos/seed/${video.id}/800/1200`,
+            posterUrl: video.thumbnail_url || video.thumbnail || undefined,
+            createdAt: video.created_at || undefined,
+            duration: typeof video.duration === 'number' ? video.duration : undefined,
             category: video.category || null,
             dnaRationale: Math.random() > 0.5 ? "Matches your interest in Engineering & Dev" : "Popular in your local DNA community",
             isHighSynergy: (video.id.charCodeAt(0) % 10 < 7) || Math.random() > 0.3, // ~70-80% chance for synergy to ensure sections aren't empty
@@ -95,6 +104,9 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     }, []);
 
     const fetchVideos = useCallback(async (pageNum: number, isRefresh: boolean = false) => {
+        // The session loads a beat after mount. Fetching before it does meant every
+        // signed-in start fetched twice (and showed a signed-out feed in between).
+        if (authLoading) return;
         if (!supabase || !enabled) {
             setLoading(false);
             setRefreshing(false);
@@ -123,10 +135,35 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 setHasMore((pageNum + 1) * 12 < allSaved.length);
             }
 
+            // Who the viewer follows: it filters the Following feed and marks every
+            // video's author (isFollowing used to be hard-coded false, so a followed
+            // creator still showed a Follow button)
+            let followedIds = new Set<string>();
+            if (user) {
+                const { data: followRows } = await supabase
+                    .from('follows')
+                    .select('following_id')
+                    .eq('follower_id', user.id);
+                (followRows || []).forEach((f: any) => followedIds.add(f.following_id));
+            }
+
+            if (type === 'following') {
+                // Signed out, or following nobody yet: nothing to show, and no need to ask the server
+                if (followedIds.size === 0) {
+                    if (isRefresh) setVideos([]);
+                    setHasMore(false);
+                    return;
+                }
+            }
+
             // 1. Fetch videos - Increased range to fetch more in case many are filtered out
             let query = supabase
                 .from('videos')
                 .select('*');
+
+            if (type === 'following') {
+                query = query.in('user_id', Array.from(followedIds));
+            }
 
             if (sort === 'popular') {
                 query = query.order('likes', { ascending: false }); // Assuming 'likes' column exists (mapped from likes_count?) or use 'likes_count'
@@ -156,11 +193,26 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 query = query.eq('category', category);
             }
 
-            const { data: videoData, error: videoError } = await query
+            const { data: pageRows, error: videoError } = await query
                 .range(pageNum * 12, (pageNum + 1) * 12 - 1); // Load 12 at a time (optimized)
 
             if (videoError) throw videoError;
-            if (!videoData) return;
+            if (!pageRows) return;
+            let videoData = pageRows;
+
+            // The first page leads with the pinned video: fetched by id if it is not on the page,
+            // moved to the front if it is. After that the feed carries on as normal.
+            if (pinnedId && pageNum === 0) {
+                const onPage = videoData.find((v: any) => v.id === pinnedId);
+                let pinned = onPage;
+                if (!pinned) {
+                    const { data: one } = await supabase.from('videos').select('*').eq('id', pinnedId).maybeSingle();
+                    pinned = one || undefined;
+                }
+                if (pinned) videoData = [pinned, ...videoData.filter((v: any) => v.id !== pinnedId)];
+            } else if (pinnedId) {
+                videoData = videoData.filter((v: any) => v.id !== pinnedId);
+            }
 
             // 2. Parallelize dependent fetches (Profiles and Likes)
             const userIds = [...new Set(videoData.map((v: any) => v.user_id).filter(Boolean))];
@@ -288,7 +340,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
 
             const formattedVideos = videoData
                 .map((v: any) => {
-                    const formatted = formatVideo(v, profilesMap[v.user_id], likedVideoIds.has(v.id), savedVideoIds.has(v.id));
+                    const formatted = formatVideo(v, profilesMap[v.user_id], likedVideoIds.has(v.id), savedVideoIds.has(v.id), followedIds.has(v.user_id));
                     const videoUrl = v.url || v.s3_url;
                     if (videoUrl && videoLogicMap[videoUrl]) {
                         formatted.logicStats = videoLogicMap[videoUrl];
@@ -325,7 +377,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 // newest save first, as the ids came back (hasMore was set above)
                 formattedVideos.sort((a: Video, b: Video) => pageSavedIds!.indexOf(a.id) - pageSavedIds!.indexOf(b.id));
             } else {
-                setHasMore(videoData.length === 12);
+                setHasMore(pageRows.length === 12);
             }
 
             if (isRefresh) {
@@ -339,13 +391,23 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             setLoading(false);
             setRefreshing(false);
         }
-    }, [userId, searchQuery, hashtag, category, user, formatVideo, sort, savedBy, enabled]);
+    }, [type, userId, searchQuery, hashtag, category, user, authLoading, formatVideo, sort, savedBy, enabled, pinnedId]);
+
+    // A different feed (another tab, category or search) must not show the previous
+    // one while it loads; a new session or a refresh keeps what is on screen.
+    const feedKey = [type, userId, searchQuery, hashtag, category, sort, savedBy, pinnedId].join('|');
+    const lastFeedKey = useRef(feedKey);
 
     useEffect(() => {
-        // console.log('useVideos component mounted or dependencies changed.');
+        if (lastFeedKey.current !== feedKey) {
+            lastFeedKey.current = feedKey;
+            setVideos([]);
+            setHasMore(true);
+            setLoading(true);
+        }
         setPage(0);
         fetchVideos(0, true);
-    }, [type, userId, searchQuery, hashtag, category, user, fetchVideos]);
+    }, [feedKey, user, authLoading, fetchVideos]);
 
     const loadMore = () => {
         if (!loading && hasMore) {
@@ -364,39 +426,43 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     const toggleLike = async (videoId: string) => {
         if (!user) { promptSignIn('like videos'); return; }
 
-        const videoIndex = videos.findIndex(v => v.id === videoId);
-        if (videoIndex === -1) return;
+        const current = videos.find(v => v.id === videoId);
+        if (!current) return;
+        const wasLiked = current.isLiked;
 
-        const video = videos[videoIndex];
-        const wasLiked = video.isLiked;
-
-        // Optimistic update
-        const updatedVideos = [...videos];
-        updatedVideos[videoIndex] = {
-            ...video,
-            isLiked: !wasLiked,
-            likes: wasLiked ? Math.max(0, video.likes - 1) : video.likes + 1
-        };
-        setVideos(updatedVideos);
+        // Optimistic, and reverted from the latest list rather than a stale copy
+        const apply = (liked: boolean) => setVideos(prev => prev.map(v => v.id === videoId
+            ? { ...v, isLiked: liked, likes: liked ? v.likes + 1 : Math.max(0, v.likes - 1) }
+            : v));
+        apply(!wasLiked);
 
         try {
             if (!supabase) return;
             if (wasLiked) {
-                await supabase
+                const { error } = await supabase
                     .from('likes')
                     .delete()
                     .eq('user_id', user.id)
                     .eq('video_id', videoId);
+                if (error) throw error;
             } else {
-                await supabase
+                const { error } = await supabase
                     .from('likes')
                     .insert({ user_id: user.id, video_id: videoId });
+                if (error) throw error;
             }
         } catch (error) {
             console.error('Error toggling like:', error);
-            // Revert on error
-            setVideos(videos);
+            apply(wasLiked);
         }
+    };
+
+    /** Like without ever un-liking: what a double tap means. Returns whether anything changed. */
+    const likeOnly = (videoId: string) => {
+        const current = videos.find(v => v.id === videoId);
+        if (!current || current.isLiked) return false;
+        toggleLike(videoId);
+        return true;
     };
 
     const toggleSave = async (videoId: string) => {
@@ -437,29 +503,30 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
         if (user && user.id === userIdToFollow) return;
         if (!user) { promptSignIn('follow creators'); return; }
 
-        const isFollowing = videos.some(v => v.authorId === userIdToFollow && v.isFollowing);
-
-        // Optimistic update for all videos by this author
-        setVideos(prev => prev.map(v =>
-            v.authorId === userIdToFollow ? { ...v, isFollowing: !isFollowing } : v
+        const wasFollowing = videos.some(v => v.authorId === userIdToFollow && v.isFollowing);
+        const apply = (following: boolean) => setVideos(prev => prev.map(v =>
+            v.authorId === userIdToFollow ? { ...v, isFollowing: following } : v
         ));
+        apply(!wasFollowing);
 
         try {
             if (!supabase) return;
-            if (isFollowing) {
-                await supabase
+            if (wasFollowing) {
+                const { error } = await supabase
                     .from('follows')
                     .delete()
                     .eq('follower_id', user.id)
                     .eq('following_id', userIdToFollow);
+                if (error) throw error;
             } else {
-                await supabase
+                const { error } = await supabase
                     .from('follows')
                     .insert({ follower_id: user.id, following_id: userIdToFollow });
+                if (error) throw error;
             }
         } catch (error) {
             console.error('Error toggling follow:', error);
-            // Revert (harder to revert nested state, maybe just re-fetch or use a more robust state manager)
+            apply(wasFollowing);
         }
     };
 
@@ -471,6 +538,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
         loadMore,
         refresh,
         toggleLike,
+        likeOnly,
         toggleSave,
         toggleFollow,
     };
