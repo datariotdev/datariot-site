@@ -21,6 +21,7 @@ import { FONT, RADIUS, useUI } from '../../design-system/ui';
 import { Txt } from '../core/Txt';
 import { Avatar } from '../core/Avatar';
 import { Button } from '../core/Button';
+import { MAX_CONTENT_WIDTH } from '../../lib/constants/layout';
 
 interface CommentsModalProps {
     visible: boolean;
@@ -247,7 +248,7 @@ export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps)
 const styles = StyleSheet.create({
     modal: { flex: 1, justifyContent: 'flex-end' },
     backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
-    sheet: { height: '72%', borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, overflow: 'hidden' },
+    sheet: { height: '72%', width: '100%', maxWidth: MAX_CONTENT_WIDTH, alignSelf: 'center', borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, overflow: 'hidden' },
     handle: { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginTop: 10 },
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 14, paddingBottom: 14 },
     divider: { height: StyleSheet.hairlineWidth },

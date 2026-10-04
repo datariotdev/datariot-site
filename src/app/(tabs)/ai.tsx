@@ -5,6 +5,7 @@ import {
     TextInput,
     Pressable,
     FlatList,
+    ScrollView,
     Keyboard,
     KeyboardAvoidingView,
     Platform,
@@ -186,8 +187,13 @@ export default function AIScreen() {
             </View>
 
             {empty ? (
-                <View style={styles.emptyWrap}>
-                    <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}>
+                <ScrollView
+                    style={styles.emptyWrap}
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <View style={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 12 }}>
                         <View style={[styles.mark, { backgroundColor: c.surface, borderColor: c.hairline }]}>
                             <Ionicons name="sparkles" size={26} color={c.text} />
                         </View>
@@ -211,7 +217,7 @@ export default function AIScreen() {
                             </Pressable>
                         ))}
                     </View>
-                </View>
+                </ScrollView>
             ) : (
                 <FlatList
                     ref={listRef}

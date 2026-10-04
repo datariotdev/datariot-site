@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Video } from '../../lib/supabase/hooks/useVideos';
 import { formatCount } from '../../lib/utils/format';
+import { MAX_CONTENT_WIDTH } from '../../lib/constants/layout';
 import { pickPlaceholder } from '../Explore/PosterTile';
 import { Txt } from '../core/Txt';
 
@@ -53,7 +54,7 @@ function Tile({ video, size, onPress }: { video: Video; size: number; onPress: (
 /** Three across, hairline gaps, nothing but pictures. Rows are built by the caller so one list can scroll header and grid together. */
 export function GridRow({ videos, onOpen }: { videos: Video[]; onOpen: (video: Video) => void }) {
     const { width } = useWindowDimensions();
-    const size = (width - GAP * (COLUMNS - 1)) / COLUMNS;
+    const size = (Math.min(width, MAX_CONTENT_WIDTH) - GAP * (COLUMNS - 1)) / COLUMNS;
 
     return (
         <View style={styles.row}>

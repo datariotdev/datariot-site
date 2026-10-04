@@ -380,7 +380,7 @@ export default function DebateThreadScreen() {
                             ref={inputRef}
                             value={draft}
                             onChangeText={setDraft}
-                            placeholder={side ? 'Make your case' : 'Pick a side, then make your case'}
+                            placeholder={side ? 'Make your case' : 'Pick a side first'}
                             placeholderTextColor={c.textTertiary}
                             multiline
                             numberOfLines={1}

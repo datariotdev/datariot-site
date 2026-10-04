@@ -78,8 +78,10 @@ export default function EditorScreen() {
             <Stack.Screen options={{ headerShown: false }} />
             <StatusBar style="light" />
 
-            <Pressable onPress={toggle} style={StyleSheet.absoluteFill} accessibilityRole="button" accessibilityLabel={playing ? 'Pause' : 'Play'}>
+            <View pointerEvents="none" style={StyleSheet.absoluteFill}>
                 <VideoView player={player} style={{ flex: 1, width: '100%', height: '100%' }} contentFit="contain" nativeControls={false} />
+            </View>
+            <Pressable onPress={toggle} style={StyleSheet.absoluteFill} accessibilityRole="button" accessibilityLabel={playing ? 'Pause' : 'Play'}>
                 {!playing ? (
                     <View style={styles.center} pointerEvents="none">
                         <View style={styles.playDisc}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { VideoView, useVideoPlayer, VideoContentFit } from 'expo-video';
 import { useEventListener } from 'expo';
 import { encodeVideoUrl } from '../../lib/utils/url';
@@ -75,12 +75,15 @@ export function ImmersiveVideo({ url, playing, muted, progress, onReady, onFaile
     }, [playing, player, progress]);
 
     return (
-        <VideoView
-            player={player}
-            // width/height as well as absoluteFill: a browser's <video> keeps its own size otherwise
-            style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
-            contentFit={fit}
-            nativeControls={false}
-        />
+        // Taps belong to the pressable layer around this, not to the native video view
+        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+            <VideoView
+                player={player}
+                // width/height as well as absoluteFill: a browser's <video> keeps its own size otherwise
+                style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
+                contentFit={fit}
+                nativeControls={false}
+            />
+        </View>
     );
 }

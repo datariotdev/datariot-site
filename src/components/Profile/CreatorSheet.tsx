@@ -3,6 +3,7 @@ import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RADIUS, useUI } from '../../design-system/ui';
 import { Txt } from '../core/Txt';
+import { MAX_CONTENT_WIDTH } from '../../lib/constants/layout';
 
 export interface CreatorStats {
     memberSince?: string;
@@ -61,7 +62,7 @@ export function CreatorSheet({ visible, onClose, stats }: { visible: boolean; on
 const styles = StyleSheet.create({
     modal: { flex: 1, justifyContent: 'flex-end' },
     backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
-    sheet: { borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, paddingBottom: 12 },
+    sheet: { width: '100%', maxWidth: MAX_CONTENT_WIDTH, alignSelf: 'center', borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, paddingBottom: 12 },
     handle: { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginTop: 10 },
     head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', padding: 20, paddingBottom: 12 },
     row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 15, borderTopWidth: StyleSheet.hairlineWidth },

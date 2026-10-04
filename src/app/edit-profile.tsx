@@ -59,15 +59,19 @@ export default function EditProfileScreen() {
     // The values as loaded, to know whether there is anything to save
     const initial = useRef<Snapshot | null>(null);
 
+    // Keyed on the id, not the user object: a silent token refresh hands over a new object, and
+    // reloading then would wipe what the person has typed
+    const userId = user?.id;
+
     const getProfile = useCallback(async () => {
         try {
             setLoading(true);
-            if (!user) throw new Error('No user on the session!');
+            if (!userId) throw new Error('No user on the session!');
 
             const { data, error, status } = await supabase
                 .from('profiles')
                 .select('username, display_name, avatar_url, bio, banner_url')
-                .eq('id', user.id)
+                .eq('id', userId)
                 .single();
 
             if (error && status !== 406) throw error;
@@ -93,11 +97,11 @@ export default function EditProfileScreen() {
         } finally {
             setLoading(false);
         }
-    }, [user]);
+    }, [userId]);
 
     useEffect(() => {
-        if (user) getProfile();
-    }, [user, getProfile]);
+        if (userId) getProfile();
+    }, [userId, getProfile]);
 
     const uploading = uploadingAvatar || uploadingHeader;
     const was = initial.current;

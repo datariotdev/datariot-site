@@ -303,7 +303,9 @@ export default function PublishScreen() {
                         accessibilityLabel={previewPlaying ? 'Pause preview' : 'Play preview'}
                         style={[styles.preview, { borderColor: c.hairline }]}
                     >
-                        <VideoView player={player} style={{ width: '100%', height: '100%' }} contentFit="contain" nativeControls={false} />
+                        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+                            <VideoView player={player} style={{ width: '100%', height: '100%' }} contentFit="contain" nativeControls={false} />
+                        </View>
                         {!previewPlaying ? (
                             <View style={styles.previewCenter} pointerEvents="none">
                                 <View style={styles.playDisc}>

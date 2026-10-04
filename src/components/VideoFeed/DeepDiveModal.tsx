@@ -20,6 +20,7 @@ import { Txt } from '../core/Txt';
 import { RichText } from '../core/RichText';
 import { Skeleton } from '../core/Skeleton';
 import { Tabs } from '../core/Tabs';
+import { MAX_CONTENT_WIDTH } from '../../lib/constants/layout';
 
 interface DeepDiveModalProps {
     visible: boolean;
@@ -272,7 +273,7 @@ export function DeepDiveModal({ visible, video, onClose }: DeepDiveModalProps) {
 const styles = StyleSheet.create({
     modal: { flex: 1, justifyContent: 'flex-end' },
     backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
-    sheet: { height: '82%', borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, overflow: 'hidden' },
+    sheet: { height: '82%', width: '100%', maxWidth: MAX_CONTENT_WIDTH, alignSelf: 'center', borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, overflow: 'hidden' },
     handle: { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginTop: 10 },
     header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 6 },
     mark: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
