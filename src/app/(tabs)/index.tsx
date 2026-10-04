@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
 import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
-import { useRouter } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { useTheme } from '../../components/Theme/ThemeProvider';
@@ -36,7 +35,6 @@ const TICKER_ITEMS = [
 ];
 
 const DesktopHome = () => {
-    const router = useRouter();
     const isFocused = useIsFocused();
     const insets = useSafeAreaInsets();
     const [activeTab, setActiveTab] = useState<FeedType>('trending');

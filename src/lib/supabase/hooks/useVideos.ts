@@ -3,6 +3,7 @@ import { supabase } from '../client';
 import { useAuth } from './useAuth';
 import { encodeVideoUrl } from '../../utils/url';
 import { promptSignIn } from '../../utils/promptSignIn';
+import { cleanSearch } from './useSearchProfiles';
 
 export interface Video {
     id: string;
@@ -185,8 +186,9 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             if (hashtag) {
                 // Assuming hashtag is stored in description or a separate array
                 query = query.textSearch('description', `'${hashtag}'`);
-            } else if (searchQuery) {
-                query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+            } else if (searchQuery && cleanSearch(searchQuery)) {
+                const q = cleanSearch(searchQuery);
+                query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
             }
 
             if (category) {

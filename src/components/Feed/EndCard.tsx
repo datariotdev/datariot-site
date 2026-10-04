@@ -12,7 +12,7 @@ export function EndCard({ onExplore, onRefresh }: { onExplore: () => void; onRef
             <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: ON_VIDEO.glass, alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
                 <Ionicons name="checkmark" size={28} color="#FFFFFF" />
             </View>
-            <Txt variant="title" tone="onVideo" style={{ textAlign: 'center' }}>You're all caught up</Txt>
+            <Txt variant="title" tone="onVideo" style={{ textAlign: 'center' }}>You&apos;re all caught up</Txt>
             <Txt variant="body" tone="onVideoDim" style={{ textAlign: 'center', marginTop: 6 }}>
                 That was everything for now. Find more in Explore, or check back soon.
             </Txt>

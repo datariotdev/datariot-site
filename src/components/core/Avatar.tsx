@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { FONT, useUI } from '../../design-system/ui';
-import { Text } from 'react-native';
 
 interface AvatarProps {
     uri?: string | null;

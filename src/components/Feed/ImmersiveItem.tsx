@@ -96,7 +96,6 @@ function HeartBurst({ burst }: { burst: { id: number; x: number; y: number } | n
 
 function ImmersiveItemBase({ video, width, height, bottomInset, active, near, focused, autoplay, muted, isOwn, handlers }: ImmersiveItemProps) {
     const [userPaused, setUserPaused] = useState(!autoplay);
-    const [ready, setReady] = useState(false);
     const [failed, setFailed] = useState(false);
     const [retryKey, setRetryKey] = useState(0);
     const [expanded, setExpanded] = useState(false);
@@ -121,7 +120,6 @@ function ImmersiveItemBase({ video, width, height, bottomInset, active, near, fo
     // Out of the window, the player is gone: the poster has to cover again
     useEffect(() => {
         if (!near) {
-            setReady(false);
             posterOpacity.setValue(1);
         }
     }, [near, posterOpacity]);
@@ -129,7 +127,6 @@ function ImmersiveItemBase({ video, width, height, bottomInset, active, near, fo
     useEffect(() => () => { if (singleTap.current) clearTimeout(singleTap.current); }, []);
 
     const handleReady = useCallback(() => {
-        setReady(true);
         Animated.timing(posterOpacity, { toValue: 0, duration: 180, useNativeDriver: true }).start();
     }, [posterOpacity]);
 
@@ -137,7 +134,6 @@ function ImmersiveItemBase({ video, width, height, bottomInset, active, near, fo
 
     const retry = () => {
         setFailed(false);
-        setReady(false);
         posterOpacity.setValue(1);
         setRetryKey(k => k + 1);
     };
@@ -211,7 +207,7 @@ function ImmersiveItemBase({ video, width, height, bottomInset, active, near, fo
             {failed ? (
                 <View style={styles.centerWrap}>
                     <Ionicons name="cloud-offline-outline" size={30} color="#FFFFFF" />
-                    <Txt variant="bodyStrong" tone="onVideo" style={{ marginTop: 10 }}>Couldn't load this video</Txt>
+                    <Txt variant="bodyStrong" tone="onVideo" style={{ marginTop: 10 }}>Couldn&apos;t load this video</Txt>
                     <Pressable onPress={retry} accessibilityRole="button" style={styles.retry}>
                         <Txt variant="callout" style={{ color: INK }}>Try again</Txt>
                     </Pressable>

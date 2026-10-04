@@ -1,8 +1,7 @@
 import React from 'react';
 import { StyleProp, TextStyle, View } from 'react-native';
-import { FONT } from '../../design-system/ui';
+import { FONT, TypeVariant } from '../../design-system/ui';
 import { Txt, Tone } from './Txt';
-import { TypeVariant } from '../../design-system/ui';
 
 interface RichTextProps {
     children: string;

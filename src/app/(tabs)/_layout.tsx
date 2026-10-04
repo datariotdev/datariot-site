@@ -148,7 +148,7 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="profile"
                     options={{
-                        href: null, // Reached from the avatar on Home and from Messages; not a tab of its own
+                        href: null, // Reached from the avatar on Home, from a creator's name and from Settings; not a tab of its own
                     }}
                 />
             </Tabs>

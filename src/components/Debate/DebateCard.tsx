@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
+import { View, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming, withSpring } from 'react-native-reanimated';
-import { useTheme } from '../Theme/ThemeProvider';
 import { Post } from '@lib/supabase/hooks/usePosts';
+import { RADIUS, useUI } from '../../design-system/ui';
+import { formatCount, timeAgo } from '../../lib/utils/format';
+import { Avatar } from '../core/Avatar';
+import { Txt } from '../core/Txt';
 
 interface DebateCardProps {
     item: Post;
@@ -12,160 +14,81 @@ interface DebateCardProps {
     isOwnPost?: boolean;
 }
 
+/** A debate in a list: who put the thesis, the thesis, which side is ahead, and how many have weighed in. */
 export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardProps) {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
-    const deleteScale = useSharedValue(1);
+    const { c } = useUI();
 
-    const handleDeletePress = () => {
-        deleteScale.value = withSequence(
-            withTiming(1.2, { duration: 100 }),
-            withSpring(1)
-        );
-        if (onDelete) onDelete(item.id);
-    };
-
-    const animatedDeleteStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: deleteScale.value }]
-    }));
-
-    // The Logic Score is currently stored in "likes"
-    const threadWeight = item.likes;
-    const argumentsCount = item.comments;
+    const stats = item.logicStats;
+    const voted = !!stats && stats.forScore + stats.againstScore > 0;
+    const forPct = voted ? Math.round(stats!.forPercentage) : 50;
+    const when = timeAgo(item.createdAt);
 
     return (
         <Pressable
             onPress={onPress}
+            accessibilityRole="button"
             style={({ pressed }) => [
                 styles.card,
-                {
-                    backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                },
-                pressed && { opacity: 0.8 }
+                { backgroundColor: c.surface, borderColor: c.hairline },
+                pressed && { opacity: 0.8 },
             ]}
         >
-            <View style={styles.header}>
-                <View style={styles.authorRow}>
-                    <View style={[styles.avatar, { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }]}>
-                        {item.authorAvatar ? (
-                            <Image source={{ uri: item.authorAvatar }} style={styles.avatarImage} />
-                        ) : (
-                            <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>
-                                {item.authorName ? item.authorName[0].toUpperCase() : '?'}
-                            </Text>
-                        )}
-                    </View>
-                    <View style={styles.authorInfo}>
-                        <Text style={[styles.authorName, { color: theme.colors.text.primary }]}>{item.authorName}</Text>
-                        <Text style={[styles.date, { color: theme.colors.text.muted }]}>
-                            {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </Text>
-                    </View>
+            <View style={styles.head}>
+                <Avatar uri={item.authorAvatar} name={item.authorName} size={34} />
+                <View style={{ flex: 1 }}>
+                    <Txt variant="callout" numberOfLines={1}>{item.authorName}</Txt>
+                    {when ? <Txt variant="caption" tone="tertiary">{when}</Txt> : null}
                 </View>
 
-                {item.isAiAssisted && (
-                    <View style={[styles.aiBadge, { backgroundColor: theme.colors.primary.DEFAULT }]}>
-                        <Ionicons name="sparkles" size={12} color="#FFF" />
-                        <Text style={[styles.aiBadgeText, { color: '#FFF' }]}>LOGIC ORACLE</Text>
+                {item.isAiAssisted ? (
+                    <View style={[styles.badge, { backgroundColor: c.surfaceHigh }]}>
+                        <Ionicons name="sparkles" size={11} color={c.textSecondary} />
+                        <Txt variant="micro" tone="secondary">Checked by Orvelis</Txt>
                     </View>
-                )}
+                ) : null}
 
-                {isOwnPost && onDelete && (
-                    <Pressable
-                        onPress={handleDeletePress}
-                        style={({ pressed }) => ([
-                            styles.deleteButton,
-                            { backgroundColor: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.1)' },
-                            pressed && { opacity: 0.7 }
-                        ])}
-                    >
-                        <Animated.View style={animatedDeleteStyle}>
-                            <Ionicons name="trash-bin-outline" size={18} color="#EF4444" />
-                        </Animated.View>
+                {isOwnPost && onDelete ? (
+                    <Pressable onPress={() => onDelete(item.id)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Delete debate">
+                        <Ionicons name="trash-outline" size={18} color={c.danger} />
                     </Pressable>
-                )}
+                ) : null}
             </View>
 
             <View style={styles.body}>
-                <View style={styles.bodyContentRow}>
-                    <View style={styles.textContent}>
-                        <View style={[styles.thesisBadge, { backgroundColor: isDark ? 'rgba(0, 102, 255, 0.15)' : 'rgba(0, 102, 255, 0.1)' }]}>
-                            <Text style={[styles.thesisBadgeText, { color: theme.colors.primary.DEFAULT }]}>THESIS</Text>
-                        </View>
-                        <Text style={[styles.content, { color: theme.colors.text.primary }]} numberOfLines={3}>
-                            {item.content}
-                        </Text>
+                <Txt variant="headline" numberOfLines={4} style={{ flex: 1 }}>{item.content}</Txt>
+                {item.imageUrl ? (
+                    <View style={styles.thumbWrap}>
+                        <Image source={{ uri: item.imageUrl }} style={styles.thumb} />
+                        {item.videoUrl ? (
+                            <View style={styles.play}>
+                                <Ionicons name="play" size={13} color="#FFFFFF" />
+                            </View>
+                        ) : null}
                     </View>
-
-                    {(item.videoUrl || item.imageUrl) && (
-                        <View style={styles.mediaPreview}>
-                            <Image
-                                source={{ uri: item.imageUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&q=80' }}
-                                style={styles.thumbnail}
-                            />
-                            {item.videoUrl && (
-                                <View style={styles.videoIconOverlay}>
-                                    <Ionicons name="play" size={16} color="#FFFFFF" />
-                                </View>
-                            )}
-                        </View>
-                    )}
-                </View>
-
-                {/* Logic Balance Bar */}
-                {item.logicStats && (
-                    <View style={styles.logicBalanceContainer}>
-                        <View style={styles.logicLabels}>
-                            <Text style={styles.logicLabelText}>FOR</Text>
-                            <Text style={[styles.logicLabelText, { textAlign: 'right' }]}>AGAINST</Text>
-                        </View>
-                        <View style={styles.balanceTrack}>
-                            <View
-                                style={[
-                                    styles.balanceFill,
-                                    {
-                                        width: `${item.logicStats.forPercentage}%`,
-                                        backgroundColor: '#00C853'
-                                    }
-                                ]}
-                            />
-                            <View
-                                style={[
-                                    styles.balanceFill,
-                                    {
-                                        width: `${100 - item.logicStats.forPercentage}%`,
-                                        backgroundColor: '#D50000'
-                                    }
-                                ]}
-                            />
-                        </View>
-                        <View style={styles.logicScores}>
-                            <Text style={[styles.logicScoreText, { color: theme.colors.primary.DEFAULT }]}>{item.logicStats.forScore}</Text>
-                            <Text style={[styles.logicScoreText, { textAlign: 'right', color: theme.colors.primary.DEFAULT }]}>{item.logicStats.againstScore}</Text>
-                        </View>
-                    </View>
-                )}
+                ) : null}
             </View>
 
-            <View style={styles.footer}>
-                <View style={styles.statGroup}>
-                    <Ionicons name="bulb-outline" size={18} color={theme.colors.primary.DEFAULT} />
-                    <Text style={[styles.statText, { color: theme.colors.text.secondary }]}>
-                        <Text style={{ fontWeight: 'bold', color: theme.colors.text.primary }}>{threadWeight}</Text> Reputation
-                    </Text>
+            <View style={{ gap: 8, marginTop: 14 }}>
+                <View style={[styles.track, { backgroundColor: c.surfaceHigh }]}>
+                    {voted ? <View style={[styles.fill, { width: `${forPct}%`, backgroundColor: c.accent }]} /> : null}
                 </View>
-
-                <View style={styles.statGroup}>
-                    <Ionicons name="chatbubbles-outline" size={18} color={theme.colors.text.secondary} />
-                    <Text style={[styles.statText, { color: theme.colors.text.secondary }]}>
-                        <Text style={{ fontWeight: 'bold', color: theme.colors.text.primary }}>{argumentsCount}</Text> Arguments
-                    </Text>
+                <View style={styles.sideRow}>
+                    <Txt variant="caption" tone={voted ? 'primary' : 'tertiary'}>{voted ? `For ${forPct}%` : 'No votes yet'}</Txt>
+                    {voted ? <Txt variant="caption" tone="secondary">Against {100 - forPct}%</Txt> : null}
                 </View>
+            </View>
 
-                <View style={styles.flexSpacer} />
-
-                <Ionicons name="chevron-forward" size={20} color={theme.colors.text.muted} />
+            <View style={[styles.foot, { borderTopColor: c.hairline }]}>
+                <View style={styles.stat}>
+                    <Ionicons name="chatbubbles-outline" size={16} color={c.textSecondary} />
+                    <Txt variant="caption" tone="secondary">{formatCount(item.comments)} {item.comments === 1 ? 'argument' : 'arguments'}</Txt>
+                </View>
+                <View style={styles.stat}>
+                    <Ionicons name={item.isLiked ? 'heart' : 'heart-outline'} size={16} color={item.isLiked ? c.like : c.textSecondary} />
+                    <Txt variant="caption" tone="secondary">{formatCount(item.likes)}</Txt>
+                </View>
+                <View style={{ flex: 1 }} />
+                <Ionicons name="chevron-forward" size={18} color={c.textTertiary} />
             </View>
         </Pressable>
     );
@@ -173,181 +96,26 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
 
 const styles = StyleSheet.create({
     card: {
-        marginBottom: 16,
-        borderRadius: 24,
         marginHorizontal: 16,
-        padding: 4,
+        marginBottom: 12,
+        padding: 16,
+        borderRadius: RADIUS.lg,
         borderWidth: 1,
-        // Shadow for depth
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-        elevation: 5,
     },
-    header: {
-        flexDirection: 'row',
+    head: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+    badge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, height: 22, borderRadius: 11 },
+    body: { flexDirection: 'row', gap: 14, alignItems: 'flex-start' },
+    thumbWrap: { width: 64, height: 64, borderRadius: 12, overflow: 'hidden' },
+    thumb: { width: '100%', height: '100%' },
+    play: {
+        ...StyleSheet.absoluteFillObject,
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: 12,
-        paddingBottom: 8,
-    },
-    authorRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        borderWidth: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
+        backgroundColor: 'rgba(0,0,0,0.28)',
     },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 20,
-    },
-    avatarText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    authorInfo: {
-        marginLeft: 12,
-        justifyContent: 'center'
-    },
-    authorName: {
-        fontWeight: '700',
-        fontSize: 16,
-        marginBottom: 2,
-    },
-    date: {
-        fontSize: 12,
-        fontWeight: '500',
-    },
-    deleteButton: {
-        padding: 8,
-        borderRadius: 20,
-    },
-    body: {
-        paddingHorizontal: 16,
-        paddingBottom: 16,
-    },
-    thesisBadge: {
-        alignSelf: 'flex-start',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    thesisBadgeText: {
-        fontSize: 10,
-        fontWeight: '900',
-        letterSpacing: 1,
-    },
-    content: {
-        fontSize: 16,
-        lineHeight: 24,
-        fontWeight: '500',
-    },
-    footer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(128,128,128,0.1)',
-        gap: 16,
-    },
-    statGroup: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-    },
-    statText: {
-        fontSize: 13,
-    },
-    flexSpacer: {
-        flex: 1,
-    },
-    // New Styles
-    bodyContentRow: {
-        flexDirection: 'row',
-        gap: 12,
-        marginBottom: 16,
-    },
-    textContent: {
-        flex: 1,
-    },
-    mediaPreview: {
-        width: 80,
-        height: 100,
-        borderRadius: 12,
-        overflow: 'hidden',
-        backgroundColor: 'rgba(0,0,0,0.1)',
-        position: 'relative',
-    },
-    thumbnail: {
-        width: '100%',
-        height: '100%',
-    },
-    videoIconOverlay: {
-        position: 'absolute',
-        top: 4,
-        right: 4,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        borderRadius: 10,
-        padding: 4,
-    },
-    logicBalanceContainer: {
-        marginVertical: 4,
-    },
-    logicLabels: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 4,
-    },
-    logicLabelText: {
-        fontSize: 10,
-        fontWeight: '900',
-        color: 'rgba(255,255,255,0.4)',
-    },
-    balanceTrack: {
-        height: 6,
-        borderRadius: 3,
-        flexDirection: 'row',
-        overflow: 'hidden',
-        backgroundColor: 'rgba(255,255,255,0.05)',
-    },
-    balanceFill: {
-        height: '100%',
-    },
-    logicScores: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 4,
-    },
-    logicScoreText: {
-        fontSize: 11,
-        fontWeight: '700',
-        color: '#D9E4FF',
-    },
-    aiBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#D9E4FF',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
-        gap: 4,
-    },
-    aiBadgeText: {
-        fontSize: 9,
-        fontWeight: '900',
-        color: '#000',
-        letterSpacing: 0.5,
-    },
+    track: { height: 5, borderRadius: 3, overflow: 'hidden', flexDirection: 'row' },
+    fill: { height: 5, borderRadius: 3 },
+    sideRow: { flexDirection: 'row', justifyContent: 'space-between' },
+    foot: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 14, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth },
+    stat: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

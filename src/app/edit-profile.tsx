@@ -1,48 +1,63 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
-    TextInput,
     Pressable,
     Image,
-    Alert,
     ActivityIndicator,
     ScrollView,
     KeyboardAvoidingView,
-    Platform
+    Platform,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from '@components/UI/SafeAreaView';
-import { theme } from '@design-system/theme';
+import { useRouter, Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { supabase } from '@lib/supabase/client';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
+import { ON_VIDEO, useUI } from '../design-system/ui';
+import { Txt } from '../components/core/Txt';
+import { Avatar } from '../components/core/Avatar';
+import { Button } from '../components/core/Button';
+import { Field } from '../components/core/Field';
+import { notify, confirmAction } from '../lib/utils/dialogs';
 
-export default function Page() {
+const BIO_MAX = 200;
+
+interface Snapshot {
+    username: string;
+    displayName: string;
+    bio: string;
+    avatarUrl: string | null;
+    headerUrl: string | null;
+}
+
+export default function EditProfileScreen() {
     const router = useRouter();
     const { user } = useAuth();
+    const insets = useSafeAreaInsets();
+    const { c, isDark } = useUI();
+
     const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingHeader, setUploadingHeader] = useState(false);
-
-    // Log states for debugging
-    console.log('EditProfile states:', { loading, uploadingAvatar, uploadingHeader });
 
     const [username, setUsername] = useState('');
     const [displayName, setDisplayName] = useState('');
     const [bio, setBio] = useState('');
 
-    // Preview states (can be local URIs or remote URLs)
+    // What the screen shows (a local file right after picking) vs what gets saved (always a remote URL)
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [headerPreview, setHeaderPreview] = useState<string | null>(null);
-
-    // Final URLs (must be remote URLs for saving to DB)
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [headerUrl, setHeaderUrl] = useState<string | null>(null);
+
+    // The values as loaded, to know whether there is anything to save
+    const initial = useRef<Snapshot | null>(null);
 
     const getProfile = useCallback(async () => {
         try {
@@ -55,9 +70,7 @@ export default function Page() {
                 .eq('id', user.id)
                 .single();
 
-            if (error && status !== 406) {
-                throw error;
-            }
+            if (error && status !== 406) throw error;
 
             if (data) {
                 setUsername(data.username || '');
@@ -67,51 +80,50 @@ export default function Page() {
                 setBio(data.bio || '');
                 setHeaderUrl(data.banner_url);
                 setHeaderPreview(data.banner_url);
+                initial.current = {
+                    username: data.username || '',
+                    displayName: data.display_name || '',
+                    bio: data.bio || '',
+                    avatarUrl: data.avatar_url ?? null,
+                    headerUrl: data.banner_url ?? null,
+                };
             }
         } catch (error) {
-            if (error instanceof Error) {
-                Alert.alert('Error', error.message);
-            }
+            if (error instanceof Error) notify('Could not load your profile', error.message);
         } finally {
             setLoading(false);
         }
     }, [user]);
 
     useEffect(() => {
-        if (user) {
-            getProfile();
-        }
+        if (user) getProfile();
     }, [user, getProfile]);
 
+    const uploading = uploadingAvatar || uploadingHeader;
+    const was = initial.current;
+    const dirty = !!was && (
+        username.trim() !== was.username ||
+        displayName.trim() !== was.displayName ||
+        bio.trim() !== was.bio ||
+        (avatarUrl ?? null) !== was.avatarUrl ||
+        (headerUrl ?? null) !== was.headerUrl
+    );
+    const valid = username.trim().length >= 2;
+    const canSave = dirty && valid && !uploading && !saving && !loading;
+
     const updateProfile = async () => {
-        console.log('Update profile triggered');
-        if (uploadingAvatar || uploadingHeader) {
-            Alert.alert('Please wait', 'Images are still uploading...');
+        if (uploading) {
+            notify('One moment', 'Your photo is still uploading.');
             return;
         }
 
         try {
-            setLoading(true);
+            setSaving(true);
             if (!user) throw new Error('No user found');
 
-            // Ensure we are using the remote URL if available, otherwise fallback to existing
-            // If headerUrl is null, it might mean no change or upload finished but state lagged? 
-            // Actually, uploadImage sets headerUrl directly.
-            // But if user didn't change it, headerUrl starts as null unless we initialized it.
-            // Wait, we initialize headerUrl in getProfile.
-
-            // Logic:
-            // 1. If we have a new remote URL from upload (headerUrl), use it.
-            // 2. If we haven't uploaded a new one, we should use the one from getProfile.
-            // Problem: In getProfile we set headerUrl to data.banner_url.
-            // So headerUrl should hold the current remote URL.
-            // Unless... uploadImage failed?
-
-            // Let's use a robust selection:
+            // Only remote URLs go to the database; a local file path means the upload has not finished
             const finalAvatarUrl = avatarUrl && avatarUrl.startsWith('http') ? avatarUrl : (avatarPreview && avatarPreview.startsWith('http') ? avatarPreview : null);
             const finalHeaderUrl = headerUrl && headerUrl.startsWith('http') ? headerUrl : (headerPreview && headerPreview.startsWith('http') ? headerPreview : null);
-
-            console.log('Final URLs for save:', { finalAvatarUrl, finalHeaderUrl });
 
             const updates = {
                 id: user.id,
@@ -123,37 +135,23 @@ export default function Page() {
                 updated_at: new Date().toISOString(),
             };
 
-            console.log('Upserting profile with:', updates);
-
-            const { error } = await supabase
-                .from('profiles')
-                .upsert(updates);
+            const { error } = await supabase.from('profiles').upsert(updates);
 
             if (error) {
-                // Check for missing column error (PostgREST code PGRST204 is common for schema cache issues, 
-                // but sometimes it's 42703 'undefined_column' in the message details)
+                // A project without the bio / banner columns still gets the name and photo saved
                 if (error.code === 'PGRST204' || error.message.includes('Could not find the') || error.message.includes('column')) {
                     console.warn('Schema mismatch detected. Attempting partial save...');
 
-                    // Fallback: Save only standard columns
-                    const standardUpdates = {
+                    const { error: fallbackError } = await supabase.from('profiles').upsert({
                         id: user.id,
                         username: username.trim(),
                         display_name: displayName.trim(),
                         avatar_url: finalAvatarUrl,
                         updated_at: new Date().toISOString(),
-                    };
-
-                    const { error: fallbackError } = await supabase
-                        .from('profiles')
-                        .upsert(standardUpdates);
-
+                    });
                     if (fallbackError) throw fallbackError;
 
-                    Alert.alert(
-                        'Saved (Partial)',
-                        'Profile name and avatar saved. Bio and Header could not be saved because the database schema is missing those columns. Please run the SQL script to fix this.'
-                    );
+                    notify('Mostly saved', 'Your name and photo are saved. The bio and banner could not be, because the database does not have those fields yet.');
                     router.back();
                     return;
                 }
@@ -162,15 +160,12 @@ export default function Page() {
                 throw error;
             }
 
-            console.log('Profile updated successfully');
-            Alert.alert('Success', 'Profile updated!', [
-                { text: 'OK', onPress: () => router.back() }
-            ]);
+            // The profile page reloads itself when it comes back into view
+            router.back();
         } catch {
-            Alert.alert('Error', 'Failed to update profile');
+            notify('Could not save', 'Check your connection and try again.');
         } finally {
-            setLoading(false);
-            console.log('Update profile attempt finished');
+            setSaving(false);
         }
     };
 
@@ -185,47 +180,38 @@ export default function Page() {
 
             if (!result.canceled && result.assets[0].uri) {
                 const localUri = result.assets[0].uri;
-
-                // Set preview immediately
-                if (type === 'avatar') {
-                    setAvatarPreview(localUri);
-                } else {
-                    setHeaderPreview(localUri);
-                }
-
+                if (type === 'avatar') setAvatarPreview(localUri);
+                else setHeaderPreview(localUri);
                 uploadImage(localUri, type);
             }
         } catch {
-            Alert.alert('Error', 'Error picking image');
+            notify('Could not open your photos', 'Allow access to your library in Settings and try again.');
         }
     };
 
-
-
     const uploadImage = async (uri: string, type: 'avatar' | 'header') => {
         const setUploading = type === 'avatar' ? setUploadingAvatar : setUploadingHeader;
+        // Put the old picture back if this one never makes it up
+        const restore = () => {
+            if (type === 'avatar') setAvatarPreview(avatarUrl);
+            else setHeaderPreview(headerUrl);
+        };
         try {
             setUploading(true);
             if (!user) return;
 
             const ext = uri.split('.').pop() || 'png';
-            const fileName = `${user.id}/${type}_${Date.now()}.${ext}`;
-            const filePath = fileName;
-
+            const filePath = `${user.id}/${type}_${Date.now()}.${ext}`;
             const bucketName = 'avatars';
 
-            console.log('Reading file (base64):', uri);
-            const base64 = await FileSystem.readAsStringAsync(uri, {
-                encoding: 'base64',
-            });
+            const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
             const arrayBuffer = decode(base64);
-            console.log('File size (bytes):', arrayBuffer.byteLength);
 
             const { error: uploadError } = await supabase.storage
                 .from(bucketName)
                 .upload(filePath, arrayBuffer, {
                     contentType: `image/${ext === 'jpeg' ? 'jpeg' : ext}`,
-                    upsert: true
+                    upsert: true,
                 });
 
             if (uploadError) {
@@ -238,283 +224,109 @@ export default function Page() {
             const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
 
             if (data?.publicUrl) {
-                if (type === 'avatar') {
-                    console.log('Setting avatar URL:', data.publicUrl);
-                    setAvatarUrl(data.publicUrl);
-                } else {
-                    console.log('Setting header URL:', data.publicUrl);
-                    setHeaderUrl(data.publicUrl);
-                }
+                if (type === 'avatar') setAvatarUrl(data.publicUrl);
+                else setHeaderUrl(data.publicUrl);
             } else {
-                console.warn('GetPublicUrl returned no data');
+                restore();
             }
         } catch (error) {
             console.error('Upload error:', error);
-            if (error instanceof Error) {
-                Alert.alert('Upload Error', error.message);
-            }
+            restore();
+            notify('Photo not uploaded', error instanceof Error ? error.message : 'Try a different photo.');
         } finally {
             setUploading(false);
         }
     };
 
-    const monoFont = { fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' };
+    const close = async () => {
+        if (!dirty || await confirmAction('Discard your changes?', { confirmLabel: 'Discard', cancelLabel: 'Keep editing', destructive: true })) router.back();
+    };
+
+    const name = displayName || username || user?.email?.split('@')[0] || '';
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Pressable onPress={() => router.back()} style={styles.cancelButton}>
-                    <Text style={[styles.cancelText, monoFont]}>[ CANCEL ]</Text>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { backgroundColor: c.bg }]}>
+            <Stack.Screen options={{ headerShown: false }} />
+            <StatusBar style={isDark ? 'light' : 'dark'} />
+
+            <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+                <Pressable onPress={close} hitSlop={10} accessibilityRole="button" accessibilityLabel="Cancel" style={styles.side}>
+                    <Txt variant="body" tone="secondary">Cancel</Txt>
                 </Pressable>
-                <Text style={[styles.headerTitle, monoFont]}>[ EDIT PROFILE ]</Text>
-                <Pressable
-                    onPress={updateProfile}
-                    style={[styles.saveButton, loading && styles.disabledButton]}
-                    disabled={loading}
-                >
-                    {(loading || uploadingAvatar || uploadingHeader) ? (
-                        <ActivityIndicator color="white" size="small" />
-                    ) : (
-                        <Text style={[styles.saveText, monoFont]}>[ SAVE ]</Text>
-                    )}
-                </Pressable>
+                <Txt variant="headline">Edit profile</Txt>
+                <View style={[styles.side, { alignItems: 'flex-end' }]}>
+                    <Button label="Save" size="sm" onPress={updateProfile} loading={saving} disabled={!canSave} />
+                </View>
             </View>
 
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={{ flex: 1 }}
-            >
-                <ScrollView contentContainerStyle={styles.content}>
-                    {/* Header Image Section */}
-                    <View style={styles.headerImageSection}>
-                        <Pressable onPress={() => pickImage('header')} style={styles.headerImageContainer} disabled={uploadingHeader}>
-                            {headerPreview ? (
-                                <View style={{ flex: 1 }}>
-                                    <Image source={{ uri: headerPreview }} style={styles.headerImage} />
-                                    {uploadingHeader && (
-                                        <View style={[StyleSheet.absoluteFill, styles.imageLoadingOverlay]}>
-                                            <ActivityIndicator color="white" />
-                                        </View>
-                                    )}
-                                </View>
-                            ) : (
-                                <View style={[styles.headerImage, styles.placeholderHeader]}>
-                                    <Ionicons name="image-outline" size={40} color="rgba(255,255,255,0.5)" />
-                                </View>
-                            )}
-                            <View style={styles.editIconOverlay}>
-                                <Ionicons name="camera" size={20} color="white" />
-                            </View>
-                        </Pressable>
-                    </View>
-
-                    {/* Avatar Section - Overlapping Header */}
-                    <View style={styles.avatarSection}>
-                        <Pressable onPress={() => pickImage('avatar')} style={styles.avatarContainer} disabled={uploadingAvatar}>
-                            <View>
-                                {avatarPreview ? (
-                                    <Image source={{ uri: avatarPreview }} style={styles.avatar} />
-                                ) : (
-                                    <View style={[styles.avatar, styles.placeholderAvatar]}>
-                                        <Text style={[styles.avatarPlaceholderText, monoFont]}>
-                                            {displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
-                                        </Text>
-                                    </View>
-                                )}
-                                {uploadingAvatar && (
-                                    <View style={[styles.avatar, styles.imageLoadingOverlay, { position: 'absolute' }]}>
-                                        <ActivityIndicator color="white" />
-                                    </View>
-                                )}
-                            </View>
-                            <View style={styles.editAvatarOverlay}>
-                                <Ionicons name="camera" size={16} color="white" />
-                            </View>
-                        </Pressable>
-                    </View>
-
-                    {/* Form Fields */}
-                    <View style={styles.form}>
-                        <View style={styles.inputGroup}>
-                            <Text style={[styles.label, monoFont]}>&gt; DISPLAY NAME</Text>
-                            <TextInput
-                                style={[styles.input, monoFont]}
-                                value={displayName}
-                                onChangeText={setDisplayName}
-                                placeholder="Enter display name"
-                                placeholderTextColor={theme.colors.text.secondary}
-                            />
+            <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 40 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+                {/* Banner */}
+                <Pressable
+                    onPress={() => pickImage('header')}
+                    disabled={uploadingHeader}
+                    accessibilityRole="button"
+                    accessibilityLabel="Change banner"
+                    style={[styles.banner, { backgroundColor: c.surface }]}
+                >
+                    {headerPreview ? <Image source={{ uri: headerPreview }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+                    {uploadingHeader ? (
+                        <View style={[StyleSheet.absoluteFill, styles.dim]}><ActivityIndicator color="#FFFFFF" /></View>
+                    ) : (
+                        <View style={[styles.badge, { backgroundColor: ON_VIDEO.glassStrong, right: 12, bottom: 12 }]}>
+                            <Ionicons name="camera-outline" size={18} color="#FFFFFF" />
                         </View>
+                    )}
+                </Pressable>
 
-                        <View style={styles.inputGroup}>
-                            <Text style={[styles.label, monoFont]}>&gt; USERNAME</Text>
-                            <TextInput
-                                style={[styles.input, monoFont]}
-                                value={username}
-                                onChangeText={setUsername}
-                                placeholder="Enter username"
-                                placeholderTextColor={theme.colors.text.secondary}
-                                autoCapitalize="none"
-                            />
-                        </View>
+                {/* Photo, overlapping the banner */}
+                <View style={styles.avatarRow}>
+                    <Pressable onPress={() => pickImage('avatar')} disabled={uploadingAvatar} accessibilityRole="button" accessibilityLabel="Change photo" style={{ alignSelf: 'flex-start' }}>
+                        <Avatar uri={avatarPreview} name={name} size={92} style={{ borderWidth: 4, borderColor: c.bg }} />
+                        {uploadingAvatar ? (
+                            <View style={[styles.avatarDim]}><ActivityIndicator color="#FFFFFF" /></View>
+                        ) : (
+                            <View style={[styles.badge, { backgroundColor: c.accent, right: -2, bottom: -2, width: 30, height: 30, borderRadius: 15, borderWidth: 3, borderColor: c.bg }]}>
+                                <Ionicons name="camera" size={14} color={c.onAccent} />
+                            </View>
+                        )}
+                    </Pressable>
+                </View>
 
-                        <View style={styles.inputGroup}>
-                            <Text style={[styles.label, monoFont]}>&gt; BIO</Text>
-                            <TextInput
-                                style={[styles.input, styles.textArea, monoFont]}
-                                value={bio}
-                                onChangeText={setBio}
-                                placeholder="Write something about yourself..."
-                                placeholderTextColor={theme.colors.text.secondary}
-                                multiline
-                                numberOfLines={4}
-                                textAlignVertical="top"
-                            />
-                        </View>
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+                <View style={styles.form}>
+                    <Field label="Name" value={displayName} onChangeText={setDisplayName} placeholder="How you want to be shown" maxLength={50} />
+                    <Field
+                        label="Username"
+                        value={username}
+                        onChangeText={setUsername}
+                        placeholder="username"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        maxLength={30}
+                        hint={!valid && username.length > 0 ? 'Use at least 2 characters.' : undefined}
+                    />
+                    <Field
+                        label="Bio"
+                        value={bio}
+                        onChangeText={setBio}
+                        placeholder="What do you make, and what do you want to argue about?"
+                        multiline
+                        maxLength={BIO_MAX}
+                        hint={`${bio.length}/${BIO_MAX}`}
+                    />
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: theme.colors.background.primary,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: theme.spacing.lg,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.1)',
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    cancelButton: {
-        padding: 8,
-    },
-    cancelText: {
-        color: theme.colors.text.secondary,
-        fontSize: 16,
-    },
-    saveButton: {
-        padding: 8,
-        backgroundColor: theme.colors.primary.DEFAULT,
-        borderRadius: 20,
-        paddingHorizontal: 16,
-        minWidth: 70,
-        alignItems: 'center',
-    },
-    saveText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 14,
-    },
-    content: {
-        paddingBottom: 40,
-    },
-    headerImageSection: {
-        height: 150,
-        width: '100%',
-        marginBottom: 50, // Space for avatar overlap
-    },
-    headerImageContainer: {
-        width: '100%',
-        height: '100%',
-        position: 'relative',
-        backgroundColor: 'rgba(255,255,255,0.05)',
-    },
-    headerImage: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-    },
-    placeholderHeader: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    editIconOverlay: {
-        position: 'absolute',
-        bottom: 8,
-        right: 8,
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        padding: 8,
-        borderRadius: 20,
-    },
-    avatarSection: {
-        position: 'absolute',
-        top: 100, // Overlap header
-        left: 20,
-        zIndex: 10,
-    },
-    avatarContainer: {
-        position: 'relative',
-    },
-    avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderWidth: 4,
-        borderColor: theme.colors.background.primary,
-    },
-    placeholderAvatar: {
-        backgroundColor: theme.colors.primary.DEFAULT,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    avatarPlaceholderText: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    editAvatarOverlay: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: theme.colors.primary.DEFAULT,
-        padding: 6,
-        borderRadius: 15,
-        borderWidth: 2,
-        borderColor: theme.colors.background.primary,
-    },
-    form: {
-        paddingHorizontal: theme.spacing.lg,
-        marginTop: 10,
-    },
-    inputGroup: {
-        marginBottom: 20,
-    },
-    label: {
-        color: theme.colors.text.secondary,
-        fontSize: 14,
-        marginBottom: 8,
-        fontWeight: '600',
-    },
-    input: {
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        borderRadius: 12,
-        padding: 16,
-        color: 'white',
-        fontSize: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
-    },
-    textArea: {
-        minHeight: 100,
-    },
-    disabledButton: {
-        opacity: 0.5,
-    },
-    imageLoadingOverlay: {
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+    root: { flex: 1 },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 10 },
+    side: { minWidth: 76, minHeight: 36, justifyContent: 'center' },
+    banner: { height: 132, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
+    dim: { backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center' },
+    badge: { position: 'absolute', width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+    avatarRow: { paddingHorizontal: 20, marginTop: -46, marginBottom: 8 },
+    avatarDim: { position: 'absolute', top: 0, left: 0, width: 92, height: 92, borderRadius: 46, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center' },
+    form: { paddingHorizontal: 20, paddingTop: 12, gap: 20 },
 });

@@ -1,335 +1,131 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Pressable, LayoutChangeEvent } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEventListener } from 'expo';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, runOnJS } from 'react-native-reanimated';
-import { theme } from '@design-system/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ICE, INK, ON_VIDEO } from '../design-system/ui';
+import { Txt } from '../components/core/Txt';
+import { IconButton } from '../components/core/IconButton';
+import { notify } from '../lib/utils/dialogs';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const TIMELINE_HEIGHT = 60;
-const HANDLE_WIDTH = 20;
-const TIMELINE_PADDING = 20;
-const TIMELINE_WIDTH = SCREEN_WIDTH - (TIMELINE_PADDING * 2);
+const clock = (seconds: number) => {
+    const total = Math.max(0, Math.floor(seconds || 0));
+    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+};
 
+/**
+ * The look at a clip before it goes up. Trimming happens earlier, in the system
+ * picker (it has its own trim bar); what this screen adds is a chance to watch the
+ * whole thing, with sound, once.
+ */
 export default function EditorScreen() {
     const router = useRouter();
-    const params = useLocalSearchParams();
-    const videoUri = params.videoUri as string;
+    const insets = useSafeAreaInsets();
+    const { videoUri, debateId, side } = useLocalSearchParams<{ videoUri?: string; debateId?: string; side?: string }>();
 
-    const player = useVideoPlayer(videoUri || null, player => {
-        player.timeUpdateEventInterval = 0.05; // Update every 50ms for smooth timeline
+    const player = useVideoPlayer(videoUri || null, p => {
+        p.loop = true;
+        p.timeUpdateEventInterval = 0.25;
+        p.play();
     });
 
-    // State
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [duration, setDuration] = useState(0); // in milliseconds
+    const [playing, setPlaying] = useState(true);
     const [position, setPosition] = useState(0);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [trimStart, setTrimStart] = useState(0);
-    const [trimEnd, setTrimEnd] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const barWidth = useRef(1);
 
-    useEventListener(player, 'playingChange', ({ isPlaying }) => {
-        setIsPlaying(isPlaying);
-    });
-
-    useEventListener(player, 'timeUpdate', ({ currentTime }) => {
-        const positionMillis = currentTime * 1000;
-        setPosition(positionMillis);
-
-        // Loop within trim
-        if (player.playing && trimEnd > 0 && positionMillis >= trimEnd) {
-            player.currentTime = trimStart / 1000;
-        }
-    });
-
+    useEventListener(player, 'playingChange', ({ isPlaying }) => setPlaying(isPlaying));
+    useEventListener(player, 'timeUpdate', ({ currentTime }) => setPosition(currentTime));
     useEventListener(player, 'statusChange', ({ status }) => {
-        if (status === 'readyToPlay' && !isLoaded && player.duration > 0) {
-            const ms = player.duration * 1000;
-            setDuration(ms);
-            setTrimEnd(ms);
-            setIsLoaded(true);
-        }
+        if (status === 'readyToPlay' && player.duration > 0) setDuration(player.duration);
     });
-
-    // Animated values for handles
-    const leftHandleX = useSharedValue(0);
-    const rightHandleX = useSharedValue(TIMELINE_WIDTH);
 
     useEffect(() => {
         if (!videoUri) {
-            Alert.alert("Error", "No video loaded");
+            notify('No video', 'Pick or record a video first.');
             router.back();
         }
     }, [videoUri, router]);
 
-    // Update trim times when handles move
-    const updateTrimTimes = (leftX: number, rightX: number) => {
-        if (duration > 0) {
-            const start = (leftX / TIMELINE_WIDTH) * duration;
-            const end = (rightX / TIMELINE_WIDTH) * duration;
-            setTrimStart(start);
-            setTrimEnd(end);
-        }
+    const toggle = () => (playing ? player.pause() : player.play());
+
+    const seek = (x: number) => {
+        if (duration <= 0) return;
+        const t = Math.max(0, Math.min(1, x / barWidth.current)) * duration;
+        player.currentTime = t;
+        setPosition(t);
     };
 
-    function seekTo(millis: number) {
-        player.currentTime = millis / 1000;
-    }
-
-    // Gestures
-    const leftHandleGesture = Gesture.Pan()
-        .onUpdate((e) => {
-            const newX = Math.max(0, Math.min(e.absoluteX - TIMELINE_PADDING, rightHandleX.value - HANDLE_WIDTH * 2));
-            leftHandleX.value = newX;
-            runOnJS(updateTrimTimes)(newX, rightHandleX.value);
-        })
-        .onEnd(() => {
-            runOnJS(seekTo)(leftHandleX.value / TIMELINE_WIDTH * duration);
-        });
-
-    const rightHandleGesture = Gesture.Pan()
-        .onUpdate((e) => {
-            const newX = Math.max(leftHandleX.value + HANDLE_WIDTH * 2, Math.min(e.absoluteX - TIMELINE_PADDING, TIMELINE_WIDTH));
-            rightHandleX.value = newX;
-            runOnJS(updateTrimTimes)(leftHandleX.value, newX);
-        })
-        .onEnd(() => {
-            runOnJS(seekTo)(rightHandleX.value / TIMELINE_WIDTH * duration);
-        });
-
-    const leftHandleStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: leftHandleX.value }],
-    }));
-
-    const rightHandleStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: rightHandleX.value }],
-    }));
-
-    // Middle overlay style
-    const selectedRegionStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: leftHandleX.value }],
-        width: rightHandleX.value - leftHandleX.value,
-    }));
-
-    const togglePlay = () => {
-        if (isPlaying) {
-            player.pause();
-        } else {
-            // If we are at the end of the trim, restart from trim start
-            if (position >= trimEnd) {
-                player.currentTime = trimStart / 1000;
-            }
-            player.play();
-        }
-    };
-
-
-    const handleSave = () => {
-        // Navigate to upload/publish screen with the trimmed parameters
+    const next = () => {
+        player.pause();
         router.push({
             pathname: '/publish',
             params: {
                 videoUri,
-                trimStart,
-                trimEnd
-            }
+                duration: duration > 0 ? String(Math.round(duration)) : '',
+                ...(debateId ? { debateId, side } : {}),
+            },
         });
     };
 
-    const formatTime = (millis: number) => {
-        const totalSeconds = Math.floor(millis / 1000);
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    };
+    const progress = duration > 0 ? Math.min(1, position / duration) : 0;
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={styles.container}>
-                <Stack.Screen options={{ headerShown: false }} />
+        <View style={styles.root}>
+            <Stack.Screen options={{ headerShown: false }} />
+            <StatusBar style="light" />
 
-                {/* Header */}
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.back()}>
-                        <Ionicons name="close" size={28} color="white" />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Editor</Text>
-                    <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-                        <Text style={styles.saveButtonText}>Next</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Video Preview */}
-                <View style={styles.videoContainer}>
-                    <VideoView
-                        player={player}
-                        style={styles.video}
-                        contentFit="contain"
-                        nativeControls={false}
-                    />
-                    {!isPlaying && (
-                        <TouchableOpacity style={styles.playOverlay} onPress={togglePlay}>
-                            <Ionicons name="play" size={50} color="white" />
-                        </TouchableOpacity>
-                    )}
-                    {isPlaying && (
-                        <TouchableOpacity style={styles.pauseOverlay} onPress={togglePlay} />
-                    )}
-                </View>
-
-                {/* Controls Area */}
-                <View style={styles.controlsContainer}>
-                    <View style={styles.timeInfo}>
-                        <Text style={styles.timeText}>{formatTime(position)} / {formatTime(duration)}</Text>
+            <Pressable onPress={toggle} style={StyleSheet.absoluteFill} accessibilityRole="button" accessibilityLabel={playing ? 'Pause' : 'Play'}>
+                <VideoView player={player} style={{ flex: 1, width: '100%', height: '100%' }} contentFit="contain" nativeControls={false} />
+                {!playing ? (
+                    <View style={styles.center} pointerEvents="none">
+                        <View style={styles.playDisc}>
+                            <Ionicons name="play" size={30} color={ON_VIDEO.text} style={{ marginLeft: 3 }} />
+                        </View>
                     </View>
+                ) : null}
+            </Pressable>
 
-                    {/* Timeline Trimmer */}
-                    <View style={styles.timelineContainer}>
-                        {/* Background track */}
-                        <View style={styles.timelineTrack} />
+            <View style={[styles.top, { paddingTop: insets.top + 4 }]} pointerEvents="box-none">
+                <IconButton variant="glass" name="close" label="Close" onPress={() => router.back()} />
+                <Pressable onPress={next} accessibilityRole="button" accessibilityLabel="Next" style={styles.next}>
+                    <Txt variant="bodyStrong" style={{ color: INK }}>Next</Txt>
+                </Pressable>
+            </View>
 
-                        {/* Selected Region (Yellow highlight) */}
-                        <Animated.View style={[styles.selectedRegion, selectedRegionStyle]} />
-
-                        {/* Left Handle */}
-                        <GestureDetector gesture={leftHandleGesture}>
-                            <Animated.View style={[styles.handle, styles.leftHandle, leftHandleStyle]}>
-                                <View style={styles.handleBar} />
-                            </Animated.View>
-                        </GestureDetector>
-
-                        {/* Right Handle */}
-                        <GestureDetector gesture={rightHandleGesture}>
-                            <Animated.View style={[styles.handle, styles.rightHandle, rightHandleStyle]}>
-                                <View style={styles.handleBar} />
-                            </Animated.View>
-                        </GestureDetector>
+            <View style={[styles.bottom, { paddingBottom: insets.bottom + 16 }]} pointerEvents="box-none">
+                <Pressable
+                    onPress={e => seek(e.nativeEvent.locationX)}
+                    onLayout={(e: LayoutChangeEvent) => { barWidth.current = e.nativeEvent.layout.width || 1; }}
+                    accessibilityRole="adjustable"
+                    accessibilityLabel="Seek"
+                    style={styles.seek}
+                >
+                    <View style={styles.track}>
+                        <View style={[styles.fill, { width: `${progress * 100}%` }]} />
                     </View>
-
-                    <Text style={styles.hintText}>Drag ends to trim</Text>
+                </Pressable>
+                <View style={styles.times}>
+                    <Txt variant="caption" tone="onVideoDim">{clock(position)}</Txt>
+                    <Txt variant="caption" tone="onVideoDim">{clock(duration)}</Txt>
                 </View>
-
-            </SafeAreaView>
-        </GestureHandlerRootView>
+            </View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        zIndex: 10,
-    },
-    headerTitle: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: '600',
-    },
-    saveButton: {
-        backgroundColor: theme.colors.primary.DEFAULT,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-    },
-    saveButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    videoContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative',
-    },
-    video: {
-        width: '100%',
-        height: '100%',
-    },
-    playOverlay: {
-        position: 'absolute',
-        backgroundColor: 'rgba(0,0,0,0.3)',
-        padding: 20,
-        borderRadius: 50,
-    },
-    pauseOverlay: {
-        ...StyleSheet.absoluteFillObject,
-    },
-    controlsContainer: {
-        height: 200,
-        backgroundColor: '#111',
-        padding: 20,
-        justifyContent: 'center',
-    },
-    timeInfo: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    timeText: {
-        color: 'white',
-        fontVariant: ['tabular-nums'],
-    },
-    timelineContainer: {
-        height: TIMELINE_HEIGHT,
-        width: TIMELINE_WIDTH,
-        alignSelf: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-    },
-    timelineTrack: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: '#333',
-        borderRadius: 8,
-        overflow: 'hidden',
-    },
-    selectedRegion: {
-        position: 'absolute',
-        height: '100%',
-        backgroundColor: 'rgba(217, 228, 255, 0.3)', // Logo Blue with opacity
-        borderTopWidth: 2,
-        borderBottomWidth: 2,
-        borderColor: '#D9E4FF',
-    },
-    handle: {
-        position: 'absolute',
-        width: HANDLE_WIDTH,
-        height: TIMELINE_HEIGHT + 10, // Slightly taller
-        backgroundColor: '#D9E4FF',
-        borderRadius: 4,
-        justifyContent: 'center',
-        alignItems: 'center',
-        top: -5,
-    },
-    leftHandle: {
-        left: 0,
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-    },
-    rightHandle: {
-        left: -HANDLE_WIDTH, // Offset because translateX handles position
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-    },
-    handleBar: {
-        width: 4,
-        height: 20,
-        backgroundColor: '#000',
-        borderRadius: 2,
-    },
-    hintText: {
-        color: '#666',
-        textAlign: 'center',
-        marginTop: 10,
-        fontSize: 12,
-    },
+    root: { flex: 1, backgroundColor: '#000' },
+    center: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+    playDisc: { width: 76, height: 76, borderRadius: 38, backgroundColor: ON_VIDEO.glassStrong, alignItems: 'center', justifyContent: 'center' },
+    top: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10 },
+    next: { height: 40, paddingHorizontal: 20, borderRadius: 20, backgroundColor: ICE, alignItems: 'center', justifyContent: 'center' },
+    bottom: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 20 },
+    seek: { height: 32, justifyContent: 'center' },
+    track: { height: 3, borderRadius: 2, backgroundColor: ON_VIDEO.track, overflow: 'hidden' },
+    fill: { height: '100%', backgroundColor: '#FFFFFF' },
+    times: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 },
 });

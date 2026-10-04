@@ -7,3 +7,5 @@ export { EmptyState } from './EmptyState';
 export { Tabs } from './Tabs';
 export { Skeleton } from './Skeleton';
 export { RichText } from './RichText';
+export { Field } from './Field';
+export { VideoViewer } from './VideoViewer';

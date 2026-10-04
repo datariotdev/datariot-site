@@ -13,6 +13,8 @@ export interface Argument {
     strength: number;
     isVoted: boolean;
     videoUrl?: string; // Optional video content
+    /** Drafted by Orvelis when the thesis was posted, not written by the person it is filed under. */
+    byAI?: boolean;
 }
 
 export function useDebateArguments(postId: string | null) {
@@ -76,6 +78,13 @@ export function useDebateArguments(postId: string | null) {
                 let rawText = c.text || c.content || '';
                 let side: 'FOR' | 'AGAINST' | 'NEUTRAL' = 'NEUTRAL';
 
+                // Arguments the model drafted for a new thesis carry its tag in front of the side
+                let byAI = false;
+                if (rawText.startsWith('AI_ORACLE:|')) {
+                    byAI = true;
+                    rawText = rawText.substring('AI_ORACLE:|'.length);
+                }
+
                 if (rawText.startsWith('FOR:|')) {
                     side = 'FOR';
                     rawText = rawText.substring(5);
@@ -97,6 +106,7 @@ export function useDebateArguments(postId: string | null) {
                     strength: c.likes_count || 0,
                     isVoted: votedIds.has(c.id),
                     videoUrl: c.videos?.url, // From the join
+                    byAI,
                 };
             };
 

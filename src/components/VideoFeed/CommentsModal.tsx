@@ -10,13 +10,13 @@ import {
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
-    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useComments, Comment } from '@lib/supabase/hooks/useComments';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
+import { confirmAction } from '../../lib/utils/dialogs';
 import { FONT, RADIUS, useUI } from '../../design-system/ui';
 import { Txt } from '../core/Txt';
 import { Avatar } from '../core/Avatar';
@@ -52,11 +52,8 @@ function CommentRow({
         onLike(comment.id);
     };
 
-    const handleDelete = () => {
-        Alert.alert('Delete comment', 'This can\'t be undone.', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => onDelete(comment.id) },
-        ]);
+    const handleDelete = async () => {
+        if (await confirmAction('Delete this comment?', { message: 'This can\'t be undone.', confirmLabel: 'Delete', destructive: true })) onDelete(comment.id);
     };
 
     return (

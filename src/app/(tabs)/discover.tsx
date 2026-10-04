@@ -1,220 +1,300 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, Pressable, FlatList, useWindowDimensions, ActivityIndicator, Platform, RefreshControl } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { SafeAreaView } from '@components/UI/SafeAreaView';
-import { theme as baseTheme } from '@design-system/theme';
-import { useRecommendedUsers } from '@lib/supabase/hooks/useRecommendedUsers';
-import { useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../components/Theme/ThemeProvider';
-import { usePosts } from '@lib/supabase/hooks/usePosts';
-import { AmbientGlow } from '../../components/UI/AmbientGlow';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import { useVideos, Video } from '../../lib/supabase/hooks/useVideos';
+import { useSearchProfiles, PersonResult } from '../../lib/supabase/hooks/useSearchProfiles';
+import { usePosts, Post } from '../../lib/supabase/hooks/usePosts';
+import { useDebounced } from '../../lib/hooks/useDebounced';
+import { useTabBarHeight } from '../../lib/hooks/useTabBarHeight';
+import { VIDEO_CATEGORIES } from '../../lib/constants/categories';
+import { FONT, NO_OUTLINE, RADIUS, useUI } from '../../design-system/ui';
+import { Txt } from '../../components/core/Txt';
+import { Chip } from '../../components/core/Chip';
+import { Tabs } from '../../components/core/Tabs';
+import { Avatar } from '../../components/core/Avatar';
+import { Button } from '../../components/core/Button';
+import { EmptyState } from '../../components/core/EmptyState';
+import { Skeleton } from '../../components/core/Skeleton';
+import { PosterTile } from '../../components/Explore/PosterTile';
+import { PersonRow } from '../../components/Explore/PersonRow';
+import { DebateCard } from '../../components/Debate/DebateCard';
 
-// Intelligence Hub Components
-import { SectionHeader } from '@components/Discovery/SectionHeader';
-import { DNAMatchCard } from '@components/Discovery/DNAMatchCard';
-import { DebateCard } from '@components/Debate/DebateCard';
-import { TrendingTopics } from '@components/Discovery/TrendingTopics';
-import { TrendingBullets } from '@components/Discovery/TrendingBullets';
-import { DebateSwitcher } from '@components/Discovery/DebateSwitcher';
-import { IntellectRecommendations } from '@components/Discovery/IntellectRecommendations';
+type Scope = 'videos' | 'people' | 'debates';
 
+const SCOPES: { key: Scope; label: string }[] = [
+    { key: 'videos', label: 'Videos' },
+    { key: 'people', label: 'People' },
+    { key: 'debates', label: 'Debates' },
+];
+
+/**
+ * Explore: one search box for videos, people and debates, categories as chips,
+ * and, before you type anything, what is popular and who is worth following.
+ */
 export default function DiscoverScreen() {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
-    const [searchQuery, setSearchQuery] = useState('');
-    const [refreshing, setRefreshing] = useState(false);
-    const [activeBranch, setActiveBranch] = useState('active');
+    const { c, isDark } = useUI();
     const router = useRouter();
+    const insets = useSafeAreaInsets();
+    const tabBarHeight = useTabBarHeight();
+    const params = useLocalSearchParams<{ category?: string; focus?: string }>();
 
-    // 1. Fetch Debates (Posts)
-    const {
-        posts: textPosts,
-        refresh: refreshPosts
-    } = usePosts();
+    const inputRef = useRef<TextInput>(null);
+    const [query, setQuery] = useState('');
+    const [focused, setFocused] = useState(false);
+    const [category, setCategory] = useState<string | null>(null);
+    const [scope, setScope] = useState<Scope>('videos');
 
-    // 2. Recommended Minds (Real Data)
-    const {
-        users: recommendedUsers,
-        toggleFollowUser
-    } = useRecommendedUsers();
+    const debounced = useDebounced(query.trim(), 300);
+    const searching = debounced.length >= 2;
 
-    // --- Intelligence Hub Data ---
+    // A category tapped on a clip, or the search icon on Home, lands here with a request
+    useEffect(() => {
+        if (params.category) {
+            setCategory(String(params.category));
+            setScope('videos');
+            router.setParams({ category: undefined });
+        }
+    }, [params.category]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // 1. Recommended Accounts (Top 5 active)
-    const recommendedAccounts = (recommendedUsers || []).slice(0, 5).map((user, i) => ({
-        id: user.id || `u-${i}`,
-        username: user.username || 'Thinker',
-        avatarUrl: user.avatarUrl || `https://i.pravatar.cc/150?u=${i}`,
-        logicScore: Math.floor(Math.random() * 15000) + 5000,
-        activity: i % 2 === 0 ? 'Active in AI Ethics' : 'Top Rebutter in Space Law'
-    }));
+    useFocusEffect(
+        useCallback(() => {
+            if (!params.focus) return;
+            const t = setTimeout(() => {
+                inputRef.current?.focus();
+                router.setParams({ focus: undefined });
+            }, 320);
+            return () => clearTimeout(t);
+        }, [params.focus]), // eslint-disable-line react-hooks/exhaustive-deps
+    );
 
-    const onRefresh = useCallback(() => {
+    const feed = useVideos({
+        type: 'search',
+        searchQuery: searching ? debounced : undefined,
+        category: category || undefined,
+        sort: searching ? 'recent' : 'popular',
+    });
+    const people = useSearchProfiles(debounced);
+    const debates = usePosts();
+
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(async () => {
         setRefreshing(true);
-        refreshPosts();
-        setTimeout(() => setRefreshing(false), 1000);
-    }, [refreshPosts]);
+        try {
+            if (scope === 'debates') await debates.refresh?.();
+            else feed.refresh();
+        } finally {
+            setTimeout(() => setRefreshing(false), 600);
+        }
+    }, [scope, feed, debates]);
 
-    const renderHeader = () => (
-        <View style={styles.headerContainer}>
-            {/* 1. Trending Topics (Primary Hierarchy) */}
-            {!searchQuery && (
-                <View style={styles.sectionPadding}>
-                    <TrendingTopics onItemPress={(id) => setSearchQuery(id)} />
-                </View>
-            )}
+    const openClip = (video: Video) =>
+        router.push({
+            pathname: '/video-player',
+            params: {
+                type: 'search',
+                ...(searching ? { searchQuery: debounced } : {}),
+                ...(category ? { category } : {}),
+                sort: searching ? 'recent' : 'popular',
+                initialVideoId: video.id,
+            },
+        });
 
-            {/* 2. Trending Now (Secondary Categories) */}
-            {!searchQuery && (
-                <View style={styles.sectionPadding}>
-                    <TrendingBullets onItemPress={(id) => setSearchQuery(id)} />
-                </View>
-            )}
+    const openPerson = (id: string) => router.push(`/user/${id}` as any);
 
-            {/* 3. Recommended Accounts (5 accounts) */}
-            {!searchQuery && (
-                <View style={styles.sectionPadding}>
-                    <IntellectRecommendations
-                        intellects={recommendedAccounts}
-                        onFollow={(id) => toggleFollowUser(id)}
-                        onPress={(id) => router.push(`/(tabs)/profile`)}
+    const cancel = () => {
+        setQuery('');
+        setFocused(false);
+        inputRef.current?.blur();
+    };
+
+    const q = debounced.toLowerCase();
+    const matchingDebates = searching ? debates.posts.filter(p => p.content.toLowerCase().includes(q)) : debates.posts;
+
+    /* ---------- search bar, chips, scope tabs: fixed above the list ---------- */
+    const top = (
+        <View style={{ paddingTop: insets.top + 8, backgroundColor: c.bg }}>
+            <View style={styles.searchRow}>
+                <View style={[styles.search, { backgroundColor: c.surface, borderColor: focused ? c.textTertiary : c.hairline }]}>
+                    <Ionicons name="search" size={18} color={c.textTertiary} />
+                    <TextInput
+                        ref={inputRef}
+                        value={query}
+                        onChangeText={setQuery}
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => setFocused(false)}
+                        placeholder="Search videos, people, debates"
+                        placeholderTextColor={c.textTertiary}
+                        style={[styles.input, { color: c.text }, NO_OUTLINE]}
+                        returnKeyType="search"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        clearButtonMode="never"
                     />
+                    {query.length > 0 ? (
+                        <Pressable onPress={() => setQuery('')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Clear search">
+                            <Ionicons name="close-circle" size={18} color={c.textTertiary} />
+                        </Pressable>
+                    ) : null}
                 </View>
-            )}
-
-            {/* 4. Debate Switcher & Feed Header */}
-            <View style={{ marginTop: 8 }}>
-                <SectionHeader
-                    title={searchQuery ? 'Strategic Search' : 'Active Debates'}
-                    subtitle={searchQuery ? `Logic for "${searchQuery}"` : 'Filter by knowledge branch'}
-                />
-                {!searchQuery && (
-                    <DebateSwitcher
-                        activeTab={activeBranch}
-                        onTabChange={setActiveBranch}
-                    />
-                )}
+                {focused || query.length > 0 ? (
+                    <Pressable onPress={cancel} hitSlop={8} accessibilityRole="button">
+                        <Txt variant="bodyStrong">Cancel</Txt>
+                    </Pressable>
+                ) : null}
             </View>
+
+            {scope === 'videos' || !searching ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
+                    <Chip label="All" active={category === null} onPress={() => setCategory(null)} />
+                    {VIDEO_CATEGORIES.map(cat => (
+                        <Chip key={cat} label={cat} active={category === cat} onPress={() => setCategory(category === cat ? null : cat)} />
+                    ))}
+                </ScrollView>
+            ) : null}
+
+            {searching ? <Tabs tabs={SCOPES} active={scope} onChange={setScope} /> : <View style={{ height: 6 }} />}
         </View>
     );
 
-    const renderDebateItem = ({ item }: { item: any }) => (
-        <DebateCard
-            item={{
-                ...item,
-                createdAt: item.createdAt || new Date().toISOString()
-            }}
-            onPress={() => {
-                router.push({
-                    pathname: '/(tabs)',
-                    params: { postId: item.id }
-                });
-            }}
-        />
-    );
+    /* ---------- the three lists ---------- */
+    const listPadding = { paddingBottom: tabBarHeight + 24 };
+    const refresh = <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={c.textSecondary} />;
 
-    const filteredPosts = searchQuery
-        ? textPosts.filter(p => p.content.toLowerCase().includes(searchQuery.toLowerCase()))
-        : textPosts;
+    let list: React.ReactNode;
+
+    if (scope === 'people' && searching) {
+        list = (
+            <FlatList<PersonResult>
+                key="people"
+                data={people.people}
+                keyExtractor={p => p.id}
+                renderItem={({ item }) => (
+                    <PersonRow person={item} onPress={() => openPerson(item.id)} onToggleFollow={() => people.toggleFollow(item.id)} />
+                )}
+                contentContainerStyle={listPadding}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+                ListEmptyComponent={
+                    people.loading ? (
+                        <View style={{ padding: 20, gap: 12 }}><Skeleton style={{ height: 52 }} /><Skeleton style={{ height: 52 }} /></View>
+                    ) : (
+                        <EmptyState icon="person-outline" title="No one by that name" body="Check the spelling, or try a handle." />
+                    )
+                }
+            />
+        );
+    } else if (scope === 'debates' && searching) {
+        list = (
+            <FlatList<Post>
+                key="debates"
+                data={matchingDebates}
+                keyExtractor={p => p.id}
+                renderItem={({ item }) => <DebateCard item={item} onPress={() => router.push(`/debate/${item.id}` as any)} />}
+                contentContainerStyle={listPadding}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+                refreshControl={refresh}
+                ListEmptyComponent={<EmptyState icon="chatbubbles-outline" title="No debates match" body="Try another word, or start the debate yourself." actionLabel="Propose a thesis" onAction={() => router.push('/publish')} />}
+            />
+        );
+    } else {
+        const suggestions = !searching && !category && people.people.length > 0;
+        list = (
+            <FlatList<Video>
+                key="videos"
+                data={feed.videos}
+                keyExtractor={v => v.id}
+                numColumns={2}
+                renderItem={({ item }) => <PosterTile video={item} onPress={() => openClip(item)} />}
+                contentContainerStyle={[{ paddingHorizontal: 11 }, listPadding]}
+                onEndReached={feed.loadMore}
+                onEndReachedThreshold={0.6}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+                showsVerticalScrollIndicator={false}
+                refreshControl={refresh}
+                ListHeaderComponent={
+                    <View style={{ marginHorizontal: -11 }}>
+                        {suggestions ? (
+                            <View style={{ marginBottom: 6 }}>
+                                <Txt variant="title" style={styles.section}>People to follow</Txt>
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.people} keyboardShouldPersistTaps="handled">
+                                    {people.people.slice(0, 10).map(p => (
+                                        <Pressable key={p.id} onPress={() => openPerson(p.id)} style={styles.person} accessibilityRole="button">
+                                            <Avatar uri={p.avatarUrl} name={p.displayName} size={64} />
+                                            <Txt variant="callout" numberOfLines={1} style={{ marginTop: 8, maxWidth: 88 }}>{p.displayName}</Txt>
+                                            <Button
+                                                label={p.isFollowing ? 'Following' : 'Follow'}
+                                                variant={p.isFollowing ? 'ghost' : 'secondary'}
+                                                size="sm"
+                                                onPress={() => people.toggleFollow(p.id)}
+                                                style={{ marginTop: 6, height: 32, paddingHorizontal: 14 }}
+                                            />
+                                        </Pressable>
+                                    ))}
+                                </ScrollView>
+                            </View>
+                        ) : null}
+                        <Txt variant="title" style={styles.section}>
+                            {searching ? `Videos for “${debounced}”` : category ? category : 'Trending now'}
+                        </Txt>
+                    </View>
+                }
+                ListEmptyComponent={
+                    feed.loading ? (
+                        <View style={styles.skeletonGrid}>
+                            {[0, 1, 2, 3].map(i => (
+                                <View key={i} style={styles.skeletonCell}>
+                                    <Skeleton style={styles.skeletonTile} />
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        <EmptyState
+                            icon="film-outline"
+                            title={searching ? 'No videos found' : 'Nothing here yet'}
+                            body={searching ? 'Try a different word, or look under People and Debates.' : 'Be the first to post in this category.'}
+                            actionLabel={category ? 'Show everything' : undefined}
+                            onAction={category ? () => setCategory(null) : undefined}
+                        />
+                    )
+                }
+            />
+        );
+    }
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <AmbientGlow color={isDark ? "rgba(217, 228, 255, 0.08)" : "rgba(217, 228, 255, 0.04)"} size={380} opacity={0.6} duration={25000} delay={0} />
-            <SafeAreaView style={styles.safeArea}>
-
-                {/* Search Bar */}
-                <View style={styles.searchContainer}>
-                    <BlurView intensity={50} tint={isDark ? "dark" : "light"} style={styles.searchBarBlur}>
-                        <View style={[styles.searchBar, {
-                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)',
-                            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'
-                        }]}>
-                            <Ionicons name="search-outline" size={18} color={theme.colors.text.muted} />
-                            <TextInput
-                                style={[styles.searchInput, { color: theme.colors.text.primary }]}
-                                placeholder="Search the Arena..."
-                                placeholderTextColor={theme.colors.text.muted}
-                                value={searchQuery}
-                                onChangeText={setSearchQuery}
-                            />
-                            {searchQuery.length > 0 && (
-                                <Pressable onPress={() => setSearchQuery('')}>
-                                    <Ionicons name="close-circle" size={18} color={theme.colors.text.muted} />
-                                </Pressable>
-                            )}
-                        </View>
-                    </BlurView>
-                </View>
-
-                <FlatList
-                    data={filteredPosts}
-                    renderItem={renderDebateItem}
-                    keyExtractor={(item) => item.id}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 100 }}
-                    ListHeaderComponent={renderHeader}
-                    ListEmptyComponent={
-                        <View style={styles.emptyContainer}>
-                            <Text style={[styles.emptyText, { color: theme.colors.text.muted }]}>No debates found matching your search.</Text>
-                        </View>
-                    }
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                            tintColor={theme.colors.primary.light}
-                        />
-                    }
-                />
-            </SafeAreaView>
+        <View style={[styles.root, { backgroundColor: c.bg }]}>
+            <StatusBar style={isDark ? 'light' : 'dark'} />
+            {top}
+            {list}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    root: { flex: 1 },
+    searchRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingBottom: 12 },
+    search: {
         flex: 1,
-    },
-    safeArea: {
-        flex: 1,
-    },
-    headerContainer: {
-        paddingTop: Platform.OS === 'android' ? 10 : 0,
-        gap: 8,
-    },
-    searchContainer: {
-        paddingHorizontal: baseTheme.spacing.lg,
-        paddingTop: 12,
-        paddingBottom: 16,
-    },
-    searchBarBlur: {
-        borderRadius: 25,
-        overflow: 'hidden',
-    },
-    searchBar: {
+        height: 46,
+        borderRadius: RADIUS.md,
+        borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        height: 50,
-        borderWidth: 1,
         gap: 10,
+        paddingHorizontal: 14,
     },
-    searchInput: {
-        flex: 1,
-        fontSize: 15,
-        color: baseTheme.colors.text.primary,
-        height: '100%',
-    },
-    sectionPadding: {
-        paddingBottom: 8,
-    },
-    emptyContainer: {
-        padding: 40,
-        alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 14,
-        textAlign: 'center',
-    },
+    input: { flex: 1, height: '100%', fontFamily: FONT.regular, fontSize: 16, padding: 0 },
+    chips: { paddingHorizontal: 16, gap: 8, paddingBottom: 12 },
+    section: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 10 },
+    people: { paddingHorizontal: 16, gap: 16, paddingBottom: 10 },
+    person: { alignItems: 'center', width: 96 },
+    skeletonGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+    skeletonCell: { width: '50%', padding: 5 },
+    skeletonTile: { aspectRatio: 0.74, borderRadius: 16 },
 });

@@ -1,110 +1,98 @@
-import React, { useState } from 'react';
-import {
-    View, Text, StyleSheet, TouchableOpacity,
-    Platform, ScrollView, ActivityIndicator, Alert, useWindowDimensions
-} from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from '../../lib/supabase/hooks/useAuth';
-import { router } from 'expo-router';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from '../../components/UI/SafeAreaView';
-import { useTheme } from '../../components/Theme/ThemeProvider';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../../lib/supabase/hooks/useAuth';
+import { useTabBarHeight } from '../../lib/hooks/useTabBarHeight';
+import { RADIUS, useUI } from '../../design-system/ui';
+import { Txt } from '../../components/core/Txt';
+import { EmptyState } from '../../components/core/EmptyState';
+import { notify } from '../../lib/utils/dialogs';
 
-function ActionCard({
-    onPress,
-    icon,
-    title,
-    subtitle,
-    isPrimary,
-}: {
-    onPress: () => void;
-    icon: keyof typeof Ionicons.glyphMap;
+type IconName = keyof typeof Ionicons.glyphMap;
+
+interface OptionProps {
+    icon: IconName;
     title: string;
     subtitle: string;
-    isPrimary: boolean;
-}) {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+    onPress: () => void;
+    primary?: boolean;
+}
 
-    const bg = isDark ? '#111318' : '#FFFFFF';
-    const borderCol = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+/** One way to start something: an icon, what it does, and where it goes. */
+function Option({ icon, title, subtitle, onPress, primary }: OptionProps) {
+    const { c } = useUI();
+    const fg = primary ? c.onAccent : c.text;
+    const sub = primary ? c.onAccent : c.textSecondary;
 
     return (
-        <TouchableOpacity
-            activeOpacity={0.8}
+        <Pressable
             onPress={onPress}
-            style={[
-                styles.card,
-                isPrimary
-                    ? { backgroundColor: '#D9E4FF', shadowColor: '#D9E4FF', shadowOpacity: 0.15 }
-                    : { backgroundColor: bg, borderColor: borderCol, borderWidth: 1 }
+            accessibilityRole="button"
+            accessibilityLabel={title}
+            style={({ pressed }) => [
+                styles.option,
+                primary ? { backgroundColor: c.accent } : { backgroundColor: c.surface, borderWidth: 1, borderColor: c.hairline },
+                pressed && { opacity: 0.85, transform: [{ scale: 0.99 }] },
             ]}
         >
-            <View style={styles.cardHeader}>
-                <View style={[
-                    styles.iconCircle,
-                    isPrimary
-                        ? { backgroundColor: '#FFFFFF' }
-                        : { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }
-                ]}>
-                    <Ionicons
-                        name={icon}
-                        size={28}
-                        color={isPrimary ? '#000000' : theme.colors.text.primary}
-                    />
-                </View>
-                <View style={[
-                    styles.arrowCircle,
-                    isPrimary
-                        ? { backgroundColor: 'rgba(0,0,0,0.05)' }
-                        : { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }
-                ]}>
-                    <Feather
-                        name="arrow-up-right"
-                        size={18}
-                        color={isPrimary ? '#000000' : theme.colors.text.primary}
-                    />
-                </View>
+            <View style={[styles.optionIcon, { backgroundColor: primary ? 'rgba(0,0,0,0.08)' : c.surfaceHigh }]}>
+                <Ionicons name={icon} size={24} color={fg} />
             </View>
-
-            <View style={styles.cardFooter}>
-                <Text style={[
-                    styles.cardTitle,
-                    { fontFamily: theme.typography.fontFamilies.bold },
-                    isPrimary ? { color: '#000000' } : { color: theme.colors.text.primary }
-                ]}>
-                    {title}
-                </Text>
-                <Text style={[
-                    styles.cardSubtitle,
-                    { fontFamily: theme.typography.fontFamilies.regular },
-                    isPrimary ? { color: 'rgba(0,0,0,0.6)' } : { color: theme.colors.text.secondary }
-                ]}>
-                    {subtitle}
-                </Text>
+            <View style={{ flex: 1 }}>
+                <Txt variant="headline" style={{ color: fg }}>{title}</Txt>
+                <Txt variant="callout" style={{ color: sub, opacity: primary ? 0.7 : 1, marginTop: 2 }}>{subtitle}</Txt>
             </View>
-        </TouchableOpacity>
+            <Ionicons name="chevron-forward" size={20} color={primary ? c.onAccent : c.textTertiary} />
+        </Pressable>
     );
 }
 
+const TIPS = [
+    'One idea per clip. If you can say it in a sentence, it fits.',
+    'Say the point in the first few seconds, then show why.',
+    'Under a minute. People can always go deeper with a Deep Dive.',
+];
+
 export default function CreateScreen() {
     const { user, loading } = useAuth();
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+    const { c, isDark } = useUI();
+    const insets = useSafeAreaInsets();
+    const tabBarHeight = useTabBarHeight();
 
-    const bg = theme.colors.background.primary;
-    const fg = theme.colors.text.primary;
-    // Syncopate is a wide face: "SOMETHING" at a fixed 44px was wider than a phone
-    // and broke mid-word ("SOMETHIN / G"). Size the three lines to the screen.
-    const { width: winWidth } = useWindowDimensions();
-    const heroSize = Math.max(26, Math.min(Platform.OS === 'web' ? 44 : 38, Math.floor((winWidth - 48) / 8.6)));
-    const heroStyle = { fontSize: heroSize, lineHeight: Math.round(heroSize * 1.15) };
+    // Set when someone taps "Video FOR / AGAINST" on a debate: the clip answers that debate
+    const { debateId, side } = useLocalSearchParams<{ debateId?: string; side?: string }>();
+    const replying = !!debateId;
+    const stance = side === 'AGAINST' ? 'Against' : 'For';
 
-    const pickVideo = async () => {
+    const toEditor = (videoUri: string) => {
+        router.push({ pathname: '/editor', params: { videoUri, ...(replying ? { debateId, side } : {}) } });
+        // The tab stays mounted, so forget the debate once the clip is on its way
+        if (replying) router.setParams({ debateId: undefined, side: undefined });
+    };
+
+    const record = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+            notify('Camera access needed', 'Allow camera access in Settings to record a video.');
+            return;
+        }
+        const result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+            videoMaxDuration: 90,
+            allowsEditing: true,
+            quality: 1,
+        });
+        if (!result.canceled && result.assets?.[0]) toEditor(result.assets[0].uri);
+    };
+
+    const upload = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Permission needed', 'Allow access to media library.');
+            notify('Photos access needed', 'Allow access to your library in Settings to upload a video.');
             return;
         }
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -112,155 +100,94 @@ export default function CreateScreen() {
             allowsEditing: true,
             quality: 1,
         });
-        if (!result.canceled && result.assets && result.assets[0]) {
-            router.push({ pathname: '/editor', params: { videoUri: result.assets[0].uri } });
-        }
+        if (!result.canceled && result.assets?.[0]) toEditor(result.assets[0].uri);
     };
-
-    const handleWritePost = () => router.push('/publish');
 
     if (loading) {
         return (
-            <View style={[styles.root, styles.center, { backgroundColor: bg }]}>
-                <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
+            <View style={[styles.root, styles.center, { backgroundColor: c.bg }]}>
+                <ActivityIndicator color={c.textSecondary} />
             </View>
         );
     }
 
     if (!user) {
         return (
-            <SafeAreaView style={styles.root}>
+            <View style={[styles.root, styles.center, { backgroundColor: c.bg }]}>
                 <StatusBar style={isDark ? 'light' : 'dark'} />
-                <View style={[styles.root, styles.center]}>
-                    <Ionicons name="lock-closed" size={48} color={fg} style={{ marginBottom: 20 }} />
-                    <Text style={[styles.lockTitle, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
-                        Sign in
-                    </Text>
-                    <Text style={[styles.lockSub, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.regular }]}>
-                        Required to create content
-                    </Text>
-                </View>
-            </SafeAreaView>
+                <EmptyState
+                    icon="lock-closed-outline"
+                    title="Sign in to create"
+                    body="Post a video or start a debate with an account."
+                    actionLabel="Sign in"
+                    onAction={() => router.push('/auth/login')}
+                />
+            </View>
         );
     }
 
     return (
-        <SafeAreaView style={styles.root}>
+        <View style={[styles.root, { backgroundColor: c.bg }]}>
             <StatusBar style={isDark ? 'light' : 'dark'} />
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <ScrollView
+                contentContainerStyle={{ paddingTop: insets.top + 24, paddingBottom: tabBarHeight + 32, paddingHorizontal: 20 }}
+                showsVerticalScrollIndicator={false}
+            >
+                <Txt variant="display">{replying ? 'Answer on camera' : 'Create'}</Txt>
+                <Txt variant="body" tone="secondary" style={{ marginTop: 6, marginBottom: 28 }}>
+                    {replying ? 'Make your case in a clip. It lands in the debate.' : 'Make a point in a minute, or start a debate.'}
+                </Txt>
 
-                {/* HERO */}
-                <View style={styles.heroBox}>
-                    <View style={styles.heroLine} />
-                    <Text numberOfLines={1} style={[styles.heroText, heroStyle, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
-                        CREATE
-                    </Text>
-                    <Text numberOfLines={1} style={[styles.heroText, heroStyle, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
-                        SOMETHING
-                    </Text>
-                    <Text numberOfLines={1} style={[styles.heroText, heroStyle, { color: isDark ? '#D9E4FF' : theme.colors.primary.DEFAULT, fontFamily: theme.typography.fontFamilies.brand }]}>
-                        NEW
-                    </Text>
+                {replying ? (
+                    <View style={[styles.reply, { backgroundColor: c.surface, borderColor: c.hairline }]}>
+                        <Ionicons name="chatbubbles-outline" size={18} color={c.textSecondary} />
+                        <Txt variant="callout" style={{ flex: 1 }}>Answering a debate · {stance}</Txt>
+                        <Pressable
+                            onPress={() => router.setParams({ debateId: undefined, side: undefined })}
+                            hitSlop={12}
+                            accessibilityRole="button"
+                            accessibilityLabel="Stop answering this debate"
+                        >
+                            <Ionicons name="close" size={18} color={c.textTertiary} />
+                        </Pressable>
+                    </View>
+                ) : null}
+
+                <View style={{ gap: 12 }}>
+                    <Option primary icon="videocam" title="Record a video" subtitle="Say it on camera, up to 90 seconds" onPress={record} />
+                    <Option icon="images-outline" title="Upload a video" subtitle="Vertical works best" onPress={upload} />
+                    {replying ? null : (
+                        <Option icon="chatbubbles-outline" title="Propose a thesis" subtitle="Put an argument out, let people pick a side" onPress={() => router.push('/publish')} />
+                    )}
                 </View>
 
-                {/* CARDS */}
-                <View style={styles.cardsContainer}>
-                    <ActionCard
-                        onPress={pickVideo}
-                        icon="videocam"
-                        title="Upload Video"
-                        subtitle="Vertical 9:16 format"
-                        isPrimary={true}
-                    />
-
-                    <ActionCard
-                        onPress={handleWritePost}
-                        icon="chatbubbles-outline"
-                        title="Propose Thesis"
-                        subtitle="Start a logical debate"
-                        isPrimary={false}
-                    />
+                <View style={[styles.tips, { borderColor: c.hairline }]}>
+                    <Txt variant="micro" tone="tertiary" style={{ letterSpacing: 1.2, marginBottom: 12 }}>MAKE IT COUNT</Txt>
+                    {TIPS.map((tip, i) => (
+                        <View key={i} style={styles.tip}>
+                            <Txt variant="callout" tone="tertiary" style={{ width: 18 }}>{i + 1}</Txt>
+                            <Txt variant="callout" tone="secondary" style={{ flex: 1 }}>{tip}</Txt>
+                        </View>
+                    ))}
                 </View>
-
-                {/* FOOTER TEXT */}
-                <View style={styles.footerWrap}>
-                    <Text style={[styles.footerText, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.mono }]}>
-                        {`DESIGN SYSTEM\nB/W/BLU`}
-                    </Text>
-                </View>
-
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     root: { flex: 1 },
-    center: { justifyContent: 'center', alignItems: 'center' },
-    scrollContent: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 60, flexGrow: 1 },
-
-    // Lock screen
-    lockTitle: { fontSize: 24, fontWeight: '900', textTransform: 'uppercase', letterSpacing: -0.5 },
-    lockSub: { fontSize: 15, marginTop: 8, textAlign: 'center' },
-
-    // Hero
-    heroBox: { marginBottom: 40, marginTop: 10 },
-    heroLine: { width: 40, height: 4, backgroundColor: '#D9E4FF', marginBottom: 24 },
-    heroText: {
-        fontSize: Platform.OS === 'web' ? 44 : 38,
-        fontWeight: '900',
-        textTransform: 'uppercase',
-        letterSpacing: -1,
-        lineHeight: Platform.OS === 'web' ? 50 : 44,
-    },
-
-    // Cards
-    cardsContainer: {
+    center: { alignItems: 'center', justifyContent: 'center' },
+    option: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 16,
-        marginBottom: 24,
-    },
-    card: {
-        width: '45%',
-        maxWidth: 300,
-        borderRadius: 24,
-        padding: 24,
-        minHeight: 180,
-        justifyContent: 'space-between',
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 12,
-        backgroundColor: 'rgba(255,255,255,0.08)',
-        borderColor: 'rgba(255,255,255,0.12)',
-        borderWidth: 1,
-    },
-
-    cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-    iconCircle: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        justifyContent: 'center',
         alignItems: 'center',
+        gap: 14,
+        padding: 16,
+        minHeight: 84,
+        borderRadius: RADIUS.lg,
     },
-    arrowCircle: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cardFooter: { gap: 6, marginTop: 20 },
-    cardTitle: { fontSize: 22, fontWeight: '800', letterSpacing: -0.5 },
-    cardSubtitle: { fontSize: 14, fontWeight: '500' },
-
-    // Footer
-    footerWrap: { marginTop: 40, alignItems: 'flex-start' },
-    footerText: {
-        fontSize: 11,
-        fontWeight: '800',
-        letterSpacing: 2,
-        lineHeight: 16,
-        opacity: 0.6,
-    },
+    optionIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+    reply: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, height: 48, borderRadius: RADIUS.md, borderWidth: 1, marginBottom: 14 },
+    tips: { marginTop: 32, paddingTop: 20, borderTopWidth: StyleSheet.hairlineWidth },
+    tip: { flexDirection: 'row', gap: 6, marginBottom: 10 },
 });

@@ -302,6 +302,8 @@ export async function chatWithAI(message: string, history: any[]): Promise<strin
 export interface DebateSeed {
     thesis: string;
     arguments: { side: 'FOR' | 'AGAINST'; text: string; strength: number }[];
+    /** True when the model could not be reached and this is a stock placeholder, not a real answer. */
+    fallback?: boolean;
 }
 
 // Generate Debate Seed (Thesis + Arguments)
@@ -334,7 +336,8 @@ export async function generateDebateSeed(contentHint: string): Promise<DebateSee
             arguments: [
                 { side: 'FOR', text: "Logical consistency is the only way to reach a universal truth.", strength: 10 },
                 { side: 'AGAINST', text: "Human experience is fundamentally emotional, ignoring it leads to flawed conclusions.", strength: 12 }
-            ]
+            ],
+            fallback: true,
         };
     }
 }

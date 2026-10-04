@@ -10,6 +10,7 @@
  *
  * Use through useUI() so light and dark both come out right.
  */
+import { Platform } from 'react-native';
 import { useTheme } from '../components/Theme/ThemeProvider';
 
 /** The logo's two colours. */
@@ -35,6 +36,9 @@ export const type = {
 } as const;
 
 export type TypeVariant = keyof typeof type;
+
+/** Text inputs draw their own focus border; the browser's default ring on top of it is only a web thing. */
+export const NO_OUTLINE = Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null;
 
 export const RADIUS = { sm: 10, md: 14, lg: 20, xl: 28, pill: 999 } as const;
 export const SPACE = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
