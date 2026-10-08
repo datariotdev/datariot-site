@@ -65,11 +65,13 @@ const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime:
         ]).start();
     }, [isSeeking, trackHeight, dotScale, labelScale]);
 
+    // m:ss, and h:mm:ss once a video passes an hour
     const formatTime = (millis: number) => {
-        const totalSeconds = Math.max(0, millis) / 1000;
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = Math.floor(totalSeconds % 60);
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        const total = Math.floor(Math.max(0, millis) / 1000);
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const sec = (total % 60).toString().padStart(2, '0');
+        return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${sec}` : `${m}:${sec}`;
     };
 
     const handleSlidingStart = () => {

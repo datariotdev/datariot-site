@@ -41,8 +41,11 @@ interface VideoPlayerLayerProps {
 }
 
 const formatClock = (millis: number) => {
-    const total = Math.max(0, millis) / 1000;
-    return `${Math.floor(total / 60)}:${Math.floor(total % 60).toString().padStart(2, '0')}`;
+    const total = Math.floor(Math.max(0, millis) / 1000);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const sec = (total % 60).toString().padStart(2, '0');
+    return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${sec}` : `${m}:${sec}`;
 };
 
 const VideoPlayerLayer = ({ videoUrl, isActive, isFocused, isPaused, isMuted, onTimeUpdate }: VideoPlayerLayerProps) => {
