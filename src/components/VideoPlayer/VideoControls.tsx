@@ -37,6 +37,10 @@ interface VideoControlsProps {
  * right (the same Doto face the website uses for counters). While dragging, the
  * digits show where you are, so you can tell what you are jumping to.
  */
+// A see-through 28pt thumb: iOS keeps drawing its white knob (and shadow) even with a clear tint,
+// and the size keeps the grab area comfortable. Our own dot shows while dragging instead.
+const INVISIBLE_THUMB = { uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAGklEQVR4nO3BMQEAAADCoPVPbQhfoAAAAH4DDFwAAf7ywOgAAAAASUVORK5CYII=' };
+
 const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime: number, duration: number, onSeek?: (value: number) => void }) => {
     const [isSeeking, setIsSeeking] = useState(false);
     const [seekValue, setSeekValue] = useState(0);
@@ -108,6 +112,7 @@ const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime:
                     minimumTrackTintColor="transparent"
                     maximumTrackTintColor="transparent"
                     thumbTintColor="transparent"
+                    thumbImage={INVISIBLE_THUMB}
                     onSlidingStart={handleSlidingStart}
                     onValueChange={handleValueChange}
                     onSlidingComplete={handleSlidingComplete}
