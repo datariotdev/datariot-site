@@ -14,7 +14,7 @@ import {
     useWindowDimensions,
     Platform
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,18 +22,11 @@ import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { encodeVideoUrl } from '../../lib/utils/url';
 import { VideoControls } from '../VideoPlayer/VideoControls';
+import { PlayerTopBar } from '../VideoPlayer/PlayerTopBar';
 import { CommentsModal } from './CommentsModal';
 import { DeepDiveModal } from './DeepDiveModal';
 import { MoreOptionsModal } from './MoreOptionsModal';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withRepeat,
-    withTiming,
-    withSequence,
-    FadeIn
-} from 'react-native-reanimated';
 import { useTheme } from '../Theme/ThemeProvider';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -187,22 +180,6 @@ export function FullScreenVideoModal({
     const { height: screenHeight } = useWindowDimensions();
     const [activeIndex, setActiveIndex] = useState(0);
 
-    // AI Pulsing Animation
-    const pulseAnim = useSharedValue(1);
-    useEffect(() => {
-        pulseAnim.value = withRepeat(
-            withSequence(
-                withTiming(0.4, { duration: 1000 }),
-                withTiming(1, { duration: 1000 })
-            ),
-            -1,
-            true
-        );
-    }, []);
-
-    const animatedPulseStyle = useAnimatedStyle(() => ({
-        opacity: pulseAnim.value,
-    }));
     const flatListRef = useRef<FlatList>(null);
     const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
     const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
@@ -256,41 +233,16 @@ export function FullScreenVideoModal({
                     style={[styles.statusShadow, { height: insets.top + 30 }]}
                     pointerEvents="none"
                 />
-                <View style={[styles.headerWrapper, { top: Math.max(insets.top, 20) }]}>
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={onClose}
-                    >
-                        <Ionicons name="close" size={28} color="#FFF" />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={() => {
+                <View style={[styles.headerWrapper, { top: Math.max(insets.top, 20) }]} pointerEvents="box-none">
+                    <PlayerTopBar
+                        index={activeIndex}
+                        total={videos.length}
+                        onClose={onClose}
+                        onAsk={() => {
                             onClose();
                             router.push('/ai');
                         }}
-                        style={styles.aiLogoContainer}
-                    >
-                        <View style={[
-                            styles.aiLogoWrapper,
-                            {
-                                width: 38,
-                                height: 38,
-                                borderRadius: 19,
-                                borderWidth: 1,
-                                borderColor: 'rgba(217, 228, 255, 0.15)',
-                                backgroundColor: 'rgba(0, 8, 20, 0.5)',
-                                shadowColor: '#D9E4FF',
-                                shadowOffset: { width: 0, height: 0 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 6,
-                                elevation: 3,
-                            }
-                        ]}>
-                            <MaterialCommunityIcons name="robot-excited" size={18} color="#D9E4FF" />
-                        </View>
-                    </TouchableOpacity>
+                    />
                 </View>
 
                 <FlatList
@@ -351,38 +303,12 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 200,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        justifyContent: 'space-between',
-    },
-    closeButton: {
-        width: 44,
-        height: 44,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     pauseOverlay: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.2)',
-    },
-    aiLogoContainer: {
-        width: 44,
-        height: 44,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    aiLogoWrapper: {
-        width: 36,
-        height: 36,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    aiLogo: {
-        width: 32,
-        height: 32,
     },
     statusShadow: {
         position: 'absolute',
