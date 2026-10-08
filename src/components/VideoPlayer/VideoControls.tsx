@@ -31,32 +31,38 @@ interface VideoControlsProps {
     onFollow: () => void;
 }
 
+/**
+ * The progress line under a video: a thin track that fills as the clip plays and
+ * thickens while you drag it, with the clip's length in dot-matrix digits on the
+ * right (the same Doto face the website uses for counters). While dragging, the
+ * digits show where you are, so you can tell what you are jumping to.
+ */
 const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime: number, duration: number, onSeek?: (value: number) => void }) => {
     const [isSeeking, setIsSeeking] = useState(false);
     const [seekValue, setSeekValue] = useState(0);
-    const trackHeightAnim = useRef(new Animated.Value(2)).current; // Initial ultra thin height
-    const thumbScaleAnim = useRef(new Animated.Value(1)).current;
+    const trackHeight = useRef(new Animated.Value(4)).current;
+    const dotScale = useRef(new Animated.Value(0)).current;
+    const labelScale = useRef(new Animated.Value(1)).current;
+    const fill = useRef(new Animated.Value(0)).current;
 
     const displayTime = isSeeking ? seekValue : currentTime;
-    const progressPercent = duration > 0 ? (displayTime / duration) * 100 : 0;
+    const progress = duration > 0 ? Math.min(1, Math.max(0, displayTime / duration)) : 0;
+
+    // The fill glides to each new position instead of stepping
+    useEffect(() => {
+        Animated.timing(fill, { toValue: progress, duration: isSeeking ? 0 : 160, useNativeDriver: false }).start();
+    }, [progress, isSeeking, fill]);
 
     useEffect(() => {
         Animated.parallel([
-            Animated.timing(trackHeightAnim, {
-                toValue: isSeeking ? 6 : 2, // Thicker when seeking
-                duration: 150,
-                useNativeDriver: false, // height is not supported by native driver
-            }),
-            Animated.timing(thumbScaleAnim, {
-                toValue: isSeeking ? 1.5 : 1,
-                duration: 150,
-                useNativeDriver: true,
-            })
+            Animated.timing(trackHeight, { toValue: isSeeking ? 8 : 4, duration: 150, useNativeDriver: false }),
+            Animated.spring(dotScale, { toValue: isSeeking ? 1 : 0, useNativeDriver: true, speed: 30, bounciness: 8 }),
+            Animated.spring(labelScale, { toValue: isSeeking ? 1.14 : 1, useNativeDriver: true, speed: 30, bounciness: 6 }),
         ]).start();
-    }, [isSeeking, trackHeightAnim, thumbScaleAnim]);
+    }, [isSeeking, trackHeight, dotScale, labelScale]);
 
     const formatTime = (millis: number) => {
-        const totalSeconds = millis / 1000;
+        const totalSeconds = Math.max(0, millis) / 1000;
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = Math.floor(totalSeconds % 60);
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -77,22 +83,23 @@ const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime:
         setTimeout(() => setIsSeeking(false), 200);
     };
 
+    const fillWidth = fill.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
+    const fillLeft = fill.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
+
     return (
         <View style={styles.scrubberContainer} pointerEvents="box-none">
             <View style={styles.sliderContainer} pointerEvents="box-none">
-                {/* Background Track */}
-                <View style={styles.trackBase} pointerEvents="none" />
+                {/* Track and fill, centred in the touch area */}
+                <View style={styles.trackWrap} pointerEvents="none">
+                    <Animated.View style={[styles.trackBase, { height: trackHeight }]}>
+                        <Animated.View style={[styles.trackFill, { width: fillWidth }]} />
+                    </Animated.View>
+                    <Animated.View style={[styles.dotPos, { left: fillLeft }]}>
+                        <Animated.View style={[styles.dot, { transform: [{ scale: dotScale }] }]} />
+                    </Animated.View>
+                </View>
 
-                {/* Progress Fill */}
-                <View
-                    style={[
-                        styles.trackFill,
-                        { width: `${progressPercent}%` }
-                    ]}
-                    pointerEvents="none"
-                />
-
-                {/* Actual Slider Layer */}
+                {/* The real slider sits on top, invisible, and takes the touches */}
                 <Slider
                     style={styles.slider}
                     minimumValue={0}
@@ -100,7 +107,7 @@ const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime:
                     value={isSeeking ? seekValue : currentTime}
                     minimumTrackTintColor="transparent"
                     maximumTrackTintColor="transparent"
-                    thumbTintColor="#FFFFFF" // Making thumb visible definitively
+                    thumbTintColor="transparent"
                     onSlidingStart={handleSlidingStart}
                     onValueChange={handleValueChange}
                     onSlidingComplete={handleSlidingComplete}
@@ -108,9 +115,9 @@ const VideoScrubber = ({ currentTime = 0, duration = 0, onSeek }: { currentTime:
             </View>
 
             <View style={styles.timeWrapper}>
-                <Text style={styles.timeText}>
-                    {formatTime(displayTime)} / {formatTime(duration)}
-                </Text>
+                <Animated.Text style={[styles.timeText, { transform: [{ scale: labelScale }] }]}>
+                    {formatTime(isSeeking ? seekValue : duration)}
+                </Animated.Text>
             </View>
         </View>
     );
@@ -454,42 +461,56 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 32,
         justifyContent: 'center',
-        marginRight: 12,
+        marginRight: 14,
         position: 'relative',
     },
+    trackWrap: {
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'center',
+    },
     trackBase: {
-        position: 'absolute',
-        top: 14,
-        left: 0,
-        right: 0,
-        height: 2,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        width: '100%',
+        borderRadius: 4,
+        overflow: 'hidden',
+        backgroundColor: 'rgba(218, 230, 247, 0.16)',
     },
     trackFill: {
         position: 'absolute',
-        top: 14,
         left: 0,
-        height: 2,
-        backgroundColor: '#D9E4FF',
-        zIndex: 1,
-        shadowColor: '#D9E4FF',
+        top: 0,
+        bottom: 0,
+        borderRadius: 4,
+        backgroundColor: '#DAE6F7',
+    },
+    dotPos: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        width: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    dot: {
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        backgroundColor: '#DAE6F7',
+        shadowColor: '#DAE6F7',
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.8,
-        shadowRadius: 4,
+        shadowOpacity: 0.6,
+        shadowRadius: 6,
     },
     timeWrapper: {
         justifyContent: 'center',
         height: 32,
     },
     timeText: {
-        color: '#FFFFFF',
-        fontFamily: theme.typography.fontFamilies.bold,
-        fontSize: 11,
+        color: 'rgba(226, 235, 250, 0.95)',
+        fontFamily: 'Doto_900Black',
+        fontSize: 18,
+        letterSpacing: 1,
         textAlign: 'right',
-        minWidth: 80,
-        textShadowColor: 'rgba(0, 0, 0, 0.9)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 4,
+        minWidth: 46,
     },
     slider: {
         width: '100%',
