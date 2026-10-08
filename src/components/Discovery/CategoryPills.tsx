@@ -55,25 +55,37 @@ const Chip = ({
     const accent = theme.colors.primary.DEFAULT;
 
     if (SOFT) {
+        // Outline pills; the chosen one is solid ice (ink in the light theme) with a dot
+        const solid = isDark ? '#DAE6F7' : '#07080C';
+        const onSolid = isDark ? '#07080C' : '#DAE6F7';
         return (
             <Pressable
                 onPress={onPress}
                 style={[
                     styles.softChip,
-                    {
-                        backgroundColor: isActive
-                            ? (isDark ? accent : '#1E2A55')
-                            : (isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(30, 42, 85, 0.08)'),
-                    },
+                    isActive
+                        ? {
+                            backgroundColor: solid,
+                            borderColor: solid,
+                            shadowColor: '#DAE6F7',
+                            shadowOffset: { width: 0, height: 0 },
+                            shadowOpacity: isDark ? 0.4 : 0,
+                            shadowRadius: 10,
+                        }
+                        : {
+                            backgroundColor: 'transparent',
+                            borderColor: isDark ? 'rgba(218, 230, 247, 0.24)' : 'rgba(7, 8, 12, 0.22)',
+                        },
                 ]}
             >
+                {isActive && <View style={[styles.softDot, { backgroundColor: onSolid }]} />}
                 <Text
                     allowFontScaling={false}
                     style={[
                         styles.softText,
                         {
                             fontFamily: isActive ? theme.typography.fontFamilies.semibold : theme.typography.fontFamilies.medium,
-                            color: isActive ? (isDark ? '#08090D' : '#FFFFFF') : (isDark ? 'rgba(217, 228, 255, 0.78)' : '#44507A'),
+                            color: isActive ? onSolid : (isDark ? 'rgba(218, 230, 247, 0.82)' : 'rgba(7, 8, 12, 0.72)'),
                         },
                     ]}
                 >
@@ -156,8 +168,16 @@ const styles = StyleSheet.create({
         height: 34,
         paddingHorizontal: 16,
         borderRadius: 999,
+        borderWidth: 1,
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    softDot: {
+        width: 5,
+        height: 5,
+        borderRadius: 2.5,
+        marginRight: 7,
     },
     softText: {
         fontSize: 13,

@@ -262,7 +262,7 @@ const HomeScreen = () => {
                                 styles.roundButton,
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
-                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                    borderColor: isDark ? 'rgba(218,230,247,0.16)' : 'rgba(7,8,12,0.10)',
                                 },
                             ]}
                             onPress={() => setIsMenuOpen(true)}
@@ -280,7 +280,7 @@ const HomeScreen = () => {
                                 styles.pillBlur,
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-                                    borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
+                                    borderColor: isDark ? 'rgba(218,230,247,0.16)' : 'rgba(7,8,12,0.10)',
                                 },
                             ]}
                         >
@@ -303,19 +303,24 @@ const HomeScreen = () => {
                                 styles.roundButton,
                                 {
                                     backgroundColor: viewMode === 'mosaic'
-                                        ? theme.colors.primary.DEFAULT
+                                        ? (isDark ? '#DAE6F7' : '#07080C')
                                         : (isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)'),
-                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                    borderColor: viewMode === 'mosaic'
+                                        ? (isDark ? '#DAE6F7' : '#07080C')
+                                        : (isDark ? 'rgba(218,230,247,0.16)' : 'rgba(7,8,12,0.10)'),
                                     marginRight: 8,
                                 },
                             ]}
                             onPress={() => setViewMode(viewMode === 'mosaic' ? 'classic' : 'mosaic')}
                         >
-                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            {/* The chosen state is a clean solid; blur over it only greys the colour */}
+                            {viewMode !== 'mosaic' && (
+                                <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            )}
                             <Ionicons
                                 name={viewMode === 'mosaic' ? 'grid' : 'apps'}
                                 size={22}
-                                color={viewMode === 'mosaic' ? '#000' : theme.colors.text.primary}
+                                color={viewMode === 'mosaic' ? (isDark ? '#07080C' : '#DAE6F7') : theme.colors.text.primary}
                             />
                         </Pressable>
 
@@ -324,7 +329,7 @@ const HomeScreen = () => {
                                 styles.roundButton,
                                 {
                                     backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
-                                    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                    borderColor: isDark ? 'rgba(218,230,247,0.16)' : 'rgba(7,8,12,0.10)',
                                 },
                             ]}
                             onPress={() => router.push('/profile')}
@@ -431,7 +436,7 @@ const styles = StyleSheet.create({
         height: 36,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 4,
+        paddingHorizontal: 1,
         borderRadius: 18,
         overflow: 'hidden',
     },
@@ -444,9 +449,10 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     tabText: {
-        fontSize: 10,
-        fontWeight: '700',
-        letterSpacing: 0.5,
+        fontFamily: 'Doto_900Black',
+        fontSize: 10.5,
+        letterSpacing: 0,
+        includeFontPadding: false,
     },
     loadingContainer: {
         flex: 1,
@@ -518,25 +524,21 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
         >
             {isActive && (
                 <View style={[StyleSheet.absoluteFill, { padding: 2 }]}>
-                    <LinearGradient
-                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.tabIndicatorBackground}
+                    <View
+                        style={[
+                            styles.tabIndicatorBackground,
+                            { backgroundColor: isDark ? '#DAE6F7' : '#07080C' },
+                        ]}
                     />
                 </View>
             )}
             <Text
                 numberOfLines={1}
-                ellipsizeMode="tail"
+                ellipsizeMode="clip"
                 style={[
                     styles.tabText,
-                    { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium },
-                    isActive && {
-                        color: isDark ? '#000000' : '#FFFFFF',
-                        fontFamily: theme.typography.fontFamilies.bold,
-                        fontWeight: '800',
-                    },
+                    { color: isDark ? 'rgba(218,230,247,0.62)' : 'rgba(7,8,12,0.6)' },
+                    isActive && { color: isDark ? '#07080C' : '#DAE6F7' },
                 ]}
             >
                 {label}

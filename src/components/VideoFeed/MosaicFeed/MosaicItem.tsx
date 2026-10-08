@@ -6,12 +6,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { theme } from '@design-system/theme';
+import { HalftoneArt } from './HalftoneArt';
 
 const GRID_SPACING = 12;
 // Item width is handled by flex and numColumns in parent
 
 interface MosaicItemProps {
     video: any;
+    index?: number;
     isActive: boolean;
     isScreenFocused: boolean;
     onPress: () => void;
@@ -69,26 +71,33 @@ const MosaicVideo = ({ videoUrl, isActive, isScreenFocused, onFailed }: MosaicVi
     );
 };
 
-const ICE = '#D9E4FF';
+const ICE = '#DAE6F7';
+const INK = '#07080C';
+const pad2 = (n: number) => n.toString().padStart(2, '0');
 
-export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: MosaicItemProps) => {
-    const { theme, mode } = useTheme();
+export const MosaicItem = memo(({ video, index = 0, isActive, isScreenFocused, onPress }: MosaicItemProps) => {
+    const { mode } = useTheme();
     const isDark = mode === 'dark';
     const [failed, setFailed] = useState(false);
     // The placeholder picsum image is not this video's picture, so it is not used as a stand-in
     const realThumb = video.thumbnailUrl && !/picsum\.photos/.test(video.thumbnailUrl) ? video.thumbnailUrl : null;
+    const hasMedia = (video.videoUrl && !failed) || !!realThumb;
+
+    // Tiles with a picture are dark under their text in either theme; the dot-art ones follow the theme
+    const onDark = isDark || hasMedia;
+    const fg = onDark ? '#FFFFFF' : INK;
+    const fgSoft = onDark ? 'rgba(218, 230, 247, 0.85)' : 'rgba(7, 8, 12, 0.62)';
+    const hairline = onDark ? 'rgba(218, 230, 247, 0.30)' : 'rgba(7, 8, 12, 0.22)';
 
     return (
-        <Pressable onPress={onPress} style={[styles.container, { borderColor: isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(8, 9, 13, 0.08)' }]}>
-            <View style={styles.card}>
-                {/* Brand backdrop: shows while a clip loads and when it cannot play */}
-                <LinearGradient
-                    colors={isDark ? ['#1A1C24', '#0D0E13'] : ['#F2F6FD', '#C4D5F0']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={StyleSheet.absoluteFill}
-                />
-
+        <Pressable
+            onPress={onPress}
+            style={[
+                styles.container,
+                { borderColor: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.08)' },
+            ]}
+        >
+            <View style={[styles.card, { backgroundColor: isDark ? '#0A0B10' : '#EEF3FC' }]}>
                 {video.videoUrl && !failed ? (
                     <MosaicVideo
                         videoUrl={video.videoUrl}
@@ -99,40 +108,53 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                 ) : realThumb ? (
                     <Image source={{ uri: realThumb }} style={StyleSheet.absoluteFill} resizeMode="cover" />
                 ) : (
-                    <View style={[StyleSheet.absoluteFill, styles.centered]}>
-                        <View style={styles.playGlyph}>
-                            <Ionicons name="play" size={20} color={ICE} style={{ marginLeft: 2 }} />
-                        </View>
-                    </View>
+                    <HalftoneArt seed={String(video.id || video.title || index)} isDark={isDark} />
                 )}
 
-                {/* Soft navy fade so the text reads without a hard black slab */}
-                <LinearGradient
-                    colors={['rgba(8,9,13,0)', 'rgba(8,9,13,0.3)', 'rgba(8,9,13,0.9)']}
-                    locations={[0.35, 0.6, 1]}
-                    style={StyleSheet.absoluteFill}
-                />
+                {/* Fade so the text reads without a hard black slab */}
+                {(hasMedia || isDark) && (
+                    <LinearGradient
+                        colors={['rgba(7,8,12,0)', 'rgba(7,8,12,0.35)', 'rgba(7,8,12,0.92)']}
+                        locations={[0.3, 0.62, 1]}
+                        style={StyleSheet.absoluteFill}
+                        pointerEvents="none"
+                    />
+                )}
 
                 {video.category && (
-                    <View style={styles.topBadgeContainer}>
-                        <View style={styles.categoryBadge}>
-                            <Text style={styles.categoryText}>{String(video.category)}</Text>
-                        </View>
+                    <View
+                        style={[
+                            styles.categoryBadge,
+                            {
+                                borderColor: hairline,
+                                backgroundColor: onDark ? 'rgba(7, 8, 12, 0.72)' : 'rgba(255, 255, 255, 0.72)',
+                            },
+                        ]}
+                    >
+                        <View style={[styles.categoryDot, { backgroundColor: onDark ? ICE : INK }]} />
+                        <Text style={[styles.categoryText, { color: onDark ? ICE : INK }]} numberOfLines={1}>
+                            {String(video.category).toUpperCase()}
+                        </Text>
                     </View>
                 )}
 
+                {/* Contact-sheet frame number */}
+                <Text style={[styles.frameNo, { color: onDark ? 'rgba(218, 230, 247, 0.9)' : 'rgba(7, 8, 12, 0.55)' }]}>
+                    {pad2(index + 1)}
+                </Text>
+
                 <View style={styles.bottomOverlay}>
-                    <Text style={styles.title} numberOfLines={2}>
+                    <Text style={[styles.title, { color: fg }]} numberOfLines={2}>
                         {video.title || ''}
                     </Text>
 
                     <View style={styles.footerRow}>
-                        <Text style={styles.authorName} numberOfLines={1}>
+                        <Text style={[styles.authorName, { color: fgSoft }]} numberOfLines={1}>
                             {video.author ? `@${video.author}` : ''}
                         </Text>
                         <View style={styles.statsContainer}>
-                            <Ionicons name="heart" size={11} color={ICE} />
-                            <Text style={styles.statsText}>{formatNumber(video.likes)}</Text>
+                            <Ionicons name="heart" size={11} color={onDark ? ICE : INK} />
+                            <Text style={[styles.statsText, { color: fg }]}>{formatNumber(video.likes || 0)}</Text>
                         </View>
                     </View>
                 </View>
@@ -163,35 +185,39 @@ const styles = StyleSheet.create({
     card: {
         flex: 1,
     },
-    centered: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    playGlyph: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: 'rgba(217, 228, 255, 0.14)',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    topBadgeContainer: {
+    categoryBadge: {
         position: 'absolute',
         top: 10,
         left: 10,
+        maxWidth: '70%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 1,
     },
-    categoryBadge: {
-        backgroundColor: 'rgba(217, 228, 255, 0.18)',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 999,
-        zIndex: 20,
+    categoryDot: {
+        width: 4,
+        height: 4,
+        borderRadius: 2,
+        marginRight: 6,
     },
     categoryText: {
-        color: ICE,
-        fontSize: 10.5,
-        letterSpacing: 0.3,
-        fontFamily: FONT_MED,
+        flexShrink: 1,
+        fontSize: 11,
+        letterSpacing: 0.6,
+        fontFamily: 'Doto_900Black',
+        includeFontPadding: false,
+    },
+    frameNo: {
+        position: 'absolute',
+        top: 11,
+        right: 12,
+        fontSize: 14,
+        letterSpacing: 1,
+        fontFamily: 'Doto_900Black',
+        includeFontPadding: false,
     },
     bottomOverlay: {
         position: 'absolute',
@@ -201,7 +227,6 @@ const styles = StyleSheet.create({
         padding: 12,
     },
     title: {
-        color: '#FFF',
         fontSize: 13.5,
         lineHeight: 17,
         marginBottom: 6,
@@ -213,7 +238,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     authorName: {
-        color: 'rgba(217, 228, 255, 0.85)',
         fontSize: 11,
         flex: 1,
         fontFamily: FONT_MED,
@@ -225,8 +249,9 @@ const styles = StyleSheet.create({
         gap: 3,
     },
     statsText: {
-        color: '#FFF',
-        fontSize: 11,
-        fontFamily: FONT_MED,
+        fontSize: 14,
+        letterSpacing: 0.5,
+        fontFamily: 'Doto_900Black',
+        includeFontPadding: false,
     },
 });
