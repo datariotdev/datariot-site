@@ -40,6 +40,11 @@ interface VideoPlayerLayerProps {
     onTimeUpdate: (currentTime: number, duration: number) => void;
 }
 
+const formatClock = (millis: number) => {
+    const total = Math.max(0, millis) / 1000;
+    return `${Math.floor(total / 60)}:${Math.floor(total % 60).toString().padStart(2, '0')}`;
+};
+
 const VideoPlayerLayer = ({ videoUrl, isActive, isFocused, isPaused, isMuted, onTimeUpdate }: VideoPlayerLayerProps) => {
     const videoRef = useRef<Video>(null);
 
@@ -85,6 +90,7 @@ export const CoubClassicItem = memo(({
 }: FeedItemProps) => {
     const [isMuted] = useState(true);
     const [progress, setProgress] = useState(0);
+    const [durationMs, setDurationMs] = useState(0);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const { width: windowWidth } = useWindowDimensions();
@@ -186,7 +192,10 @@ export const CoubClassicItem = memo(({
                         isFocused={isFocused}
                         isPaused={isPaused}
                         isMuted={isMuted}
-                        onTimeUpdate={(current, duration) => setProgress(current / duration)}
+                        onTimeUpdate={(current, duration) => {
+                            setProgress(duration > 0 ? current / duration : 0);
+                            setDurationMs(prev => (Math.abs(prev - duration) > 250 ? duration : prev));
+                        }}
                     />
                 ) : (
                     <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#06070A', justifyContent: 'center', alignItems: 'center' }]}>
@@ -213,20 +222,18 @@ export const CoubClassicItem = memo(({
                     </View>
                 )}
 
-                {/* Premium Gradient Progress Bar */}
+                {/* Progress line + dot-matrix duration, same look as the full-screen player */}
+                {durationMs > 0 && (
+                    <View style={styles.durationChip} pointerEvents="none">
+                        <Text style={styles.durationText}>{formatClock(durationMs)}</Text>
+                    </View>
+                )}
                 <View style={styles.progressBarContainer} pointerEvents="none">
-                    <LinearGradient
-                        colors={['#D9E4FF', '#A5C6FF']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={[styles.progressBarFill, { width: `${progress * 100}%` }]}
-                    />
-                    {/* Glow dot at progress tip */}
+                    <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
                     {progress > 0 && (
                         <View style={[styles.progressGlowDot, { left: `${progress * 100}%` }]} />
                     )}
                 </View>
-
 
             </Pressable>
 
@@ -569,13 +576,25 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        height: 3,
-        backgroundColor: 'rgba(255,255,255,0.06)',
+        height: 4,
+        backgroundColor: 'rgba(218,230,247,0.16)',
     },
     progressBarFill: {
         height: '100%',
-        borderTopRightRadius: 3,
-        borderBottomRightRadius: 3,
+        backgroundColor: '#DAE6F7',
+        borderTopRightRadius: 4,
+        borderBottomRightRadius: 4,
+    },
+    durationChip: {
+        position: 'absolute',
+        right: 12,
+        bottom: 12,
+    },
+    durationText: {
+        fontFamily: 'Doto_900Black',
+        fontSize: 18,
+        letterSpacing: 1,
+        color: 'rgba(226,235,250,0.95)',
     },
     progressGlowDot: {
         position: 'absolute',
@@ -583,7 +602,7 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#D9E4FF',
+        backgroundColor: '#DAE6F7',
         marginLeft: -4,
         shadowColor: '#D9E4FF',
         shadowOffset: { width: 0, height: 0 },

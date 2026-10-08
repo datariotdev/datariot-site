@@ -276,8 +276,10 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     timeText: {
-        color: 'white',
-        fontVariant: ['tabular-nums'],
+        color: 'rgba(226,235,250,0.95)',
+        fontFamily: 'Doto_900Black',
+        fontSize: 20,
+        letterSpacing: 1,
     },
     timelineContainer: {
         height: TIMELINE_HEIGHT,
