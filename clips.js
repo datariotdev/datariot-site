@@ -2,9 +2,10 @@
    Datariot — the feed
    The hero phone plays a real clip from the app and keeps the screen around
    it alive: progress, counters, reactions, a comment being typed, the light
-   of the clip spilling into the screen. Section 01 lays out a reel of short
-   clips that each make one point, built from real frames in the app and
-   explainers filmed as screen recordings; slide 04 takes a vote; between
+   of the clip spilling into the screen. Section 01 is a second phone with
+   four real clips on it: tap a question and it swipes to that clip, stamps
+   THE POINT on it and writes the point out; slide 02 plays the loop, a clip
+   filmed, answered and voted on, in one scene; slide 04 takes a vote; between
    them a camera-spider reels the clip with a point up into its web; 06's
    globe turns. The spider, the web and the globe are pixel canvases;
    everything else is DOM and CSS.
@@ -34,13 +35,8 @@
     })();
     if (gfxLite) document.documentElement.classList.add('gfx-lite');
 
-    function esc(s) {
-        return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
-    }
-
-    var ICON = {
-        reply: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg>'
-    };
+    // play a CSS animation again: take its class off, force a style flush, put it back
+    function restart(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 
     // ---------- the hero phone: a real clip from the app ----------
     function initPhone() {
@@ -74,7 +70,6 @@
         function fmt(t) { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ':' + (t % 60 < 10 ? '0' : '') + (t % 60); }
         function two(n) { return (n < 10 ? '0' : '') + n; }
         function num(n) { return n.toLocaleString('en-US'); }
-        function restart(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
         function on(el, yes) { if (el) el.classList.toggle('is-on', yes); }
 
         function react() {
@@ -201,152 +196,191 @@
         }
     }
 
-    // ---------- section 01: the reel ----------
-    // Real frames from clips in the app, and three explainers built the way
-    // they are filmed: a screen recording of a chat, a chart, a timer. Every
-    // point is checkable; the site sells short videos that leave you knowing
-    // something, so the examples have to hold up too.
-    var REEL = [
-        {
-            kind: 'inset', img: 'assets/reel-lidar.jpg', handle: 'Fara', topic: 'Engineering', len: '0:44',
-            title: 'How lidar sees the street',
-            cap: 'Lidar times <mark>laser pulses</mark>',
-            point: 'Lidar times laser pulses as they bounce back and turns the delays into a 3D map.'
-        },
-        {
-            kind: 'chat', handle: 'lena_codes', topic: 'AI', len: '0:45',
-            title: 'What an AI chatbot actually does',
-            cap: 'it predicts <mark>the next word</mark>',
-            point: 'A chatbot predicts likely next words. Facts still need checking.'
-        },
-        {
-            kind: 'video', src: 'assets/hero-clip', handle: 'Fronda', topic: 'Debate', len: '0:14',
-            title: 'Should we prioritize logic over emotion?',
-            cap: 'logic or <mark>emotion?</mark>', replies: '214 video replies',
-            point: 'Emotion tells you what matters; logic tells you what to do about it.'
-        },
-        {
-            kind: 'inset', img: 'assets/reel-bear.jpg', handle: 'Fronda', topic: 'Education', len: '0:31',
-            title: 'Polar bears aren’t actually white',
-            cap: 'the fur is <mark>see-through</mark>',
-            point: 'Their fur is translucent and hollow; it only looks white. The skin underneath is black.'
-        },
-        {
-            kind: 'chart', handle: 'nadia.saves', topic: 'Education', len: '0:49',
-            title: 'Compound interest, in one chart',
-            cap: 'interest earns <mark>interest</mark>',
-            point: 'Interest earns interest, so time does the heavy lifting: $100 at 7% is $761 after 30 years.'
-        },
-        {
-            kind: 'full', img: 'assets/reel-tower.jpg', handle: 'Fronda', topic: 'Engineering', len: '0:38',
-            title: 'Why tall towers sway on purpose',
-            cap: 'built to <mark>bend a little</mark>',
-            point: 'Tall towers are designed to sway a little; flexing absorbs wind that a rigid tower would fight.'
-        },
-        {
-            kind: 'timer', handle: 'aiko.daily', topic: 'Lifestyle', len: '0:27',
-            title: 'The 20-20-20 rule for screen eyes',
-            cap: 'look <mark>20 feet away</mark>',
-            point: 'Every 20 minutes, look 20 feet away for 20 seconds.'
-        }
-    ];
+    // ---------- shared: a row of buttons that take turns ----------
+    // One button is on. While the demo is on screen and nobody has touched
+    // it, the bar inside the button that is on (a CSS animation) is the clock:
+    // when it ends the next button takes over. Hovering or focusing the demo
+    // holds the clock; a tap takes the demo over for good (.is-manual).
+    // show(i, again) paints the rest of the demo; again is true when the
+    // button that is already on was tapped, which plays its scene again.
+    // Until the demo itself is on screen it is .is-away and holds its first
+    // frame (the page's own rule only knows about the whole slide, which
+    // starts a screen before the demo does); onView(seen) hears about it.
+    function takeTurns(root, buttons, show, onView, first) {
+        var n = buttons.length, active = -1;
 
-    // $100 at 7% a year, one point per year for 30 years
-    function growthPath(w, h) {
-        var pts = [], max = 100 * Math.pow(1.07, 30);
-        for (var y = 0; y <= 30; y++) {
-            var v = 100 * Math.pow(1.07, y);
-            pts.push((y / 30 * w).toFixed(1) + ' ' + (h - v / max * h).toFixed(1));
-        }
-        return 'M' + pts.join(' L');
-    }
-
-    function media(c) {
-        if (c.kind === 'video') {
-            return '<video class="reel-card__img" muted loop playsinline preload="none" poster="' + c.src + '.jpg">' +
-                '<source src="' + c.src + '.webm" type="video/webm"><source src="' + c.src + '.mp4" type="video/mp4"></video>';
-        }
-        if (c.kind === 'full') {
-            return '<img class="reel-card__img reel-card__img--drift" src="' + c.img + '" alt="" loading="lazy" decoding="async">';
-        }
-        if (c.kind === 'inset') {
-            // a landscape clip in a vertical frame: the picture in the middle,
-            // its own light behind it, blurred ahead of time (-amb.jpg) so the
-            // moving reel carries no live filter
-            return '<span class="reel-card__amb" style="background-image:url(\'' + c.img.replace(/\.jpg$/, '-amb.jpg') + '\')"></span>' +
-                '<img class="reel-card__inset" src="' + c.img + '" alt="" loading="lazy" decoding="async">';
-        }
-        if (c.kind === 'chat') {
-            return '<div class="rx rx--chat">' +
-                '<span class="rx__app">ASSISTANT</span>' +
-                '<p class="rx__prompt">The cat sat on the<i></i></p>' +
-                '<span class="rx__label">NEXT WORD</span>' +
-                '<ol class="rx__bars">' +
-                '<li style="--v:.62"><b>mat</b><span><i></i></span><em>62%</em></li>' +
-                '<li style="--v:.21"><b>sofa</b><span><i></i></span><em>21%</em></li>' +
-                '<li style="--v:.09"><b>roof</b><span><i></i></span><em>9%</em></li>' +
-                '</ol></div>';
-        }
-        if (c.kind === 'chart') {
-            var d = growthPath(170, 110);
-            return '<div class="rx rx--chart">' +
-                '<span class="rx__app">$100 AT 7% A YEAR</span>' +
-                '<b class="rx__big">$761</b><span class="rx__sub">after 30 years</span>' +
-                '<svg class="rx__plot" viewBox="-4 -6 178 124" aria-hidden="true">' +
-                '<path class="rx__grid" d="M0 110H170M0 55H170M0 0H170"/>' +
-                '<path class="rx__area" d="' + d + ' L170 110 L0 110Z"/>' +
-                '<path class="rx__line" pathLength="1" d="' + d + '"/>' +
-                '</svg>' +
-                '<span class="rx__axis"><i>YEAR 0</i><i>15</i><i>30</i></span></div>';
-        }
-        if (c.kind === 'timer') {
-            return '<div class="rx rx--timer">' +
-                '<span class="rx__app">SCREEN BREAK</span>' +
-                '<span class="rx__ring"><svg viewBox="0 0 120 120" aria-hidden="true">' +
-                '<circle class="rx__track" cx="60" cy="60" r="52"/><circle class="rx__arc" pathLength="1" cx="60" cy="60" r="52"/></svg>' +
-                '<b>20:00</b></span>' +
-                '<span class="rx__chips"><i>20 MIN</i><i>20 FT</i><i>20 SEC</i></span></div>';
-        }
-        return '';
-    }
-
-    function reelCard(c, n) {
-        return '<figure class="reel-card reel-card--' + c.kind + '" style="--n:' + n + '">' +
-            '<div class="reel-card__clip">' +
-            '<div class="reel-card__media">' + media(c) + '</div>' +
-            '<span class="reel-card__top"><em>' + esc(c.topic.toUpperCase()) + '</em><b>' + c.len + '</b></span>' +
-            (c.replies ? '<span class="reel-card__reply">' + ICON.reply + esc(c.replies) + '</span>' : '') +
-            '<p class="reel-card__cap">' + c.cap + '</p>' +
-            '<div class="reel-card__meta"><span class="reel-card__who"><i></i>@' + esc(c.handle) + '</span>' +
-            '<p>' + esc(c.title) + '</p></div>' +
-            '<div class="reel-card__prog"><i></i></div>' +
-            '</div>' +
-            '<figcaption class="reel-card__point"><span>THE POINT</span><p>' + esc(c.point) + '</p></figcaption>' +
-            '</figure>';
-    }
-
-    function initReel() {
-        var track = document.getElementById('reelTrack');
-        if (!track) return;
-        var html = REEL.map(reelCard).join('');
-        // two copies so the marquee can loop without a seam; the copy is hidden from AT
-        track.innerHTML = '<div class="reel__set">' + html + '</div><div class="reel__set" aria-hidden="true">' + html + '</div>';
-
-        // the real clip plays only while its card is on screen
-        var vids = track.querySelectorAll('video');
-        if (!vids.length || reduced || !('IntersectionObserver' in window)) return;
-        var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) {
-                var v = e.target;
-                if (e.isIntersecting && !document.hidden) {
-                    var p = v.play();
-                    if (p && p.catch) p.catch(function () { });
-                } else {
-                    v.pause();
-                }
+        function go(i, byUser) {
+            i = (i + n) % n;
+            var again = i === active;
+            if (byUser) root.classList.add('is-manual');
+            active = i;
+            buttons.forEach(function (b, k) {
+                b.classList.toggle('is-on', k === i);
+                b.setAttribute('aria-pressed', k === i ? 'true' : 'false');
             });
-        }, { threshold: 0.3 });
-        vids.forEach(function (v) { io.observe(v); });
+            show(i, again);
+        }
+
+        buttons.forEach(function (b, k) {
+            b.addEventListener('click', function () { go(k, true); });
+            var bar = b.querySelector('[data-bar]');
+            if (bar) bar.addEventListener('animationend', function () {
+                if (k === active && !root.classList.contains('is-manual')) go(k + 1, false);
+            });
+        });
+
+        var hover = false, focus = false;
+        function hold() { root.classList.toggle('is-held', hover || focus); }
+        if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+            root.addEventListener('pointerenter', function () { hover = true; hold(); });
+            root.addEventListener('pointerleave', function () { hover = false; hold(); });
+        }
+        root.addEventListener('focusin', function () { focus = true; hold(); });
+        root.addEventListener('focusout', function () { focus = false; hold(); });
+
+        go(first || 0, false);
+
+        if ('IntersectionObserver' in window) {
+            root.classList.add('is-away');
+            new IntersectionObserver(function (entries) {
+                var seen = entries[0].isIntersecting;
+                root.classList.toggle('is-away', !seen);
+                if (onView) onView(seen);
+            }, { threshold: 0.25 }).observe(root);
+        } else if (onView) {
+            onView(true);
+        }
+    }
+
+    // ---------- section 01: tap a question, get the point ----------
+    // The phone is a feed of four real clips from the app. Each question on
+    // the right is one of them: tapping it swipes the phone to that clip,
+    // stamps THE POINT on it, and writes the point out underneath. Left
+    // alone, the clips take turns. Every point is checkable; the site sells
+    // short videos that leave you knowing something, so the examples have to
+    // hold up too.
+    function initFeed() {
+        var root = document.getElementById('feedDemo');
+        if (!root) return;
+        var clips = [].slice.call(root.querySelectorAll('.fd__clip'));
+        var qs = [].slice.call(root.querySelectorAll('.fd__q'));
+        var pts = [].slice.call(root.querySelectorAll('.fd__pt'));
+        var rail = root.querySelector('.fd__rail');
+        var points = root.querySelector('.fd__points');
+        if (!clips.length || clips.length !== qs.length || clips.length !== pts.length) return;
+        root.classList.add('is-live');
+        // nothing moves by itself for people who asked for less motion
+        if (reduced) root.classList.add('is-manual');
+
+        // the real clip plays only while it is the one on the phone and on screen
+        var vid = root.querySelector('video');
+        var vidClip = vid && vid.closest('.fd__clip');
+        var visible = false;
+        function syncVideo() {
+            if (!vid || reduced) return;
+            if (visible && !document.hidden && vidClip.classList.contains('is-on')) {
+                var p = vid.play();
+                if (p && p.catch) p.catch(function () { });
+            } else {
+                vid.pause();
+            }
+        }
+
+        function show(i, again) {
+            var wasOn = vidClip && vidClip.classList.contains('is-on');
+            clips.forEach(function (c, k) {
+                c.style.setProperty('--d', k - i);
+                c.classList.toggle('is-on', k === i);
+            });
+            pts.forEach(function (p, k) { p.classList.toggle('is-on', k === i); });
+            if (again) [clips[i], pts[i], qs[i]].forEach(function (el) { restart(el, 'is-on'); });
+            restart(rail, 'is-ping');
+            if (vid && !wasOn && vidClip.classList.contains('is-on')) {
+                try { vid.currentTime = 0; } catch (e) { }
+            }
+            syncVideo();
+        }
+
+        takeTurns(root, qs, function (i, again) {
+            if (root.classList.contains('is-manual') && points && !points.hasAttribute('aria-live')) {
+                // from the first tap on, a new point is read out
+                points.setAttribute('aria-live', 'polite');
+            }
+            show(i, again);
+        }, function (seen) {
+            visible = seen;
+            syncVideo();
+        });
+        document.addEventListener('visibilitychange', syncVideo);
+    }
+
+    // ---------- slide 02: one scene, three steps ----------
+    // The scene is CSS: data-step on #how says which step it is showing, and
+    // every part of it moves by transition. What CSS cannot do is here: the
+    // subtitle that types itself while the clock runs, the reply count and
+    // the votes that count up. Each step runs on one ticker that works the
+    // state out from the time since the step began, and holds still while the
+    // slide is off screen.
+    function initHow() {
+        var root = document.getElementById('how');
+        if (!root) return;
+        var steps = [].slice.call(root.querySelectorAll('.hw__step'));
+        if (steps.length !== 3) return;
+        var clock = root.querySelector('[data-clock]');
+        var typed = root.querySelector('[data-typed]');
+        var post = root.querySelector('.hw__post');
+        var replies = root.querySelector('[data-replies]');
+        var counts = [].slice.call(root.querySelectorAll('[data-to]'));
+        var SAY = typed ? typed.textContent : '';
+        var ticker = 0, t0 = 0, elapsed = 0, active = 0, visible = false;
+        root.classList.add('is-live');
+        // nothing moves by itself for people who asked for less motion
+        if (reduced) root.classList.add('is-manual');
+
+        function setText(el, s) { if (el && el.textContent !== s) el.textContent = s; }
+        function span(t, a, b) { return Math.max(0, Math.min(1, (t - a) / (b - a))); }
+
+        // what the scene reads t ms into a step
+        function render(step, t) {
+            if (step === 0) {
+                var secs = Math.min(24, Math.floor(t / 140));
+                setText(clock, '0:' + (secs < 10 ? '0' : '') + secs);
+                setText(typed, SAY.slice(0, Math.floor(span(t, 500, 500 + SAY.length * 70) * SAY.length)));
+                if (post) post.classList.toggle('is-hit', t > 4600);
+            } else if (step === 1) {
+                setText(replies, t > 1900 ? '2' : t > 1200 ? '1' : '0');
+            } else {
+                setText(replies, '2');
+                var k = 1 - Math.pow(1 - span(t, 600, 2100), 3);
+                counts.forEach(function (el) { setText(el, String(Math.round(k * el.getAttribute('data-to')))); });
+            }
+        }
+
+        function stop() { clearInterval(ticker); ticker = 0; }
+        function run() {
+            if (ticker || reduced || !visible) return;
+            t0 = performance.now() - elapsed;
+            ticker = setInterval(function () {
+                elapsed = performance.now() - t0;
+                render(active, elapsed);
+                if (elapsed > 6000) stop();
+            }, 40);
+        }
+
+        function show(i, again) {
+            if (again) return;                       // the scene is already on that step
+            active = i;
+            root.setAttribute('data-step', String(i + 1));
+            stop();
+            elapsed = 0;
+            render(i, reduced ? 1e5 : 0);            // no motion: the step as it ends
+            run();
+        }
+
+        takeTurns(root, steps, show, function (seen) {
+            visible = seen;
+            if (seen) run(); else stop();
+        }, reduced ? 2 : 0);
     }
 
     // ---------- slide 04: the arena, a vote that works ----------
@@ -868,7 +902,8 @@
 
     function boot() {
         try { initPhone(); } catch (e) { console.warn('feed: phone', e); }
-        try { initReel(); } catch (e) { console.warn('feed: reel', e); }
+        try { initFeed(); } catch (e) { console.warn('feed: clips', e); }
+        try { initHow(); } catch (e) { console.warn('feed: how it works', e); }
         try { initArena(); } catch (e) { console.warn('feed: arena', e); }
         try { initCatch(); } catch (e) { console.warn('feed: catch', e); }
         try { initGlobe(); } catch (e) { console.warn('feed: globe', e); }
