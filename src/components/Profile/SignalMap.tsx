@@ -18,7 +18,7 @@ const pad = (n: number) => n.toString().padStart(2, '0');
 
 interface SignalMapProps {
     /** When each clip, thesis and argument was made */
-    dates: Array<string | number | Date | null | undefined>;
+    dates: (string | number | Date | null | undefined)[];
 }
 
 /**

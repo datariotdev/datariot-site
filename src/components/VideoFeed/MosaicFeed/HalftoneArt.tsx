@@ -85,7 +85,7 @@ export const HalftoneArt = memo(({ seed, isDark }: HalftoneArtProps) => {
         const step = size.w / COLS;
         const rows = Math.max(1, Math.round(size.h / step));
         const maxD = step * 0.76;
-        const out: Array<{ key: string; left: number; top: number; d: number; o: number }> = [];
+        const out: { key: string; left: number; top: number; d: number; o: number }[] = [];
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < COLS; c++) {
                 const s = field((c + 0.5) / COLS, (r + 0.5) / rows, c);

@@ -5,11 +5,16 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { ChatItem } from '../../components/UI/ChatItem';
 import { Avatar } from '../../components/UI/Avatar';
+import { OrbitGlyph } from '../../components/UI/OrbitGlyph';
+import { DotRule } from '../../components/UI/DotRule';
+import { EmptyDots } from '../../components/UI/EmptyDots';
 import { useRouter } from 'expo-router';
 import { useChats } from '../../lib/supabase/hooks/useChats';
 import { supabase } from '../../lib/supabase/client';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
 import { usePalette } from '../../design-system/palette';
+import { LinearGradient } from 'expo-linear-gradient';
+import { withAlpha } from '../../lib/utils/color';
 
 interface Profile {
     id: string;
@@ -18,14 +23,29 @@ interface Profile {
     avatar_url: string | null;
 }
 
-/** Orvelis lives at the top of the list; it is a tool, not a person, so it carries no unread count. */
-const AI_BOT = {
-    id: 'ai-bot',
-    name: 'Orvelis',
-    message: 'Ask anything, or test an argument.',
-    time: '',
-    isAi: true,
-};
+const pad = (n: number) => n.toString().padStart(2, '0');
+
+/** Orvelis is pinned above the conversations: a tool, not a person, so it has no unread count or time. */
+function OrvelisCard({ onPress }: { onPress: () => void }) {
+    const p = usePalette();
+    return (
+        <Pressable
+            onPress={onPress}
+            accessibilityRole="button"
+            accessibilityLabel="Orvelis. Ask anything, or test an argument."
+            style={({ pressed }) => [styles.orv, { backgroundColor: p.accent }, pressed && { opacity: 0.9 }]}
+        >
+            <OrbitGlyph color={p.onAccent} size={42} />
+            <View style={{ flex: 1 }}>
+                <Text style={[styles.orvTitle, { color: p.onAccent }]}>ORVELIS</Text>
+                <Text style={[styles.orvSub, { color: p.onAccent, fontFamily: p.fonts.regular }]}>Ask anything, or test an argument.</Text>
+            </View>
+            <View style={[styles.orvGo, { backgroundColor: p.onAccent }]}>
+                <Ionicons name="arrow-forward" size={18} color={p.accent} />
+            </View>
+        </Pressable>
+    );
+}
 
 export default function InboxScreen() {
     const router = useRouter();
@@ -142,14 +162,22 @@ export default function InboxScreen() {
     const header = (
         <View>
             <View style={[styles.titleRow, { paddingTop: insets.top + 12 }]}>
-                <Text style={[styles.title, { color: p.text, fontFamily: p.fonts.bold }]}>{isSearching ? 'New message' : 'Messages'}</Text>
+                <View>
+                    <Text style={[styles.title, { color: p.text, fontFamily: p.fonts.bold }]}>{isSearching ? 'New message' : 'Messages'}</Text>
+                    <View style={styles.sub}>
+                        <View style={[styles.subDot, { backgroundColor: p.accent }]} />
+                        <Text style={[styles.subText, { color: p.sub }]}>
+                            {isSearching ? 'FIND A CREATOR' : `${pad(chats.length)} ${chats.length === 1 ? 'THREAD' : 'THREADS'}`}
+                        </Text>
+                    </View>
+                </View>
                 <Pressable
                     onPress={isSearching ? closeSearch : () => setIsSearching(true)}
                     hitSlop={8}
                     accessibilityLabel={isSearching ? 'Close search' : 'Find someone to message'}
-                    style={[styles.roundBtn, { backgroundColor: p.card, borderColor: p.border }]}
+                    style={[styles.roundBtn, { backgroundColor: p.accent }]}
                 >
-                    <Ionicons name={isSearching ? 'close' : 'create-outline'} size={20} color={p.text} />
+                    <Ionicons name={isSearching ? 'close' : 'create-outline'} size={21} color={p.onAccent} />
                 </Pressable>
             </View>
 
@@ -168,7 +196,14 @@ export default function InboxScreen() {
                     />
                 </View>
             ) : (
-                <ChatItem {...AI_BOT} onPress={() => handleChatPress(AI_BOT.id)} />
+                <>
+                    <OrvelisCard onPress={() => handleChatPress('ai-bot')} />
+                    {chats.length > 0 && (
+                        <View style={styles.rule}>
+                            <DotRule label="THREADS" right={pad(chats.length)} />
+                        </View>
+                    )}
+                </>
             )}
         </View>
     );
@@ -221,18 +256,13 @@ export default function InboxScreen() {
                     loading ? (
                         <View style={{ paddingTop: 40 }}><ActivityIndicator color={p.sub} /></View>
                     ) : (
-                        <View style={styles.empty}>
-                            <View style={[styles.emptyIcon, { backgroundColor: p.card, borderColor: p.border }]}>
-                                <Ionicons name="chatbubble-ellipses-outline" size={26} color={p.sub} />
-                            </View>
-                            <Text style={[styles.emptyTitle, { color: p.text, fontFamily: p.fonts.bold }]}>No conversations yet</Text>
-                            <Text style={[styles.emptySub, { color: p.sub, fontFamily: p.fonts.regular }]}>
-                                Find a creator whose video made you think and say so.
-                            </Text>
-                            <Pressable onPress={() => setIsSearching(true)} style={({ pressed }) => [styles.cta, { backgroundColor: p.accent }, pressed && { opacity: 0.8 }]}>
-                                <Text style={[styles.ctaText, { color: p.onAccent, fontFamily: p.fonts.semibold }]}>Find someone</Text>
-                            </Pressable>
-                        </View>
+                        <EmptyDots
+                            glyph="thesis"
+                            title="No conversations yet"
+                            sub="Find a creator whose video made you think and say so."
+                            cta="Find someone"
+                            onCta={() => setIsSearching(true)}
+                        />
                     )
                 }
                 renderItem={({ item }) => (
@@ -241,27 +271,39 @@ export default function InboxScreen() {
                 contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
                 showsVerticalScrollIndicator={false}
             />
+            {/* Rows fade out above the tab bar instead of running under its icons */}
+            {Platform.OS !== 'web' && (
+                <LinearGradient
+                    colors={[withAlpha(p.bg, 0), withAlpha(p.bg, 0.92), p.bg]}
+                    locations={[0, 0.55, 1]}
+                    style={[styles.bottomFade, { height: tabBarHeight + 40 }]}
+                    pointerEvents="none"
+                />
+            )}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 14 },
-    title: { fontSize: 32, letterSpacing: -0.8 },
-    roundBtn: { width: 42, height: 42, borderRadius: 21, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-    search: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, marginHorizontal: 20, marginBottom: 10, paddingHorizontal: 16, borderRadius: 24, borderWidth: 1 },
+    titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 16 },
+    title: { fontSize: 34, letterSpacing: -0.9 },
+    sub: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+    subDot: { width: 5, height: 5, borderRadius: 2.5, marginRight: 8 },
+    subText: { fontFamily: 'Doto_700Bold', fontSize: 13, letterSpacing: 1.6, includeFontPadding: false },
+    roundBtn: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
+    orv: { flexDirection: 'row', alignItems: 'center', gap: 14, marginHorizontal: 16, paddingHorizontal: 16, paddingVertical: 16, borderRadius: 26 },
+    orvTitle: { fontFamily: 'Doto_900Black', fontSize: 21, letterSpacing: 1.6, includeFontPadding: false },
+    orvSub: { fontSize: 13.5, marginTop: 2, opacity: 0.72 },
+    orvGo: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+    bottomFade: { position: 'absolute', left: 0, right: 0, bottom: 0 },
+    rule: { paddingHorizontal: 20, paddingTop: 22, paddingBottom: 6 },
+    search: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 50, marginHorizontal: 16, marginBottom: 10, paddingHorizontal: 16, borderRadius: 25, borderWidth: 1 },
     searchInput: { flex: 1, height: '100%', fontSize: 16, padding: 0 },
     hint: { textAlign: 'center', fontSize: 14, paddingTop: 36, paddingHorizontal: 30 },
-    userRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 20, paddingVertical: 11 },
+    userRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingVertical: 11 },
     userName: { fontSize: 16 },
     userHandle: { fontSize: 13.5, marginTop: 1 },
     pill: { height: 34, paddingHorizontal: 16, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
     pillText: { fontSize: 13 },
-    empty: { alignItems: 'center', paddingHorizontal: 40, paddingTop: 44 },
-    emptyIcon: { width: 60, height: 60, borderRadius: 30, borderWidth: 1, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
-    emptyTitle: { fontSize: 18 },
-    emptySub: { fontSize: 14.5, lineHeight: 21, textAlign: 'center', marginTop: 6 },
-    cta: { marginTop: 20, height: 44, paddingHorizontal: 24, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-    ctaText: { fontSize: 14.5 },
 });

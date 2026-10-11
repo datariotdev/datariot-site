@@ -4,17 +4,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MosaicItem } from './MosaicItem';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { Video } from '../../../lib/supabase/hooks/useVideos';
+import { withAlpha } from '../../../lib/utils/color';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_SPACING = 12;
-
-// 'rgba' of a #rrggbb colour, so a fade to the page colour has no grey midtones
-const withAlpha = (hex: string, a: number) => {
-    const m = /^#([0-9a-f]{6})$/i.exec(hex);
-    if (!m) return `rgba(0,0,0,${a})`;
-    const n = parseInt(m[1], 16);
-    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
-};
 
 interface MosaicFeedProps {
     videos: Video[];

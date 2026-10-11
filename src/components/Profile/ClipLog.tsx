@@ -170,7 +170,7 @@ interface ClipLogProps {
 /** Clips grouped by month, newest first; the newest one gets the wide frame */
 export function ClipLog({ items, onPress }: ClipLogProps) {
     const groups = useMemo(() => {
-        const out: Array<{ key: string; label: string; items: ClipItem[] }> = [];
+        const out: { key: string; label: string; items: ClipItem[] }[] = [];
         items.forEach(it => {
             const d = it.createdAt ? new Date(it.createdAt) : null;
             const valid = d && !isNaN(d.getTime());

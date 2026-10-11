@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, StatusBar, Platform, ImageBackground, Alert, Image } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
@@ -9,15 +9,15 @@ import { supabase } from '@lib/supabase/client';
 import { theme } from '@design-system/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { encodeVideoUrl } from '@lib/utils/url';
-import Animated, { useAnimatedScrollHandler, useSharedValue, useAnimatedStyle, interpolate, Extrapolation, withSpring, withTiming, SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedScrollHandler, useSharedValue, useAnimatedStyle, interpolate, Extrapolation, SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { SignalMap } from '../../components/Profile/SignalMap';
 import { ProfileTabs } from '../../components/Profile/ProfileTabs';
 import { ClipLog, ClipItem } from '../../components/Profile/ClipLog';
 import { ThesisRow } from '../../components/Profile/ThesisRow';
-import { EmptyDots } from '../../components/Profile/EmptyDots';
-import { DnaSheet } from '../../components/Profile/DnaSheet';
+import { EmptyDots } from '../../components/UI/EmptyDots';
+import { ProfileStats } from '../../components/Profile/ProfileStats';
 import { AmbientGlow } from '../../components/UI/AmbientGlow';
 
 interface ProfileData {
@@ -29,18 +29,9 @@ interface ProfileData {
     followers_count: number;
     following_count: number;
     videos_count: number;
-    theses_count: number;
     arguments_count: number;
-    created_at: string;
-    total_impact_score: number;
-    global_rank?: number | string;
-    top_category?: string;
-    activity_level?: string;
-    win_rate?: string;
 }
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const isWeb = Platform.OS === 'web';
 const HEADER_HEIGHT = 220;
 
 const StickyHeader = ({ scrollY, user, handleSignOut, router }: { scrollY: SharedValue<number>, user: any, handleSignOut: () => void, router: any }) => {
@@ -76,7 +67,7 @@ const StickyHeader = ({ scrollY, user, handleSignOut, router }: { scrollY: Share
     );
 };
 
-const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setActiveTab, onShowAchievements, activityDates, counts }: any) => {
+const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setActiveTab, activityDates, counts }: any) => {
     const router = useRouter();
 
     const bannerStyle = useAnimatedStyle(() => {
@@ -156,48 +147,11 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                             &gt; @{profile?.username || user.email?.split('@')[0]}
                         </Text>
 
-                        {/* Stats Row */}
-                        <View style={[
-                            styles.compactStatsContainer,
-                            {
-                                backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)',
-                                borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
-                                borderWidth: 1,
-                            }
-                        ]}>
-                            <View style={styles.compactStatsRow}>
-                                <View style={styles.compactStatItem}>
-                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{profile?.followers_count || 0}</Text>
-                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>FOLLOWERS</Text>
-                                </View>
-                                <View style={[styles.compactStatDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)' }]} />
-                                <View style={styles.compactStatItem}>
-                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{profile?.following_count || 0}</Text>
-                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>FOLLOWING</Text>
-                                </View>
-                                <View style={[styles.compactStatDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)' }]} />
-                                <View style={styles.compactStatItem}>
-                                    <Text style={[styles.compactStatValue, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{profile?.arguments_count || 0}</Text>
-                                    <Text style={[styles.compactStatLabel, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>ARGUMENTS</Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        {/* Creator DNA Button */}
-                        <Pressable
-                            onPress={onShowAchievements}
-                            style={[styles.achievementsBtn, {
-                                backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
-                                borderWidth: 1,
-                            }]}
-                        >
-                            <View style={styles.achievementsBtnLeft}>
-                                <Ionicons name="finger-print" size={18} color={theme.colors.primary.DEFAULT} style={{ marginRight: 8 }} />
-                                <Text style={[styles.achievementsBtnText, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>[ CREATOR DNA ]</Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={16} color={theme.colors.text.secondary} />
-                        </Pressable>
+                        <ProfileStats
+                            followers={profile?.followers_count || 0}
+                            following={profile?.following_count || 0}
+                            arguments={profile?.arguments_count || 0}
+                        />
                     </View>
                 </View>
 
@@ -220,7 +174,6 @@ export default function ProfileScreen() {
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [activeTab, setActiveTab] = useState<'posts' | 'videos' | 'saved'>('videos');
-    const [showAchievements, setShowAchievements] = useState(false);
     const [commentDates, setCommentDates] = useState<string[]>([]);
     const [savedItems, setSavedItems] = useState<ClipItem[]>([]);
     const { theme, mode } = useTheme();
@@ -378,11 +331,6 @@ export default function ProfileScreen() {
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id);
 
-            const { count: thesisCount } = await supabase
-                .from('posts')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', user.id);
-
             const { count: argumentCount } = await supabase
                 .from('comments')
                 .select('*', { count: 'exact', head: true })
@@ -397,80 +345,11 @@ export default function ProfileScreen() {
                 .limit(400);
             setCommentDates((commentRows || []).map((r: any) => r.created_at).filter(Boolean));
 
-            // Fetch Top Category based on user's videos
-            let topCat = 'General';
-            const { data: userVideos } = await supabase
-                .from('videos')
-                .select('category')
-                .eq('user_id', user.id)
-                .limit(50);
-
-            if (userVideos && userVideos.length > 0) {
-                const categoryCounts = userVideos.reduce((acc: any, val: any) => {
-                    if (val.category) {
-                        acc[val.category] = (acc[val.category] || 0) + 1;
-                    }
-                    return acc;
-                }, {});
-                const sortedCats = Object.entries(categoryCounts).sort((a: any, b: any) => b[1] - a[1]);
-                if (sortedCats.length > 0) {
-                    topCat = (sortedCats[0] as unknown as [string, number])[0];
-                    topCat = topCat.charAt(0).toUpperCase() + topCat.slice(1); // Capitalize
-                }
-            }
-
-            // Calculate Global Rank based on total_impact_score
-            let globalRank: string | number = 'N/A';
-            const impactScore = profileData?.total_impact_score || 0;
-            const { count: rankCount } = await supabase
-                .from('profiles')
-                .select('*', { count: 'exact', head: true })
-                .gt('total_impact_score', impactScore);
-
-            if (rankCount !== null) {
-                globalRank = `#${rankCount + 1}`;
-            }
-
-            // Compute Activity Level
-            const totalActions = (videoCount || 0) + (thesisCount || 0) + (argumentCount || 0);
-            let activityLevel = 'Low';
-            if (totalActions > 50) activityLevel = 'High';
-            else if (totalActions > 10) activityLevel = 'Medium';
-
-            // Compute Win Rate / Approval Rate (Sum of likes on contributions)
-            let approvalRate = '0%';
-            try {
-                const { data: commentLikes } = await supabase
-                    .from('comments')
-                    .select('likes_count')
-                    .eq('user_id', user.id);
-
-                const { data: postLikes } = await supabase
-                    .from('posts')
-                    .select('likes_count')
-                    .eq('user_id', user.id);
-
-                const totalLikes = (commentLikes?.reduce((sum: number, c: any) => sum + (c.likes_count || 0), 0) || 0) +
-                    (postLikes?.reduce((sum: number, p: any) => sum + (p.likes_count || 0), 0) || 0);
-
-                if (totalActions > 0) {
-                    // We call it "Approval Rate" but calculate it as a score normalized to 100 for gamification
-                    approvalRate = Math.min(100, Math.floor((totalLikes / totalActions) * 100)) + '%';
-                }
-            } catch (e) {
-                console.error('Error calculating approval rate:', e);
-            }
-
             if (profileData) {
                 setProfile({
                     ...profileData,
                     videos_count: videoCount || 0,
-                    theses_count: thesisCount || 0,
                     arguments_count: argumentCount || 0,
-                    top_category: topCat,
-                    global_rank: globalRank,
-                    activity_level: activityLevel,
-                    win_rate: approvalRate
                 });
             }
         } catch (error) {
@@ -615,7 +494,6 @@ export default function ProfileScreen() {
                             headerImageUrl={headerImageUrl}
                             activeTab={activeTab}
                             setActiveTab={setActiveTab}
-                            onShowAchievements={() => setShowAchievements(true)}
                             activityDates={activityDates}
                             counts={counts}
                         />
@@ -639,7 +517,6 @@ export default function ProfileScreen() {
                 style={{ backgroundColor: 'transparent' }}
             />
 
-            <DnaSheet visible={showAchievements} onClose={() => setShowAchievements(false)} profile={profile} />
         </View>
     );
 }
@@ -738,28 +615,6 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: 'bold',
     },
-    achievementsBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 16,
-        marginTop: 12,
-        marginBottom: 8,
-        width: '90%',
-        alignSelf: 'center',
-    },
-    achievementsBtnLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-    },
-    achievementsBtnText: {
-        fontSize: 14,
-        fontWeight: '700',
-        letterSpacing: -0.2,
-    },
     infoColumn: {
         alignItems: 'center',
         width: '100%',
@@ -807,40 +662,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
-
     // Compact Stats
-    compactStatsContainer: {
-        marginTop: 4,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        alignSelf: 'center',
-    },
-    compactStatsRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    compactStatItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginRight: 0,
-    },
-    compactStatValue: {
-        fontSize: 15,
-        fontWeight: '800',
-        marginRight: 4,
-    },
-    compactStatLabel: {
-        fontSize: 10,
-        fontWeight: '500',
-        letterSpacing: 0.2,
-        opacity: 0.6,
-    },
-    compactStatDivider: {
-        width: 1,
-        height: 12,
-        marginRight: 12,
-    },
 
     // Empty & Loading
     loadingContainer: {

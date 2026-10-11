@@ -4,7 +4,7 @@ import { usePalette } from '../../design-system/palette';
 
 export type ProfileTab = 'videos' | 'posts' | 'saved';
 
-const TABS: Array<{ key: ProfileTab; label: string }> = [
+const TABS: { key: ProfileTab; label: string }[] = [
     { key: 'videos', label: 'ESSENCE' },
     { key: 'posts', label: 'THESES' },
     { key: 'saved', label: 'VAULT' },

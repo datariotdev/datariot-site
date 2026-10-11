@@ -13,6 +13,18 @@ export interface ChatPreview {
     isAi?: boolean;
 }
 
+const startOfDay = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+
+/** Clock time today, then Yesterday, a weekday within the week, then the date */
+const formatWhen = (iso: string) => {
+    const d = new Date(iso);
+    const days = Math.round((startOfDay(new Date()) - startOfDay(d)) / 86400000);
+    if (days <= 0) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return d.toLocaleDateString([], { weekday: 'short' });
+    return d.toLocaleDateString([], { day: 'numeric', month: 'short' });
+};
+
 export function useChats() {
     const { user } = useAuth();
     const [chats, setChats] = useState<ChatPreview[]>([]);
@@ -101,6 +113,7 @@ export function useChats() {
             }
 
             const finalChats: ChatPreview[] = [];
+            const lastAt: Record<string, number> = {};
             for (const cId of chatIds) {
                 // Try to guess the other user from interactors
                 // (Find the first profile in interactors that appeared in this chat's messages)
@@ -109,18 +122,20 @@ export function useChats() {
 
                 const profile = otherUserId ? profilesMap[otherUserId] : null;
                 const lastMsg = lastMsgs.get(cId);
+                lastAt[cId as string] = lastMsg ? new Date(lastMsg.created_at).getTime() : 0;
 
                 finalChats.push({
                     id: profile?.id || (cId as string),
                     chat_id: cId as string,
                     name: profile ? (profile.display_name || profile.username) : 'Unknown User',
                     message: lastMsg ? (lastMsg.media_type ? `Sent a ${lastMsg.media_type}` : lastMsg.content) : 'Started a conversation',
-                    time: lastMsg ? new Date(lastMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'New',
+                    time: lastMsg ? formatWhen(lastMsg.created_at) : 'New',
                     unreadCount: 0,
                     avatar_url: profile?.avatar_url || null
                 });
             }
 
+            finalChats.sort((a, b) => (lastAt[b.chat_id] || 0) - (lastAt[a.chat_id] || 0));
             setChats(finalChats);
 
         } catch (error) {
