@@ -22,6 +22,8 @@ export interface Video {
     isSaved: boolean;
     isFollowing: boolean;
     thumbnailUrl?: string; // Optional thumbnail URL
+    createdAt?: string;
+    duration?: number; // seconds
     category?: string;
     dnaRationale?: string;
     isHighSynergy?: boolean;
@@ -82,6 +84,8 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             isSaved: false,
             isFollowing: false,
             thumbnailUrl: video.thumbnail_url || video.thumbnail || `https://picsum.photos/seed/${video.id}/800/1200`,
+            createdAt: video.created_at || undefined,
+            duration: Number.isFinite(Number(video.duration)) && Number(video.duration) > 0 ? Number(video.duration) : undefined,
             category: video.category || null,
             dnaRationale: Math.random() > 0.5 ? "Matches your interest in Engineering & Dev" : "Popular in your local DNA community",
             isHighSynergy: (video.id.charCodeAt(0) % 10 < 7) || Math.random() > 0.3, // ~70-80% chance for synergy to ensure sections aren't empty

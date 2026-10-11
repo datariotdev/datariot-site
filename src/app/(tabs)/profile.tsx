@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Alert, Image, Modal, ScrollView, Animated as RNAnimated } from 'react-native';
-import { BlurView } from 'expo-blur';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Alert, Image } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
@@ -8,13 +7,17 @@ import { useVideos } from '@lib/supabase/hooks/useVideos';
 import { usePosts, Post } from '@lib/supabase/hooks/usePosts';
 import { supabase } from '@lib/supabase/client';
 import { theme } from '@design-system/theme';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { Ionicons } from '@expo/vector-icons';
 import { encodeVideoUrl } from '@lib/utils/url';
 import Animated, { useAnimatedScrollHandler, useSharedValue, useAnimatedStyle, interpolate, Extrapolation, withSpring, withTiming, SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { DebateCard } from '@components/Debate/DebateCard';
+import { SignalMap } from '../../components/Profile/SignalMap';
+import { ProfileTabs } from '../../components/Profile/ProfileTabs';
+import { ClipLog, ClipItem } from '../../components/Profile/ClipLog';
+import { ThesisRow } from '../../components/Profile/ThesisRow';
+import { EmptyDots } from '../../components/Profile/EmptyDots';
+import { DnaSheet } from '../../components/Profile/DnaSheet';
 import { AmbientGlow } from '../../components/UI/AmbientGlow';
 
 interface ProfileData {
@@ -38,8 +41,6 @@ interface ProfileData {
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
-// Web layout constrains content to 600px width
-const VIDEO_ITEM_WIDTH = isWeb ? (Math.min(SCREEN_WIDTH, 600) - 2) / 3 : (SCREEN_WIDTH - 2) / 3;
 const HEADER_HEIGHT = 220;
 
 const StickyHeader = ({ scrollY, user, handleSignOut, router }: { scrollY: SharedValue<number>, user: any, handleSignOut: () => void, router: any }) => {
@@ -75,7 +76,7 @@ const StickyHeader = ({ scrollY, user, handleSignOut, router }: { scrollY: Share
     );
 };
 
-const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setActiveTab, onShowAchievements }: any) => {
+const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setActiveTab, onShowAchievements, activityDates, counts }: any) => {
     const router = useRouter();
 
     const bannerStyle = useAnimatedStyle(() => {
@@ -207,181 +208,8 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                 </View>
             </View>
 
-            <View style={[styles.tabsWrapper, { borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', borderWidth: 1 }]}>
-                <BlurView intensity={isDark ? 40 : 60} tint={isDark ? 'dark' : 'light'} style={styles.tabsBlur}>
-                    <View style={styles.tabsContainer}>
-                        {(['videos', 'posts', 'saved'] as const).map((tab) => {
-                            const isActive = activeTab === tab;
-                            return (
-                                <Pressable
-                                    key={tab}
-                                    style={[
-                                        styles.tabItem,
-                                        isActive && {
-                                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
-                                            borderColor: isDark ? 'rgba(0, 240, 255, 0.2)' : 'rgba(8, 145, 178, 0.2)',
-                                            borderWidth: 1,
-                                            borderRadius: 16,
-                                            margin: 2,
-                                        }
-                                    ]}
-                                    onPress={() => setActiveTab(tab)}
-                                >
-                                    {tab === 'videos' ? (
-                                        <MaterialCommunityIcons
-                                            name={isActive ? 'play-box-multiple' : 'play-box-multiple-outline'}
-                                            size={20}
-                                            color={isActive ? theme.colors.primary.DEFAULT : theme.colors.text.secondary}
-                                        />
-                                    ) : (
-                                        <Ionicons
-                                            name={
-                                                isActive
-                                                    ? (tab === 'posts' ? 'infinite' : 'library')
-                                                    : (tab === 'posts' ? 'infinite-outline' : 'library-outline')
-                                            }
-                                            size={20}
-                                            color={isActive ? theme.colors.primary.DEFAULT : theme.colors.text.secondary}
-                                        />
-                                    )}
-                                    {isActive && (
-                                        <Text style={[styles.activeTabText, { color: theme.colors.primary.DEFAULT, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>
-                                            [ {tab === 'videos' ? 'ESSENCE' : tab === 'posts' ? 'THESES' : 'VAULT'} ]
-                                        </Text>
-                                    )}
-                                </Pressable>
-                            );
-                        })}
-                    </View>
-                </BlurView>
-            </View>
-        </View>
-    );
-};
-
-const InternalProfileVideoGridItem = ({ videoUrl }: { videoUrl: string }) => {
-    const player = useVideoPlayer(encodeVideoUrl(videoUrl), player => {
-        player.muted = true;
-        player.loop = false;
-        player.pause();
-    });
-
-    return (
-        <VideoView
-            player={player}
-            style={StyleSheet.absoluteFill}
-            contentFit="cover"
-            nativeControls={false}
-        />
-    );
-};
-
-const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { item: any, onPress: () => void, isDark: boolean, featured?: boolean }) => {
-    const scale = useSharedValue(1);
-    const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-
-    const itemWidth = featured
-        ? (isWeb ? Math.min(SCREEN_WIDTH, 600) - 2 : SCREEN_WIDTH - 2)
-        : VIDEO_ITEM_WIDTH;
-    const itemHeight = featured ? itemWidth * 0.56 : itemWidth * 1.3;
-
-    // Stable random views count per item id
-    const viewsCount = React.useMemo(() => {
-        let hash = 0;
-        for (let i = 0; i < (item.id || '').length; i++) hash = (hash * 31 + (item.id || '').charCodeAt(i)) & 0xffffffff;
-        return Math.abs(hash % 9800) + 200;
-    }, [item.id]);
-
-    const formatViews = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : `${n}`;
-
-    // Duration label: use item.duration if available, else a stable pseudo-random
-    const durationLabel = React.useMemo(() => {
-        if (item.duration) return item.duration;
-        let hash = 0;
-        const s = item.id || 'x';
-        for (let i = 0; i < s.length; i++) hash = (hash * 17 + s.charCodeAt(i)) & 0xffffffff;
-        const secs = 15 + Math.abs(hash) % 46;
-        return `0:${secs < 10 ? '0' : ''}${secs}`;
-    }, [item.id, item.duration]);
-
-    return (
-        <Pressable
-            onPressIn={() => { scale.value = withTiming(0.96, { duration: 100 }); }}
-            onPressOut={() => { scale.value = withSpring(1, { damping: 12 }); }}
-            onPress={onPress}
-            style={{ width: itemWidth, height: itemHeight, marginBottom: 1 }}
-        >
-            <Animated.View style={[{ flex: 1, overflow: 'hidden', borderRadius: featured ? 0 : 0, backgroundColor: isDark ? '#000000' : '#EEEEEE' }, animStyle]}>
-                {item.videoUrl ? (
-                    <InternalProfileVideoGridItem videoUrl={item.videoUrl} />
-                ) : (
-                    <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}>
-                        <Ionicons name="videocam-off" size={featured ? 32 : 24} color="rgba(255,255,255,0.1)" />
-                    </View>
-                )}
-                {/* Bottom gradient overlay */}
-                <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.72)']}
-                    style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', padding: featured ? 14 : 6 }]}
-                >
-                    {featured && (
-                        <View style={styles.featuredBadge}>
-                            <Ionicons name="flame" size={11} color="#FFFFFF" />
-                            <Text style={styles.featuredBadgeText}>FEATURED</Text>
-                        </View>
-                    )}
-                    <View style={styles.videoItemBottom}>
-                        <View style={styles.viewsOverlay}>
-                            <Ionicons name="play" size={featured ? 13 : 10} color="white" />
-                            <Text style={[styles.viewsText, featured && { fontSize: 13 }]}>{formatViews(viewsCount)}</Text>
-                        </View>
-                        <View style={styles.durationBadge}>
-                            <Text style={styles.durationText}>{durationLabel}</Text>
-                        </View>
-                    </View>
-                </LinearGradient>
-            </Animated.View>
-        </Pressable>
-    );
-};
-
-// Renders videos in a 3-col grid with the first item being full-width featured
-const EssenceGrid = ({ videos, onPress, isDark }: { videos: any[], onPress: (id: string, idx: number) => void, isDark: boolean }) => {
-    if (!videos || videos.length === 0) return null;
-
-    const [featured, ...rest] = videos;
-    // Group rest into rows of 3
-    const rows: any[][] = [];
-    for (let i = 0; i < rest.length; i += 3) {
-        rows.push(rest.slice(i, i + 3));
-    }
-
-    return (
-        <View style={{ paddingTop: 12 }}>
-            {/* Featured (first) video */}
-            <ProfileVideoGridItem
-                item={featured}
-                onPress={() => onPress(featured.id, 0)}
-                isDark={isDark}
-                featured={true}
-            />
-            {/* Grid rows */}
-            {rows.map((row, rowIdx) => (
-                <View key={rowIdx} style={[styles.videoColumnWrapper]}>
-                    {row.map((item, colIdx) => (
-                        <ProfileVideoGridItem
-                            key={item.id}
-                            item={item}
-                            onPress={() => onPress(item.id, rowIdx * 3 + colIdx + 1)}
-                            isDark={isDark}
-                        />
-                    ))}
-                    {/* Fill empty slots to keep alignment */}
-                    {row.length < 3 && Array.from({ length: 3 - row.length }).map((_, i) => (
-                        <View key={`empty-${i}`} style={{ width: VIDEO_ITEM_WIDTH, height: VIDEO_ITEM_WIDTH * 1.3 }} />
-                    ))}
-                </View>
-            ))}
+            <SignalMap dates={activityDates} />
+            <ProfileTabs active={activeTab} onChange={setActiveTab} counts={counts} />
         </View>
     );
 };
@@ -393,6 +221,8 @@ export default function ProfileScreen() {
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [activeTab, setActiveTab] = useState<'posts' | 'videos' | 'saved'>('videos');
     const [showAchievements, setShowAchievements] = useState(false);
+    const [commentDates, setCommentDates] = useState<string[]>([]);
+    const [savedItems, setSavedItems] = useState<ClipItem[]>([]);
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
@@ -404,6 +234,7 @@ export default function ProfileScreen() {
     const {
         videos,
         loading: loadingVideos,
+        loadMore: loadMoreVideos,
     } = useVideos({ type: 'user', userId: user?.id });
 
     const {
@@ -438,9 +269,10 @@ export default function ProfileScreen() {
 
     // ...
 
-    const renderPostItem = ({ item }: { item: Post }) => (
-        <DebateCard
+    const renderPostItem = ({ item, index }: { item: Post; index: number }) => (
+        <ThesisRow
             item={item}
+            index={index}
             onDelete={item.userId === user?.id ? () => handleDeletePost(item.id) : undefined}
             onPress={() => router.push(`/debate/${item.id}`)}
         />
@@ -462,13 +294,67 @@ export default function ProfileScreen() {
     }, [user?.id, profile?.banner_url, getProfileCoverImage]);
 
 
+    // Everything the user has made, dated, for the activity map
+    const activityDates = React.useMemo(
+        () => [
+            ...videos.map(v => v.createdAt),
+            ...posts.map(po => po.createdAt),
+            ...commentDates,
+        ],
+        [videos, posts, commentDates]
+    );
+
+    const counts = {
+        videos: profile?.videos_count ?? videos.length,
+        posts: posts.length,
+        saved: savedItems.length,
+    };
+
     useFocusEffect(
         React.useCallback(() => {
             if (user) {
                 fetchProfile();
+                fetchSaved();
             }
         }, [user])
     );
+
+    // Clips the user bookmarked, newest first
+    const fetchSaved = async () => {
+        if (!supabase || !user) return;
+        try {
+            const { data: rows } = await supabase
+                .from('save_actions')
+                .select('video_id, created_at')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(60);
+            const ids = (rows || []).map((r: any) => r.video_id).filter(Boolean);
+            if (ids.length === 0) {
+                setSavedItems([]);
+                return;
+            }
+            const { data: vids } = await supabase.from('videos').select('*').in('id', ids);
+            const byId = new Map((vids || []).map((v: any) => [v.id, v]));
+            setSavedItems(
+                ids
+                    .map((id: string) => byId.get(id))
+                    .filter(Boolean)
+                    .map((v: any) => ({
+                        id: v.id,
+                        title: v.title,
+                        videoUrl: encodeVideoUrl(v.url || v.s3_url) || undefined,
+                        thumbnailUrl: v.thumbnail_url || undefined,
+                        category: v.category,
+                        views: v.views_count || v.views || 0,
+                        duration: Number(v.duration) > 0 ? Number(v.duration) : undefined,
+                        createdAt: v.created_at,
+                    }))
+            );
+        } catch (e) {
+            console.error('Error fetching saved clips:', e);
+        }
+    };
 
     const fetchProfile = async () => {
         if (!supabase || !user) {
@@ -501,6 +387,15 @@ export default function ProfileScreen() {
                 .from('comments')
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id);
+
+            // When the user's arguments were made, for the activity map
+            const { data: commentRows } = await supabase
+                .from('comments')
+                .select('created_at')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(400);
+            setCommentDates((commentRows || []).map((r: any) => r.created_at).filter(Boolean));
 
             // Fetch Top Category based on user's videos
             let topCat = 'General';
@@ -620,33 +515,23 @@ export default function ProfileScreen() {
         );
     }
 
-
-
-
-
-    const navigateToVideo = (videoId: string, initialScrollIndex: number) => {
-        router.push({
-            pathname: '/video-player',
-            params: {
-                type: 'user',
-                userId: user?.id,
-                initialVideoId: videoId
-            }
-        });
-    };
-
-    const renderVideoItem = ({ item, index }: { item: any, index: number }) => (
-        <ProfileVideoGridItem item={item} onPress={() => navigateToVideo(item.id, index)} isDark={isDark} />
-    );
-
-    const navigateToVideoById = (videoId: string, idx: number) => {
+    const openVideo = (videoId: string) => {
         router.push({
             pathname: '/video-player',
             params: { type: 'user', userId: user?.id, initialVideoId: videoId }
         });
     };
 
-
+    const clipItems: ClipItem[] = videos.map(v => ({
+        id: v.id,
+        title: v.title,
+        videoUrl: v.videoUrl,
+        thumbnailUrl: v.thumbnailUrl,
+        category: v.category,
+        views: v.views,
+        duration: v.duration,
+        createdAt: v.createdAt,
+    }));
 
     const renderContent = () => {
         if (activeTab === 'videos') {
@@ -657,18 +542,18 @@ export default function ProfileScreen() {
                     </View>
                 );
             }
-            if (!videos || videos.length === 0) {
+            if (videos.length === 0) {
                 return (
-                    <View style={styles.emptyState}>
-                        <Text style={[styles.emptyStateText, { color: theme.colors.text.secondary }]}>Share your first video</Text>
-                        <Pressable style={[styles.createFirstButton, { backgroundColor: theme.colors.primary.DEFAULT }]} onPress={() => router.push('/create')}>
-                            <Text style={styles.createFirstButtonText}>Create</Text>
-                        </Pressable>
-                    </View>
+                    <EmptyDots
+                        glyph="clip"
+                        title="No clips yet"
+                        sub="Share your first video and it lands here."
+                        cta="Create"
+                        onCta={() => router.push('/create')}
+                    />
                 );
             }
-            // Render the custom essence grid
-            return <EssenceGrid videos={videos} onPress={navigateToVideoById} isDark={isDark} />;
+            return <ClipLog items={clipItems} onPress={openVideo} />;
         }
 
         if (activeTab === 'posts') {
@@ -681,34 +566,29 @@ export default function ProfileScreen() {
             }
             if (posts.length === 0) {
                 return (
-                    <View style={styles.emptyState}>
-                        <Text style={[styles.emptyStateText, { color: theme.colors.text.secondary }]}>No theses yet.</Text>
-                        <Pressable style={[styles.createFirstButton, { backgroundColor: theme.colors.primary.DEFAULT }]} onPress={() => router.push('/create')}>
-                            <Text style={styles.createFirstButtonText}>Propose a thesis</Text>
-                        </Pressable>
-                    </View>
+                    <EmptyDots
+                        glyph="thesis"
+                        title="No theses yet"
+                        sub="Put a claim out there and let people argue it."
+                        cta="Propose a thesis"
+                        onCta={() => router.push('/create')}
+                    />
                 );
             }
-            // For posts, we might want to render them here or use the FlatList?
-            // Since FlatList is configured for NUM_COLUMNS=3 for videos, we cannot easily mix layout unless we change key/numColumns dynamically.
-            // Best to use a separate list or conditional render in the main FlatList.
-            // The main FlatList is the page body.
-            return null;
+            // The theses themselves are the FlatList rows below the header
+            return <View style={{ height: 18 }} />;
         }
 
-        // Default empty state (Saved)
-        return (
-            <View style={styles.emptyState}>
-                <Ionicons
-                    name="bookmark-outline"
-                    size={48}
-                    color={theme.colors.text.muted}
+        if (savedItems.length === 0) {
+            return (
+                <EmptyDots
+                    glyph="vault"
+                    title="The vault is empty"
+                    sub="Clips you bookmark will rest here."
                 />
-                <Text style={[styles.emptyStateText, { color: theme.colors.text.secondary }]}>
-                    No saved items
-                </Text>
-            </View>
-        );
+            );
+        }
+        return <ClipLog items={savedItems} onPress={openVideo} />;
     };
 
     return (
@@ -736,10 +616,16 @@ export default function ProfileScreen() {
                             activeTab={activeTab}
                             setActiveTab={setActiveTab}
                             onShowAchievements={() => setShowAchievements(true)}
+                            activityDates={activityDates}
+                            counts={counts}
                         />
                         {renderContent()}
                     </>
                 )}
+                onEndReached={() => {
+                    if (activeTab === 'videos') loadMoreVideos();
+                }}
+                onEndReachedThreshold={0.6}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={Platform.OS === 'android'}
                 maxToRenderPerBatch={10}
@@ -753,74 +639,7 @@ export default function ProfileScreen() {
                 style={{ backgroundColor: 'transparent' }}
             />
 
-            <Modal
-                visible={showAchievements}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setShowAchievements(false)}
-            >
-                <Pressable style={styles.modalOverlay} onPress={() => setShowAchievements(false)}>
-                    <Pressable style={[
-                        styles.modalContent,
-                        {
-                            backgroundColor: isDark ? '#050508' : '#FAF9F6',
-                            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
-                            borderWidth: 1,
-                        }
-                    ]}>
-                        {/* Handle */}
-                        <View style={styles.modalHandle} />
-
-                        <View style={styles.modalHeader}>
-                            <View>
-                                <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>Creator DNA</Text>
-                                <Text style={[styles.modalSubtitle, { color: theme.colors.text.secondary }]}>Identity · Stats · History</Text>
-                            </View>
-                            <Pressable onPress={() => setShowAchievements(false)} style={styles.modalCloseBtn}>
-                                <Ionicons name="close" size={20} color={theme.colors.text.secondary} />
-                            </Pressable>
-                        </View>
-
-                        {/* DNA Core Stats */}
-                        <View style={{ marginBottom: 24, marginTop: 16 }}>
-                            <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>MEMBER SINCE</Text>
-                            <Text style={{ color: theme.colors.text.primary, fontSize: 20, fontWeight: '700' }}>
-                                {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Loading...'}
-                            </Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', gap: 48, marginBottom: 32 }}>
-                            {/* Total Impact (Replaces Location) */}
-                            <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>TOTAL IMPACT</Text>
-                                <Text style={{ color: theme.colors.text.primary, fontSize: 16, fontWeight: '600' }}>{profile?.total_impact_score || 0}</Text>
-                            </View>
-
-                            {/* Favorite Category */}
-                            <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>TOP INTEREST</Text>
-                                <Text style={{ color: theme.colors.text.primary, fontSize: 16, fontWeight: '600' }}>{profile?.top_category || 'General'}</Text>
-                            </View>
-                        </View>
-
-                        {/* Engagement score */}
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 16, borderTopWidth: StyleSheet.hairlineWidth, borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
-                            <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>GLOBAL RANK</Text>
-                                <Text style={{ color: theme.colors.text.primary, fontSize: 18, fontWeight: '700' }}>{profile?.global_rank || 'N/A'}</Text>
-                            </View>
-                            <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>ACTIVITY</Text>
-                                <Text style={{ color: theme.colors.text.primary, fontSize: 18, fontWeight: '700' }}>{profile?.activity_level || 'Low'}</Text>
-                            </View>
-                            <View>
-                                <Text style={[styles.xpLevelLabel, { color: theme.colors.text.secondary, marginBottom: 4 }]}>APPROVAL RATE</Text>
-                                <Text style={{ color: theme.colors.text.primary, fontSize: 18, fontWeight: '700' }}>{profile?.win_rate || 'N/A'}</Text>
-                            </View>
-                        </View>
-                    </Pressable>
-                </Pressable>
-            </Modal>
+            <DnaSheet visible={showAchievements} onClose={() => setShowAchievements(false)} profile={profile} />
         </View>
     );
 }
@@ -872,7 +691,7 @@ const styles = StyleSheet.create({
     // Main Content
     flatListContent: {
         paddingTop: 0, // Content starts at top for seamless header
-        paddingBottom: 80,
+        paddingBottom: 130, // clear of the floating tab bar
     },
     headerContainer: {
         height: HEADER_HEIGHT,
@@ -941,178 +760,6 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         letterSpacing: -0.2,
     },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        justifyContent: 'flex-end',
-    },
-    modalContent: {
-        borderTopLeftRadius: 32,
-        borderTopRightRadius: 32,
-        padding: 20,
-        paddingBottom: Platform.OS === 'ios' ? 44 : 28,
-    },
-    modalHandle: {
-        width: 36,
-        height: 4,
-        borderRadius: 2,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        alignSelf: 'center',
-        marginBottom: 20,
-    },
-    modalHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 20,
-    },
-    modalTitle: {
-        fontSize: 22,
-        fontWeight: '900',
-        letterSpacing: -0.5,
-    },
-    modalSubtitle: {
-        fontSize: 12,
-        marginTop: 2,
-        opacity: 0.6,
-        letterSpacing: 0.3,
-    },
-    modalCloseBtn: {
-        padding: 6,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: 20,
-    },
-    // XP Card
-    xpCard: {
-        borderRadius: 20,
-        padding: 18,
-        marginBottom: 14,
-    },
-    xpCardTop: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 14,
-    },
-    xpLevelLabel: {
-        fontSize: 10,
-        fontWeight: '700',
-        color: 'rgba(255,255,255,0.6)',
-        letterSpacing: 1.5,
-    },
-    xpLevelNum: {
-        fontSize: 40,
-        fontWeight: '900',
-        color: '#FFFFFF',
-        lineHeight: 44,
-        letterSpacing: -1,
-    },
-    xpTitleBox: {
-        alignItems: 'flex-end',
-    },
-    xpTitle: {
-        fontSize: 16,
-        fontWeight: '800',
-        color: '#FFFFFF',
-        letterSpacing: -0.3,
-    },
-    xpTitleSub: {
-        fontSize: 11,
-        color: 'rgba(255,255,255,0.55)',
-        marginTop: 2,
-    },
-    xpBarBg: {
-        height: 6,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        borderRadius: 3,
-        overflow: 'hidden',
-    },
-    xpBarFill: {
-        height: '100%',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 3,
-    },
-    xpBarLabels: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 6,
-    },
-    xpCurrent: {
-        fontSize: 11,
-        color: 'rgba(255,255,255,0.7)',
-        fontWeight: '600',
-    },
-    xpMax: {
-        fontSize: 11,
-        color: 'rgba(255,255,255,0.5)',
-    },
-    // Achievement Cards
-    achRow: {
-        flexDirection: 'row',
-        gap: 10,
-        marginBottom: 14,
-    },
-    achCard: {
-        flex: 1,
-        borderRadius: 18,
-        padding: 14,
-        alignItems: 'flex-start',
-    },
-    achIconRing: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        borderWidth: 1.5,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    achCardTitle: {
-        fontSize: 14,
-        fontWeight: '800',
-        letterSpacing: -0.2,
-        marginBottom: 2,
-    },
-    achCardSub: {
-        fontSize: 12,
-        marginBottom: 10,
-    },
-    achBadgePill: {
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 10,
-    },
-    achBadgePillText: {
-        fontSize: 10,
-        fontWeight: '800',
-        letterSpacing: 0.8,
-    },
-    // Reputation Score Row
-    repScoreRow: {
-        flexDirection: 'row',
-        borderRadius: 18,
-        borderWidth: 1,
-        overflow: 'hidden',
-    },
-    repScoreItem: {
-        flex: 1,
-        alignItems: 'center',
-        paddingVertical: 14,
-    },
-    repScoreNum: {
-        fontSize: 20,
-        fontWeight: '900',
-        letterSpacing: -0.5,
-    },
-    repScoreLabel: {
-        fontSize: 11,
-        marginTop: 2,
-        opacity: 0.6,
-    },
-    repScoreDivider: {
-        width: 1,
-        marginVertical: 10,
-    },
     infoColumn: {
         alignItems: 'center',
         width: '100%',
@@ -1159,30 +806,6 @@ const styles = StyleSheet.create({
         marginBottom: 14,
         textAlign: 'center',
     },
-    promoteBtn: {
-        borderRadius: 14,
-        overflow: 'hidden',
-        alignSelf: 'flex-start',
-        shadowColor: '#D9E4FF',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.45,
-        shadowRadius: 10,
-        elevation: 8,
-    },
-    promoteBtnGradient: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        paddingVertical: 9,
-        paddingHorizontal: 16,
-        borderRadius: 14,
-    },
-    promoteBtnText: {
-        color: '#fff',
-        fontSize: 13,
-        fontWeight: '700',
-        letterSpacing: 0.2,
-    },
 
 
     // Compact Stats
@@ -1219,136 +842,10 @@ const styles = StyleSheet.create({
         marginRight: 12,
     },
 
-    // Tabs
-    tabsWrapper: {
-        marginHorizontal: 16,
-        marginBottom: 12,
-        borderRadius: 20,
-        overflow: 'hidden',
-    },
-    tabsBlur: {
-        padding: 4,
-    },
-    tabsContainer: {
-        flexDirection: 'row',
-        position: 'relative',
-        height: 48,
-        alignItems: 'center',
-    },
-    tabItem: {
-        flex: 1,
-        height: '100%',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 6,
-        zIndex: 2,
-    },
-
-    tabIndicator: {
-        position: 'absolute',
-        height: 40, // Height of the sliding pill
-        backgroundColor: '#D9E4FF',
-        borderRadius: 20,
-        zIndex: 1,
-    },
-    activeTabText: {
-        color: '#fff',
-        fontSize: 12,
-        fontWeight: '800',
-        letterSpacing: 0.5,
-    },
-
-    // Grid
-    videoColumnWrapper: {
-        flexDirection: 'row',
-        gap: 1,
-    },
-    videoGridItem: {
-        width: VIDEO_ITEM_WIDTH,
-        height: VIDEO_ITEM_WIDTH * 1.3,
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        marginBottom: 1,
-    },
-    videoThumbnail: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-    },
-    videoItemBottom: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    viewsOverlay: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 3,
-    },
-    viewsText: {
-        color: 'white',
-        fontSize: 11,
-        fontWeight: '700',
-        textShadowColor: 'rgba(0,0,0,0.6)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 3,
-    },
-    durationBadge: {
-        backgroundColor: 'rgba(0,0,0,0.55)',
-        borderRadius: 4,
-        paddingHorizontal: 5,
-        paddingVertical: 2,
-    },
-    durationText: {
-        color: 'white',
-        fontSize: 10,
-        fontWeight: '700',
-        letterSpacing: 0.3,
-    },
-    featuredBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        alignSelf: 'flex-start',
-        borderRadius: 6,
-        paddingHorizontal: 7,
-        paddingVertical: 3,
-        marginBottom: 6,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.4)',
-    },
-    featuredBadgeText: {
-        color: '#FFFFFF',
-        fontSize: 9,
-        fontWeight: '900',
-        letterSpacing: 1,
-    },
-
     // Empty & Loading
     loadingContainer: {
         padding: 40,
         alignItems: 'center',
-    },
-    emptyState: {
-        padding: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    emptyStateText: {
-        color: theme.colors.text.secondary,
-        fontSize: 16,
-        marginBottom: 16,
-    },
-    createFirstButton: {
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        backgroundColor: theme.colors.primary.DEFAULT,
-        borderRadius: 8,
-    },
-    createFirstButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
     },
     authPrompt: {
         flex: 1,
@@ -1397,102 +894,4 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
     },
 
-    // Post Item
-    // Post Item
-    postItem: {
-        backgroundColor: 'rgba(255,255,255,0.03)',
-        marginBottom: 20,
-        borderRadius: 24,
-        marginHorizontal: 16,
-        padding: 4,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.08)',
-        // Shadow for depth
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.30,
-        shadowRadius: 4.65,
-        elevation: 8,
-    },
-    postHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: 12,
-        paddingBottom: 8,
-    },
-    authorRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    postBody: {
-        paddingHorizontal: 16,
-        paddingBottom: 12,
-    },
-    postFooter: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start', // Left aligned
-        gap: 24, // Consistent spacing
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        paddingTop: 8,
-        // No background, clean look
-    },
-    postAuthor: {
-        color: 'white',
-        fontWeight: '700',
-        fontSize: 16,
-        marginBottom: 2,
-    },
-    postDate: {
-        color: 'rgba(255,255,255,0.4)',
-        fontSize: 12,
-        fontWeight: '500',
-    },
-    authorInfo: {
-        marginLeft: 12,
-        justifyContent: 'center'
-    },
-    postContent: {
-        color: 'rgba(255,255,255,0.95)',
-        fontSize: 15,
-        lineHeight: 22,
-        letterSpacing: 0.2,
-    },
-    postAvatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.1)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)',
-        overflow: 'hidden',
-    },
-    postAvatarText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    actionButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        opacity: 0.8,
-    },
-    actionText: {
-        color: theme.colors.text.secondary,
-        fontSize: 13,
-        fontWeight: '600',
-    },
-    optionsButton: {
-        padding: 8,
-        borderRadius: 20,
-    },
 });
