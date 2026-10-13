@@ -9885,12 +9885,13 @@ body {
 
 
 /* ==========================================================================
-   SLIDE 02 — HOW IT WORKS, IN THE LOGO'S COLOURS
-   Three equal panels, each a real illustration of the step with a numbered
-   plate and spec chips. Since the logo became the reference the slide is its
-   two colours only: the logo's black and its pale ice line. The panels are
-   drawn like the logo too, a heavy ice outline with rounded corners; the
-   blues, the red REC and the green checks inside the art are all ice now.
+   SLIDE 02 — HOW IT WORKS, ONE SCENE IN THE LOGO'S COLOURS
+   It used to be three equal panels, a viewfinder, a thread and a tally, each
+   with its own number, tag and chips. Now it is one scene played in order:
+   you film a point, answers come in as clips of their own, and the vote and
+   the logic check lift the clearest one to the top. The logo's camera plays
+   every part. Black and ice only: the winner is solid ice, the answer that
+   lost is the same ice in dither, the way the arena draws its sides.
    ========================================================================== */
 #features {
     --st-dim: #9AA7BD;        /* secondary type on black */
@@ -9926,13 +9927,11 @@ body {
     color: var(--px-ice);
 }
 
-/* the cards span the same measure as the headline, not a narrower column */
-#features .step-grid {
-    max-width: none;
-    margin: 60px 0 0;
+/* the stakes, inverted: black type on an ice bar, like the logo's screen */
+#features .hw-br {
+    display: none;
 }
 
-/* the stakes, inverted: black type on an ice bar, like the logo's screen */
 #features .st-title-accent {
     padding: 0 0.14em;
     color: var(--px-black);
@@ -9940,527 +9939,893 @@ body {
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
 }
-.step-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(18px, 2.4vw, 32px);
-    margin-top: clamp(40px, 5vw, 68px);
-    align-items: stretch;
+
+/* the steps on the left, the scene on the right. The clock is the bar under
+   the step that is on (clips.js moves on when it ends); a tap takes over. */
+.hw {
+    --hw-rh: 92px;            /* a row of the thread */
+    --hw-gap: 12px;           /* between the answers */
+    --hw-root: 30px;          /* under the first clip, where the wires branch */
+    --hw-ind: 44px;           /* the answers sit in from the first clip */
+    --hw-pad: 26px;
+    display: grid;
+    grid-template-columns: minmax(280px, 370px) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+    margin-top: clamp(40px, 5vw, 64px);
 }
 
-.step-card {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
+.hw__steps {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
-.step-card__frame {
+.hw__step {
     position: relative;
-    background: var(--px-black);
-    border-radius: 14px;
-    aspect-ratio: 3 / 2;
-    overflow: hidden;
-    transition: box-shadow .4s var(--ease-out-expo);
-}
-
-/* the outline sits over the art: the SVG fills the frame edge to edge and
-   would bury an inset shadow */
-.step-card__frame::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    border: 2px solid var(--px-ice);
-    border-radius: inherit;
-}
-
-.step-card:hover .step-card__frame {
-    box-shadow: 0 0 0 4px rgba(218, 230, 247, 0.14);
-}
-
-.step-art {
-    display: block;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    column-gap: 14px;
+    row-gap: 8px;
     width: 100%;
-    height: 100%;
-}
-
-/* Doto's square dots, the logo's screen again; Pixelify would draw 0 as O */
-.step-card__index {
-    font-family: var(--font-lcd);
-    font-size: 30px;
-    font-weight: 900;
-    line-height: 1;
-    color: var(--px-ice);
-}
-
-/* --- shared art primitives -------------------------------------------------
-   The three panels are app screens, not icons: a viewfinder, a reply thread
-   and a tally board. Everything below is the interface inside them.
-   ------------------------------------------------------------------------- */
-.step-defs {
-    position: absolute;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-}
-
-/* the person that appears in every panel */
-.st-por-body { fill: url(#stBody); }
-.st-por-neck { fill: #8E9AB0; }
-.st-por-head { fill: var(--px-ice); }
-.st-por-lit { fill: #FFFFFF; }
-.st-por-hair { fill: #2B3140; }
-
-.st-ava-bg { fill: #0E1016; stroke: rgba(7, 8, 12, 0.9); stroke-width: 1.2; }
-.st-ava-head { fill: var(--px-ice); }
-.st-ava-body { fill: #A9B6CC; }
-
-.st-thirds {
-    fill: none;
-    stroke: rgba(218, 230, 247, 0.13);
-    stroke-width: 1;
-}
-
-.st-note text {
-    font-family: var(--font-tech);
-    font-size: 7.5px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    fill: rgba(218, 230, 247, 0.5);
-}
-
-@keyframes st-blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
-
-/* --- 01 the viewfinder --- */
-.st-subject { opacity: .95; }
-
-.st-lock path {
-    fill: none;
-    stroke: var(--px-ice);
-    stroke-width: 1.6;
-    stroke-linecap: square;
-}
-
-.st-lock text {
-    font-family: var(--font-tech);
-    font-size: 6.5px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    fill: var(--px-ice);
-}
-
-/* the picture stops at this line; everything under it is instrumentation */
-.st-band { fill: rgba(7, 8, 12, 0.92); }
-
-.st-band-rule {
-    fill: none;
-    stroke: rgba(218, 230, 247, 0.28);
-    stroke-width: 1;
-}
-
-.st-rec-pill {
-    fill: var(--px-black);
-    stroke: rgba(218, 230, 247, 0.55);
-    stroke-width: 1;
-}
-
-.st-rec-text {
-    font-family: var(--font-tech);
-    font-size: 7.5px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    fill: var(--px-ice);
-}
-
-.st-rec-dot {
-    fill: var(--px-ice);
-    animation: st-blink 1.4s ease-in-out infinite;
-    animation-play-state: paused;
-}
-
-.st-take {
-    font-family: var(--font-tech);
-    font-size: 7.5px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    fill: rgba(218, 230, 247, 0.6);
-}
-
-.st-time {
-    font-family: var(--font-lcd);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    fill: var(--px-ice);
-}
-
-.st-levels rect { fill: rgba(218, 230, 247, 0.18); }
-
-.st-levels rect:nth-child(n + 4) { fill: var(--px-ice); opacity: .9; }
-
-.st-levels rect:nth-child(-n + 2) {
-    fill: var(--px-ice);
-    opacity: .85;
-    animation: st-peak 1.7s ease-in-out infinite;
-    animation-play-state: paused;
-}
-
-@keyframes st-peak { 0%, 100% { opacity: .15; } 55% { opacity: .9; } }
-
-.st-levels text {
-    font-family: var(--font-tech);
-    font-size: 6px;
-    letter-spacing: 0.1em;
-    fill: rgba(218, 230, 247, 0.5);
-}
-
-.st-scale path {
-    fill: none;
-    stroke: rgba(218, 230, 247, 0.35);
-    stroke-width: 1;
-}
-
-.st-scale-dot { fill: var(--px-ice); }
-
-.st-scale text {
-    font-family: var(--font-tech);
-    font-size: 6px;
-    letter-spacing: 0.1em;
-    fill: rgba(218, 230, 247, 0.5);
-}
-
-.st-wave rect {
-    fill: var(--px-ice);
-    opacity: .75;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: st-bar 1.25s ease-in-out infinite;
-    animation-play-state: paused;
-}
-
-.st-wave rect:nth-child(2n) { animation-delay: .14s; }
-.st-wave rect:nth-child(3n) { animation-delay: .3s; }
-.st-wave rect:nth-child(5n) { animation-delay: .46s; }
-.st-wave rect:nth-child(7n) { animation-delay: .62s; }
-
-@keyframes st-bar { 0%, 100% { transform: scaleY(.38); } 50% { transform: scaleY(1.1); } }
-
-.st-runbar rect { fill: rgba(218, 230, 247, 0.18); }
-
-.st-runbar-fill {
-    fill: var(--px-ice) !important;
-    animation: st-run 6s ease-in-out infinite;
-    animation-play-state: paused;
-}
-
-@keyframes st-run { 0%, 100% { width: 40px; } 50% { width: 220px; } }
-
-/* --- 02 the thread --- */
-.st-clip-plate {
-    fill: #0E1016;
-    stroke: rgba(218, 230, 247, 0.28);
-    stroke-width: 1.2;
-}
-
-.st-clip--root .st-clip-plate { stroke: var(--px-ice); stroke-width: 1.6; }
-.st-clip--live .st-clip-plate { stroke: rgba(218, 230, 247, 0.5); }
-
-.st-clip-inner {
-    fill: none;
-    stroke: rgba(218, 230, 247, 0.22);
-    stroke-width: 1;
-}
-
-.st-play-ring {
-    fill: rgba(7, 8, 12, 0.55);
-    stroke: rgba(218, 230, 247, 0.85);
-    stroke-width: 1.2;
-}
-
-.st-play-tri { fill: var(--px-ice); }
-.st-play--sm .st-play-ring { stroke-width: 1.6; }
-
-.st-badge--op { fill: var(--px-ice); }
-
-.st-badge-text {
-    font-family: var(--font-tech);
-    font-size: 6.5px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    fill: var(--px-black);
-}
-
-.st-clip-handle {
-    font-family: var(--font-tech);
-    font-size: 7.5px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    fill: var(--px-ice);
-}
-
-.st-clip-meta {
-    font-family: var(--font-tech);
-    font-size: 6.8px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    fill: rgba(218, 230, 247, 0.6);
-}
-
-.st-clip-meta--live { fill: var(--px-ice); }
-
-.st-branch {
-    fill: none;
-    stroke: var(--px-ice);
-    stroke-width: 1.4;
-    stroke-dasharray: 4 5;
-    opacity: .8;
-    animation: st-flow 2.4s linear infinite;
-    animation-play-state: paused;
-}
-
-@keyframes st-flow { to { stroke-dashoffset: -18; } }
-
-.st-branch-dot { fill: var(--px-ice); }
-
-.st-minibar { fill: rgba(218, 230, 247, 0.22); }
-.st-minibar--fill { fill: var(--px-ice); }
-
-.st-live-dot {
-    fill: var(--px-ice);
-    animation: st-blink 1.2s ease-in-out infinite;
-    animation-play-state: paused;
-}
-
-.st-mini-wave rect {
-    fill: var(--px-ice);
-    opacity: .8;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: st-bar 1s ease-in-out infinite;
-    animation-play-state: paused;
-}
-
-.st-mini-wave rect:nth-child(2n) { animation-delay: .12s; }
-.st-mini-wave rect:nth-child(3n) { animation-delay: .26s; }
-
-.st-queue rect {
-    fill: rgba(218, 230, 247, 0.1);
-    stroke: rgba(218, 230, 247, 0.2);
-    stroke-width: 1;
-}
-
-.st-queue text {
-    font-family: var(--font-lcd);
-    font-size: 11px;
-    font-weight: 700;
-    fill: rgba(218, 230, 247, 0.75);
-}
-
-/* --- 03 the tally --- */
-.st-head text {
-    font-family: var(--font-tech);
-    font-size: 8.5px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    fill: var(--px-ice);
-}
-
-.st-head-meta {
-    font-size: 7px !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.16em !important;
-    fill: rgba(218, 230, 247, 0.55) !important;
-}
-
-.st-rule {
-    fill: none;
-    stroke: rgba(218, 230, 247, 0.25);
-    stroke-width: 1;
-}
-
-.st-vote text {
-    font-family: var(--font-tech);
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    fill: rgba(218, 230, 247, 0.72);
-}
-
-.st-vote-pct {
-    font-family: var(--font-lcd) !important;
-    font-size: 13px !important;
-    fill: var(--px-ice) !important;
-    letter-spacing: 0.02em !important;
-}
-
-.st-vote-track {
-    fill: rgba(218, 230, 247, 0.14);
-    stroke: rgba(218, 230, 247, 0.18);
-    stroke-width: 1;
-}
-
-.st-vote-fill {
-    animation: st-vote 3.4s var(--ease-out-expo) forwards;
-    animation-play-state: paused;
-    width: 0;
-}
-
-.st-vote-fill--pro { fill: url(#stProBar); --st-w: 187px; }
-.st-vote-fill--con { fill: url(#stConBar); --st-w: 73px; animation-delay: .2s; }
-
-@keyframes st-vote { from { width: 0; } to { width: var(--st-w); } }
-
-.st-vote-ticks {
-    fill: none;
-    stroke: rgba(7, 8, 12, 0.6);
-    stroke-width: 1;
-}
-
-.st-voters text {
-    font-family: var(--font-tech);
-    font-size: 7.5px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    fill: rgba(218, 230, 247, 0.6);
-}
-
-.st-check {
-    fill: none;
-    stroke: var(--px-ice);
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.st-voters use { opacity: .95; }
-
-.st-verdict rect {
-    fill: rgba(218, 230, 247, 0.06);
-    stroke: rgba(218, 230, 247, 0.3);
-    stroke-width: 1;
-}
-
-.st-verdict-label {
-    font-family: var(--font-tech);
-    font-size: 7.5px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    fill: var(--px-ice);
-}
-
-.st-verdict-stamp {
-    font-family: var(--font-tech);
-    font-size: 6.5px;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    fill: var(--px-ice);
-}
-
-.st-score-key {
-    font-family: var(--font-tech);
-    font-size: 6.5px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    fill: rgba(218, 230, 247, 0.6);
-}
-
-.st-score-track { fill: rgba(218, 230, 247, 0.16) !important; stroke: none !important; }
-.st-score-fill { fill: var(--px-ice) !important; stroke: none !important; }
-
-.st-score-val {
-    font-family: var(--font-lcd);
-    font-size: 9px;
-    font-weight: 700;
-    fill: var(--px-ice);
-}
-
-.st-score-val--good {
-    font-family: var(--font-tech);
-    font-size: 7px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    fill: var(--px-ice);
-}
-
-.step-card.is-inview .st-rec-dot,
-.step-card.is-inview .st-runbar-fill,
-.step-card.is-inview .st-wave rect,
-.step-card.is-inview .st-levels rect,
-.step-card.is-inview .st-reticle circle,
-.step-card.is-inview .st-branch,
-.step-card.is-inview .st-live-dot,
-.step-card.is-inview .st-mini-wave rect,
-.step-card.is-inview .st-vote-fill {
-    animation-play-state: running;
-}
-
-/* --- copy under each panel --- */
-.step-card__body {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    padding: 18px 2px 0;
-}
-
-/* the step index sits on the tag line, clear of the panel chamfer */
-.step-card__index + .step-card__tag { margin-top: -2px; }
-
-.step-card__tag {
-    font-family: var(--font-tech);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
+    margin: 0;
+    padding: 18px 20px 20px 16px;
+    text-align: left;
+    cursor: pointer;
     color: var(--st-dim);
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 0;
+    transition: border-color 0.25s, background-color 0.25s;
 }
 
-.step-card__body h3 {
-    font-family: var(--px-font);
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 1.1;
+.hw__n {
+    font: 900 30px/1 var(--font-lcd);
+    color: var(--st-faint);
+    transition: color 0.25s;
+}
+
+.hw__h {
+    align-self: center;
+    font: 400 22px/1.1 var(--px-font);
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--px-ice);
-    margin: 0;
+    opacity: 0.62;
+    transition: opacity 0.25s;
 }
 
-.step-card__body p {
-    font-family: var(--font-sans);
-    font-size: 13.5px;
-    line-height: 1.6;
+.hw__p {
+    grid-column: 2;
+    font: 500 14px/1.6 var(--font-sans);
     color: var(--st-dim);
-    margin: 0;
 }
 
-.step-card__chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px; }
+.hw__step:not(.is-on):hover .hw__h {
+    opacity: 0.9;
+}
 
-.step-card__chips em {
-    font-style: normal;
-    padding: 5px 9px;
-    clip-path: var(--px-notch-sm);
-    background: rgba(218, 230, 247, 0.1);
-    font-family: var(--font-tech);
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+/* the step that is on: the logo's outline, notched like the pixel plates */
+.hw__step.is-on {
+    border-color: var(--px-ice);
+    background: rgba(218, 230, 247, 0.05);
+    clip-path: var(--px-notch);
+}
+
+.hw__step.is-on .hw__n {
     color: var(--px-ice);
 }
 
-@media (max-width: 900px) {
-    .step-grid { grid-template-columns: minmax(0, 1fr); gap: 34px; max-width: 520px; margin-inline: auto; }
+.hw__step.is-on .hw__h {
+    opacity: 1;
+}
+
+.hw__step:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--px-ice);
+}
+
+.hw__step.is-on:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--px-black), inset 0 0 0 4px var(--px-ice);
+}
+
+.hw__bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--px-ice);
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+}
+
+.hw.is-live:not(.is-manual) .hw__step.is-on .hw__bar {
+    opacity: 0.7;
+    animation: hw-run var(--dur) linear both;
+}
+
+/* hover or focus holds the clock */
+.hw.is-held .hw__bar {
+    animation-play-state: paused !important;
+}
+
+@keyframes hw-run {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+/* --- the scene --- */
+.hw__stage {
+    position: relative;
+    min-width: 0;
+    height: calc(var(--hw-rh) * 4 + var(--hw-gap) * 2 + var(--hw-root) + var(--hw-pad) * 2);
+    overflow: hidden;
+    color: var(--px-ice);
+    background:
+        radial-gradient(circle at 50% 40%, rgba(218, 230, 247, 0.1), rgba(218, 230, 247, 0) 62%),
+        #0A0B10;
+    border: 2px solid var(--px-ice);
+    border-radius: 14px;
+}
+
+/* the logo is inverted for light pages (a rule on img[src*="logo.png"]);
+   every cube in this scene sits on black */
+#features .hw__cube {
+    filter: none;
+}
+
+/* step 1: you film it. A viewfinder: corner marks, the rule of thirds, a
+   REC light, the subtitle as it is said. */
+.hw__rec {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, transparent calc(33.333% - 1px), rgba(218, 230, 247, 0.1) 0 33.333%, transparent 0 calc(66.666% - 1px), rgba(218, 230, 247, 0.1) 0 66.666%, transparent 0),
+        linear-gradient(0deg, transparent calc(33.333% - 1px), rgba(218, 230, 247, 0.1) 0 33.333%, transparent 0 calc(66.666% - 1px), rgba(218, 230, 247, 0.1) 0 66.666%, transparent 0);
+    transition: opacity 0.3s steps(4, end);
+}
+
+.hw[data-step="2"] .hw__rec,
+.hw[data-step="3"] .hw__rec {
+    opacity: 0;
+}
+
+.hw__brk {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border: 0 solid var(--px-ice);
+}
+
+.hw__brk--tl { left: 20px; top: 20px; border-width: 3px 0 0 3px; }
+.hw__brk--tr { right: 20px; top: 20px; border-width: 3px 3px 0 0; }
+.hw__brk--bl { left: 20px; bottom: 20px; border-width: 0 0 3px 3px; }
+.hw__brk--br { right: 20px; bottom: 20px; border-width: 0 3px 3px 0; }
+
+.hw__live {
+    position: absolute;
+    left: 64px;
+    top: 27px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font: 700 12px/1 var(--font-tech);
+    letter-spacing: 0.16em;
+}
+
+.hw__live b {
+    font-weight: 700;
+    min-width: 3.2em;
+}
+
+.hw__dot {
+    display: block;
+    width: 9px;
+    height: 9px;
+    background: var(--px-ice);
+}
+
+.hw[data-step="1"] .hw__dot {
+    animation: hw-blink 1s steps(1, end) infinite;
+}
+
+@keyframes hw-blink {
+    50% { opacity: 0; }
+}
+
+/* the camera locks on: a dashed square that snaps shut around the cube */
+.hw__lock {
+    position: absolute;
+    left: 50%;
+    top: 41%;
+    width: 232px;
+    height: 232px;
+    margin: -116px 0 0 -116px;
+    border: 2px dashed rgba(218, 230, 247, 0.55);
+}
+
+.hw[data-step="1"] .hw__lock {
+    animation: hw-lock 0.55s steps(4, end) both;
+}
+
+@keyframes hw-lock {
+    from { transform: scale(1.35); opacity: 0; }
+    to { transform: none; opacity: 1; }
+}
+
+.hw__rec .hw__cube {
+    position: absolute;
+    left: 50%;
+    top: 41%;
+    width: 200px;
+    height: 200px;
+    margin: -100px 0 0 -100px;
+    object-fit: contain;
+    animation: hw-bob 3.2s steps(2, end) infinite;
+}
+
+@keyframes hw-bob {
+    50% { translate: 0 -5px; }
+}
+
+.hw__sub {
+    position: absolute;
+    left: 48px;
+    right: 48px;
+    bottom: 96px;
+    margin: 0;
+    min-height: 1.2em;
+    text-align: center;
+    font: 400 26px/1.2 var(--px-font);
+    color: var(--px-ice);
+}
+
+.hw__caret {
+    display: inline;
+    margin-left: 3px;
+    border-left: 0.45em solid var(--px-ice);
+    animation: hw-blink 0.8s steps(1, end) infinite;
+}
+
+.hw__wave {
+    position: absolute;
+    left: 48px;
+    right: 150px;
+    bottom: 40px;
+    height: 28px;
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.hw__wave i {
+    flex: 1 1 0;
+    max-width: 6px;
+    height: 100%;
+    background: var(--px-ice);
+    transform: scaleY(0.4);
+    transform-origin: 50% 100%;
+}
+
+.hw__wave i:nth-child(3n) { transform: scaleY(0.75); }
+.hw__wave i:nth-child(4n + 1) { transform: scaleY(0.25); }
+.hw__wave i:nth-child(5n + 2) { transform: scaleY(1); }
+
+.hw[data-step="1"] .hw__wave i {
+    animation: hw-wave 0.8s steps(5, end) infinite alternate;
+}
+
+.hw[data-step="1"] .hw__wave i:nth-child(2n) { animation-delay: -0.2s; }
+.hw[data-step="1"] .hw__wave i:nth-child(3n) { animation-delay: -0.4s; }
+.hw[data-step="1"] .hw__wave i:nth-child(5n) { animation-delay: -0.6s; }
+
+@keyframes hw-wave {
+    from { transform: scaleY(0.2); }
+    to { transform: scaleY(1); }
+}
+
+.hw__post {
+    position: absolute;
+    right: 48px;
+    bottom: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 16px 10px;
+    font: 400 18px/1 var(--px-font);
+    letter-spacing: 0.06em;
+    color: var(--px-black);
+    background: var(--px-ice);
+    clip-path: var(--px-notch-sm);
+}
+
+.hw__post svg {
+    width: 12px;
+    height: 8px;
+}
+
+/* the button goes down, clips.js (a moment before the step is over) */
+.hw__post.is-hit {
+    background: #FFFFFF;
+    transform: translateY(2px);
+}
+
+/* steps 2 and 3: the thread */
+.hw__thread {
+    position: absolute;
+    inset: var(--hw-pad);
+    opacity: 0;
+    transition: opacity 0.3s steps(4, end);
+}
+
+.hw[data-step="2"] .hw__thread,
+.hw[data-step="3"] .hw__thread {
+    opacity: 1;
+}
+
+.hw__row {
+    --pos: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: var(--hw-rh);
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px 10px 10px;
+    box-sizing: border-box;
+    color: var(--px-ice);
+    background: #10121A;
+    border: 1.5px solid rgba(218, 230, 247, 0.3);
+    border-radius: 8px;
+}
+
+.hw__row--root {
+    border: 2px solid var(--px-ice);
+    opacity: 0;
+    transition: opacity 0.3s steps(4, end);
+}
+
+.hw[data-step="2"] .hw__row--root,
+.hw[data-step="3"] .hw__row--root {
+    opacity: 1;
+    transition-delay: 0.15s;
+}
+
+/* an answer: in from the left one after another, and the vote sorts them.
+   --k is where it arrives, --pos is where it sits. */
+.hw__row--reply {
+    --pos: var(--k);
+    left: var(--hw-ind);
+    top: calc(var(--hw-rh) + var(--hw-root));
+    opacity: 0;
+    transform: translate(-18px, calc(var(--pos) * (var(--hw-rh) + var(--hw-gap))));
+    transition:
+        opacity 0.3s steps(4, end),
+        transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+        background-color 0.4s,
+        border-color 0.4s,
+        color 0.4s;
+}
+
+.hw[data-step="2"] .hw__row--reply,
+.hw[data-step="3"] .hw__row--reply {
+    opacity: 1;
+    transform: translate(0, calc(var(--pos) * (var(--hw-rh) + var(--hw-gap))));
+    transition-delay: calc(0.9s + var(--k) * 0.7s), calc(0.9s + var(--k) * 0.7s), 0s, 0s, 0s;
+}
+
+/* step 3: the best answer moves to the top, the others step back */
+.hw[data-step="3"] .hw__row--b { --pos: 0; }
+.hw[data-step="3"] .hw__row--a { --pos: 1; }
+
+.hw[data-step="3"] .hw__row--reply {
+    transition-delay: 0s, 2.3s, 2.8s, 2.8s, 2.8s;
+}
+
+.hw[data-step="3"] .hw__row--a,
+.hw[data-step="3"] .hw__row--c {
+    opacity: 0.5;
+    transition-delay: 2.3s, 2.3s, 0s, 0s, 0s;
+}
+
+/* the wires: a trunk down from the first clip, a branch into every answer */
+.hw__trunk {
+    position: absolute;
+    left: calc(var(--hw-ind) / 2 - 1px);
+    top: var(--hw-rh);
+    width: 2px;
+    height: calc(var(--hw-root) + (var(--hw-rh) + var(--hw-gap)) * 2 + var(--hw-rh) / 2);
+    background: repeating-linear-gradient(180deg, var(--px-ice) 0 4px, transparent 4px 8px);
+    opacity: 0.55;
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+    transition: transform 0.5s steps(8, end);
+}
+
+.hw[data-step="2"] .hw__trunk,
+.hw[data-step="3"] .hw__trunk {
+    transform: none;
+    transition-delay: 0.5s;
+}
+
+.hw__row--reply::before {
+    content: '';
+    position: absolute;
+    right: calc(100% + 1px);
+    top: calc(50% - 1px);
+    width: calc(var(--hw-ind) / 2);
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--px-ice) 0 4px, transparent 4px 8px);
+    opacity: 0.55;
+}
+
+.hw__thumb {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: calc(var(--hw-rh) - 23px);
+    overflow: hidden;
+    background: #0A0B10;
+    border: 1px solid rgba(218, 230, 247, 0.28);
+    transition: border-color 0.4s;
+}
+
+.hw__thumb .hw__cube {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
+
+/* the first clip faces the answers; the answers face it */
+.hw__row--root .hw__cube {
+    transform: scaleX(-1);
+}
+
+.hw__thumb b {
+    position: absolute;
+    left: 5px;
+    bottom: 4px;
+    font: 700 9px/1 var(--font-tech);
+    letter-spacing: 0.1em;
+    color: var(--px-ice);
+}
+
+.hw__text {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.hw__who {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 8px;
+    font: 700 11px/1 var(--font-tech);
+    letter-spacing: 0.12em;
+    color: var(--st-dim);
+    transition: color 0.4s;
+}
+
+.hw__at {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hw__who em {
+    flex: none;
+    padding: 3px 5px 2px;
+    font-style: normal;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+}
+
+.hw__op {
+    color: var(--px-black);
+    background: var(--px-ice);
+}
+
+.hw__lqi {
+    color: var(--px-ice);
+    box-shadow: inset 0 0 0 1px rgba(218, 230, 247, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s steps(3, end), color 0.4s, box-shadow 0.4s;
+}
+
+/* Orvelis has read them */
+.hw[data-step="3"] .hw__lqi {
+    opacity: 1;
+    transition-delay: 1.2s, 2.8s, 2.8s;
+}
+
+.hw__say {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    font: 600 14px/1.4 var(--font-sans);
+    color: var(--px-ice);
+    transition: color 0.4s;
+}
+
+.hw__side {
+    display: grid;
+    justify-items: end;
+    gap: 8px;
+    min-width: 64px;
+}
+
+.hw__side b {
+    font: 400 24px/1 var(--px-font);
+    transition: color 0.4s;
+}
+
+.hw__lab {
+    font: 700 9px/1 var(--font-tech);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--st-dim);
+}
+
+/* votes are only counted in step 3 */
+.hw__row--reply .hw__side {
+    opacity: 0;
+    transition: opacity 0.3s steps(3, end);
+}
+
+.hw[data-step="3"] .hw__row--reply .hw__side {
+    opacity: 1;
+    transition-delay: 0.4s;
+}
+
+.hw__meter {
+    display: block;
+    width: 64px;
+    height: 6px;
+    background: rgba(218, 230, 247, 0.14);
+}
+
+.hw__meter i {
+    display: block;
+    height: 100%;
+    background: var(--px-ice);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.9s steps(10, end);
+}
+
+.hw[data-step="3"] .hw__meter i {
+    clip-path: inset(0 calc(100% - var(--v) * 100%) 0 0);
+    transition-delay: 0.6s;
+}
+
+/* the answer that lost is the same ice in dither */
+.hw__row--a .hw__meter i {
+    background: repeating-conic-gradient(var(--px-ice) 0 25%, transparent 0 50%) 0 0 / 4px 4px;
+}
+
+/* the answer that is still being filmed */
+.hw__row--c .hw__thumb {
+    border-style: dashed;
+}
+
+.hw__row--c .hw__dot {
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    width: 7px;
+    height: 7px;
+}
+
+.hw[data-step="2"] .hw__row--c .hw__dot,
+.hw[data-step="3"] .hw__row--c .hw__dot {
+    animation: hw-blink 1s steps(1, end) infinite;
+}
+
+.hw__wave--sm {
+    position: static;
+    width: 56px;
+    height: 22px;
+    gap: 4px;
+}
+
+.hw[data-step="2"] .hw__wave--sm i,
+.hw[data-step="3"] .hw__wave--sm i {
+    animation: hw-wave 0.8s steps(5, end) infinite alternate;
+}
+
+.hw[data-step="2"] .hw__wave--sm i:nth-child(2n),
+.hw[data-step="3"] .hw__wave--sm i:nth-child(2n) {
+    animation-delay: -0.3s;
+}
+
+.hw__row--c .hw__say {
+    color: var(--st-dim);
+    font-weight: 500;
+}
+
+/* the winner: solid ice, with the stamp the catch uses */
+.hw[data-step="3"] .hw__row--b {
+    color: var(--px-black);
+    background: var(--px-ice);
+    border-color: var(--px-ice);
+}
+
+.hw[data-step="3"] .hw__row--b .hw__say,
+.hw[data-step="3"] .hw__row--b .hw__side b,
+.hw[data-step="3"] .hw__row--b .hw__lqi {
+    color: var(--px-black);
+}
+
+.hw[data-step="3"] .hw__row--b .hw__who {
+    color: #3A4252;
+}
+
+.hw[data-step="3"] .hw__row--b .hw__lqi {
+    box-shadow: inset 0 0 0 1px var(--px-black);
+}
+
+.hw[data-step="3"] .hw__row--b .hw__thumb {
+    border-color: rgba(7, 8, 12, 0.5);
+}
+
+.hw[data-step="3"] .hw__row--b .hw__meter {
+    background: rgba(7, 8, 12, 0.18);
+}
+
+.hw[data-step="3"] .hw__row--b .hw__meter i {
+    background: var(--px-black);
+}
+
+/* the row's own colours wait for the vote; so do the words in it */
+.hw[data-step="3"] .hw__row--b .hw__say,
+.hw[data-step="3"] .hw__row--b .hw__who,
+.hw[data-step="3"] .hw__row--b .hw__side b,
+.hw[data-step="3"] .hw__row--b .hw__thumb {
+    transition-delay: 2.8s;
+}
+
+.hw__stamp {
+    position: absolute;
+    right: 24px;
+    top: -27px;
+    z-index: 3;
+    padding: 8px 10px 7px;
+    font: 400 16px/1 var(--px-font);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    color: var(--px-ice);
+    background: var(--px-black);
+    clip-path: var(--px-notch-sm);
+    transform: rotate(4deg);
+    opacity: 0;
+}
+
+.hw[data-step="3"] .hw__stamp {
+    opacity: 1;
+    animation: hw-stamp 0.32s steps(4, end) 3.3s both;
+}
+
+@keyframes hw-stamp {
+    from { transform: rotate(4deg) scale(1.9); opacity: 0; }
+    to { transform: rotate(4deg) scale(1); opacity: 1; }
+}
+
+/* the scene is narrower than a row of thumb, words and votes needs: the votes
+   move up beside the name and the words run the full width under it */
+@media (max-width: 1180px) {
+    .hw {
+        --hw-rh: 96px;
+    }
+
+    .hw__row {
+        grid-template-columns: 76px minmax(0, 1fr) auto;
+        grid-template-areas: "thumb who side" "thumb say say";
+        grid-template-rows: auto 1fr;
+        align-items: start;
+        gap: 6px 12px;
+        padding: 8px 12px 8px 8px;
+    }
+
+    .hw__thumb {
+        grid-area: thumb;
+        align-self: center;
+        height: calc(var(--hw-rh) - 19px);
+    }
+
+    .hw__thumb .hw__cube {
+        width: 52px;
+        height: 52px;
+    }
+
+    .hw__thumb b {
+        left: 4px;
+        bottom: 3px;
+        font-size: 8px;
+    }
+
+    .hw__text {
+        display: contents;
+    }
+
+    .hw__who {
+        grid-area: who;
+        align-self: center;
+        min-width: 0;
+    }
+
+    .hw__say {
+        grid-area: say;
+        font-size: 13px;
+        line-height: 1.35;
+    }
+
+    .hw__side {
+        grid-area: side;
+        display: flex;
+        align-items: center;
+        align-self: center;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .hw__side b {
+        font-size: 18px;
+    }
+
+    .hw__meter {
+        width: 36px;
+    }
+
+    .hw__row--root .hw__op {
+        display: none;
+    }
+
+    .hw__sub {
+        left: 40px;
+        right: 40px;
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .hw {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+        max-width: 560px;
+        margin-inline: auto;
+    }
+
+    .hw__stage {
+        order: -1;
+    }
+
+    /* the steps that are not on fold up to their titles */
+    .hw.is-live .hw__step:not(.is-on) .hw__p {
+        display: none;
+    }
 }
 
 @media (max-width: 760px) {
     #features { padding: 132px 16px 124px !important; }
-    #features .section__title { font-size: 40px !important; line-height: 1.1 !important; }
+    /* wide enough for THE BEST ONE WINS. on one line, on any phone */
+    #features .section__title { font-size: clamp(26px, calc((100vw - 32px) / 11.6), 40px) !important; line-height: 1.1 !important; }
     #features .section__label { font-size: 11px !important; letter-spacing: 0.14em !important; }
+
+    /* the winning line starts its own line, so the bar under it is one piece */
+    #features .hw-br {
+        display: inline;
+    }
+
+    .hw {
+        --hw-ind: 30px;
+        --hw-pad: 16px;
+    }
+
+    .hw__rec .hw__cube {
+        width: 150px;
+        height: 150px;
+        margin: -75px 0 0 -75px;
+    }
+
+    .hw__lock {
+        width: 180px;
+        height: 180px;
+        margin: -90px 0 0 -90px;
+    }
+
+    .hw__sub {
+        left: 24px;
+        right: 24px;
+        bottom: 86px;
+        font-size: 19px;
+    }
+
+    .hw__wave {
+        left: 28px;
+        right: 150px;
+        bottom: 34px;
+    }
+
+    .hw__post {
+        right: 28px;
+        bottom: 30px;
+        padding: 9px 13px 8px;
+        font-size: 16px;
+    }
+
+    .hw__stamp {
+        right: 14px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 520px) {
+    /* the vote count says it; the little bar is for wider scenes */
+    .hw__meter {
+        display: none;
+    }
+}
+
+@media (max-width: 360px) {
+    .hw {
+        --hw-rh: 112px;
+    }
+
+    .hw__row {
+        grid-template-columns: 64px minmax(0, 1fr) auto;
+        gap: 6px 10px;
+    }
+
+    .hw__thumb .hw__cube {
+        width: 44px;
+        height: 44px;
+    }
+
+    .hw__say {
+        -webkit-line-clamp: 4;
+    }
+
+    .hw__row--root .hw__lab {
+        display: none;
+    }
+
+    .hw__step {
+        grid-template-columns: 40px minmax(0, 1fr);
+        column-gap: 10px;
+        padding-right: 14px;
+    }
+
+    .hw__h {
+        font-size: 19px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .step-art * { animation: none !important; }
-    .st-vote-fill--pro { width: 187px; }
-    .st-vote-fill--con { width: 73px; }
+    .hw__stage *,
+    .hw__stage *::before,
+    .hw__bar {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* where the page is composited in software (clips.js sets html.gfx-lite) the
+   loops go; the steps still play */
+html.gfx-lite .hw__wave i,
+html.gfx-lite .hw__dot,
+html.gfx-lite .hw__caret,
+html.gfx-lite .hw__rec .hw__cube {
+    animation: none !important;
 }
 
 /* ==========================================================================
@@ -10505,7 +10870,6 @@ body {
 
     /* --- HUD labels need a floor size on a phone --- */
     .section__label,
-    .step-card__tag,
     .clip-card__meta-item {
         font-size: 10px !important;
         letter-spacing: 0.13em !important;
@@ -10516,11 +10880,6 @@ body {
     .hero__eyebrow-text {
         font-size: 11px !important;
     }
-
-    /* --- steps (02) --- */
-    .step-grid { margin-top: 28px; gap: 28px; }
-    .step-card__body { padding-top: 14px; gap: 8px; }
-    .step-card__index { font-size: 22px; }
 
     /* --- hero --- */
     .hero__lede { font-size: 14.5px; }
@@ -12640,12 +12999,10 @@ html.navx-open .brandmark {
    SHORT VIDEOS WITH A POINT
    The page used to open on a wordmark, a slogan and a screen recording, and
    carried on in robots and HUD read-outs; nothing on it looked like a video
-   anyone would watch. The hero phone now plays a feed of short clips, each
-   one a person explaining one useful thing and ending on its point, and
-   section 01 lays those clips out as a reel.
-
-   The reel is built from real frames in the app and from explainers filmed
-   the way they really are, as screen recordings; clips.js builds it.
+   anyone would watch. The hero phone now plays a clip from the app, and
+   section 01 puts four more on a second phone: tap a question and the phone
+   swipes to that clip and stamps its point on it. The frames are real ones
+   from the app; clips.js runs the phone.
    ========================================================================== */
 
 /* ==========================================================================
@@ -13361,7 +13718,7 @@ html.navx-open .brandmark {
 }
 
 /* ==========================================================================
-   01 — THE FEED: a reel of clips, each with its point underneath
+   01 — THE FEED: tap a question, the phone plays that clip, the point lands
    ========================================================================== */
 .feedsec {
     display: block !important;
@@ -13432,196 +13789,181 @@ html.navx-open .brandmark {
     max-width: 46ch;
     font: 500 clamp(16px, 1.25vw, 19px)/1.6 var(--font-sans);
     color: var(--fs-soft);
+    text-wrap: pretty;
 }
 
 .feedsec__lede strong {
     color: var(--fs-ink);
 }
 
-/* the reel runs the full width of the page */
-.reel {
+/* the demo: the phone on the left, the questions and the point on the right.
+   The phone is sized by one variable (--pw) and drawn in em, so it scales
+   as a whole. Timing lives in CSS (the bar under the question that is on is
+   the clock; clips.js moves on when it ends), so the page's own rule that
+   pauses animations off screen stops the demo too. */
+.fd {
+    --fd-dur: 8s;             /* how long a clip holds before the next one */
+    --fd-t: 2.4s;             /* when the point lands, counted from the swipe */
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(36px, 6vw, 92px);
+    margin-top: clamp(44px, 5vw, 68px);
+}
+
+/* once someone taps, the point comes at once and nothing moves on by itself */
+.fd.is-manual {
+    --fd-t: 0.7s;
+}
+
+.fd__phone {
+    --pw: 300px;
     position: relative;
-    margin: 64px 0 72px;
-    overflow: hidden;
-    -webkit-mask: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
-    mask: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
-}
-
-.reel__track {
-    display: flex;
-    width: max-content;
-    animation: reel-run 70s linear infinite;
-    animation-play-state: paused;
-}
-
-.reel.is-inview .reel__track {
-    animation-play-state: running;
-}
-
-.reel:hover .reel__track,
-.reel:focus-within .reel__track {
-    animation-play-state: paused;
-}
-
-@keyframes reel-run {
-    to { transform: translateX(-50%); }
-}
-
-.reel__set {
-    display: flex;
-    gap: 22px;
-    padding-right: 22px;
-}
-
-.reel-card {
-    width: 214px;
-    margin: 0;
     flex: none;
+    width: var(--pw);
+    aspect-ratio: 300 / 620;
+    font-size: calc(var(--pw) / 30);
+    padding: 0.6em;
+    background: #000;
+    border-radius: 3.8em;
+    box-shadow:
+        0 0 0 1px #1B1D25,
+        0 2.6em 5.4em rgba(7, 8, 12, 0.26),
+        0 0.6em 1.6em rgba(7, 8, 12, 0.16);
 }
 
-.reel-card:nth-child(even) {
-    margin-top: 34px;
+[data-theme="dark"] .fd__phone {
+    box-shadow:
+        0 0 0 1px rgba(218, 230, 247, 0.3),
+        0 2.6em 5.4em rgba(0, 0, 0, 0.6);
 }
 
-.reel-card__clip {
+.fd__notch {
+    position: absolute;
+    z-index: 6;
+    top: 1.4em;
+    left: 50%;
+    width: 8.6em;
+    height: 2.3em;
+    margin-left: -4.3em;
+    background: #000;
+    border-radius: 1.2em;
+}
+
+.fd__screen {
     position: relative;
-    aspect-ratio: 9 / 16;
+    height: 100%;
     overflow: hidden;
-    border-radius: 18px;
+    clip-path: inset(0 round 3.2em);
+    background: var(--px-black);
+    isolation: isolate;
+}
+
+/* a clip is a page of the feed: the one that is on sits at 0, the ones
+   before it above, the ones after it below (clips.js writes --d) */
+.fd__clip {
+    --d: 1;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    overflow: hidden;
     color: #fff;
     background: var(--px-black);
-    box-shadow: 0 22px 44px rgba(7, 8, 12, 0.18), 0 0 0 1px rgba(7, 8, 12, 0.06);
-    transition: transform .35s cubic-bezier(.2, .8, .2, 1);
+    transform: translate3d(0, calc(var(--d) * 100%), 0);
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-[data-theme="dark"] .reel-card__clip {
-    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(218, 230, 247, 0.1);
+.fd__clip.is-on {
+    --d: 0;
 }
 
-.reel-card:hover .reel-card__clip {
-    transform: translateY(-6px);
-}
-
-.reel-card__media {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-}
-
-.reel-card__img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* a slow push-in, the way a still is filmed */
-.reel-card__img--drift {
-    transform-origin: 50% 30%;
-    animation: reel-drift 14s ease-in-out infinite alternate;
-    animation-play-state: paused;
-}
-
-.reel.is-inview .reel-card__img--drift {
-    animation-play-state: running;
-}
-
-@keyframes reel-drift {
-    from { transform: scale(1.02); }
-    to { transform: scale(1.14) translateY(-2%); }
-}
-
-/* a landscape clip set in a vertical frame, its own light blurred behind */
-.reel-card__amb {
-    position: absolute;
-    inset: -24px;
-    background-size: cover;
-    background-position: center;
-    filter: blur(18px) saturate(1.2) brightness(.5);
-}
-
-.reel-card__inset {
-    position: absolute;
-    left: 0;
-    top: 30%;
-    width: 100%;
-    height: auto;
-    display: block;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
-}
-
-.reel-card__clip::after {
+/* light and dark ends so the words on it always read */
+.fd__clip::after {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(180deg, rgba(7, 8, 12, .45) 0, rgba(7, 8, 12, 0) 18%, rgba(7, 8, 12, 0) 56%, rgba(7, 8, 12, .8) 100%);
+    background: linear-gradient(180deg, rgba(7, 8, 12, 0.5) 0, rgba(7, 8, 12, 0) 18%, rgba(7, 8, 12, 0) 52%, rgba(7, 8, 12, 0.86) 100%);
 }
 
-.reel-card__top {
+/* a landscape clip in a vertical frame: the picture in the middle, its own
+   light behind it, blurred ahead of time so nothing here is a live filter */
+.fd__amb {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.fd__pic {
+    position: absolute;
+    left: 0;
+    top: var(--top, 27%);
+    width: 100%;
+    height: auto;
+    display: block;
+    transform-origin: 50% 40%;
+    box-shadow: 0 0.8em 2.4em rgba(0, 0, 0, 0.45);
+}
+
+video.fd__pic {
+    background: #000;
+}
+
+.fd__clip--full .fd__pic {
+    top: 0;
+    height: 100%;
+    object-fit: cover;
+    box-shadow: none;
+}
+
+/* a slow push-in, the way a still is filmed */
+.fd.is-live .fd__clip.is-on img.fd__pic {
+    animation: fd-drift 14s ease-out both;
+}
+
+@keyframes fd-drift {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+.fd__top {
     position: absolute;
     z-index: 2;
-    left: 10px;
-    right: 10px;
-    top: 10px;
+    left: 1.1em;
+    right: 1.1em;
+    top: 3.9em;
     display: flex;
     justify-content: space-between;
-    font: 700 8.5px/1 var(--font-tech);
+    align-items: center;
+    font: 700 0.95em/1 var(--font-tech);
     letter-spacing: 0.14em;
 }
 
-.reel-card__top em {
+.fd__top em {
+    padding: 0.5em 0.6em 0.4em;
     font-style: normal;
-    padding: 4px 6px 3px;
     color: var(--px-black);
     background: var(--px-ice);
 }
 
-.reel-card__top b {
-    padding: 4px 0 3px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+.fd__top b {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-.reel-card__reply {
+.fd__cap {
     position: absolute;
     z-index: 2;
-    left: 10px;
-    top: 32px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 7px 4px;
-    font: 700 8.5px/1 var(--font-sans);
-    color: var(--px-black);
-    background: #fff;
-    clip-path: var(--px-notch-sm);
-}
-
-.reel-card__reply svg {
-    width: 12px;
-    height: 12px;
-    fill: var(--px-black);
-}
-
-/* auto captions, the way every short has them */
-.reel-card__cap {
-    position: absolute;
-    z-index: 2;
-    left: 8px;
-    right: 8px;
-    top: 60%;
+    left: 1.2em;
+    right: 5.6em;
+    bottom: 11.4em;
     margin: 0;
-    text-align: center;
-    font: 800 15px/1.25 var(--font-sans);
-    letter-spacing: -0.01em;
-    color: #fff;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, .75), 0 0 1px rgba(0, 0, 0, .9);
+    font: 800 1.9em/1.3 var(--font-sans);
+    text-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.75);
 }
 
-.reel-card__cap mark {
-    padding: 0 4px;
+.fd__cap mark {
+    padding: 0 0.2em;
     color: var(--px-black);
     text-shadow: none;
     background: var(--px-ice);
@@ -13629,376 +13971,436 @@ html.navx-open .brandmark {
     box-decoration-break: clone;
 }
 
-.reel-card--inset .reel-card__cap {
-    top: auto;
-    bottom: 32%;
+.fd.is-live .fd__clip.is-on .fd__cap {
+    animation: fd-cap 0.35s steps(3, end) 0.6s both;
 }
 
-.reel-card__meta {
+@keyframes fd-cap {
+    from { opacity: 0; transform: translateY(0.7em); }
+    to { opacity: 1; transform: none; }
+}
+
+.fd__who {
     position: absolute;
     z-index: 2;
-    left: 11px;
-    right: 11px;
-    bottom: 14px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
+    left: 1.2em;
+    right: 5.6em;
+    bottom: 2.4em;
 }
 
-.reel-card__who {
+.fd__who span {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font: 800 11.5px/1 var(--font-sans);
+    gap: 0.6em;
+    font: 800 1.35em/1 var(--font-sans);
 }
 
-/* the app's default avatar: a round badge with the play mark */
-.reel-card__who i {
+.fd__who i {
     display: grid;
     place-items: center;
-    width: 20px;
-    height: 20px;
+    width: 1.7em;
+    height: 1.7em;
     border-radius: 50%;
     background: var(--px-ice);
-    box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .8);
 }
 
-.reel-card__who i::before {
+.fd__who i::before {
     content: '';
-    margin-left: 2px;
-    border-left: 6px solid var(--px-black);
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
+    margin-left: 0.15em;
+    border-left: 0.5em solid var(--px-black);
+    border-top: 0.32em solid transparent;
+    border-bottom: 0.32em solid transparent;
 }
 
-.reel-card__meta p {
-    margin: 6px 0 0;
-    font: 600 11px/1.3 var(--font-sans);
+.fd__who p {
+    margin: 0.7em 0 0;
+    font: 600 1.25em/1.3 var(--font-sans);
+    color: rgba(255, 255, 255, 0.88);
 }
 
-.reel-card__prog {
+.fd__prog {
     position: absolute;
-    z-index: 2;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.4em;
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.fd__prog i {
+    display: block;
+    height: 100%;
+    background: #fff;
+    transform: scaleX(0.3);
+    transform-origin: 0 50%;
+}
+
+.fd.is-live .fd__clip.is-on .fd__prog i {
+    animation: fd-run var(--fd-dur) linear both;
+}
+
+/* tapped: the clip just loops, the way a clip does */
+.fd.is-manual .fd__clip.is-on .fd__prog i {
+    animation-iteration-count: infinite;
+}
+
+@keyframes fd-run {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+/* THE POINT, stamped on the clip the way the catch does it */
+.fd__stamp {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    top: 36%;
+    padding: 0.75em 0.95em 0.65em;
+    font: 400 2.4em/1 var(--px-font);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    color: var(--px-black);
+    background: var(--px-ice);
+    clip-path: var(--px-notch);
+    transform: translate(-50%, 0) rotate(-6deg);
+    opacity: 0;
+}
+
+.fd__clip.is-on .fd__stamp {
+    opacity: 1;
+}
+
+.fd.is-live .fd__clip.is-on .fd__stamp {
+    animation: fd-stamp 0.32s steps(4, end) var(--fd-t) both;
+}
+
+@keyframes fd-stamp {
+    from { transform: translate(-50%, 0) rotate(-6deg) scale(1.9); opacity: 0; }
+    to { transform: translate(-50%, 0) rotate(-6deg) scale(1); opacity: 1; }
+}
+
+/* the app's buttons; when the point has landed, Deep Dive blinks once */
+.fd__rail {
+    position: absolute;
+    z-index: 5;
+    right: 1em;
+    bottom: 5.8em;
+    display: grid;
+    gap: 1em;
+    justify-items: center;
+    color: #fff;
+}
+
+.fd__act {
+    display: grid;
+    justify-items: center;
+    gap: 0.45em;
+    font-style: normal;
+}
+
+.fd__act svg {
+    box-sizing: content-box;
+    width: 1.9em;
+    height: 1.9em;
+    padding: 0.7em;
+    border-radius: 50%;
+    background: rgba(7, 8, 12, 0.6);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.fd__act:first-child svg {
+    fill: currentColor;
+    stroke: none;
+}
+
+.fd__lab {
+    font: 700 0.85em/1 var(--font-sans);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.fd.is-live .fd__rail.is-ping .fd__act--dd svg {
+    animation: fd-dd 0.9s steps(2, end) calc(var(--fd-t) + 0.5s) 3 both;
+}
+
+@keyframes fd-dd {
+    from { color: #fff; background: rgba(7, 8, 12, 0.6); }
+    to { color: var(--px-black); background: var(--px-ice); }
+}
+
+/* --- the questions --- */
+.fd__side {
+    min-width: 0;
+}
+
+.fd__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fd__q {
+    position: relative;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0 16px;
+    width: 100%;
+    margin: 0;
+    padding: 16px 20px 16px 14px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--fs-ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--fs-line);
+    border-radius: 0;
+    font: 400 clamp(17px, 1.65vw, 22px)/1.15 var(--px-font);
+    letter-spacing: 0.005em;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.fd__n {
+    font: 900 20px/1 var(--font-lcd);
+    color: var(--fs-muted);
+}
+
+.fd__len {
+    font: 700 11px/1 var(--font-tech);
+    letter-spacing: 0.1em;
+    color: var(--fs-muted);
+}
+
+.fd__q:hover {
+    background: rgb(var(--brand-rgb) / 0.05);
+}
+
+/* the question that is on: the logo's black with its line colour, like the
+   highlight in the headline */
+.fd__q.is-on {
+    color: var(--brand-on);
+    background: var(--brand-500);
+    border-bottom-color: transparent;
+    clip-path: var(--px-notch);
+}
+
+.fd__q.is-on .fd__n,
+.fd__q.is-on .fd__len {
+    color: inherit;
+    opacity: 0.7;
+}
+
+.fd__q:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--brand-500);
+}
+
+.fd__q.is-on:focus-visible {
+    box-shadow: inset 0 0 0 3px var(--brand-on);
+}
+
+/* the clock: a thin line under the question that is on */
+.fd__bar {
+    position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
     height: 3px;
-    background: rgba(255, 255, 255, .22);
-}
-
-.reel-card__prog i {
-    display: block;
-    height: 100%;
-    width: 30%;
-    background: #fff;
-}
-
-.reel.is-inview .reel-card__prog i {
-    animation: reel-prog 9s linear infinite;
-    animation-delay: calc(var(--n) * -1.3s);
-}
-
-@keyframes reel-prog {
-    from { width: 0; }
-    to { width: 100%; }
-}
-
-/* ---------- explainers, filmed as screen recordings ---------- */
-.rx {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 40px 14px 0;
-    color: var(--px-ice);
-    background:
-        radial-gradient(120% 60% at 50% 0%, rgba(218, 230, 247, .1), transparent 70%),
-        var(--px-black);
-}
-
-.rx__app {
-    font: 700 8.5px/1 var(--font-tech);
-    letter-spacing: 0.18em;
-    color: rgba(218, 230, 247, .55);
-}
-
-/* the chat: a prompt and the model's guesses for the next word */
-.rx__prompt {
-    margin: 10px 0 16px;
-    padding: 11px 12px;
-    border-radius: 12px 12px 12px 4px;
-    font: 700 14px/1.3 var(--font-sans);
-    color: var(--px-black);
-    background: var(--px-ice);
-}
-
-.rx__prompt i {
-    display: inline-block;
-    width: 2px;
-    height: 14px;
-    margin-left: 3px;
-    vertical-align: -2px;
-    background: var(--px-black);
-    animation: hx-caret .9s steps(1, end) infinite;
-}
-
-.rx__label {
-    font: 700 8px/1 var(--font-tech);
-    letter-spacing: 0.18em;
-    color: rgba(218, 230, 247, .55);
-}
-
-.rx__bars {
-    list-style: none;
-    margin: 9px 0 0;
-    padding: 0;
-    display: grid;
-    gap: 9px;
-}
-
-.rx__bars li {
-    display: grid;
-    grid-template-columns: 34px 1fr 28px;
-    align-items: center;
-    gap: 7px;
-    font: 700 11px/1 var(--font-sans);
-}
-
-.rx__bars span {
-    height: 8px;
-    border-radius: 4px;
-    background: rgba(218, 230, 247, .12);
-    overflow: hidden;
-}
-
-.rx__bars span i {
-    display: block;
-    height: 100%;
-    width: calc(var(--v) * 100%);
-    border-radius: inherit;
-    background: var(--px-ice);
+    background: currentColor;
+    opacity: 0;
+    transform: scaleX(0);
     transform-origin: 0 50%;
 }
 
-.rx__bars li + li span i {
-    background: rgba(218, 230, 247, .5);
+.fd.is-live:not(.is-manual) .fd__q.is-on .fd__bar {
+    opacity: 0.55;
+    animation: fd-run var(--fd-dur) linear both;
 }
 
-.reel.is-inview .rx__bars span i {
-    animation: rx-grow 5s cubic-bezier(.2, .8, .2, 1) infinite;
+/* hover or focus holds the clock (the animation shorthands above are the
+   more specific rules, so this one has to insist) */
+.fd.is-held .fd__bar,
+.fd.is-held .fd__prog i {
+    animation-play-state: paused !important;
 }
 
-.rx__bars em {
-    font: 700 9.5px/1 var(--font-tech);
-    font-style: normal;
-    text-align: right;
-    color: rgba(218, 230, 247, .75);
-}
-
-@keyframes rx-grow {
-    0% { transform: scaleX(0); }
-    30%, 100% { transform: scaleX(1); }
-}
-
-/* the chart: $100 at 7% for thirty years */
-.rx__big {
-    margin-top: 10px;
-    font: 800 32px/1 var(--font-sans);
-    letter-spacing: -0.02em;
-    color: #fff;
-}
-
-.rx__sub {
-    margin-top: 4px;
-    font: 600 10.5px/1 var(--font-sans);
-    color: rgba(218, 230, 247, .6);
-}
-
-.rx__plot {
-    width: 100%;
-    height: auto;
-    margin-top: 14px;
-    overflow: visible;
-}
-
-.rx__grid {
-    fill: none;
-    stroke: rgba(218, 230, 247, .12);
-    stroke-width: 1;
-}
-
-.rx__area {
-    fill: rgba(218, 230, 247, .12);
-}
-
-.rx__line {
-    fill: none;
-    stroke: var(--px-ice);
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 0;
-}
-
-.reel.is-inview .rx__line {
-    animation: rx-draw 6s ease-in-out infinite;
-}
-
-@keyframes rx-draw {
-    0% { stroke-dashoffset: 1; }
-    45%, 100% { stroke-dashoffset: 0; }
-}
-
-.rx__axis {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 4px;
-    font: 700 7.5px/1 var(--font-tech);
-    letter-spacing: 0.12em;
-    color: rgba(218, 230, 247, .45);
-}
-
-.rx__axis i {
-    font-style: normal;
-}
-
-/* the timer: a break every twenty minutes */
-.rx--timer {
-    align-items: center;
-}
-
-.rx--timer .rx__app {
-    align-self: flex-start;
-}
-
-.rx__ring {
-    position: relative;
-    width: 132px;
-    height: 132px;
-    margin-top: 18px;
-}
-
-.rx__ring svg {
-    width: 100%;
-    height: 100%;
-    transform: rotate(-90deg);
-}
-
-.rx__track,
-.rx__arc {
-    fill: none;
-    stroke-width: 7;
-}
-
-.rx__track {
-    stroke: rgba(218, 230, 247, .12);
-}
-
-.rx__arc {
-    stroke: var(--px-ice);
-    stroke-linecap: round;
-    stroke-dasharray: 1;
-    stroke-dashoffset: .25;
-}
-
-.reel.is-inview .rx__arc {
-    animation: rx-ring 8s linear infinite;
-}
-
-@keyframes rx-ring {
-    from { stroke-dashoffset: 0; }
-    to { stroke-dashoffset: 1; }
-}
-
-.rx__ring b {
-    position: absolute;
-    inset: 0;
+/* --- the point --- */
+.fd__points {
     display: grid;
-    place-items: center;
-    font: 800 30px/1 var(--font-sans);
-    letter-spacing: -0.02em;
-    color: #fff;
-    font-variant-numeric: tabular-nums;
+    margin-top: clamp(26px, 3.2vw, 44px);
 }
 
-.rx__chips {
-    display: flex;
-    gap: 5px;
-    margin-top: 16px;
+.fd__pt {
+    grid-area: 1 / 1;
+    min-width: 0;
+    visibility: hidden;
+    opacity: 0;
 }
 
-.rx__chips i {
-    padding: 5px 6px 4px;
-    font: 700 8px/1 var(--font-tech);
-    font-style: normal;
-    letter-spacing: 0.12em;
-    color: var(--px-black);
-    background: var(--px-ice);
+.fd__pt.is-on {
+    visibility: visible;
+    opacity: 1;
 }
 
-/* the point sits under the clip, where a caption would */
-.reel-card__point {
-    margin-top: 14px;
-    padding: 12px 14px 13px;
-    background: var(--fs-card);
-    box-shadow: inset 0 0 0 1px var(--fs-line);
-    clip-path: var(--px-notch);
+.fd__pt-q {
+    display: none;
 }
 
-.reel-card__point span {
-    font: 800 9px/1 var(--font-tech);
+.fd__tag {
+    display: inline-block;
+    padding: 0.6em 0.75em 0.5em;
+    font: 800 10px/1 var(--font-tech);
     letter-spacing: 0.2em;
+    color: var(--brand-on);
+    background: var(--brand-500);
+    clip-path: var(--px-notch-sm);
+}
+
+.fd__text {
+    margin: 14px 0 0;
+    max-width: 24em;
+    font: 400 clamp(24px, 2.7vw, 38px)/1.14 var(--px-font);
+    letter-spacing: 0.005em;
+    color: var(--fs-ink);
+}
+
+/* a sentence to a line: the point reads as a stamp, not a paragraph */
+.fd__text span {
+    display: block;
+    text-wrap: balance;
+}
+
+.fd.is-live .fd__pt.is-on .fd__text {
+    animation: fd-wipe 0.75s steps(14, end) calc(var(--fd-t) + 0.1s) both;
+}
+
+@keyframes fd-wipe {
+    from { clip-path: inset(-0.3em 100% -0.3em -0.3em); }
+    to { clip-path: inset(-0.3em -0.3em -0.3em -0.3em); }
+}
+
+.fd__more {
+    margin: clamp(22px, 2.6vw, 34px) 0 0;
+    font: 500 15px/1.6 var(--font-sans);
+    color: var(--fs-soft);
+}
+
+.fd__more b {
+    font-weight: 700;
+    color: var(--fs-ink);
+}
+
+.fd__more a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--fs-ink);
+    text-decoration: none;
+    border-bottom: 2px solid var(--fs-ink);
+}
+
+.fd__more a svg {
+    width: 12px;
+    height: 8px;
+    transition: transform 0.2s steps(3, end);
+}
+
+.fd__more a:hover svg {
+    transform: translateX(4px);
+}
+
+/* the phone and the scene in 02 hold their first frame until they are seen
+   (clips.js sets .is-away), so a visitor always meets them at the start */
+.fd.is-away *,
+.fd.is-away *::before,
+.fd.is-away *::after,
+.hw.is-away *,
+.hw.is-away *::before,
+.hw.is-away *::after {
+    animation-play-state: paused !important;
+}
+
+/* without script there is nothing to tap: every point is written out */
+.fd:not(.is-live) .fd__q {
+    cursor: default;
+}
+
+.fd:not(.is-live) .fd__points {
+    display: block;
+}
+
+.fd:not(.is-live) .fd__pt {
+    visibility: visible;
+    opacity: 1;
+    margin-bottom: 26px;
+}
+
+.fd:not(.is-live) .fd__pt-q {
+    display: block;
+    margin: 0 0 10px;
+    font: 700 11px/1.4 var(--font-tech);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--fs-muted);
 }
 
-.reel-card__point p {
-    margin: 7px 0 0;
-    font: 700 14px/1.32 var(--font-sans);
-    letter-spacing: -0.005em;
-    color: var(--fs-ink);
+@media (max-width: 900px) {
+    .fd {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        gap: 40px;
+    }
+
+    .fd__phone {
+        --pw: min(280px, 72vw);
+    }
+
+    .fd__side {
+        width: 100%;
+    }
 }
 
-/* why it works, from the viewer's side */
-.feedsec__why {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    margin: 0;
-    padding: 0;
+@media (max-width: 600px) {
+    .fd__q {
+        grid-template-columns: 30px minmax(0, 1fr) auto;
+        gap: 0 10px;
+        padding: 14px 14px 14px 10px;
+        font-size: 17px;
+    }
+
+    .fd__n {
+        font-size: 16px;
+    }
+
+    .fd__text {
+        font-size: 25px;
+    }
 }
 
-.feedsec__why li {
-    padding: 26px 26px 28px;
-    background: var(--fs-card);
-    box-shadow: inset 0 0 0 1px var(--fs-line);
-    clip-path: var(--px-notch);
+@media (prefers-reduced-motion: reduce) {
+    .fd__clip {
+        transition: none;
+    }
+
+    .fd__clip.is-on img.fd__pic,
+    .fd__clip.is-on .fd__cap,
+    .fd__clip.is-on .fd__stamp,
+    .fd__clip.is-on .fd__prog i,
+    .fd__rail .fd__act svg,
+    .fd__bar,
+    .fd__pt.is-on .fd__text {
+        animation: none !important;
+    }
 }
 
-.feedsec__icon {
-    display: block;
-    width: 44px;
-    height: 44px;
-    margin-bottom: 20px;
-    color: var(--brand-500);
-}
-
-.feedsec__icon svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.feedsec__why h3 {
-    margin: 0 0 10px;
-    font: 400 24px/1.1 var(--px-font);
-    letter-spacing: 0.01em;
-    color: var(--fs-ink);
-}
-
-.feedsec__why p {
-    margin: 0;
-    font: 500 15px/1.6 var(--font-sans);
-    color: var(--fs-soft);
+/* where the page is composited in software the push-in goes (clips.js sets html.gfx-lite) */
+html.gfx-lite .fd__clip.is-on img.fd__pic {
+    animation: none;
 }
 
 .feed-sr {
@@ -14027,11 +14429,6 @@ html.navx-open .brandmark {
         gap: 20px;
     }
 
-    .feedsec__why {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-
     #hero .hx-brand,
     #hero .hx-cta {
         justify-content: center;
@@ -14052,22 +14449,6 @@ html.navx-open .brandmark {
 
     .feedsec__rule {
         display: none;
-    }
-
-    .reel {
-        margin: 40px 0 44px;
-    }
-
-    .reel-card {
-        width: 172px;
-    }
-
-    .reel-card:nth-child(even) {
-        margin-top: 22px;
-    }
-
-    .reel-card__point p {
-        font-size: 13px;
     }
 
     #hero .hx-title {
@@ -14124,29 +14505,6 @@ html.navx-open .brandmark {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .reel {
-        overflow-x: auto;
-        -webkit-mask: none;
-        mask: none;
-    }
-
-    .reel__track {
-        animation: none;
-    }
-
-    .reel__set[aria-hidden="true"] {
-        display: none;
-    }
-
-    .reel-card__img--drift,
-    .rx__bars span i,
-    .rx__line,
-    .rx__arc,
-    .rx__prompt i,
-    .reel-card__prog i {
-        animation: none !important;
-    }
-
     #hero .hero__phone-frame,
     #hero .hero__phone-frame::after,
     #hero .hero__float--reply .hero__float-avatar::after,
@@ -14597,8 +14955,8 @@ html.navx-open .brandmark {
    The logo is two colours: ice #DAE6F7 on black #07080C. Every blue on the
    page used to be its own blue (cobalt, sky, violet); now each one is the
    logo's. On light surfaces the accent is the logo's black, on dark ones its
-   ice, and the always-dark screens (slides 02, 04, 05, the phone, the reel,
-   the footer) keep ice whatever the theme.
+   ice, and the always-dark screens (slides 02, 04, 05, the phone, the footer)
+   keep ice whatever the theme.
    ========================================================================== */
 :root,
 [data-theme="light"] {
@@ -14633,8 +14991,7 @@ html.navx-open .brandmark {
 #debates,
 #ai-core,
 .foot,
-.hx-app,
-.reel-card__clip {
+.hx-app {
     --brand-rgb: 218 230 247;
     --brand-on: #07080C;
     --brand-300: #B7C2D6;
@@ -15123,25 +15480,6 @@ html.navx-open .brandmark {
     to { transform: translateY(400%); }
 }
 
-/* the reel's progress bars grew by width (layout, fourteen of them); they
-   scale now */
-.reel-card__prog i {
-    width: 100%;
-    transform: scaleX(.3);
-    transform-origin: 0 50%;
-}
-
-@keyframes reel-prog {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
-}
-
-/* the blurred light behind the landscape clips is baked into its own small
-   image (clips.js), so the moving reel carries no live filters */
-.reel-card__amb {
-    filter: none;
-}
-
 /* nothing animates in a section that is off screen: every section reports
    whether it is in view (script.js), and its loops wait until it is */
 [data-inview]:not(.is-inview) *,
@@ -15174,20 +15512,7 @@ html.navx-open .brandmark {
 }
 
 /* where the page is composited in software (clips.js sets html.gfx-lite),
-   the extras that cost a repaint on every frame go: the edge fade over the
-   moving reel, the loops inside its cards (each card holds its last frame),
-   and the fixed edge light */
-html.gfx-lite .reel {
-    -webkit-mask: none;
-    mask: none;
-}
-
-html.gfx-lite .reel-card *,
-html.gfx-lite .reel-card *::before,
-html.gfx-lite .reel-card *::after {
-    animation: none !important;
-}
-
+   the fixed edge light goes: it costs a repaint on every frame */
 html.gfx-lite .page-fx > .page-fx__aurora {
     display: none;
 }

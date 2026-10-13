@@ -36,7 +36,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=5.4.0" />
+    <link rel="stylesheet" href="style.css?v=5.5.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -754,358 +754,224 @@
 
 
         <!-- ============================================================
-             01 — THE FEED: a reel of short clips, each with its point.
-             clips.js builds the cards from real frames in the app; the list
-             below is the same content for screen readers and for anyone
-             without JavaScript.
+             01 — THE FEED: tap a question, the phone plays that clip, the
+             point lands. clips.js runs it: the clips take turns while the
+             slide is on screen, and a hover or a tap takes over. Without
+             script the first clip sits on the phone and every point is
+             written out below. The frames are real ones from the app.
              ============================================================ -->
         <section class="section feedsec" id="manifesto" data-inview>
             <div class="feedsec__inner">
                 <div class="feedsec__eyebrow">
                     <span>[ 01 — THE FEED ]</span>
                     <span class="feedsec__rule"></span>
-                    <span>SHORT-FORM VIDEO&nbsp;&nbsp;//&nbsp;&nbsp;EVERY CLIP HAS A POINT</span>
                 </div>
                 <div class="feedsec__head">
-                    <h2 class="feedsec__title">Every clip<br>has <span class="hx-mark">a point.</span></h2>
+                    <h2 class="feedsec__title">Tap a clip.<br>Get <span class="hx-mark">the point.</span></h2>
                     <p class="feedsec__lede">
-                        Most feeds are built to keep you scrolling. This one is built so you
-                        <strong>walk away knowing something</strong>: a trick, a fact, a skill,
-                        an argument worth hearing, from a real person on camera.
+                        Datariot is a feed of short videos that each make one clear point in under
+                        a minute. Pick a question and watch one.
                     </p>
                 </div>
-            </div>
 
-            <div class="reel" data-inview aria-hidden="true">
-                <div class="reel__track" id="reelTrack"></div>
-            </div>
-            <ul class="feed-sr" aria-label="Clips from the feed">
-                <li>How lidar sees the street — Lidar times laser pulses as they bounce back and turns the delays into a 3D map.</li>
-                <li>What an AI chatbot actually does — A chatbot predicts likely next words. Facts still need checking.</li>
-                <li>Should we prioritize logic over emotion? — Emotion tells you what matters; logic tells you what to do about it.</li>
-                <li>Polar bears aren’t actually white — Their fur is translucent and hollow; it only looks white. The skin underneath is black.</li>
-                <li>Compound interest, in one chart — Interest earns interest, so time does the heavy lifting: $100 at 7% is $761 after 30 years.</li>
-                <li>Why tall towers sway on purpose — Tall towers are designed to sway a little; flexing absorbs wind that a rigid tower would fight.</li>
-                <li>The 20-20-20 rule for screen eyes — Every 20 minutes, look 20 feet away for 20 seconds.</li>
-            </ul>
+                <div class="fd" id="feedDemo">
+                    <div class="fd__phone" aria-hidden="true">
+                        <span class="fd__notch"></span>
+                        <div class="fd__screen">
 
-            <div class="feedsec__inner">
-                <ol class="feedsec__why">
-                    <li>
-                        <span class="feedsec__icon"><svg viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="currentColor" fill-opacity=".16" d="M2 3h7v1h-7zM1 4h4v1h-4zM6 4h4v1h-4zM1 5h4v1h-4zM6 5h4v1h-4zM1 6h4v1h-4zM8 6h2v1h-2zM1 7h9v1h-9zM2 8h7v1h-7z"/><path fill="currentColor" d="M3 0h5v1h-5zM5 1h1v1h-1zM2 2h7v1h-7zM1 3h1v1h-1zM9 3h1v1h-1zM0 4h1v1h-1zM5 4h1v1h-1zM10 4h1v1h-1zM0 5h1v1h-1zM5 5h1v1h-1zM10 5h1v1h-1zM0 6h1v1h-1zM5 6h3v1h-3zM10 6h1v1h-1zM0 7h1v1h-1zM10 7h1v1h-1zM1 8h1v1h-1zM9 8h1v1h-1zM2 9h7v1h-7z"/></svg></span>
-                        <h3>Learn something in a minute</h3>
-                        <p>Clips are short and get to it. No ten-minute intros, no “wait for it”.</p>
-                    </li>
-                    <li>
-                        <span class="feedsec__icon"><svg viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="currentColor" fill-opacity=".16" d="M3 1h5v1h-5zM2 2h3v1h-3zM6 2h3v1h-3zM2 3h2v1h-2zM5 3h1v1h-1zM7 3h2v1h-2zM2 4h7v1h-7zM3 5h5v1h-5zM4 6h3v1h-3z"/><path fill="currentColor" d="M3 0h5v1h-5zM0 1h1v1h-1zM2 1h1v1h-1zM8 1h1v1h-1zM10 1h1v1h-1zM1 2h1v1h-1zM5 2h1v1h-1zM9 2h1v1h-1zM1 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM1 4h1v1h-1zM9 4h1v1h-1zM2 5h1v1h-1zM8 5h1v1h-1zM3 6h1v1h-1zM7 6h1v1h-1zM3 7h5v1h-5zM3 8h5v1h-5zM4 9h3v1h-3z"/></svg></span>
-                        <h3>Keep the point</h3>
-                        <p>Every clip has a Deep Dive one tap away: the summary, the key terms and where to learn more.</p>
-                    </li>
-                    <li>
-                        <span class="feedsec__icon"><svg viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="currentColor" fill-opacity=".16" d="M1 2h9v1h-9zM1 3h9v1h-9zM1 4h2v1h-2zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h2v1h-2zM1 5h9v1h-9zM1 6h9v1h-9zM4 7h2v1h-2zM4 8h1v1h-1z"/><path fill="currentColor" d="M1 1h9v1h-9zM0 2h1v1h-1zM10 2h1v1h-1zM0 3h1v1h-1zM10 3h1v1h-1zM0 4h1v1h-1zM3 4h1v1h-1zM5 4h1v1h-1zM7 4h1v1h-1zM10 4h1v1h-1zM0 5h1v1h-1zM10 5h1v1h-1zM0 6h1v1h-1zM10 6h1v1h-1zM1 7h3v1h-3zM6 7h4v1h-4zM3 8h1v1h-1zM5 8h1v1h-1zM3 9h2v1h-2z"/></svg></span>
-                        <h3>Ask, or answer back</h3>
-                        <p>Stuck? Ask Orvelis about the video. Disagree? Reply on camera, with your own face.</p>
-                    </li>
-                </ol>
+                            <figure class="fd__clip is-on" style="--top:27%">
+                                <span class="fd__amb" style="background-image:url('assets/reel-bear-amb.jpg')"></span>
+                                <img class="fd__pic" src="assets/reel-bear.jpg" alt="" width="464" height="238" decoding="async">
+                                <span class="fd__top"><em>EDUCATION</em><b>0:31</b></span>
+                                <p class="fd__cap">the fur is <mark>see&#8209;through</mark></p>
+                                <div class="fd__who"><span><i></i>@Fronda</span><p>Polar bears aren’t actually white</p></div>
+                                <span class="fd__prog"><i></i></span>
+                                <span class="fd__stamp">THE POINT</span>
+                            </figure>
+
+                            <figure class="fd__clip" style="--top:27%">
+                                <span class="fd__amb" style="background-image:url('assets/reel-lidar-amb.jpg')"></span>
+                                <img class="fd__pic" src="assets/reel-lidar.jpg" alt="" width="464" height="250" decoding="async">
+                                <span class="fd__top"><em>ENGINEERING</em><b>0:44</b></span>
+                                <p class="fd__cap">lidar times <mark>laser pulses</mark></p>
+                                <div class="fd__who"><span><i></i>@Fara</span><p>How lidar sees the street</p></div>
+                                <span class="fd__prog"><i></i></span>
+                                <span class="fd__stamp">THE POINT</span>
+                            </figure>
+
+                            <figure class="fd__clip" style="--top:13%">
+                                <span class="fd__amb" style="background-image:url('assets/reel-debate-amb.jpg')"></span>
+                                <video class="fd__pic" muted loop playsinline preload="none" poster="assets/hero-clip.jpg">
+                                    <source src="assets/hero-clip.webm" type="video/webm">
+                                    <source src="assets/hero-clip.mp4" type="video/mp4">
+                                </video>
+                                <span class="fd__top"><em>DEBATE</em><b>0:14</b></span>
+                                <p class="fd__cap">logic or <mark>emotion?</mark></p>
+                                <div class="fd__who"><span><i></i>@Fronda</span><p>Should we prioritize logic over emotion?</p></div>
+                                <span class="fd__prog"><i></i></span>
+                                <span class="fd__stamp">THE POINT</span>
+                            </figure>
+
+                            <figure class="fd__clip fd__clip--full">
+                                <img class="fd__pic" src="assets/reel-tower.jpg" alt="" width="380" height="650" decoding="async">
+                                <span class="fd__top"><em>ENGINEERING</em><b>0:38</b></span>
+                                <p class="fd__cap">built to <mark>bend a little</mark></p>
+                                <div class="fd__who"><span><i></i>@Fronda</span><p>Why tall towers sway on purpose</p></div>
+                                <span class="fd__prog"><i></i></span>
+                                <span class="fd__stamp">THE POINT</span>
+                            </figure>
+
+                            <!-- the app's own buttons: the point lands, then Deep Dive lights up -->
+                            <span class="fd__rail">
+                                <i class="fd__act"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><span class="fd__lab">Like</span></i>
+                                <i class="fd__act"><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg><span class="fd__lab">Reply</span></i>
+                                <i class="fd__act fd__act--dd"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21M10.5 7.8v5.4M7.8 10.5h5.4"/></svg><span class="fd__lab">Deep Dive</span></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="fd__side">
+                        <ul class="fd__list" aria-label="Clips from the feed">
+                            <li><button class="fd__q is-on" type="button" aria-pressed="true">
+                                <span class="fd__n">01</span><span>Why aren’t polar bears actually white?</span><span class="fd__len">0:31</span><i class="fd__bar" data-bar></i>
+                            </button></li>
+                            <li><button class="fd__q" type="button" aria-pressed="false">
+                                <span class="fd__n">02</span><span>How does a car see the street?</span><span class="fd__len">0:44</span><i class="fd__bar" data-bar></i>
+                            </button></li>
+                            <li><button class="fd__q" type="button" aria-pressed="false">
+                                <span class="fd__n">03</span><span>Logic or emotion: which should win?</span><span class="fd__len">0:14</span><i class="fd__bar" data-bar></i>
+                            </button></li>
+                            <li><button class="fd__q" type="button" aria-pressed="false">
+                                <span class="fd__n">04</span><span>Why do skyscrapers sway on purpose?</span><span class="fd__len">0:38</span><i class="fd__bar" data-bar></i>
+                            </button></li>
+                        </ul>
+
+                        <div class="fd__points">
+                            <article class="fd__pt is-on">
+                                <p class="fd__pt-q">01 · Why aren’t polar bears actually white?</p>
+                                <span class="fd__tag">THE POINT</span>
+                                <p class="fd__text"><span>Their fur is clear and hollow.</span> <span>It only looks white.</span> <span>The skin underneath is black.</span></p>
+                            </article>
+                            <article class="fd__pt">
+                                <p class="fd__pt-q">02 · How does a car see the street?</p>
+                                <span class="fd__tag">THE POINT</span>
+                                <p class="fd__text"><span>Lidar fires laser pulses and times how long they take to bounce back.</span> <span>Those delays become a 3D map.</span></p>
+                            </article>
+                            <article class="fd__pt">
+                                <p class="fd__pt-q">03 · Logic or emotion: which should win?</p>
+                                <span class="fd__tag">THE POINT</span>
+                                <p class="fd__text"><span>Emotion tells you what matters.</span> <span>Logic tells you what to do about it.</span></p>
+                            </article>
+                            <article class="fd__pt">
+                                <p class="fd__pt-q">04 · Why do skyscrapers sway on purpose?</p>
+                                <span class="fd__tag">THE POINT</span>
+                                <p class="fd__text"><span>A rigid tower fights the wind and loses.</span> <span>A tower built to flex a little absorbs it.</span></p>
+                            </article>
+                        </div>
+
+                        <p class="fd__more">
+                            Every clip has a <b>Deep Dive</b> for the full story. Disagree?
+                            <a href="#features">Answer on camera<svg viewBox="0 0 9 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg></a>
+                        </p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- HOW IT WORKS SECTION -->
+        <!-- ============================================================
+             02 — HOW IT WORKS: one scene that plays the whole loop. You film
+             a point; answers come in as clips of their own; the vote and the
+             logic check lift the clearest one to the top. The logo's camera
+             plays every part. clips.js runs it (the three steps take turns
+             while the slide is on screen, a tap takes over); without script
+             the scene is held on its last step and all three steps are
+             written out beside it.
+             ============================================================ -->
         <section class="section section--features section--3d-features" id="features" data-inview>
             <!-- the logo's black, dissolving into the page at both edges -->
             <div class="px-screen" aria-hidden="true"></div>
             <div class="section__container">
                 <div class="section__header section__header--stack">
                     <span class="section__label">[ 02 — HOW IT WORKS ]</span>
-                    <h2 class="section__title">MAKE A POINT. <span class="st-title-accent">GET AN ANSWER.</span></h2>
+                    <h2 class="section__title">MAKE A POINT.<br>GET ANSWERED. <br class="hw-br"><span class="st-title-accent">THE BEST ONE WINS.</span></h2>
                 </div>
-                <div class="features__fragments step-grid">
 
-                    <!-- Shared art defs: one stylized bust, reused wherever a
-                         person appears, plus the screen gradients. -->
-                    <svg class="step-defs" width="0" height="0" aria-hidden="true" focusable="false">
-                        <defs>
-                            <linearGradient id="stScreen" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#07080C" /><stop offset="100%" stop-color="#07080C" />
-                            </linearGradient>
-                            <radialGradient id="stKey" cx="50%" cy="38%" r="58%">
-                                <stop offset="0%" stop-color="#DAE6F7" stop-opacity=".12" />
-                                <stop offset="100%" stop-color="#DAE6F7" stop-opacity="0" />
-                            </radialGradient>
-                            <linearGradient id="stBody" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#DAE6F7" /><stop offset="100%" stop-color="#A9B6CC" />
-                            </linearGradient>
-                            <linearGradient id="stProBar" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stop-color="#DAE6F7" /><stop offset="100%" stop-color="#DAE6F7" />
-                            </linearGradient>
-                            <linearGradient id="stConBar" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stop-color="#DAE6F7" stop-opacity=".4" /><stop offset="100%" stop-color="#DAE6F7" stop-opacity=".4" />
-                            </linearGradient>
+                <div class="hw" id="how" data-step="3">
+                    <ol class="hw__steps" aria-label="How it works, in three steps">
+                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:6.5s">
+                            <span class="hw__n">01</span>
+                            <span class="hw__h">Make a point</span>
+                            <span class="hw__p">Film one clear thing: a fact, a how-to, a take you can back up. One short clip, your face on camera.</span>
+                            <i class="hw__bar" data-bar></i>
+                        </button></li>
+                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:6s">
+                            <span class="hw__n">02</span>
+                            <span class="hw__h">Get answered</span>
+                            <span class="hw__p">Anyone can answer with a clip of their own. Replies stack under yours, so it stays a conversation, not a comment war.</span>
+                            <i class="hw__bar" data-bar></i>
+                        </button></li>
+                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:8s">
+                            <span class="hw__n">03</span>
+                            <span class="hw__h">The best one wins</span>
+                            <span class="hw__p">Viewers vote on substance and Orvelis checks the logic. The clearest answer rises, not the loudest.</span>
+                            <i class="hw__bar" data-bar></i>
+                        </button></li>
+                    </ol>
 
-                            <!-- a person, drawn once. The light falls from the
-                                 right, so the lit side is a shape inside the
-                                 head rather than a stroke around it. -->
-                            <symbol id="stBustSym" viewBox="0 0 40 40">
-                                <path class="st-por-neck" d="M16.2 16.8h7.6v8.6h-7.6z" />
-                                <path class="st-por-body" d="M2.5 40v-6.4C2.5 25.9 10.3 21.6 20 21.6s17.5 4.3 17.5 12V40z" />
-                                <path class="st-por-head" d="M20 3.6c5.3 0 9.4 4.2 9.4 9.8 0 5.9-4.2 10.4-9.4 10.4s-9.4-4.5-9.4-10.4c0-5.6 4.1-9.8 9.4-9.8z" />
-                                <path class="st-por-lit" d="M23.4 4.7a9.6 9.6 0 0 1 6 8.7 10.3 10.3 0 0 1-6 9.5 12.4 12.4 0 0 0 3-9.5 11.8 11.8 0 0 0-3-8.7z" />
-                                <path class="st-por-hair" d="M10.6 13.4C10.6 7.8 14.7 3.6 20 3.6s9.4 4.2 9.4 9.8c0 .9-.1 1.7-.3 2.5-1-2.6-3-4.1-5.9-4.5-4-.6-7.9.5-11.6 3.2-.4.3-.7.7-.9 1.1-.1-.7-.2-1.5-.2-2.3z" />
-                            </symbol>
+                    <div class="hw__stage" aria-hidden="true">
 
-                            <!-- compact avatar for the voter row -->
-                            <symbol id="stAvaSym" viewBox="0 0 16 16">
-                                <circle class="st-ava-bg" cx="8" cy="8" r="8" />
-                                <circle class="st-ava-head" cx="8" cy="6.2" r="3" />
-                                <path class="st-ava-body" d="M2.2 16c0-3.3 2.6-5.4 5.8-5.4s5.8 2.1 5.8 5.4z" />
-                            </symbol>
-
-                            <!-- play glyph for clip thumbnails -->
-                            <symbol id="stPlaySym" viewBox="0 0 20 20">
-                                <circle class="st-play-ring" cx="10" cy="10" r="8.4" />
-                                <path class="st-play-tri" d="M8 6.2 14 10l-6 3.8z" />
-                            </symbol>
-                        </defs>
-                    </svg>
-
-                    <!-- STEP 01 — RECORD -->
-                    <article class="step-card" data-inview>
-                        <div class="step-card__frame">
-                            <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
-                                <rect width="300" height="200" fill="url(#stScreen)" />
-                                <rect width="300" height="148" fill="url(#stKey)" />
-
-                                <!-- rule of thirds, in the picture area only -->
-                                <path class="st-thirds" d="M100 8v140M200 8v140M20 57h260M20 106h260" />
-
-                                <!-- the subject, framed as a medium shot -->
-                                <g class="st-subject">
-                                    <use href="#stBustSym" x="102" y="48" width="96" height="96" />
-                                </g>
-
-                                <!-- face lock -->
-                                <g class="st-lock">
-                                    <path d="M120 64v-10h10M180 64v-10h-10M120 104v10h10M180 104v10h-10" />
-                                    <text x="120" y="47">FACE LOCK</text>
-                                </g>
-
-                                <!-- top bar -->
-                                <g class="st-hud-top">
-                                    <rect class="st-rec-pill" x="14" y="12" width="46" height="15" rx="1" />
-                                    <circle class="st-rec-dot" cx="22" cy="19.5" r="3.2" />
-                                    <text class="st-rec-text" x="29" y="22.5">REC</text>
-                                    <text class="st-take" x="68" y="22.5">TAKE 01</text>
-                                    <text class="st-time" x="286" y="23" text-anchor="end">00:24:06</text>
-                                </g>
-
-                                <!-- audio ladder, right edge -->
-                                <g class="st-levels">
-                                    <rect x="278" y="48" width="8" height="5" /><rect x="278" y="57" width="8" height="5" />
-                                    <rect x="278" y="66" width="8" height="5" /><rect x="278" y="75" width="8" height="5" />
-                                    <rect x="278" y="84" width="8" height="5" /><rect x="278" y="93" width="8" height="5" />
-                                    <rect x="278" y="102" width="8" height="5" /><rect x="278" y="111" width="8" height="5" />
-                                    <text x="282" y="126" text-anchor="middle">dB</text>
-                                </g>
-
-                                <!-- exposure scale, left edge -->
-                                <g class="st-scale">
-                                    <path d="M18 48v68M18 48h5M18 61h3M18 74h5M18 87h3M18 100h5M18 113h3" />
-                                    <circle class="st-scale-dot" cx="18" cy="74" r="2.6" />
-                                    <text x="24" y="126">EV</text>
-                                </g>
-
-                                <!-- the instrument band: everything that is UI,
-                                     not picture, lives below this line -->
-                                <rect class="st-band" x="0" y="148" width="300" height="52" />
-                                <path class="st-band-rule" d="M0 148h300" />
-
-                                <g class="st-runbar">
-                                    <rect x="20" y="154" width="260" height="2" rx="1" />
-                                    <rect class="st-runbar-fill" x="20" y="154" width="80" height="2" rx="1" />
-                                </g>
-
-                                <g class="st-wave">
-                                    <rect x="20" y="166.3" width="3" height="7.4" rx="1.5" /><rect x="28" y="164.4" width="3" height="11.2" rx="1.5" />
-                                    <rect x="36" y="162.6" width="3" height="14.9" rx="1.5" /><rect x="44" y="165.7" width="3" height="8.7" rx="1.5" />
-                                    <rect x="52" y="161.3" width="3" height="17.4" rx="1.5" /><rect x="60" y="165" width="3" height="9.9" rx="1.5" />
-                                    <rect x="68" y="167.5" width="3" height="5" rx="1.5" /><rect x="76" y="163.2" width="3" height="13.6" rx="1.5" />
-                                    <rect x="84" y="161.9" width="3" height="16.1" rx="1.5" /><rect x="92" y="165.7" width="3" height="8.7" rx="1.5" />
-                                    <rect x="100" y="160.7" width="3" height="18.6" rx="1.5" /><rect x="108" y="165" width="3" height="9.9" rx="1.5" />
-                                    <rect x="116" y="166.3" width="3" height="7.4" rx="1.5" /><rect x="124" y="162.6" width="3" height="14.9" rx="1.5" />
-                                    <rect x="132" y="164.4" width="3" height="11.2" rx="1.5" /><rect x="140" y="161.3" width="3" height="17.4" rx="1.5" />
-                                    <rect x="148" y="165.7" width="3" height="8.7" rx="1.5" /><rect x="156" y="163.2" width="3" height="13.6" rx="1.5" />
-                                    <rect x="164" y="167.5" width="3" height="5" rx="1.5" /><rect x="172" y="161.9" width="3" height="16.1" rx="1.5" />
-                                    <rect x="180" y="165" width="3" height="9.9" rx="1.5" /><rect x="188" y="160.7" width="3" height="18.6" rx="1.5" />
-                                    <rect x="196" y="165.7" width="3" height="8.7" rx="1.5" /><rect x="204" y="162.6" width="3" height="14.9" rx="1.5" />
-                                    <rect x="212" y="166.3" width="3" height="7.4" rx="1.5" /><rect x="220" y="164.4" width="3" height="11.2" rx="1.5" />
-                                    <rect x="228" y="161.3" width="3" height="17.4" rx="1.5" /><rect x="236" y="165" width="3" height="9.9" rx="1.5" />
-                                    <rect x="244" y="167.5" width="3" height="5" rx="1.5" /><rect x="252" y="163.2" width="3" height="13.6" rx="1.5" />
-                                    <rect x="260" y="165.7" width="3" height="8.7" rx="1.5" /><rect x="268" y="162.6" width="3" height="14.9" rx="1.5" />
-                                </g>
-
-                                <g class="st-note"><text x="26" y="194">CAM_01 // RAW 4K</text></g>
-                                <g class="st-note"><text x="286" y="194" text-anchor="end">NO CUTS</text></g>
-                            </svg>
+                        <!-- step 1: you film it -->
+                        <div class="hw__rec">
+                            <i class="hw__brk hw__brk--tl"></i><i class="hw__brk hw__brk--tr"></i><i class="hw__brk hw__brk--bl"></i><i class="hw__brk hw__brk--br"></i>
+                            <span class="hw__live"><i class="hw__dot"></i>REC <b data-clock>0:24</b></span>
+                            <span class="hw__lock"></span>
+                            <img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async">
+                            <p class="hw__sub"><span data-typed>Phones should be banned in class.</span><i class="hw__caret"></i></p>
+                            <span class="hw__wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                            <span class="hw__post">POST<svg viewBox="0 0 9 6" shape-rendering="crispEdges"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg></span>
                         </div>
-                        <div class="step-card__body">
-                            <span class="step-card__index">01</span>
-                            <span class="step-card__tag">[ ARGUE // ON CAMERA ]</span>
-                            <h3>Make your point</h3>
-                            <p>Film one useful thing: a fact, a how-to, a take you can back up. One clip, one clear point.</p>
-                            <span class="step-card__chips"><em>SHORT CLIP</em><em>ONE POINT</em></span>
+
+                        <!-- steps 2 and 3: the answers come in, then the vote -->
+                        <div class="hw__thread">
+                            <span class="hw__trunk"></span>
+
+                            <div class="hw__row hw__row--root">
+                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:24</b></span>
+                                <span class="hw__text">
+                                    <span class="hw__who"><span class="hw__at">@pro_logic_22</span><em class="hw__op">OP</em></span>
+                                    <span class="hw__say">Phones should be banned in class.</span>
+                                </span>
+                                <span class="hw__side"><b data-replies>2</b><span class="hw__lab">replies</span></span>
+                            </div>
+
+                            <div class="hw__row hw__row--reply hw__row--a" style="--k:0">
+                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:09</b></span>
+                                <span class="hw__text">
+                                    <span class="hw__who"><span class="hw__at">@d_marek</span><em class="hw__lqi">LQI 31</em></span>
+                                    <span class="hw__say">LOL no. It’s 2026.</span>
+                                </span>
+                                <span class="hw__side"><b data-to="38">38</b><span class="hw__meter"><i style="--v:.14"></i></span></span>
+                            </div>
+
+                            <div class="hw__row hw__row--reply hw__row--b" style="--k:1">
+                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:41</b></span>
+                                <span class="hw__text">
+                                    <span class="hw__who"><span class="hw__at">@nova_k</span><em class="hw__lqi">LQI 94</em></span>
+                                    <span class="hw__say">Ban them in lessons, keep them at lunch. The problem is attention, not phones.</span>
+                                </span>
+                                <span class="hw__side"><b data-to="276">276</b><span class="hw__meter"><i style="--v:.9"></i></span></span>
+                                <span class="hw__stamp">BEST POINT</span>
+                            </div>
+
+                            <div class="hw__row hw__row--reply hw__row--c" style="--k:2">
+                                <span class="hw__thumb"><i class="hw__dot"></i><span class="hw__wave hw__wave--sm"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+                                <span class="hw__text">
+                                    <span class="hw__who"><span class="hw__at">@tomas.thinks</span></span>
+                                    <span class="hw__say">recording a reply…</span>
+                                </span>
+                            </div>
                         </div>
-                    </article>
-
-                    <!-- STEP 02 — RESPOND -->
-                    <article class="step-card" data-inview>
-                        <div class="step-card__frame">
-                            <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
-                                <rect width="300" height="200" fill="url(#stScreen)" />
-                                <path class="st-thirds" d="M0 42h300M0 158h300M110 0v200M212 0v200" />
-
-                                <!-- the opening clip -->
-                                <g class="st-clip st-clip--root">
-                                    <rect class="st-clip-plate" x="12" y="48" width="86" height="102" rx="2" />
-                                    <clipPath id="stRootClip"><rect x="13" y="49" width="84" height="70" rx="1" /></clipPath>
-                                    <g clip-path="url(#stRootClip)">
-                                        <rect x="13" y="49" width="84" height="70" fill="#0E1016" />
-                                        <use href="#stBustSym" x="31" y="54" width="48" height="70" />
-                                    </g>
-                                    <rect class="st-clip-inner" x="13" y="49" width="84" height="70" rx="1" />
-                                    <use class="st-play" href="#stPlaySym" x="47" y="76" width="16" height="16" />
-                                    <rect class="st-badge st-badge--op" x="17" y="53" width="17" height="10" rx="1" />
-                                    <text class="st-badge-text" x="25.5" y="60.5" text-anchor="middle">OP</text>
-                                    <text class="st-clip-handle" x="17" y="132">@pro_logic_22</text>
-                                    <text class="st-clip-meta" x="17" y="143">03:42 · OPENING</text>
-                                </g>
-
-                                <!-- branches out to the answers -->
-                                <path class="st-branch" d="M98 99h14c6 0 8-4 8-9V50c0-5 3-8 8-8h14M98 99h14c6 0 8 4 8 9v40c0 5 3 8 8 8h14" />
-                                <circle class="st-branch-dot" cx="112" cy="99" r="3.4" />
-
-                                <!-- answer 01 -->
-                                <g class="st-clip st-clip--reply">
-                                    <rect class="st-clip-plate" x="142" y="18" width="114" height="50" rx="2" />
-                                    <clipPath id="stR1"><rect x="143" y="19" width="40" height="48" rx="1" /></clipPath>
-                                    <g clip-path="url(#stR1)">
-                                        <rect x="143" y="19" width="40" height="48" fill="#0E1016" />
-                                        <use href="#stBustSym" x="148" y="22" width="30" height="48" />
-                                    </g>
-                                    <use class="st-play st-play--sm" href="#stPlaySym" x="157" y="37" width="12" height="12" />
-                                    <text class="st-clip-handle" x="190" y="33">@nova_k</text>
-                                    <text class="st-clip-meta" x="190" y="44">REPLY · 00:48</text>
-                                    <rect class="st-minibar" x="190" y="52" width="58" height="3" rx="1.5" />
-                                    <rect class="st-minibar st-minibar--fill" x="190" y="52" width="34" height="3" rx="1.5" />
-                                </g>
-
-                                <!-- answer 02, being filmed right now -->
-                                <g class="st-clip st-clip--reply st-clip--live">
-                                    <rect class="st-clip-plate" x="142" y="132" width="114" height="50" rx="2" />
-                                    <clipPath id="stR2"><rect x="143" y="133" width="40" height="48" rx="1" /></clipPath>
-                                    <g clip-path="url(#stR2)">
-                                        <rect x="143" y="133" width="40" height="48" fill="#0E1016" />
-                                        <use href="#stBustSym" x="148" y="136" width="30" height="48" />
-                                    </g>
-                                    <circle class="st-live-dot" cx="176" cy="140" r="3" />
-                                    <text class="st-clip-handle" x="190" y="147">@d_marek</text>
-                                    <text class="st-clip-meta st-clip-meta--live" x="190" y="158">RECORDING</text>
-                                    <g class="st-mini-wave">
-                                        <rect x="190" y="164" width="2.5" height="10" rx="1.25" /><rect x="196" y="164" width="2.5" height="10" rx="1.25" />
-                                        <rect x="202" y="164" width="2.5" height="10" rx="1.25" /><rect x="208" y="164" width="2.5" height="10" rx="1.25" />
-                                        <rect x="214" y="164" width="2.5" height="10" rx="1.25" /><rect x="220" y="164" width="2.5" height="10" rx="1.25" />
-                                        <rect x="226" y="164" width="2.5" height="10" rx="1.25" /><rect x="232" y="164" width="2.5" height="10" rx="1.25" />
-                                    </g>
-                                </g>
-
-                                <!-- everyone else in the queue -->
-                                <g class="st-queue">
-                                    <rect x="266" y="74" width="22" height="13" rx="1" />
-                                    <rect x="269" y="91" width="19" height="11" rx="1" />
-                                    <rect x="272" y="106" width="16" height="9" rx="1" />
-                                    <text x="278" y="130" text-anchor="middle">+12</text>
-                                </g>
-
-                                <g class="st-note"><text x="26" y="192">THREAD // FACE-FIRST</text></g>
-                                <g class="st-note"><text x="286" y="192" text-anchor="end">NO ANON MOBS</text></g>
-                            </svg>
-                        </div>
-                        <div class="step-card__body">
-                            <span class="step-card__index">02</span>
-                            <span class="step-card__tag">[ RESPOND // VIDEO ]</span>
-                            <h3>Get answered on camera</h3>
-                            <p>Anyone can reply with a clip of their own, face first. A conversation, not a comment war.</p>
-                            <span class="step-card__chips"><em>VIDEO REPLIES</em><em>THREADED</em></span>
-                        </div>
-                    </article>
-
-                    <!-- STEP 03 — VOTE -->
-                    <article class="step-card" data-inview>
-                        <div class="step-card__frame">
-                            <svg class="step-art" viewBox="0 0 300 200" aria-hidden="true">
-                                <rect width="300" height="200" fill="url(#stScreen)" />
-
-                                <g class="st-head">
-                                    <circle class="st-live-dot" cx="23" cy="20" r="3.2" />
-                                    <text x="33" y="23.5">LIVE TALLY</text>
-                                    <text class="st-head-meta" x="280" y="23.5" text-anchor="end">ROUND 04 // OPEN</text>
-                                    <path class="st-rule" d="M20 32h260" />
-                                </g>
-
-                                <!-- the ballot -->
-                                <g class="st-vote">
-                                    <text x="20" y="52">PRO</text>
-                                    <text class="st-vote-pct" x="280" y="53" text-anchor="end">72%</text>
-                                    <rect class="st-vote-track" x="20" y="58" width="260" height="11" rx="1" />
-                                    <rect class="st-vote-fill st-vote-fill--pro" x="20" y="58" height="11" rx="1" />
-                                    <path class="st-vote-ticks" d="M72 58v11M124 58v11M176 58v11M228 58v11" />
-
-                                    <text x="20" y="90">CON</text>
-                                    <text class="st-vote-pct" x="280" y="91" text-anchor="end">28%</text>
-                                    <rect class="st-vote-track" x="20" y="96" width="260" height="11" rx="1" />
-                                    <rect class="st-vote-fill st-vote-fill--con" x="20" y="96" height="11" rx="1" />
-                                    <path class="st-vote-ticks" d="M72 96v11M124 96v11M176 96v11M228 96v11" />
-                                </g>
-
-                                <!-- who actually voted -->
-                                <g class="st-voters">
-                                    <use href="#stAvaSym" x="20" y="119" width="15" height="15" />
-                                    <use href="#stAvaSym" x="33" y="119" width="15" height="15" />
-                                    <use href="#stAvaSym" x="46" y="119" width="15" height="15" />
-                                    <use href="#stAvaSym" x="59" y="119" width="15" height="15" />
-                                    <use href="#stAvaSym" x="72" y="119" width="15" height="15" />
-                                    <path class="st-check" d="M94 126.5l2.8 2.8 5.4-6" />
-                                    <text x="108" y="129.5">4,812 VERIFIED VOTERS</text>
-                                </g>
-
-                                <!-- what Orvelis made of it -->
-                                <g class="st-verdict">
-                                    <rect x="20" y="142" width="260" height="44" rx="2" />
-                                    <text class="st-verdict-label" x="30" y="156">ORVELIS VERDICT</text>
-                                    <text class="st-verdict-stamp" x="270" y="156" text-anchor="end">SIGNED</text>
-
-                                    <text class="st-score-key" x="30" y="174">LOGIC</text>
-                                    <rect class="st-score-track" x="57" y="169" width="34" height="5" rx="1" />
-                                    <rect class="st-score-fill" x="57" y="169" width="32" height="5" rx="1" />
-                                    <text class="st-score-val" x="95" y="174.5">9.4</text>
-
-                                    <text class="st-score-key" x="118" y="174">EVID</text>
-                                    <rect class="st-score-track" x="142" y="169" width="34" height="5" rx="1" />
-                                    <rect class="st-score-fill" x="142" y="169" width="28" height="5" rx="1" />
-                                    <text class="st-score-val" x="180" y="174.5">8.1</text>
-
-                                    <text class="st-score-key" x="200" y="174">FALLACY</text>
-                                    <text class="st-score-val--good" x="270" y="174" text-anchor="end">NONE</text>
-                                </g>
-                            </svg>
-                        </div>
-                        <div class="step-card__body">
-                            <span class="step-card__index">03</span>
-                            <span class="step-card__tag">[ VOTE // CONSENSUS ]</span>
-                            <h3>The best point rises</h3>
-                            <p>Viewers vote on substance and Orvelis checks the logic, so the clearest answer wins, not the loudest.</p>
-                            <span class="step-card__chips"><em>VERIFIED VOTES</em><em>AI SCORED</em></span>
-                        </div>
-                    </article>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1704,11 +1570,11 @@
     <!-- no three.js: the one 3D scene left, the globe in 06, is a pixel
          canvas in clips.js now, and the 600 KB library blocked the page -->
     <!-- slide 05's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=5.4.0"></script>
+    <script defer src="pixel-field.js?v=5.5.0"></script>
 
-    <!-- the feed: the hero phone and the reel in 01 -->
-    <script defer src="clips.js?v=5.4.0"></script>
-    <script defer src="script.js?v=5.4.0"></script>
+    <!-- the feed: the hero phone, the tap-a-question demo in 01, the arena vote, the catch -->
+    <script defer src="clips.js?v=5.5.0"></script>
+    <script defer src="script.js?v=5.5.0"></script>
 </body>
 
 </html>
