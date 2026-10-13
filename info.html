@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light"> <!-- DEPLOY_VERSION_6000 -->
+<html lang="en"> <!-- DEPLOY_VERSION_6100 -->
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#020408" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff" />
     <title>Datariot — short videos with a point</title>
     <meta name="description"
         content="A short-video app where every clip leaves you with something useful. Learn it in a minute, go deeper with a Deep Dive, answer back on camera." />
@@ -31,1551 +30,600 @@
     <meta property="og:url" content="https://info.datariot.xyz/">
     <meta property="og:type" content="website">
 
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
-        rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=5.5.0" />
-    <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
-    <style>
-        :root {
-            --bg-main: #F1F5FC;
-            --text-primary: #050505;
-        }
-
-        [data-theme="dark"] {
-            --bg-main: #08090D;
-            --text-primary: #EEEEF0;
-        }
-
-        html,
-        body {
-            background-color: var(--bg-main) !important;
-            background: var(--bg-main) !important;
-            color: var(--text-primary) !important;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Sections stay transparent so the ambient backdrop on <body> shows
-           through; they used to paint flat white over it. */
-        .main,
-        .section,
-        #hero {
-            background: transparent !important;
-            color: var(--text-primary) !important;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* HARD CLEANUP: Remove all old background elements and wireframes */
-        .grid-overlay,
-        .ambient-glow,
-        .particle-canvas,
-        .hero__shimmer-bg,
-        .hero__shimmer-overlay,
-        #canvas-3d-hero,
-        #canvas-3d-middle,
-        .abstract-spin,
-        .hero__background-layer {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-        }
-
-        #hero {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            background: transparent !important;
-            z-index: 100;
-        }
-
-        .hero__main-layout {
-            display: grid !important;
-            grid-template-columns: 1.2fr 0.8fr !important;
-            gap: 60px;
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 80px 100px !important;
-            position: relative;
-            z-index: 150;
-            align-items: center;
-        }
-
-        .hero__content--left {
-            text-align: left;
-            z-index: 200;
-        }
-
-        .hero__brand-text {
-            font-size: clamp(48px, 8vw, 96px) !important;
-            font-weight: 900;
-            margin: 0 0 15px 0 !important;
-            color: var(--text-primary) !important;
-            letter-spacing: -0.045em;
-            line-height: 0.95;
-            text-transform: uppercase;
-            display: block !important;
-        }
-
-        .hero__tagline {
-            font-size: clamp(18px, 2vw, 24px) !important;
-            color: var(--text-secondary) !important;
-            margin-bottom: 40px !important;
-            max-width: 500px;
-            font-weight: 500;
-            display: block !important;
-        }
-
-        .hero__phone-showcase {
-            position: relative;
-            z-index: 200;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        /* Clean White Phone Frame */
-        .hero__phone-frame {
-            display: block !important;
-            width: 280px;
-            height: 580px;
-            background: #ffffff !important;
-            border-radius: 48px;
-            border: 2px solid #e5e5e5 !important;
-            padding: 6px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-        }
-
-        [data-theme="dark"] .hero__phone-frame {
-            background: #0C0D12 !important;
-            border-color: #1f2937 !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        }
-
-        .phone__screen {
-            width: 100%;
-            height: 100%;
-            border-radius: 40px;
-            overflow: hidden;
-            /* dark so a slow or blocked video never flashes a white slab */
-            background: linear-gradient(180deg, #12141C 0%, #07080C 100%);
-            position: relative;
-        }
-
-        .phone__full-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block !important;
-        }
-
-        /* Hide UI overlaps */
-        .phone__status-bar,
-        .phone__notch,
-        .phone__video-overlay {
-            display: none !important;
-        }
-
-        /* Reactions - Removed as requested */
-        .hero__phone-reactions {
-            display: none !important;
-        }
-
-        /* App Downloads */
-        .app-downloads {
-            display: flex !important;
-            gap: 16px;
-            margin-top: 40px;
-            z-index: 300;
-        }
-
-        .app-dl-btn {
-            background: #000 !important;
-            color: #ffffff !important;
-            padding: 12px 24px !important;
-            border-radius: 14px !important;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 170px;
-            text-decoration: none;
-            border: none !important;
-        }
-
-        @media (max-width: 1024px) {
-            .hero__main-layout {
-                display: flex !important;
-                flex-direction: column-reverse !important;
-                /* Video TOP, Text BOTTOM */
-                padding: 100px 20px 80px !important;
-                text-align: center !important;
-                gap: 50px;
-            }
-
-            .hero__content--left {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                width: 100%;
-                order: 2;
-            }
-
-            .hero__phone-showcase {
-                order: 1;
-                margin-top: 20px;
-            }
-
-            .hero__brand-text {
-                font-size: 48px !important;
-                margin-top: 10px !important;
-            }
-
-            .hero__tagline {
-                font-size: 16px !important;
-                margin-bottom: 30px !important;
-            }
-
-            .hero__phone-frame {
-                width: 260px;
-                /* Slightly larger on mobile if it's at the top */
-                height: 530px;
-            }
-
-            .app-downloads {
-                justify-content: center !important;
-                flex-wrap: wrap;
-                margin-top: 20px !important;
-            }
-        }
-
-        /* Fix for Simple Rules section on mobile */
-        @media (max-width: 1024px) {
-            .features__fragments {
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                gap: 30px !important;
-                padding: 0 20px !important;
-            }
-
-            .feature-fragment,
-            .feature-fragment--large {
-                width: 100% !important;
-                max-width: 500px !important;
-                text-align: center !important;
-                margin: 0 auto !important;
-                padding: 30px 20px !important;
-            }
-
-            .fragment-content {
-                text-align: center !important;
-                align-items: center !important;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .fragment-visual {
-                margin: 0 auto 20px !important;
-            }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@800&family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css?v=6.0.0" />
+    <!-- scroll reveals and the demos only hide things once script is here to show them again;
+         if site.js never runs (blocked, failed to load), the page falls back to its no-script layout -->
     <script>
-        // Load saved theme or default to light
-        (function () {
-            var savedTheme = localStorage.getItem('orvelis-theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-            }
-        })();
-        function toggleTheme() {
-            var html = document.documentElement;
-            var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            try { localStorage.setItem('orvelis-theme', next); } catch (e) { }
-        }
+        document.documentElement.classList.add('js');
+        addEventListener('load', function () { if (!window.siteReady) document.documentElement.classList.remove('js'); });
     </script>
 </head>
 
 <body>
+    <a class="skip" href="#main">Skip to content</a>
 
-    <!-- Page backdrop: brand light down the page, aurora along the edges of
-         the viewport and a grain tile, so the page is not a single flat sheet
-         from top to bottom. No lines, no cells. -->
-    <div class="page-fx" aria-hidden="true">
-        <span class="page-fx__glow"></span>
-        <span class="page-fx__aurora">
-            <span class="page-fx__ribbon page-fx__ribbon--l"></span>
-            <span class="page-fx__ribbon page-fx__ribbon--r"></span>
-        </span>
-        <span class="page-fx__grain"></span>
-    </div>
-
-
-    <!-- Ambient glow effects -->
-    <div class="ambient-glow ambient-glow--1"></div>
-    <div class="ambient-glow ambient-glow--2"></div>
-    <div class="ambient-glow ambient-glow--3"></div>
-    <div class="grid-overlay"></div>
-    <canvas id="particleCanvas" class="particle-canvas"></canvas>
-    <div class="floating-orbs">
-        <div class="floating-orb floating-orb--1"></div>
-        <div class="floating-orb floating-orb--2"></div>
-        <div class="floating-orb floating-orb--3"></div>
-        <div class="floating-orb floating-orb--4"></div>
-    </div>
-
-
-    <!-- Left Sidebar Navigation -->
-    <!-- The icon rail is gone: the MENU overlay above is the only navigation. -->
-
-    <!-- Fixed brand mark; balances the MENU trigger now that the icon rail is gone. -->
-    <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
-        <span class="brandmark__mark" aria-hidden="true">D</span>
-        <span class="brandmark__word">DATARIOT</span>
-    </a>
-
-    <!-- Menu trigger. One control at every width — the overlay below is the
-         same menu on a phone and on a desktop. -->
-    <button class="navx-trigger" id="navTrigger" aria-label="Open menu" aria-expanded="false" aria-controls="navOverlay">
-        <span class="navx-trigger__bars" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="navx-trigger__label" data-open="MENU" data-close="CLOSE">MENU</span>
-    </button>
-
-    <!-- Full-screen navigation -->
-    <div class="navx" id="navOverlay" role="dialog" aria-modal="true" aria-label="Site navigation">
-        <div class="navx__scrim" data-navx-close></div>
-
-        <div class="navx__panel">
-            <div class="navx__light" aria-hidden="true"></div>
-
-            <div class="navx__bar">
-                <span class="navx__brand">
-                    <span class="navx__brand-mark">D</span>
-                    DATARIOT
-                    <em>v0.1 BETA</em>
-                </span>
-                <span class="navx__status">
-                    <i aria-hidden="true"></i>
-                    NAVIGATION
-                </span>
-            </div>
-
-            <div class="navx__body">
-                <nav class="navx__nav">
-                    <a class="navx__item" href="#hero" data-navx-link data-section="hero">
-                        <span class="navx__item-num">00</span>
-                        <span class="navx__item-text">Home</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                    <a class="navx__item" href="#manifesto" data-navx-link data-section="manifesto">
-                        <span class="navx__item-num">01</span>
-                        <span class="navx__item-text">The feed</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                    <a class="navx__item" href="#features" data-navx-link data-section="features">
-                        <span class="navx__item-num">02</span>
-                        <span class="navx__item-text">How it works</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                    <a class="navx__item" href="#interface" data-navx-link data-section="interface">
-                        <span class="navx__item-num">03</span>
-                        <span class="navx__item-text">The app</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                    <a class="navx__item" href="#debates" data-navx-link data-section="debates">
-                        <span class="navx__item-num">04</span>
-                        <span class="navx__item-text">The arena</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                    <a class="navx__item" href="#ai-core" data-navx-link data-section="ai-core">
-                        <span class="navx__item-num">05</span>
-                        <span class="navx__item-text">Orvelis AI</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                    <a class="navx__item" href="#global" data-navx-link data-section="global">
-                        <span class="navx__item-num">06</span>
-                        <span class="navx__item-text">Global network</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                    <a class="navx__item" href="#beta" data-navx-link data-section="beta">
-                        <span class="navx__item-num">07</span>
-                        <span class="navx__item-text">Early access</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                    <a class="navx__item" href="#faq" data-navx-link data-section="faq">
-                        <span class="navx__item-num">08</span>
-                        <span class="navx__item-text">FAQ</span>
-                        <span class="navx__item-arrow" aria-hidden="true"></span>
-                    </a>
-                </nav>
-
-                <aside class="navx__side">
-                    <div class="navx__side-block">
-                        <span class="navx__side-tag">[ WHAT THIS IS ]</span>
-                        <p>A short-video app where every clip has a point. Watch a minute, keep
-                            something useful, answer back on camera.</p>
-                    </div>
-
-                    <div class="navx__side-block">
-                        <span class="navx__side-tag">[ APPEARANCE ]</span>
-                        <button class="navx__theme" id="navxTheme" type="button">
-                            <span class="navx__theme-icon" aria-hidden="true">
-                                <svg class="navx__theme-moon" viewBox="0 0 18 18" fill="none">
-                                    <path d="M15.5 9.5C14.5 13 11.5 15.5 8 15.5C4 15.5 1 12.5 1 8.5C1 5 3.5 2 7 1C5.5 3 5.5 6.5 7.5 9C9.5 11.5 13 12 15.5 9.5Z" stroke="currentColor" stroke-width="1.3" />
-                                </svg>
-                                <svg class="navx__theme-sun" viewBox="0 0 18 18" fill="none">
-                                    <circle cx="9" cy="9" r="4" stroke="currentColor" stroke-width="1.3" />
-                                    <path d="M9 1V3M9 15V17M1 9H3M15 9H17M3.5 3.5L5 5M13 13L14.5 14.5M14.5 3.5L13 5M5 13L3.5 14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-                                </svg>
-                            </span>
-                            <span class="navx__theme-label">SWITCH THEME</span>
-                        </button>
-                    </div>
-
-                    <a class="navx__cta" href="#beta" data-navx-link>
-                        JOIN THE WAITLIST
-                        <span aria-hidden="true"></span>
-                    </a>
-
-                    <div class="navx__side-foot">
-                        <a href="privacy.html">Privacy</a>
-                        <a href="terms.html">Terms</a>
-                        <a href="cookies.html">Cookies</a>
-                    </div>
-                </aside>
-            </div>
-        </div>
-    </div>
-    <script>
-        /* The menu binds here, inline and immediately after its own markup.
-           It used to live in script.js, which meant one blocked CDN, one
-           earlier throw or one stale cached bundle took the navigation with
-           it. Nothing below depends on anything else on the page. */
-        (function () {
-            var overlay = document.getElementById('navOverlay');
-            var trigger = document.getElementById('navTrigger');
-            if (!overlay || !trigger) return;
-
-            var root = document.documentElement;
-            var label = trigger.querySelector('.navx-trigger__label');
-            var lastFocus = null;
-
-            function isOpen() { return overlay.classList.contains('is-open'); }
-
-            function setState(open) {
-                overlay.classList.toggle('is-open', open);
-                trigger.classList.toggle('is-active', open);
-                root.classList.toggle('navx-open', open);
-                trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
-                trigger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-                if (label) label.textContent = (open ? label.getAttribute('data-close') : label.getAttribute('data-open')) || 'MENU';
-                document.body.style.overflow = open ? 'hidden' : '';
-                if (window.FXBudget) { open ? window.FXBudget.pause() : window.FXBudget.resume(); }
-            }
-
-            function open() {
-                if (isOpen()) return;
-                lastFocus = document.activeElement;
-                setState(true);
-                var first = overlay.querySelector('[data-navx-link]');
-                if (first) { try { first.focus({ preventScroll: true }); } catch (e) { } }
-            }
-
-            function close() {
-                if (!isOpen()) return;
-                setState(false);
-                if (lastFocus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { } }
-            }
-
-            trigger.addEventListener('click', function (e) {
-                e.preventDefault();
-                isOpen() ? close() : open();
-            });
-
-            var closers = overlay.querySelectorAll('[data-navx-close]');
-            for (var i = 0; i < closers.length; i++) {
-                closers[i].addEventListener('click', function (e) { e.preventDefault(); close(); });
-            }
-
-            var links = overlay.querySelectorAll('[data-navx-link]');
-            for (var j = 0; j < links.length; j++) {
-                links[j].addEventListener('click', function (e) {
-                    var id = (this.getAttribute('href') || '').replace('#', '');
-                    var target = id && document.getElementById(id);
-                    close();
-                    if (target) {
-                        e.preventDefault();
-                        setTimeout(function () { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 220);
-                    }
-                });
-            }
-
-            var themeBtn = document.getElementById('navxTheme');
-            if (themeBtn) {
-                themeBtn.addEventListener('click', function () {
-                    if (typeof window.toggleTheme === 'function') window.toggleTheme();
-                });
-            }
-
-            document.addEventListener('keydown', function (e) {
-                if (!isOpen()) return;
-                if (e.key === 'Escape') { close(); return; }
-                if (e.key !== 'Tab') return;
-                var items = [trigger].concat([].slice.call(overlay.querySelectorAll('a[href], button:not([disabled])')));
-                var first = items[0];
-                var last = items[items.length - 1];
-                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-            });
-
-            window.closeOverlayNav = close;
-            // one line so a failure is diagnosable from the console
-            console.log('Datariot menu: ready');
-        })();
-
-        // App buttons soon effect
-        function showSoon(btn) {
-            btn.classList.add('show-soon');
-            setTimeout(() => {
-                btn.classList.remove('show-soon');
-            }, 2000);
-        }
-    </script>
-
-
-
-    <!-- Main Content -->
-    <main class="main">
-        <!-- Top Header Navigation -->
-        <header class="top-nav">
-            <div class="header__links" style="pointer-events: auto;">
-                <a href="#beta" class="header__link header__link--cta">Join Waitlist</a>
-            </div>
-        </header>
-
-        <!-- HERO SECTION -->
-        <section class="section section--hero hero--shimmer" id="hero" data-inview>
-            <div class="hero__background-layer">
-                <div id="canvas-3d-hero"></div>
-                <!-- Geex-Style Spinning Elements -->
-                <div class="abstract-spin abstract-spin--1">
-                    <svg viewBox="0 0 200 200">
-                        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--blue-1)" stroke-width="1.5"
-                            stroke-dasharray="2 6" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="var(--blue-2)" stroke-width="1.5"
-                            stroke-dasharray="4 8" />
-                        <circle cx="100" cy="100" r="50" fill="none" stroke="var(--accent)" stroke-width="1" />
-                    </svg>
-                </div>
-                <div class="abstract-spin abstract-spin--2">
-                    <svg viewBox="0 0 100 100" style="overflow: visible;">
-                        <defs>
-                            <path id="textCircle" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" />
-                        </defs>
-                        <text font-size="11" font-family="'JetBrains Mono', monospace" font-weight="600" fill="currentColor"
-                            opacity="0.6">
-                            <textPath href="#textCircle" startOffset="0%">
-                                DATARIOT • SHORT VIDEO • CREATIVE FREEDOM • ARENA •
-                            </textPath>
-                        </text>
-                    </svg>
-                </div>
-                <div class="hero__shimmer-bg"></div>
-                <div class="hero__shimmer-overlay"></div>
-            </div>
-
-            <div class="hero__main-layout">
-                <div class="hero__content hero__content--left">
-                    <div class="hx-brand">
-                        <b><i aria-hidden="true">D</i>DATARIOT</b>
-                        <span>SHORT-FORM VIDEO&nbsp;&nbsp;//&nbsp;&nbsp;V0.1 BETA</span>
-                    </div>
-                    <h1 class="hx-title">Short videos<br>with <span class="hx-mark">a point.</span></h1>
-                    <p class="hero__lede">
-                        Datariot is a short-video app where every clip leaves you with something:
-                        a fact, a skill, an argument worth hearing. <strong>Watch a minute, keep the
-                        point, answer back on camera.</strong>
-                    </p>
-                    <ul class="hero__marks">
-                        <li class="hero__mark">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <rect x="2.5" y="6" width="13" height="12" rx="3.2" stroke="currentColor" stroke-width="1.6" />
-                                <path d="M15.5 11.2 21 8.2v7.6l-5.5-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
-                            </svg>
-                            Short clips
-                        </li>
-                        <li class="hero__mark">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.6" />
-                                <path d="M12 7.6V12l3 1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                            </svg>
-                            Learn in a minute
-                        </li>
-                        <li class="hero__mark">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M12 3.4l7 3v5.2c0 4.2-2.9 7.3-7 8.9-4.1-1.6-7-4.7-7-8.9V6.4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
-                                <path d="M9 12.2l2.2 2.2L15.4 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            Real people on camera
-                        </li>
-                    </ul>
-                    <div class="hx-cta">
-                        <a class="hx-join" href="#beta">Join the waitlist
-                            <svg viewBox="0 0 9 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
-                        </a>
-                        <div class="app-downloads">
-                            <button class="app-dl-btn" onclick="showSoon(this)">
-                                <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: currentColor;">
-                                    <path
-                                        d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.65.15 3.1 1 4.13 2.52-3.32 1.84-2.8 6.57.51 7.9-.68 1.64-1.4 3.09-2.28 4.41L18.71 19.5z" />
-                                    <path
-                                        d="M15.14 4.54c-.66.8-1.63 1.34-2.67 1.32-.22-1.12.31-2.25.99-3.01.65-.77 1.69-1.34 2.68-1.34.19 1.14-.34 2.22-.99 3.03z" />
-                                </svg>
-                                <div class="app-dl-text">
-                                    <span class="app-dl-small">Download on the</span>
-                                    <span class="app-dl-large">App Store</span>
-                                </div>
-                                <div class="app-dl-soon">SOON</div>
-                            </button>
-                            <button class="app-dl-btn" onclick="showSoon(this)">
-                                <svg viewBox="0 0 24 24" style="width: 28px; height: 28px;">
-                                    <path d="M3.5 3.5v17l13-8.5-13-8.5z" fill="currentColor" />
-                                    <path d="M4.5 4.5v15l11-7.5-11-7.5z" fill="#000" opacity="0.2" />
-                                </svg>
-                                <div class="app-dl-text">
-                                    <span class="app-dl-small">GET IT ON</span>
-                                    <span class="app-dl-large">Google Play</span>
-                                </div>
-                                <div class="app-dl-soon">SOON</div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="hero__phone-showcase" id="heroPhone" data-inview>
-                    <span class="hero__phone-glow" aria-hidden="true"></span>
-
-                    <!-- real screens from the app, fanned out behind the phone -->
-                    <div class="hero__clip-stack" aria-hidden="true">
-                        <span class="hero__clip-stack-card hero__clip-stack-card--1"><img src="assets/smart-feed-real.jpg" alt="" loading="lazy" decoding="async"></span>
-                        <span class="hero__clip-stack-card hero__clip-stack-card--2"><img src="assets/debate-threads-real.jpg" alt="" loading="lazy" decoding="async"></span>
-                        <span class="hero__clip-stack-card hero__clip-stack-card--3"><img src="assets/creator-dna-real.jpg" alt="" loading="lazy" decoding="async"></span>
-                    </div>
-
-                    <div class="hero__swipe" aria-hidden="true">
-                        <svg viewBox="0 0 28 44" fill="none">
-                            <path d="M6 20l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M6 32l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <span>SWIPE FOR THE NEXT POINT</span>
-                    </div>
-
-                    <div class="hero__float hero__float--live" aria-hidden="true">
-                        <span class="hero__float-dot"></span>
-                        LIVE
-                        <b data-live>00:47</b>
-                    </div>
-
-                    <div class="hero__float hero__float--reply" aria-hidden="true">
-                        <span class="hero__float-avatar"></span>
-                        <span class="hero__float-body">
-                            <b>Video reply</b>
-                            <i>answered on camera</i>
-                        </span>
-                    </div>
-
-                    <div class="hero__float hero__float--verdict" aria-hidden="true">
-                        <span class="hero__float-body">
-                            <b>Orvelis AI</b>
-                            <i>logic scan · <span data-scan>92</span>%</i>
-                        </span>
-                        <span class="hero__float-meter"><span></span></span>
-                    </div>
-
-                    <div class="hero__phone-frame">
-                        <div class="phone__notch"></div>
-                        <div class="phone__screen">
-                            <!-- the clip is cut from the app's own screen recording; clips.js
-                                 keeps the counters, the reactions and the ambient light going -->
-                            <div class="hx-app" id="heroApp" role="img"
-                                aria-label="The Datariot app playing a short video by @Fronda: Should we prioritize logic over emotion in the discussion?">
-                                <div class="hx-app__amb-img" style="background-image: url('assets/hero-clip.jpg')"></div>
-                                <canvas class="hx-app__amb" width="24" height="46"></canvas>
-                                <div class="hx-app__top">
-                                    <div class="hx-app__status"><b>9:41</b><i></i></div>
-                                    <div class="hx-app__tabs"><span>ARENA</span><span class="is-on">FEED</span><span>CIRCLE</span></div>
-                                </div>
-                                <div class="hx-app__clip">
-                                    <video class="hx-app__video" autoplay loop muted playsinline preload="auto" poster="assets/hero-clip.jpg">
-                                        <source src="assets/hero-clip.webm" type="video/webm">
-                                        <source src="assets/hero-clip.mp4" type="video/mp4">
-                                    </video>
-                                    <span class="hx-app__who"><i></i>@Fronda</span>
-                                    <span class="hx-app__pop"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg></span>
-                                </div>
-                                <div class="hx-app__under">
-                                    <p class="hx-app__cap">Should we prioritize logic over emotion in the dis… <b>more</b></p>
-                                    <div class="hx-app__row">
-                                        <span class="hx-app__act hx-app__act--like"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><i>Like</i><b data-count="like">3,128</b></span>
-                                        <span class="hx-app__act"><svg viewBox="0 0 24 24"><path d="M12 3.2c5 0 9 3.4 9 7.7s-4 7.7-9 7.7c-1 0-2-.1-2.9-.4L4.6 20.4l1.2-3.9C4 15.1 3 13.1 3 10.9c0-4.3 4-7.7 9-7.7z"/></svg><i>Comment</i><b data-count="comment">842</b></span>
-                                        <span class="hx-app__act"><svg viewBox="0 0 24 24"><path d="M6.2 3.2h11.6v17.6L12 16.8l-5.8 4z"/></svg><i>Save</i><b>219</b></span>
-                                        <span class="hx-app__input"><em data-typing>Add a comment...</em><span class="hx-app__send"><svg viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5 12 6l5.5 5.5"/></svg></span></span>
-                                    </div>
-                                    <div class="hx-app__time"><span class="hx-app__bar"><i></i></span><b data-time>0:00 / 0:14</b></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hero__ticker" data-inview aria-hidden="true">
-                <div class="hero__ticker-track">
-                    <div class="hero__ticker-run"><span>SHORT VIDEOS WITH A POINT</span><em>//</em><span>LEARN SOMETHING IN A MINUTE</span><em>//</em><span>REAL PEOPLE ON CAMERA</span><em>//</em><span>DEEP DIVE ON EVERY CLIP</span><em>//</em><span>VIDEO REPLIES</span><em>//</em><span>ORVELIS CHECKS THE LOGIC</span><em>//</em><span>NO BOT SWARMS</span><em>//</em><span>LOGIC OVER LIKES</span><em>//</em></div>
-                    <div class="hero__ticker-run"><span>SHORT VIDEOS WITH A POINT</span><em>//</em><span>LEARN SOMETHING IN A MINUTE</span><em>//</em><span>REAL PEOPLE ON CAMERA</span><em>//</em><span>DEEP DIVE ON EVERY CLIP</span><em>//</em><span>VIDEO REPLIES</span><em>//</em><span>ORVELIS CHECKS THE LOGIC</span><em>//</em><span>NO BOT SWARMS</span><em>//</em><span>LOGIC OVER LIKES</span><em>//</em></div>
-                </div>
-            </div>
-
-            <div class="scroll-indicator">
-                <div class="scroll-indicator__line"></div>
-            </div>
-        </section>
-
+    <div class="shell">
 
         <!-- ============================================================
-             01 — THE FEED: tap a question, the phone plays that clip, the
-             point lands. clips.js runs it: the clips take turns while the
-             slide is on screen, and a hover or a tap takes over. Without
-             script the first clip sits on the phone and every point is
-             written out below. The frames are real ones from the app.
+             The sidebar says what is on the page, the way base.org's does:
+             the brand, the sections, the other places, and one way in.
+             Phones get the same links behind a Menu button.
              ============================================================ -->
-        <section class="section feedsec" id="manifesto" data-inview>
-            <div class="feedsec__inner">
-                <div class="feedsec__eyebrow">
-                    <span>[ 01 — THE FEED ]</span>
-                    <span class="feedsec__rule"></span>
-                </div>
-                <div class="feedsec__head">
-                    <h2 class="feedsec__title">Tap a clip.<br>Get <span class="hx-mark">the point.</span></h2>
-                    <p class="feedsec__lede">
-                        Datariot is a feed of short videos that each make one clear point in under
-                        a minute. Pick a question and watch one.
-                    </p>
-                </div>
+        <aside class="side">
+            <a class="brand" href="#hero"><img src="assets/mark.png" alt="" width="32" height="32" />Datariot</a>
 
-                <div class="fd" id="feedDemo">
-                    <div class="fd__phone" aria-hidden="true">
-                        <span class="fd__notch"></span>
-                        <div class="fd__screen">
+            <nav class="side__nav" aria-label="Sections">
+                <a href="#manifesto" data-nav="manifesto">The feed</a>
+                <a href="#features" data-nav="features">How it works</a>
+                <a href="#debates" data-nav="debates">The arena</a>
+                <a href="#ai-core" data-nav="ai-core">Orvelis AI</a>
+                <a href="#faq" data-nav="faq">FAQ</a>
+            </nav>
 
-                            <figure class="fd__clip is-on" style="--top:27%">
-                                <span class="fd__amb" style="background-image:url('assets/reel-bear-amb.jpg')"></span>
-                                <img class="fd__pic" src="assets/reel-bear.jpg" alt="" width="464" height="238" decoding="async">
-                                <span class="fd__top"><em>EDUCATION</em><b>0:31</b></span>
-                                <p class="fd__cap">the fur is <mark>see&#8209;through</mark></p>
-                                <div class="fd__who"><span><i></i>@Fronda</span><p>Polar bears aren’t actually white</p></div>
-                                <span class="fd__prog"><i></i></span>
-                                <span class="fd__stamp">THE POINT</span>
-                            </figure>
+            <div class="side__more">
+                <a href="https://datariot.xyz">Web app <svg class="ext" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 2.5h6v6M9.5 2.5l-7 7" /></svg></a>
+                <a href="https://docs.datariot.xyz">Docs <svg class="ext" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 2.5h6v6M9.5 2.5l-7 7" /></svg></a>
+                <a href="https://discord.gg/KvBpEVrk2" target="_blank" rel="noopener">Discord <svg class="ext" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 2.5h6v6M9.5 2.5l-7 7" /></svg></a>
+                <a href="https://x.com/datariot_xyz" target="_blank" rel="noopener">X <svg class="ext" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 2.5h6v6M9.5 2.5l-7 7" /></svg></a>
+            </div>
 
-                            <figure class="fd__clip" style="--top:27%">
-                                <span class="fd__amb" style="background-image:url('assets/reel-lidar-amb.jpg')"></span>
-                                <img class="fd__pic" src="assets/reel-lidar.jpg" alt="" width="464" height="250" decoding="async">
-                                <span class="fd__top"><em>ENGINEERING</em><b>0:44</b></span>
-                                <p class="fd__cap">lidar times <mark>laser pulses</mark></p>
-                                <div class="fd__who"><span><i></i>@Fara</span><p>How lidar sees the street</p></div>
-                                <span class="fd__prog"><i></i></span>
-                                <span class="fd__stamp">THE POINT</span>
-                            </figure>
+            <div class="side__start">
+                <span class="label">Start here</span>
+                <a class="btn btn--dark btn--block" href="#beta">Join the waitlist</a>
+            </div>
+        </aside>
 
-                            <figure class="fd__clip" style="--top:13%">
-                                <span class="fd__amb" style="background-image:url('assets/reel-debate-amb.jpg')"></span>
-                                <video class="fd__pic" muted loop playsinline preload="none" poster="assets/hero-clip.jpg">
+        <header class="top">
+            <a class="brand" href="#hero"><img src="assets/mark.png" alt="" width="28" height="28" />Datariot</a>
+            <button class="top__menu" type="button" aria-expanded="false" aria-controls="topNav">
+                <span class="top__bars" aria-hidden="true"><i></i><i></i></span>
+                <span class="top__word">Menu</span>
+            </button>
+            <nav class="top__nav" id="topNav" aria-label="Sections">
+                <a href="#manifesto">The feed</a>
+                <a href="#features">How it works</a>
+                <a href="#debates">The arena</a>
+                <a href="#ai-core">Orvelis AI</a>
+                <a href="#faq">FAQ</a>
+                <a class="btn btn--dark btn--block" href="#beta">Join the waitlist</a>
+            </nav>
+        </header>
+
+        <main class="main" id="main">
+
+            <!-- HERO: what it is in one line, and the app playing a real clip -->
+            <section class="hero" id="hero">
+                <div class="wrap">
+                    <p class="label rv">Short-video app &middot; Beta</p>
+                    <div class="hero__head">
+                        <h1 class="h1 rv">Short videos<br />with a point.</h1>
+                        <div class="hero__aside rv" style="--d: .08s">
+                            <p class="lead">
+                                Datariot is a short-video app where every clip leaves you with something:
+                                a fact, a skill, an argument worth hearing.
+                            </p>
+                            <div class="hero__cta">
+                                <a class="btn btn--dark" href="#beta">Join the waitlist</a>
+                                <a class="btn btn--light" href="#features">How it works</a>
+                            </div>
+                            <p class="hero__soon">iOS and Android &middot; coming soon</p>
+                        </div>
+                    </div>
+
+                    <div class="hero__stage rv" style="--d: .16s">
+                        <div class="phone hero__phone">
+                            <span class="phone__notch" aria-hidden="true"></span>
+                            <!-- the clip is cut from the app's own screen recording -->
+                            <div class="app" id="heroApp" role="img"
+                                aria-label="The Datariot app playing a short video by @Fronda: Should we prioritize logic over emotion in the discussion?">
+                                <span class="app__glow" style="background-image: url('assets/reel-debate-amb.jpg')"></span>
+                                <div class="app__top">
+                                    <span class="app__status">9:41</span>
+                                    <span class="app__tabs"><i>Arena</i><i class="is-on">Feed</i><i>Circle</i></span>
+                                </div>
+                                <video class="app__video" autoplay loop muted playsinline preload="auto" poster="assets/hero-clip.jpg">
                                     <source src="assets/hero-clip.webm" type="video/webm">
                                     <source src="assets/hero-clip.mp4" type="video/mp4">
                                 </video>
-                                <span class="fd__top"><em>DEBATE</em><b>0:14</b></span>
-                                <p class="fd__cap">logic or <mark>emotion?</mark></p>
-                                <div class="fd__who"><span><i></i>@Fronda</span><p>Should we prioritize logic over emotion?</p></div>
-                                <span class="fd__prog"><i></i></span>
-                                <span class="fd__stamp">THE POINT</span>
-                            </figure>
-
-                            <figure class="fd__clip fd__clip--full">
-                                <img class="fd__pic" src="assets/reel-tower.jpg" alt="" width="380" height="650" decoding="async">
-                                <span class="fd__top"><em>ENGINEERING</em><b>0:38</b></span>
-                                <p class="fd__cap">built to <mark>bend a little</mark></p>
-                                <div class="fd__who"><span><i></i>@Fronda</span><p>Why tall towers sway on purpose</p></div>
-                                <span class="fd__prog"><i></i></span>
-                                <span class="fd__stamp">THE POINT</span>
-                            </figure>
-
-                            <!-- the app's own buttons: the point lands, then Deep Dive lights up -->
-                            <span class="fd__rail">
-                                <i class="fd__act"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><span class="fd__lab">Like</span></i>
-                                <i class="fd__act"><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg><span class="fd__lab">Reply</span></i>
-                                <i class="fd__act fd__act--dd"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21M10.5 7.8v5.4M7.8 10.5h5.4"/></svg><span class="fd__lab">Deep Dive</span></i>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="fd__side">
-                        <ul class="fd__list" aria-label="Clips from the feed">
-                            <li><button class="fd__q is-on" type="button" aria-pressed="true">
-                                <span class="fd__n">01</span><span>Why aren’t polar bears actually white?</span><span class="fd__len">0:31</span><i class="fd__bar" data-bar></i>
-                            </button></li>
-                            <li><button class="fd__q" type="button" aria-pressed="false">
-                                <span class="fd__n">02</span><span>How does a car see the street?</span><span class="fd__len">0:44</span><i class="fd__bar" data-bar></i>
-                            </button></li>
-                            <li><button class="fd__q" type="button" aria-pressed="false">
-                                <span class="fd__n">03</span><span>Logic or emotion: which should win?</span><span class="fd__len">0:14</span><i class="fd__bar" data-bar></i>
-                            </button></li>
-                            <li><button class="fd__q" type="button" aria-pressed="false">
-                                <span class="fd__n">04</span><span>Why do skyscrapers sway on purpose?</span><span class="fd__len">0:38</span><i class="fd__bar" data-bar></i>
-                            </button></li>
-                        </ul>
-
-                        <div class="fd__points">
-                            <article class="fd__pt is-on">
-                                <p class="fd__pt-q">01 · Why aren’t polar bears actually white?</p>
-                                <span class="fd__tag">THE POINT</span>
-                                <p class="fd__text"><span>Their fur is clear and hollow.</span> <span>It only looks white.</span> <span>The skin underneath is black.</span></p>
-                            </article>
-                            <article class="fd__pt">
-                                <p class="fd__pt-q">02 · How does a car see the street?</p>
-                                <span class="fd__tag">THE POINT</span>
-                                <p class="fd__text"><span>Lidar fires laser pulses and times how long they take to bounce back.</span> <span>Those delays become a 3D map.</span></p>
-                            </article>
-                            <article class="fd__pt">
-                                <p class="fd__pt-q">03 · Logic or emotion: which should win?</p>
-                                <span class="fd__tag">THE POINT</span>
-                                <p class="fd__text"><span>Emotion tells you what matters.</span> <span>Logic tells you what to do about it.</span></p>
-                            </article>
-                            <article class="fd__pt">
-                                <p class="fd__pt-q">04 · Why do skyscrapers sway on purpose?</p>
-                                <span class="fd__tag">THE POINT</span>
-                                <p class="fd__text"><span>A rigid tower fights the wind and loses.</span> <span>A tower built to flex a little absorbs it.</span></p>
-                            </article>
-                        </div>
-
-                        <p class="fd__more">
-                            Every clip has a <b>Deep Dive</b> for the full story. Disagree?
-                            <a href="#features">Answer on camera<svg viewBox="0 0 9 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================================================
-             02 — HOW IT WORKS: one scene that plays the whole loop. You film
-             a point; answers come in as clips of their own; the vote and the
-             logic check lift the clearest one to the top. The logo's camera
-             plays every part. clips.js runs it (the three steps take turns
-             while the slide is on screen, a tap takes over); without script
-             the scene is held on its last step and all three steps are
-             written out beside it.
-             ============================================================ -->
-        <section class="section section--features section--3d-features" id="features" data-inview>
-            <!-- the logo's black, dissolving into the page at both edges -->
-            <div class="px-screen" aria-hidden="true"></div>
-            <div class="section__container">
-                <div class="section__header section__header--stack">
-                    <span class="section__label">[ 02 — HOW IT WORKS ]</span>
-                    <h2 class="section__title">MAKE A POINT.<br>GET ANSWERED. <br class="hw-br"><span class="st-title-accent">THE BEST ONE WINS.</span></h2>
-                </div>
-
-                <div class="hw" id="how" data-step="3">
-                    <ol class="hw__steps" aria-label="How it works, in three steps">
-                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:6.5s">
-                            <span class="hw__n">01</span>
-                            <span class="hw__h">Make a point</span>
-                            <span class="hw__p">Film one clear thing: a fact, a how-to, a take you can back up. One short clip, your face on camera.</span>
-                            <i class="hw__bar" data-bar></i>
-                        </button></li>
-                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:6s">
-                            <span class="hw__n">02</span>
-                            <span class="hw__h">Get answered</span>
-                            <span class="hw__p">Anyone can answer with a clip of their own. Replies stack under yours, so it stays a conversation, not a comment war.</span>
-                            <i class="hw__bar" data-bar></i>
-                        </button></li>
-                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:8s">
-                            <span class="hw__n">03</span>
-                            <span class="hw__h">The best one wins</span>
-                            <span class="hw__p">Viewers vote on substance and Orvelis checks the logic. The clearest answer rises, not the loudest.</span>
-                            <i class="hw__bar" data-bar></i>
-                        </button></li>
-                    </ol>
-
-                    <div class="hw__stage" aria-hidden="true">
-
-                        <!-- step 1: you film it -->
-                        <div class="hw__rec">
-                            <i class="hw__brk hw__brk--tl"></i><i class="hw__brk hw__brk--tr"></i><i class="hw__brk hw__brk--bl"></i><i class="hw__brk hw__brk--br"></i>
-                            <span class="hw__live"><i class="hw__dot"></i>REC <b data-clock>0:24</b></span>
-                            <span class="hw__lock"></span>
-                            <img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async">
-                            <p class="hw__sub"><span data-typed>Phones should be banned in class.</span><i class="hw__caret"></i></p>
-                            <span class="hw__wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-                            <span class="hw__post">POST<svg viewBox="0 0 9 6" shape-rendering="crispEdges"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg></span>
-                        </div>
-
-                        <!-- steps 2 and 3: the answers come in, then the vote -->
-                        <div class="hw__thread">
-                            <span class="hw__trunk"></span>
-
-                            <div class="hw__row hw__row--root">
-                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:24</b></span>
-                                <span class="hw__text">
-                                    <span class="hw__who"><span class="hw__at">@pro_logic_22</span><em class="hw__op">OP</em></span>
-                                    <span class="hw__say">Phones should be banned in class.</span>
-                                </span>
-                                <span class="hw__side"><b data-replies>2</b><span class="hw__lab">replies</span></span>
-                            </div>
-
-                            <div class="hw__row hw__row--reply hw__row--a" style="--k:0">
-                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:09</b></span>
-                                <span class="hw__text">
-                                    <span class="hw__who"><span class="hw__at">@d_marek</span><em class="hw__lqi">LQI 31</em></span>
-                                    <span class="hw__say">LOL no. It’s 2026.</span>
-                                </span>
-                                <span class="hw__side"><b data-to="38">38</b><span class="hw__meter"><i style="--v:.14"></i></span></span>
-                            </div>
-
-                            <div class="hw__row hw__row--reply hw__row--b" style="--k:1">
-                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:41</b></span>
-                                <span class="hw__text">
-                                    <span class="hw__who"><span class="hw__at">@nova_k</span><em class="hw__lqi">LQI 94</em></span>
-                                    <span class="hw__say">Ban them in lessons, keep them at lunch. The problem is attention, not phones.</span>
-                                </span>
-                                <span class="hw__side"><b data-to="276">276</b><span class="hw__meter"><i style="--v:.9"></i></span></span>
-                                <span class="hw__stamp">BEST POINT</span>
-                            </div>
-
-                            <div class="hw__row hw__row--reply hw__row--c" style="--k:2">
-                                <span class="hw__thumb"><i class="hw__dot"></i><span class="hw__wave hw__wave--sm"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
-                                <span class="hw__text">
-                                    <span class="hw__who"><span class="hw__at">@tomas.thinks</span></span>
-                                    <span class="hw__say">recording a reply…</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- APP INTERFACE SHOWCASE -->
-        <section class="section section--interface iface" id="interface" data-inview>
-            <div class="section__container">
-
-                <div class="iface__eyebrow">
-                    <span class="iface__eyebrow-tag">[ 03 — THE APP ]</span>
-                    <span class="iface__eyebrow-rule"></span>
-                    <span class="iface__eyebrow-meta">BUILT FOR SHORT VIDEO&nbsp;&nbsp;//&nbsp;&nbsp;3 SCREENS</span>
-                </div>
-
-                <div class="iface__head">
-                    <h2 class="section__title">A feed that respects your time.</h2>
-                    <p class="iface__lede">
-                        Three screens carry the whole loop: a feed of clips worth your minute, threads
-                        where people answer on camera, and a profile that shows what you bring.
-                    </p>
-                </div>
-
-                <div class="iface__rack">
-
-                    <figure class="dev">
-                        <div class="dev__plate">
-                            <span class="dev__corner dev__corner--tl" aria-hidden="true"></span>
-                            <span class="dev__corner dev__corner--br" aria-hidden="true"></span>
-                            <div class="dev__phone">
-                                <span class="dev__notch" aria-hidden="true"></span>
-                                <img class="dev__shot" src="assets/smart-feed-real.jpg" alt="The Datariot feed of short clips" loading="lazy" />
-                                <span class="dev__sheen" aria-hidden="true"></span>
-                            </div>
-                        </div>
-                        <figcaption class="dev__cap">
-                            <span class="dev__index">01</span>
-                            <span class="dev__tag">[ SMART FEED ]</span>
-                            <h3>Clips worth your minute</h3>
-                            <p>A vertical feed that puts substance first, matched to what you are curious about.</p>
-                            <span class="dev__chips"><em>VERTICAL FEED</em><em>97% MATCH</em></span>
-                        </figcaption>
-                    </figure>
-
-                    <figure class="dev dev--lead">
-                        <div class="dev__plate">
-                            <span class="dev__corner dev__corner--tl" aria-hidden="true"></span>
-                            <span class="dev__corner dev__corner--br" aria-hidden="true"></span>
-                            <div class="dev__phone">
-                                <span class="dev__notch" aria-hidden="true"></span>
-                                <img class="dev__shot" src="assets/debate-threads-real.jpg" alt="Debate threads: clips branching into video replies" loading="lazy" />
-                                <span class="dev__sheen" aria-hidden="true"></span>
-                            </div>
-
-                            <!-- HUD callouts; the plate's chamfer is drawn by a
-                                 pseudo-element, so nothing here gets clipped -->
-                            <span class="dev__call dev__call--a">
-                                <i aria-hidden="true"></i>
-                                AI TOPIC CLUSTERS
-                            </span>
-                            <span class="dev__call dev__call--b">
-                                <i aria-hidden="true"></i>
-                                TAP TO REPLY ON CAMERA
-                            </span>
-                        </div>
-                        <figcaption class="dev__cap">
-                            <span class="dev__index">02</span>
-                            <span class="dev__tag">[ DEBATE THREADS ]</span>
-                            <h3>Every clip opens a thread</h3>
-                            <p>Answers stack under the original clip, face first, so the whole conversation stays watchable end to end.</p>
-                            <span class="dev__chips"><em>VIDEO REPLIES</em><em>THREADED</em></span>
-                        </figcaption>
-                    </figure>
-
-                    <figure class="dev">
-                        <div class="dev__plate">
-                            <span class="dev__corner dev__corner--tl" aria-hidden="true"></span>
-                            <span class="dev__corner dev__corner--br" aria-hidden="true"></span>
-                            <div class="dev__phone">
-                                <span class="dev__notch" aria-hidden="true"></span>
-                                <img class="dev__shot" src="assets/creator-dna-real.jpg" alt="Creator DNA: a personal reasoning profile scored by Orvelis" loading="lazy" />
-                                <span class="dev__sheen" aria-hidden="true"></span>
-                            </div>
-                        </div>
-                        <figcaption class="dev__cap">
-                            <span class="dev__index">03</span>
-                            <span class="dev__tag">[ CREATOR DNA ]</span>
-                            <h3>Your Creator DNA</h3>
-                            <p>Orvelis keeps a running read of your clarity, logic and evidence across every clip you post.</p>
-                            <span class="dev__chips"><em>LQI PROFILE</em><em>ORVELIS AI</em></span>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================================================
-             THE CATCH: between the app and the arena, a scroll scene. The
-             feed rushes past; Orvelis, drawn as the logo's camera on eight
-             pixel legs, lowers itself on a thread, grabs the one clip with
-             a point and reels it up into its web. clips.js draws the spider
-             and the web; without script it is the last frame, held.
-             ============================================================ -->
-        <section class="catch" id="catch" aria-labelledby="catchTitle" data-inview>
-            <div class="px-screen px-screen--into-next" aria-hidden="true"></div>
-            <div class="catch__pin">
-                <div class="catch__feed" aria-hidden="true"></div>
-                <canvas class="catch__web" aria-hidden="true"></canvas>
-                <figure class="catch__clip" aria-hidden="true">
-                    <div class="catch__media">
-                        <video class="catch__video" muted loop playsinline preload="none" poster="assets/hero-clip.jpg">
-                            <source src="assets/hero-clip.webm" type="video/webm">
-                            <source src="assets/hero-clip.mp4" type="video/mp4">
-                        </video>
-                    </div>
-                    <span class="catch__chip"><em>DEBATE</em><b>0:14</b></span>
-                    <p class="catch__cap">logic or <mark>emotion?</mark></p>
-                    <span class="catch__who"><i></i>@Fronda</span>
-                    <span class="catch__prog"><i></i></span>
-                    <span class="catch__stamp">THE POINT</span>
-                </figure>
-                <canvas class="catch__spider" aria-hidden="true"></canvas>
-                <span class="catch__readout" aria-hidden="true"><i></i><b data-catch-readout>SCANNING THE FEED</b></span>
-                <div class="catch__copy">
-                    <span class="catch__label">[ ORVELIS // THE CATCH ]</span>
-                    <h2 class="catch__title" id="catchTitle">
-                        <span class="catch__line" data-step="0">The feed <span class="hx-mark">never stops.</span></span>
-                        <span class="catch__line" data-step="1">Orvelis waits for <span class="hx-mark">the point.</span></span>
-                        <span class="catch__line" data-step="2">Then it <span class="hx-mark">reels it in.</span></span>
-                    </h2>
-                    <p class="catch__lede">Noise slips through the web. Clips with a point get caught and pulled up to you.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 04 — THE ARENA: one question, two cameras, a vote that works -->
-        <section class="section section--debates" id="debates" data-inview>
-            <!-- black like the logo; the backdrop runs on under slide 05's
-                 dithered top edge so the two screens meet without a gap -->
-            <div class="px-screen px-screen--into-next" aria-hidden="true"></div>
-            <div class="section__container">
-                <div class="section__header">
-                    <span class="section__label">[ 04 — THE ARENA ]</span>
-                    <h2 class="section__title">DISAGREE? SAY IT ON CAMERA.</h2>
-                    <p class="ar-lede">Two people, one question, both on camera. You decide who made the better point.</p>
-                </div>
-
-                <div class="ar" id="arena">
-                    <p class="ar-q"><span>[ TODAY&rsquo;S QUESTION ]</span>&ldquo;Remote work makes teams more productive.&rdquo;</p>
-
-                    <div class="ar-sides">
-                        <div class="ar-side ar-side--for">
-                            <p class="ar-say"><span>FOR &middot; @nova_k</span>&ldquo;Less commuting, more deep work. It shows.&rdquo;</p>
-                            <img class="ar-cam" src="assets/logo.png" alt="" width="230" height="230" loading="lazy" decoding="async">
-                            <button class="ar-vote" type="button" data-side="for" aria-pressed="false">I&rsquo;m for</button>
-                        </div>
-                        <span class="ar-vs" aria-hidden="true">VS</span>
-                        <div class="ar-side ar-side--against">
-                            <p class="ar-say"><span>AGAINST &middot; @d_marek</span>&ldquo;Sure. Now ask who mentors the new hires.&rdquo;</p>
-                            <img class="ar-cam" src="assets/logo.png" alt="" width="230" height="230" loading="lazy" decoding="async">
-                            <button class="ar-vote" type="button" data-side="against" aria-pressed="false">I&rsquo;m against</button>
-                        </div>
-                    </div>
-
-                    <div class="ar-result">
-                        <div class="ar-bar" aria-hidden="true"><i class="ar-bar__for"></i><i class="ar-bar__against"></i></div>
-                        <div class="ar-nums" aria-hidden="true"><b data-for>57%</b><span data-note>PICK A SIDE &middot; 1,300 VOTES</span><b data-against>43%</b></div>
-                        <span class="feed-sr" aria-live="polite" data-status></span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- ORVELIS AI CORE SECTION -->
-        <section class="section section--ai" id="ai-core" data-inview>
-            <!-- the dithered wave behind the slide: pixel-field.js draws it,
-                 the CSS navy fill stands in when there is no WebGL -->
-            <div class="px-field" aria-hidden="true">
-                <canvas class="px-field__canvas"></canvas>
-            </div>
-
-            <div class="section__container">
-                <div class="ai-core-layout">
-                    <div class="ai-showcase__visual">
-                        <div class="aic-card">
-                            <div class="aic-strip">
-                                <span class="aic-strip-ticks" aria-hidden="true"></span>
-                                <span class="aic-strip-id">ORV / 3.0.1 / ARENA-LINK</span>
-                            </div>
-
-                            <div class="aic-head">
-                                <span class="aic-avatar" aria-hidden="true">
-                                    <svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v2h-2zM2 2h8v1h-8zM1 3h2v1h-2zM9 3h2v1h-2zM1 4h1v1h-1zM10 4h1v1h-1zM0 5h2v2h-2zM3 5h2v2h-2zM7 5h2v2h-2zM10 5h2v2h-2zM1 7h1v2h-1zM10 7h1v2h-1zM4 8h4v1h-4zM1 9h2v1h-2zM9 9h2v1h-2zM2 10h8v1h-8z"/></svg>
-                                </span>
-                                <span class="aic-head-text">
-                                    <b>ORVELIS</b>
-                                    <i>AI CORE <em>//</em> CONSENSUS ENGINE</i>
-                                </span>
-                                <span class="aic-online"><i aria-hidden="true"></i>ONLINE</span>
-                            </div>
-
-                            <div class="aic-now">
-                                <span class="aic-now-thumb" aria-hidden="true">
-                                    <svg viewBox="0 0 5 7" shape-rendering="crispEdges"><path fill="currentColor" d="M0 0h1v7h-1zM1 1h1v5h-1zM2 2h1v3h-1zM3 3h1v1h-1z"/></svg>
-                                </span>
-                                <span class="aic-now-body">
-                                    <b>NOW SCANNING</b>
-                                    <i>@tomas.thinks &mdash; ice cream &amp; sharks</i>
-                                </span>
-                                <span class="aic-now-wave" aria-hidden="true">
-                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                </span>
-                            </div>
-
-                            <div class="aic-block">
-                                <div class="aic-block-head">
-                                    <span class="aic-tag">LOGIC SCORE</span>
-                                    <span class="aic-block-id">01</span>
-                                </div>
-                                <div class="aic-score">
-                                    <span class="aic-score-num">92</span>
-                                    <span class="aic-score-unit">LQI</span>
-                                    <span class="aic-score-delta">
-                                        <svg viewBox="0 0 5 3" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 0h1v1h-1zM1 1h3v1h-3zM0 2h5v1h-5z"/></svg>
-                                        15%
-                                    </span>
-                                </div>
-                                <div class="aic-meter" aria-hidden="true">
-                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                </div>
-                                <span class="aic-state">CLEAR AND FAIR</span>
-                                <p class="aic-copy">Clear claim, a good example, and the real cause named. One source would make it airtight.</p>
-                            </div>
-
-                            <div class="aic-block">
-                                <div class="aic-block-head">
-                                    <span class="aic-tag">THE POINT, CHECKED</span>
-                                    <span class="aic-block-id">02</span>
-                                </div>
-                                <div class="aic-row aic-row--ok">
-                                    <span class="aic-row-tag">THE POINT</span>
-                                    <p class="aic-copy">Rising together doesn’t mean one causes the other: summer drives both.</p>
-                                </div>
-                                <div class="aic-row aic-row--warn">
-                                    <span class="aic-row-tag">WATCH FOR</span>
-                                    <p class="aic-copy">The chart at 0:12 has no source yet, and shark numbers vary a lot by coast.</p>
+                                <div class="app__under">
+                                    <span class="app__who"><i></i>@Fronda</span>
+                                    <p class="app__cap">Should we prioritize logic over emotion in the discussion?</p>
+                                    <div class="app__row">
+                                        <span><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z" /></svg>3,128</span>
+                                        <span><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3" /><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z" /></svg>214 replies</span>
+                                        <span class="app__dd">Deep Dive</span>
+                                    </div>
+                                    <span class="app__bar"><i></i></span>
                                 </div>
                             </div>
-
-                            <div class="aic-foot">
-                                <span class="aic-foot-item"><b>0.4</b><i>S LATENCY</i></span>
-                                <span class="aic-foot-item"><b>12</b><i>SIGNALS</i></span>
-                                <span class="aic-foot-item"><b>96</b><i>% CONFIDENCE</i></span>
-                            </div>
                         </div>
-
-                        <p class="aic-formula">
-                            <span>1 clip</span>
-                            <svg viewBox="0 0 9 6" shape-rendering="crispEdges" role="img" aria-label="becomes"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
-                            <span>1 point, checked</span>
-                        </p>
                     </div>
+                </div>
+            </section>
 
-                    <div class="ai-showcase__content">
-                        <div class="aic-intro">
-                            <span class="section__label">[ 05 — ORVELIS AI ]</span>
-                            <h2 class="section__title">IT FINDS THE POINT.<br><span class="aic-title-accent">AND THE HOLES IN IT.</span></h2>
-                            <p class="aic-lede">
-                                Meet <strong>Orvelis</strong>, the AI inside every clip. It pulls out what is actually being claimed, checks the logic, flags the tricks to the second and builds a Deep Dive, so you can go further than sixty seconds.
+            <!-- WHAT IT IS: four things, one line each -->
+            <section class="sec" id="what">
+                <div class="wrap">
+                    <div class="sec__head">
+                        <div class="sec__title rv">
+                            <h2 class="h2">A feed that leaves you with something.</h2>
+                        </div>
+                        <div class="sec__text rv" style="--d: .08s">
+                            <p class="lead">
+                                Same short-video format, different goal. Every clip is built around one point,
+                                and everything around it helps you keep it, check it or argue with it.
                             </p>
                         </div>
+                    </div>
 
-                        <div class="aic-stack">
-                            <div class="aic-mod">
-                                <span class="aic-mod-index">01</span>
-                                <span class="aic-mod-tag">[ LOGIC // FALLACIES ]</span>
-                                <h4>Logic &amp; fallacy detection</h4>
-                                <p>Flags logical fallacies, emotional manipulation and rhetorical traps automatically, timestamped to the second they happen on camera.</p>
-                                <span class="aic-mod-meta">
-                                    <em>14 FALLACY CLASSES</em><em>REAL-TIME</em>
-                                </span>
+                    <ol class="cards">
+                        <li class="card rv">
+                            <span class="card__art" aria-hidden="true">
+                                <svg viewBox="0 0 11 11" shape-rendering="crispEdges"><path fill="currentColor" fill-opacity=".14" d="M2 3h7v1h-7zM1 4h4v1h-4zM6 4h4v1h-4zM1 5h4v1h-4zM6 5h4v1h-4zM1 6h4v1h-4zM8 6h2v1h-2zM1 7h9v1h-9zM2 8h7v1h-7z" /><path fill="currentColor" d="M3 0h5v1h-5zM5 1h1v1h-1zM2 2h7v1h-7zM1 3h1v1h-1zM9 3h1v1h-1zM0 4h1v1h-1zM5 4h1v1h-1zM10 4h1v1h-1zM0 5h1v1h-1zM5 5h1v1h-1zM10 5h1v1h-1zM0 6h1v1h-1zM5 6h3v1h-3zM10 6h1v1h-1zM0 7h1v1h-1zM10 7h1v1h-1zM1 8h1v1h-1zM9 8h1v1h-1zM2 9h7v1h-7z" /></svg>
+                            </span>
+                            <span class="card__n">01</span>
+                            <h3>One point per clip</h3>
+                            <p>Short clips that get to it. Each one is built around a single idea you can keep.</p>
+                        </li>
+                        <li class="card rv" style="--d: .06s">
+                            <span class="card__art" aria-hidden="true">
+                                <svg viewBox="0 0 11 11" shape-rendering="crispEdges"><path fill="currentColor" fill-opacity=".14" d="M3 1h5v1h-5zM2 2h3v1h-3zM6 2h3v1h-3zM2 3h2v1h-2zM5 3h1v1h-1zM7 3h2v1h-2zM2 4h7v1h-7zM3 5h5v1h-5zM4 6h3v1h-3z" /><path fill="currentColor" d="M3 0h5v1h-5zM0 1h1v1h-1zM2 1h1v1h-1zM8 1h1v1h-1zM10 1h1v1h-1zM1 2h1v1h-1zM5 2h1v1h-1zM9 2h1v1h-1zM1 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM1 4h1v1h-1zM9 4h1v1h-1zM2 5h1v1h-1zM8 5h1v1h-1zM3 6h1v1h-1zM7 6h1v1h-1zM3 7h5v1h-5zM3 8h5v1h-5zM4 9h3v1h-3z" /></svg>
+                            </span>
+                            <span class="card__n">02</span>
+                            <h3>A Deep Dive on every clip</h3>
+                            <p>One tap opens the summary, the key terms and where to learn more.</p>
+                        </li>
+                        <li class="card rv" style="--d: .12s">
+                            <span class="card__art" aria-hidden="true">
+                                <svg viewBox="0 0 11 11" shape-rendering="crispEdges"><path fill="currentColor" fill-opacity=".14" d="M1 2h9v1h-9zM1 3h9v1h-9zM1 4h2v1h-2zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h2v1h-2zM1 5h9v1h-9zM1 6h9v1h-9zM4 7h2v1h-2zM4 8h1v1h-1z" /><path fill="currentColor" d="M1 1h9v1h-9zM0 2h1v1h-1zM10 2h1v1h-1zM0 3h1v1h-1zM10 3h1v1h-1zM0 4h1v1h-1zM3 4h1v1h-1zM5 4h1v1h-1zM7 4h1v1h-1zM10 4h1v1h-1zM0 5h1v1h-1zM10 5h1v1h-1zM0 6h1v1h-1zM10 6h1v1h-1zM1 7h3v1h-3zM6 7h4v1h-4zM3 8h1v1h-1zM5 8h1v1h-1zM3 9h2v1h-2z" /></svg>
+                            </span>
+                            <span class="card__n">03</span>
+                            <h3>Answer on camera</h3>
+                            <p>Disagree? Reply with a clip of your own, not a comment war.</p>
+                        </li>
+                        <li class="card rv" style="--d: .18s">
+                            <span class="card__art" aria-hidden="true">
+                                <svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v2h-2zM2 2h8v1h-8zM1 3h2v1h-2zM9 3h2v1h-2zM1 4h1v1h-1zM10 4h1v1h-1zM0 5h2v2h-2zM3 5h2v2h-2zM7 5h2v2h-2zM10 5h2v2h-2zM1 7h1v2h-1zM10 7h1v2h-1zM4 8h4v1h-4zM1 9h2v1h-2zM9 9h2v1h-2zM2 10h8v1h-8z" /></svg>
+                            </span>
+                            <span class="card__n">04</span>
+                            <h3>Orvelis checks the logic</h3>
+                            <p>Our AI pulls out the claim and flags the tricks, to the second.</p>
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- THE FEED: tap a question, the phone plays that clip, the point lands.
+                 site.js runs it; without script the first clip sits on the phone
+                 and every point is written out. The frames are real ones from the app. -->
+            <section class="sec" id="manifesto">
+                <div class="wrap">
+                    <div class="sec__head">
+                        <div class="sec__title rv">
+                            <p class="label">The feed</p>
+                            <h2 class="h2">Tap a clip. Get the point.</h2>
+                        </div>
+                        <div class="sec__text rv" style="--d: .08s">
+                            <p class="lead">Pick a question. The clip plays and the point lands: that is the whole idea of Datariot.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel panel--demo rv">
+                        <div class="fd" id="feedDemo">
+                            <div class="phone fd__phone" aria-hidden="true">
+                                <span class="phone__notch"></span>
+                                <div class="fd__screen">
+
+                                    <figure class="fd__clip is-on" style="--top:27%">
+                                        <span class="fd__amb" style="background-image:url('assets/reel-bear-amb.jpg')"></span>
+                                        <img class="fd__pic" src="assets/reel-bear.jpg" alt="" width="464" height="238" decoding="async">
+                                        <span class="fd__top"><em>EDUCATION</em><b>0:31</b></span>
+                                        <p class="fd__cap">the fur is <mark>see&#8209;through</mark></p>
+                                        <div class="fd__who"><span><i></i>@Fronda</span><p>Polar bears aren’t actually white</p></div>
+                                        <span class="fd__prog"><i></i></span>
+                                        <span class="fd__stamp">The point</span>
+                                    </figure>
+
+                                    <figure class="fd__clip" style="--top:27%">
+                                        <span class="fd__amb" style="background-image:url('assets/reel-lidar-amb.jpg')"></span>
+                                        <img class="fd__pic" src="assets/reel-lidar.jpg" alt="" width="464" height="250" decoding="async">
+                                        <span class="fd__top"><em>ENGINEERING</em><b>0:44</b></span>
+                                        <p class="fd__cap">lidar times <mark>laser pulses</mark></p>
+                                        <div class="fd__who"><span><i></i>@Fara</span><p>How lidar sees the street</p></div>
+                                        <span class="fd__prog"><i></i></span>
+                                        <span class="fd__stamp">The point</span>
+                                    </figure>
+
+                                    <figure class="fd__clip" style="--top:13%">
+                                        <span class="fd__amb" style="background-image:url('assets/reel-debate-amb.jpg')"></span>
+                                        <video class="fd__pic" muted loop playsinline preload="none" poster="assets/hero-clip.jpg">
+                                            <source src="assets/hero-clip.webm" type="video/webm">
+                                            <source src="assets/hero-clip.mp4" type="video/mp4">
+                                        </video>
+                                        <span class="fd__top"><em>DEBATE</em><b>0:14</b></span>
+                                        <p class="fd__cap">logic or <mark>emotion?</mark></p>
+                                        <div class="fd__who"><span><i></i>@Fronda</span><p>Should we prioritize logic over emotion?</p></div>
+                                        <span class="fd__prog"><i></i></span>
+                                        <span class="fd__stamp">The point</span>
+                                    </figure>
+
+                                    <figure class="fd__clip fd__clip--full">
+                                        <img class="fd__pic" src="assets/reel-tower.jpg" alt="" width="380" height="650" decoding="async">
+                                        <span class="fd__top"><em>ENGINEERING</em><b>0:38</b></span>
+                                        <p class="fd__cap">built to <mark>bend a little</mark></p>
+                                        <div class="fd__who"><span><i></i>@Fronda</span><p>Why tall towers sway on purpose</p></div>
+                                        <span class="fd__prog"><i></i></span>
+                                        <span class="fd__stamp">The point</span>
+                                    </figure>
+
+                                    <!-- the app's own buttons: the point lands, then Deep Dive lights up -->
+                                    <span class="fd__rail">
+                                        <i class="fd__act"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z" /></svg><span class="fd__lab">Like</span></i>
+                                        <i class="fd__act"><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3" /><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z" /></svg><span class="fd__lab">Reply</span></i>
+                                        <i class="fd__act fd__act--dd"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.2" /><path d="M15.2 15.2 21 21M10.5 7.8v5.4M7.8 10.5h5.4" /></svg><span class="fd__lab">Deep Dive</span></i>
+                                    </span>
+                                </div>
                             </div>
-                            <div class="aic-mod">
-                                <span class="aic-mod-index">02</span>
-                                <span class="aic-mod-tag">[ DEEP DIVE // EVERY CLIP ]</span>
-                                <h4>A Deep Dive on every clip</h4>
-                                <p>A summary, three key terms and three places to learn more, plus a chat that answers your questions about the video.</p>
-                                <span class="aic-mod-meta">
-                                    <em>SUMMARY</em><em>ASK AI</em>
-                                </span>
-                            </div>
-                            <div class="aic-mod">
-                                <span class="aic-mod-index">03</span>
-                                <span class="aic-mod-tag">[ PEOPLE // IDENTITY ]</span>
-                                <h4>One face, one voice</h4>
-                                <p>Every clip is tied to a verified human on camera. No anonymous pile-ons, no sock puppets, no bot swarms in the vote.</p>
-                                <span class="aic-mod-meta">
-                                    <em>100% VERIFIED</em><em>NO ANON VOTES</em>
-                                </span>
+
+                            <div class="fd__side">
+                                <ul class="fd__list" aria-label="Clips from the feed">
+                                    <li><button class="fd__q is-on" type="button" aria-pressed="true">
+                                        <span class="fd__n">01</span><span>Why aren’t polar bears actually white?</span><span class="fd__len">0:31</span><i class="fd__bar" data-bar></i>
+                                    </button></li>
+                                    <li><button class="fd__q" type="button" aria-pressed="false">
+                                        <span class="fd__n">02</span><span>How does a car see the street?</span><span class="fd__len">0:44</span><i class="fd__bar" data-bar></i>
+                                    </button></li>
+                                    <li><button class="fd__q" type="button" aria-pressed="false">
+                                        <span class="fd__n">03</span><span>Logic or emotion: which should win?</span><span class="fd__len">0:14</span><i class="fd__bar" data-bar></i>
+                                    </button></li>
+                                    <li><button class="fd__q" type="button" aria-pressed="false">
+                                        <span class="fd__n">04</span><span>Why do skyscrapers sway on purpose?</span><span class="fd__len">0:38</span><i class="fd__bar" data-bar></i>
+                                    </button></li>
+                                </ul>
+
+                                <div class="fd__points">
+                                    <article class="fd__pt is-on">
+                                        <p class="fd__pt-q">01 · Why aren’t polar bears actually white?</p>
+                                        <span class="label">The point</span>
+                                        <p class="fd__text"><span>Their fur is clear and hollow.</span> <span>It only looks white.</span> <span>The skin underneath is black.</span></p>
+                                    </article>
+                                    <article class="fd__pt">
+                                        <p class="fd__pt-q">02 · How does a car see the street?</p>
+                                        <span class="label">The point</span>
+                                        <p class="fd__text"><span>Lidar fires laser pulses and times how long they take to bounce back.</span> <span>Those delays become a 3D map.</span></p>
+                                    </article>
+                                    <article class="fd__pt">
+                                        <p class="fd__pt-q">03 · Logic or emotion: which should win?</p>
+                                        <span class="label">The point</span>
+                                        <p class="fd__text"><span>Emotion tells you what matters.</span> <span>Logic tells you what to do about it.</span></p>
+                                    </article>
+                                    <article class="fd__pt">
+                                        <p class="fd__pt-q">04 · Why do skyscrapers sway on purpose?</p>
+                                        <span class="label">The point</span>
+                                        <p class="fd__text"><span>A rigid tower fights the wind and loses.</span> <span>A tower built to flex a little absorbs it.</span></p>
+                                    </article>
+                                </div>
+
+                                <p class="fd__more">
+                                    Every clip has a <b>Deep Dive</b> for the full story. Disagree?
+                                    <a href="#features">Answer on camera <span aria-hidden="true">&rarr;</span></a>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-
-        <!-- GLOBAL NETWORK SECTION -->
-        <section class="section section--global gnet" id="global" data-inview>
-            <div class="section__container">
-
-                <div class="gnet__eyebrow">
-                    <span class="gnet__eyebrow-tag">[ 06 — GLOBAL NETWORK ]</span>
-                    <span class="gnet__eyebrow-rule"></span>
-                    <span class="gnet__eyebrow-meta">
-                        <span class="gnet__pulse"></span>
-                        NETWORK LIVE
-                    </span>
-                </div>
-
-                <div class="gnet__head">
-                    <h2 class="section__title">Good ideas travel.</h2>
-                    <p class="gnet__lede">
-                        A clip made in Lagos gets answered from Warsaw before it finishes buffering.
-                        Topics cluster by meaning, not by map.
-                    </p>
-                </div>
-
-                <div class="gnet__grid">
-
-                    <!-- the map -->
-                    <div class="gnet__map">
-                        <div class="gnet__map-frame">
-                            <span class="gnet__corner gnet__corner--tl" aria-hidden="true"></span>
-                            <span class="gnet__corner gnet__corner--br" aria-hidden="true"></span>
-                            <div class="orvelis-canvas-container gnet__canvas" id="canvas-3d-globe"></div>
-
-                            <div class="gnet__map-hud">
-                                <span class="gnet__map-tag">[ TOPOLOGY // LIVE ]</span>
-                                <span class="gnet__map-coord">LAT 51.50 / LON -0.12</span>
-                            </div>
-
-                            <!-- clusters called out on the sphere -->
-                            <span class="gnet__pin gnet__pin--1"><i></i>EU-WEST</span>
-                            <span class="gnet__pin gnet__pin--2"><i></i>SA-EAST</span>
-                            <span class="gnet__pin gnet__pin--3"><i></i>APAC</span>
+            <!-- HOW IT WORKS: one scene that plays the loop. You film a point, answers
+                 come in as clips of their own, the vote and the logic check lift the
+                 clearest one. The logo's camera plays every part. site.js runs it;
+                 without script the scene holds its last step. -->
+            <section class="sec" id="features">
+                <div class="wrap">
+                    <div class="sec__head">
+                        <div class="sec__title rv">
+                            <p class="label">How it works</p>
+                            <h2 class="h2">Make a point. Get answered.</h2>
                         </div>
-
-                        <div class="gnet__readout">
-                            <span class="gnet__readout-item"><b>1,247</b><i>ACTIVE NODES</i></span>
-                            <span class="gnet__readout-item"><b>384</b><i>LIVE CLUSTERS</i></span>
-                            <span class="gnet__readout-item"><b>62</b><i>COUNTRIES</i></span>
-                            <span class="gnet__readout-item"><b>34</b><i>MS MEDIAN HOP</i></span>
+                        <div class="sec__text rv" style="--d: .08s">
+                            <p class="lead">Film one clear thing. Anyone can answer with a clip of their own, and the clearest answer rises, not the loudest.</p>
                         </div>
                     </div>
 
-                    <!-- the regions board -->
-                    <div class="gnet__board">
-                        <div class="gnet__board-head">
-                            <span class="gnet__board-title">REGIONS BY LIVE DEBATE</span>
-                            <span class="gnet__board-now">NOW</span>
+                    <div class="hw rv" id="how" data-step="3">
+                        <div class="hw__stage" aria-hidden="true">
+
+                            <!-- step 1: you film it -->
+                            <div class="hw__rec">
+                                <i class="hw__brk hw__brk--tl"></i><i class="hw__brk hw__brk--tr"></i><i class="hw__brk hw__brk--bl"></i><i class="hw__brk hw__brk--br"></i>
+                                <span class="hw__live"><i class="hw__dot"></i>REC <b data-clock>0:24</b></span>
+                                <span class="hw__lock"></span>
+                                <img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async">
+                                <p class="hw__sub"><span data-typed>Phones should be banned in class.</span><i class="hw__caret"></i></p>
+                                <span class="hw__wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                                <span class="hw__post">Post <span aria-hidden="true">&rarr;</span></span>
+                            </div>
+
+                            <!-- steps 2 and 3: the answers come in, then the vote -->
+                            <div class="hw__thread">
+                                <span class="hw__trunk"></span>
+
+                                <div class="hw__row hw__row--root">
+                                    <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:24</b></span>
+                                    <span class="hw__text">
+                                        <span class="hw__who"><span class="hw__at">@pro_logic_22</span><em class="hw__op">OP</em></span>
+                                        <span class="hw__say">Phones should be banned in class.</span>
+                                    </span>
+                                    <span class="hw__side"><b data-replies>2</b><span class="hw__lab">replies</span></span>
+                                </div>
+
+                                <div class="hw__row hw__row--reply hw__row--a" style="--k:0">
+                                    <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:09</b></span>
+                                    <span class="hw__text">
+                                        <span class="hw__who"><span class="hw__at">@d_marek</span><em class="hw__lqi">LQI 31</em></span>
+                                        <span class="hw__say">LOL no. It’s 2026.</span>
+                                    </span>
+                                    <span class="hw__side"><b data-to="38">38</b><span class="hw__meter"><i style="--v:.14"></i></span></span>
+                                </div>
+
+                                <div class="hw__row hw__row--reply hw__row--b" style="--k:1">
+                                    <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:41</b></span>
+                                    <span class="hw__text">
+                                        <span class="hw__who"><span class="hw__at">@nova_k</span><em class="hw__lqi">LQI 94</em></span>
+                                        <span class="hw__say">Ban them in lessons, keep them at lunch. The problem is attention, not phones.</span>
+                                    </span>
+                                    <span class="hw__side"><b data-to="276">276</b><span class="hw__meter"><i style="--v:.9"></i></span></span>
+                                    <span class="hw__stamp">Best point</span>
+                                </div>
+
+                                <div class="hw__row hw__row--reply hw__row--c" style="--k:2">
+                                    <span class="hw__thumb"><i class="hw__dot"></i><span class="hw__wave hw__wave--sm"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+                                    <span class="hw__text">
+                                        <span class="hw__who"><span class="hw__at">@tomas.thinks</span></span>
+                                        <span class="hw__say">recording a reply…</span>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
-                        <ol class="gnet__regions">
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">01</span>
-                                <span class="gnet__region-name">EU&nbsp;WEST</span>
-                                <span class="gnet__region-bar"><i style="width: 92%"></i></span>
-                                <span class="gnet__region-val">418</span>
-                            </li>
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">02</span>
-                                <span class="gnet__region-name">NA&nbsp;EAST</span>
-                                <span class="gnet__region-bar"><i style="width: 78%"></i></span>
-                                <span class="gnet__region-val">356</span>
-                            </li>
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">03</span>
-                                <span class="gnet__region-name">APAC</span>
-                                <span class="gnet__region-bar"><i style="width: 61%"></i></span>
-                                <span class="gnet__region-val">277</span>
-                            </li>
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">04</span>
-                                <span class="gnet__region-name">SA&nbsp;EAST</span>
-                                <span class="gnet__region-bar"><i style="width: 44%"></i></span>
-                                <span class="gnet__region-val">201</span>
-                            </li>
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">05</span>
-                                <span class="gnet__region-name">AFRICA</span>
-                                <span class="gnet__region-bar"><i style="width: 33%"></i></span>
-                                <span class="gnet__region-val">149</span>
-                            </li>
+                        <ol class="hw__steps" aria-label="How it works, in three steps">
+                            <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:6.5s">
+                                <i class="hw__bar" data-bar></i>
+                                <span class="hw__n">01</span>
+                                <span class="hw__h">Make a point</span>
+                                <span class="hw__p">Film one clear thing: a fact, a how-to, a take you can back up.</span>
+                            </button></li>
+                            <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:6s">
+                                <i class="hw__bar" data-bar></i>
+                                <span class="hw__n">02</span>
+                                <span class="hw__h">Get answered</span>
+                                <span class="hw__p">Anyone can answer with a clip of their own, stacked under yours.</span>
+                            </button></li>
+                            <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:8s">
+                                <i class="hw__bar" data-bar></i>
+                                <span class="hw__n">03</span>
+                                <span class="hw__h">The best one wins</span>
+                                <span class="hw__p">Viewers vote on substance and Orvelis checks the logic.</span>
+                            </button></li>
                         </ol>
-
-                        <div class="gnet__feed">
-                            <span class="gnet__feed-title">[ CROSS-BORDER REPLIES ]</span>
-                            <ul class="gnet__feed-list">
-                                <li><em>LAGOS</em><span class="gnet__arrow" aria-hidden="true"></span><em>WARSAW</em><i>0:41</i></li>
-                                <li><em>SÃO PAULO</em><span class="gnet__arrow" aria-hidden="true"></span><em>LISBON</em><i>1:12</i></li>
-                                <li><em>JAKARTA</em><span class="gnet__arrow" aria-hidden="true"></span><em>BERLIN</em><i>0:58</i></li>
-                                <li><em>TORONTO</em><span class="gnet__arrow" aria-hidden="true"></span><em>SEOUL</em><i>2:04</i></li>
-                            </ul>
-                        </div>
-
-                        <p class="gnet__note">
-                            Topics are grouped by meaning, so a clip finds the people who care about it,
-                            not the people who happen to share a timezone.
-                        </p>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- BETA SECTION — REDESIGNED -->
-        <section class="section section--beta" id="beta" data-inview>
-            <div class="beta-bg-glows">
-                <div class="beta-glow beta-glow--1"></div>
-                <div class="beta-glow beta-glow--2"></div>
-            </div>
-            <div class="section__container">
-                <div class="beta__layout">
-                    <div class="beta__info">
-                        <div class="section__header">
-                            <span class="section__label">[ 07 — EARLY ACCESS ]</span>
-                            <h2 class="section__title">Get in before<br />everyone else.</h2>
+            <!-- THE ARENA: one question, two cameras, a vote that works -->
+            <section class="sec" id="debates">
+                <div class="wrap">
+                    <div class="sec__head">
+                        <div class="sec__title rv">
+                            <p class="label">The arena</p>
+                            <h2 class="h2">Disagree? Say it on camera.</h2>
                         </div>
-                        <div class="beta__perks">
-                            <div class="beta__perk">
-                                <span class="beta__perk-tag">[ ACCESS // 01 ]</span>
-                                <div>
-                                    <h4>Priority Access</h4>
-                                    <p>Be first in line when we launch</p>
+                        <div class="sec__text rv" style="--d: .08s">
+                            <p class="lead">Two people, one question, both on camera. You decide who made the better point.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel panel--dark rv">
+                        <div class="ar" id="arena">
+                            <p class="ar-q"><span class="label">Today’s question</span>“Remote work makes teams more productive.”</p>
+
+                            <div class="ar-sides">
+                                <div class="ar-side ar-side--for">
+                                    <p class="ar-say"><span>For<span class="ar-say__who"> · @nova_k</span></span>“Less commuting, more deep work. It shows.”</p>
+                                    <img class="ar-cam" src="assets/logo.png" alt="" width="230" height="230" loading="lazy" decoding="async">
+                                    <button class="ar-vote" type="button" data-side="for" aria-pressed="false">I’m for</button>
+                                </div>
+                                <span class="ar-vs" aria-hidden="true">vs</span>
+                                <div class="ar-side ar-side--against">
+                                    <p class="ar-say"><span>Against<span class="ar-say__who"> · @d_marek</span></span>“Sure. Now ask who mentors the new hires.”</p>
+                                    <img class="ar-cam" src="assets/logo.png" alt="" width="230" height="230" loading="lazy" decoding="async">
+                                    <button class="ar-vote" type="button" data-side="against" aria-pressed="false">I’m against</button>
                                 </div>
                             </div>
-                            <div class="beta__perk">
-                                <span class="beta__perk-tag">[ BADGE // 02 ]</span>
-                                <div>
-                                    <h4>Founding Member Badge</h4>
-                                    <p>Exclusive profile badge forever</p>
-                                </div>
+
+                            <div class="ar-result">
+                                <div class="ar-bar" aria-hidden="true"><i class="ar-bar__for"></i><i class="ar-bar__against"></i></div>
+                                <div class="ar-nums" aria-hidden="true"><b data-for>57%</b><span data-note>Pick a side · 1,300 votes</span><b data-against>43%</b></div>
+                                <span class="sr" aria-live="polite" data-status></span>
                             </div>
                         </div>
                     </div>
-                    <div class="beta__card">
-                        <div class="beta__card-inner" id="betaCard">
-                            <div class="card-tech-grid"></div>
-                            <div class="beta__card-glow"></div>
-                            <span class="beta__card-meta">// EARLY ACCESS</span>
-                            <h3 class="beta__card-title">Join the Waitlist</h3>
-                            <p class="beta__card-desc">Drop your email and we'll send you an invite when it's your turn to make a point.</p>
-                            <form class="beta__inline-form" id="betaForm">
-                                <div class="beta__input-wrap">
-                                    <input type="email" id="betaEmail" placeholder="your@email.com" required
-                                        autocomplete="email" />
-                                    <button type="submit" class="beta__submit-btn">
-                                        [ COUNT ME IN ]
-                                    </button>
+                </div>
+            </section>
+
+            <!-- ORVELIS: what the AI does with a clip, shown on one clip -->
+            <section class="sec" id="ai-core">
+                <div class="wrap">
+                    <div class="sec__head">
+                        <div class="sec__title rv">
+                            <p class="label">Orvelis AI</p>
+                            <h2 class="h2">It finds the point, and the holes in it.</h2>
+                        </div>
+                        <div class="sec__text rv" style="--d: .08s">
+                            <p class="lead">
+                                Orvelis is the AI inside every clip. It pulls out what is actually being claimed,
+                                checks the logic, flags the tricks to the second and builds a Deep Dive.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="panel panel--orv rv">
+                        <article class="orv">
+                            <header class="orv__head">
+                                <span class="orv__avatar" aria-hidden="true">
+                                    <svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v2h-2zM2 2h8v1h-8zM1 3h2v1h-2zM9 3h2v1h-2zM1 4h1v1h-1zM10 4h1v1h-1zM0 5h2v2h-2zM3 5h2v2h-2zM7 5h2v2h-2zM10 5h2v2h-2zM1 7h1v2h-1zM10 7h1v2h-1zM4 8h4v1h-4zM1 9h2v1h-2zM9 9h2v1h-2zM2 10h8v1h-8z" /></svg>
+                                </span>
+                                <span class="orv__who"><b>Orvelis</b><i>@tomas.thinks · ice cream and sharks · 0:48</i></span>
+                                <span class="orv__ok">Checked</span>
+                            </header>
+                            <dl class="orv__rows">
+                                <div class="orv__row">
+                                    <dt>The point</dt>
+                                    <dd>Rising together doesn’t mean one causes the other: summer drives both.</dd>
                                 </div>
-                            </form>
-                            <span class="beta__card-note">No spam. Unsubscribe anytime.</span>
+                                <div class="orv__row">
+                                    <dt>Watch for</dt>
+                                    <dd>The chart at 0:12 has no source yet, and shark numbers vary a lot by coast.</dd>
+                                </div>
+                                <div class="orv__row">
+                                    <dt>Go deeper</dt>
+                                    <dd class="orv__chips"><span>Correlation vs causation</span><span>Confounding</span><span>Base rates</span></dd>
+                                </div>
+                            </dl>
+                            <p class="orv__ask"><span>Ask Orvelis about this clip</span><i aria-hidden="true">&uarr;</i></p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ: plain questions, plain answers; details does the opening -->
+            <section class="sec" id="faq">
+                <div class="wrap">
+                    <div class="sec__head">
+                        <div class="sec__title rv">
+                            <p class="label">FAQ</p>
+                            <h2 class="h2">Questions, answered.</h2>
                         </div>
-                        <div class="beta__success" id="betaSuccess">
-                            <div class="beta__success-icon">
-                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M4 12.6 9.4 18 20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
+                        <div class="sec__text rv" style="--d: .08s">
+                            <p class="lead">
+                                The short version of what Datariot is, how it works and what happens to your clips.
+                                Something missing? Ask us on <a href="https://discord.gg/KvBpEVrk2" target="_blank" rel="noopener">Discord</a>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq rv">
+                        <details class="faq__item" open>
+                            <summary><span class="faq__q">What is Datariot?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>A short-video app where every clip has a point. People explain, show or argue something worth knowing, and anyone can answer back with a clip of their own.</p></div>
+                        </details>
+                        <details class="faq__item">
+                            <summary><span class="faq__q">How is it different from TikTok or Reels?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>It is built around what a clip says, not how long it keeps you watching. Every clip has a Deep Dive, replies are videos instead of comment wars, and Orvelis, our AI, checks the logic.</p></div>
+                        </details>
+                        <details class="faq__item">
+                            <summary><span class="faq__q">What is Orvelis?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>The AI inside Datariot. For every clip it builds a Deep Dive: a summary, three key terms and three places to learn more. It answers your questions about the video and flags fallacies and manipulation, timestamped to the second.</p></div>
+                        </details>
+                        <details class="faq__item">
+                            <summary><span class="faq__q">What is a video reply?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>Instead of typing a comment, you answer on camera with a clip of your own. Replies stack under the original, so the whole exchange stays watchable from start to finish.</p></div>
+                        </details>
+                        <details class="faq__item">
+                            <summary><span class="faq__q">Who decides who made the better point?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>Viewers vote, and Orvelis marks the logic. Votes come from verified people, so bots and sock puppets can’t swing them.</p></div>
+                        </details>
+                        <details class="faq__item">
+                            <summary><span class="faq__q">Do I have to show my face?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>To post, yes. Datariot is face-first: every clip is tied to a verified person on camera, which keeps anonymous pile-ons out.</p></div>
+                        </details>
+                        <details class="faq__item">
+                            <summary><span class="faq__q">What can I post about?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>Anything you can explain, show or argue: science, engineering, AI, logic, sport, gaming, lifestyle, politics, comedy and more. Keep it educational, informative or constructive, and bring evidence when you argue.</p></div>
+                        </details>
+                        <details class="faq__item">
+                            <summary><span class="faq__q">When can I get it, and who can join?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>Datariot is in beta. The iOS and Android apps are coming soon: <a href="#beta">join the waitlist</a> and we’ll send your invite when it’s your turn. You need to be 13 or older.</p></div>
+                        </details>
+                        <details class="faq__item">
+                            <summary><span class="faq__q">What happens to my data and my clips?</span><i class="faq__sign" aria-hidden="true"></i></summary>
+                            <div class="faq__a"><p>We don’t sell your personal data. You keep ownership of everything you post, and you can ask us to delete your account and data at any time. The details are in our <a href="privacy.html">Privacy Policy</a>.</p></div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EARLY ACCESS. The form has no backend yet: nothing is saved and
+                 nothing is promised on submit. Wire it to storage first, then
+                 show a success state only after the save succeeds. -->
+            <section class="sec sec--cta" id="beta">
+                <div class="wrap">
+                    <div class="cta rv">
+                        <div class="cta__text">
+                            <p class="label">Early access</p>
+                            <h2 class="h2">Get in before everyone else.</h2>
+                            <p class="lead">Drop your email and we’ll send an invite when it’s your turn. Early members get a founding badge on their profile.</p>
+                        </div>
+                        <form class="cta__form" id="betaForm">
+                            <label class="sr" for="betaEmail">Email</label>
+                            <input type="email" id="betaEmail" placeholder="you@email.com" required autocomplete="email" />
+                            <button type="submit" class="btn btn--ice">Join the waitlist</button>
+                            <p class="cta__note">No spam. Unsubscribe anytime.</p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="foot">
+                <div class="wrap">
+                    <div class="foot__top">
+                        <div class="foot__brand">
+                            <a class="brand" href="#hero"><img src="assets/mark.png" alt="" width="32" height="32" />Datariot</a>
+                            <p>Short videos with a point.</p>
+                        </div>
+                        <nav class="foot__cols" aria-label="Footer">
+                            <div>
+                                <h3>Product</h3>
+                                <a href="#manifesto">The feed</a>
+                                <a href="#features">How it works</a>
+                                <a href="#debates">The arena</a>
+                                <a href="#ai-core">Orvelis AI</a>
+                                <a href="https://datariot.xyz">Web app</a>
                             </div>
-                            <h3>You're on the list!</h3>
-                            <p>We'll reach out with access details soon.</p>
-                        </div>
+                            <div>
+                                <h3>Company</h3>
+                                <a href="https://docs.datariot.xyz">Documentation</a>
+                                <a href="#faq">FAQ</a>
+                                <a href="#beta">Early access</a>
+                            </div>
+                            <div>
+                                <h3>Legal</h3>
+                                <a href="privacy.html">Privacy Policy</a>
+                                <a href="terms.html">Terms of Service</a>
+                                <a href="cookies.html">Cookie Policy</a>
+                            </div>
+                            <div>
+                                <h3>Social</h3>
+                                <a href="https://x.com/datariot_xyz" target="_blank" rel="noopener">X / Twitter</a>
+                                <a href="https://discord.gg/KvBpEVrk2" target="_blank" rel="noopener">Discord</a>
+                            </div>
+                        </nav>
+                    </div>
+                    <div class="foot__bottom">
+                        <span>&copy; 2026 Datariot</span>
+                        <span>v0.1 beta</span>
                     </div>
                 </div>
-            </div>
-        </section>
+            </footer>
+        </main>
+    </div>
 
-        <!-- 08 — FAQ -->
-        <section class="section faq" id="faq" data-inview>
-            <div class="faq__inner">
-                <div class="faq__head">
-                    <span class="faq__tag">[ 08 &mdash; FAQ ]</span>
-                    <h2 class="faq__title">Questions, <span class="hx-mark">answered.</span></h2>
-                    <p class="faq__lede">
-                        The short version of what Datariot is, how it works and what happens to your clips.
-                        Something missing? Ask us on <a href="https://discord.gg/KvBpEVrk2" target="_blank" rel="noopener">Discord</a>.
-                    </p>
-                </div>
-                <div class="faq__list">
-                    <details class="faq__item" open>
-                        <summary><span class="faq__n">01</span><span class="faq__q">What is Datariot?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>A short-video app where every clip has a point. People explain, show or argue something worth knowing, and anyone can answer back with a clip of their own.</p></div>
-                    </details>
-                    <details class="faq__item">
-                        <summary><span class="faq__n">02</span><span class="faq__q">How is it different from TikTok or Reels?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>It is built around what a clip says, not how long it keeps you watching. Every clip has a Deep Dive, replies are videos instead of comment wars, and Orvelis, our AI, checks the logic.</p></div>
-                    </details>
-                    <details class="faq__item">
-                        <summary><span class="faq__n">03</span><span class="faq__q">What is Orvelis?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>The AI inside Datariot. For every clip it builds a Deep Dive: a summary, three key terms and three places to learn more. It answers your questions about the video and flags fallacies and manipulation, timestamped to the second.</p></div>
-                    </details>
-                    <details class="faq__item">
-                        <summary><span class="faq__n">04</span><span class="faq__q">What is a video reply?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>Instead of typing a comment, you answer on camera with a clip of your own. Replies stack under the original, so the whole exchange stays watchable from start to finish.</p></div>
-                    </details>
-                    <details class="faq__item">
-                        <summary><span class="faq__n">05</span><span class="faq__q">Who decides who made the better point?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>Viewers vote, and Orvelis marks the logic. Votes come from verified people, so bots and sock puppets can&rsquo;t swing them.</p></div>
-                    </details>
-                    <details class="faq__item">
-                        <summary><span class="faq__n">06</span><span class="faq__q">Do I have to show my face?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>To post, yes. Datariot is face-first: every clip is tied to a verified person on camera, which keeps anonymous pile-ons out.</p></div>
-                    </details>
-                    <details class="faq__item">
-                        <summary><span class="faq__n">07</span><span class="faq__q">What can I post about?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>Anything you can explain, show or argue: science, engineering, AI, logic, sport, gaming, lifestyle, politics, comedy and more. Keep it educational, informative or constructive, and bring evidence when you argue.</p></div>
-                    </details>
-                    <details class="faq__item">
-                        <summary><span class="faq__n">08</span><span class="faq__q">When can I get it, and who can join?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>Datariot is in beta. The iOS and Android apps are coming soon: <a href="#beta">join the waitlist</a> and we&rsquo;ll send your invite when it&rsquo;s your turn. You need to be 13 or older.</p></div>
-                    </details>
-                    <details class="faq__item">
-                        <summary><span class="faq__n">09</span><span class="faq__q">What happens to my data and my clips?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>We don&rsquo;t sell your personal data. You keep ownership of everything you post, and you can ask us to delete your account and data at any time. The details are in our <a href="privacy.html">Privacy Policy</a>.</p></div>
-                    </details>
-                </div>
-            </div>
-        </section>
-
-        <!-- FOOTER: the logo's screen, black with ice, dissolving in from the page -->
-        <footer class="foot" data-inview>
-            <div class="px-screen" aria-hidden="true"></div>
-            <div class="foot__inner">
-                <div class="foot__top">
-                    <div class="foot__brand">
-                        <img class="foot__logo" src="assets/logo.png" alt="" width="96" height="96" loading="lazy" decoding="async">
-                        <div>
-                            <b class="foot__word">DATARIOT</b>
-                            <p class="foot__tag">Short videos with a point.</p>
-                        </div>
-                        <a class="foot__cta" href="#beta">Join the beta
-                            <svg viewBox="0 0 9 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
-                        </a>
-                    </div>
-                    <nav class="foot__cols" aria-label="Footer">
-                        <div class="foot__col">
-                            <h5>[ PRODUCT ]</h5>
-                            <a href="#manifesto">The feed</a>
-                            <a href="#features">How it works</a>
-                            <a href="#debates">The arena</a>
-                            <a href="#ai-core">Orvelis AI</a>
-                            <a href="https://datariot.xyz">Web app</a>
-                        </div>
-                        <div class="foot__col">
-                            <h5>[ COMPANY ]</h5>
-                            <a href="#manifesto">Manifesto</a>
-                            <a href="https://docs.datariot.xyz">Documentation</a>
-                            <a href="#faq">FAQ</a>
-                            <a href="#">Careers</a>
-                            <a href="#">Press</a>
-                        </div>
-                        <div class="foot__col">
-                            <h5>[ LEGAL ]</h5>
-                            <a href="privacy.html">Privacy Policy</a>
-                            <a href="terms.html">Terms of Service</a>
-                            <a href="cookies.html">Cookie Policy</a>
-                        </div>
-                        <div class="foot__col">
-                            <h5>[ SOCIAL ]</h5>
-                            <a href="https://x.com/datariot.xyz" target="_blank" rel="noopener">X / Twitter</a>
-                            <a href="https://discord.gg/KvBpEVrk2" target="_blank" rel="noopener">Discord</a>
-                        </div>
-                    </nav>
-                </div>
-                <div class="foot__big" aria-hidden="true">DATARIOT</div>
-                <div class="foot__bottom">
-                    <span>&copy; 2026 Datariot. All rights reserved.</span>
-                    <span class="foot__status"><i aria-hidden="true"></i>V0.1 BETA &middot; BUILT FOR CLIPS WITH A POINT</span>
-                    <span class="foot__legal">
-                        <a href="privacy.html">Privacy</a>
-                        <a href="terms.html">Terms</a>
-                        <a href="cookies.html">Cookies</a>
-                    </span>
-                </div>
-            </div>
-        </footer>
-
-    </main>
-
-    <!-- External Scripts (Handling everything now) -->
-    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Premium Animation Libraries -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script defer src="https://unpkg.com/split-type"></script>
-    <!-- no three.js: the one 3D scene left, the globe in 06, is a pixel
-         canvas in clips.js now, and the 600 KB library blocked the page -->
-    <!-- slide 05's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=5.5.0"></script>
-
-    <!-- the feed: the hero phone, the tap-a-question demo in 01, the arena vote, the catch -->
-    <script defer src="clips.js?v=5.5.0"></script>
-    <script defer src="script.js?v=5.5.0"></script>
+    <script defer src="site.js?v=6.0.0"></script>
 </body>
 
 </html>
-
