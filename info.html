@@ -36,7 +36,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=5.5.0" />
+    <link rel="stylesheet" href="style.css?v=5.6.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -607,29 +607,6 @@
                         a fact, a skill, an argument worth hearing. <strong>Watch a minute, keep the
                         point, answer back on camera.</strong>
                     </p>
-                    <ul class="hero__marks">
-                        <li class="hero__mark">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <rect x="2.5" y="6" width="13" height="12" rx="3.2" stroke="currentColor" stroke-width="1.6" />
-                                <path d="M15.5 11.2 21 8.2v7.6l-5.5-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
-                            </svg>
-                            Short clips
-                        </li>
-                        <li class="hero__mark">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.6" />
-                                <path d="M12 7.6V12l3 1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                            </svg>
-                            Learn in a minute
-                        </li>
-                        <li class="hero__mark">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M12 3.4l7 3v5.2c0 4.2-2.9 7.3-7 8.9-4.1-1.6-7-4.7-7-8.9V6.4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
-                                <path d="M9 12.2l2.2 2.2L15.4 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            Real people on camera
-                        </li>
-                    </ul>
                     <div class="hx-cta">
                         <a class="hx-join" href="#beta">Join the waitlist
                             <svg viewBox="0 0 9 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
@@ -679,12 +656,6 @@
                             <path d="M6 32l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <span>SWIPE FOR THE NEXT POINT</span>
-                    </div>
-
-                    <div class="hero__float hero__float--live" aria-hidden="true">
-                        <span class="hero__float-dot"></span>
-                        LIVE
-                        <b data-live>00:47</b>
                     </div>
 
                     <div class="hero__float hero__float--reply" aria-hidden="true">
@@ -778,55 +749,87 @@
                     <div class="fd__phone" aria-hidden="true">
                         <span class="fd__notch"></span>
                         <div class="fd__screen">
+                            <!-- the app around the feed, drawn as the hero's phone is: the
+                                 status bar and the tabs stay put while the clips move under them -->
+                            <div class="fd__top">
+                                <div class="fd__status"><b>9:41</b><i></i></div>
+                                <div class="fd__tabs"><span>ARENA</span><span class="is-on">FEED</span><span>CIRCLE</span></div>
+                            </div>
 
-                            <figure class="fd__clip is-on" style="--top:27%">
+                            <figure class="fd__clip is-on">
                                 <span class="fd__amb" style="background-image:url('assets/reel-bear-amb.jpg')"></span>
-                                <img class="fd__pic" src="assets/reel-bear.jpg" alt="" width="464" height="238" decoding="async">
-                                <span class="fd__top"><em>EDUCATION</em><b>0:31</b></span>
-                                <p class="fd__cap">the fur is <mark>see&#8209;through</mark></p>
-                                <div class="fd__who"><span><i></i>@Fronda</span><p>Polar bears aren’t actually white</p></div>
-                                <span class="fd__prog"><i></i></span>
-                                <span class="fd__stamp">THE POINT</span>
+                                <div class="fd__media">
+                                    <img class="fd__pic" src="assets/reel-bear.jpg" alt="" width="464" height="238" decoding="async">
+                                    <span class="fd__who"><i></i>@Fronda</span>
+                                </div>
+                                <div class="fd__under">
+                                    <p class="fd__cap">Polar bears aren’t actually white. Here’s what you’re… <b>more</b></p>
+                                    <div class="fd__row">
+                                        <span class="fd__act fd__act--like"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><i>Like</i><b>2,406</b></span>
+                                        <span class="fd__act"><svg viewBox="0 0 24 24"><path d="M12 3.2c5 0 9 3.4 9 7.7s-4 7.7-9 7.7c-1 0-2-.1-2.9-.4L4.6 20.4l1.2-3.9C4 15.1 3 13.1 3 10.9c0-4.3 4-7.7 9-7.7z"/></svg><i>Comment</i><b>311</b></span>
+                                        <span class="fd__act"><svg viewBox="0 0 24 24"><path d="M6.2 3.2h11.6v17.6L12 16.8l-5.8 4z"/></svg><i>Save</i><b>187</b></span>
+                                        <span class="fd__input"><em>Add a comment...</em><span class="fd__send"><svg viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5 12 6l5.5 5.5"/></svg></span></span>
+                                    </div>
+                                    <div class="fd__time"><span class="fd__prog"><i></i><span class="fd__knob"></span></span><b data-len="31">0:09 / 0:31</b></div>
+                                </div>
                             </figure>
 
-                            <figure class="fd__clip" style="--top:27%">
+                            <figure class="fd__clip">
                                 <span class="fd__amb" style="background-image:url('assets/reel-lidar-amb.jpg')"></span>
-                                <img class="fd__pic" src="assets/reel-lidar.jpg" alt="" width="464" height="250" decoding="async">
-                                <span class="fd__top"><em>ENGINEERING</em><b>0:44</b></span>
-                                <p class="fd__cap">lidar times <mark>laser pulses</mark></p>
-                                <div class="fd__who"><span><i></i>@Fara</span><p>How lidar sees the street</p></div>
-                                <span class="fd__prog"><i></i></span>
-                                <span class="fd__stamp">THE POINT</span>
+                                <div class="fd__media">
+                                    <img class="fd__pic" src="assets/reel-lidar.jpg" alt="" width="464" height="250" decoding="async">
+                                    <span class="fd__who"><i></i>@Fara</span>
+                                </div>
+                                <div class="fd__under">
+                                    <p class="fd__cap">How lidar sees the street: one laser, one clock and… <b>more</b></p>
+                                    <div class="fd__row">
+                                        <span class="fd__act fd__act--like"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><i>Like</i><b>1,874</b></span>
+                                        <span class="fd__act"><svg viewBox="0 0 24 24"><path d="M12 3.2c5 0 9 3.4 9 7.7s-4 7.7-9 7.7c-1 0-2-.1-2.9-.4L4.6 20.4l1.2-3.9C4 15.1 3 13.1 3 10.9c0-4.3 4-7.7 9-7.7z"/></svg><i>Comment</i><b>129</b></span>
+                                        <span class="fd__act"><svg viewBox="0 0 24 24"><path d="M6.2 3.2h11.6v17.6L12 16.8l-5.8 4z"/></svg><i>Save</i><b>402</b></span>
+                                        <span class="fd__input"><em>Add a comment...</em><span class="fd__send"><svg viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5 12 6l5.5 5.5"/></svg></span></span>
+                                    </div>
+                                    <div class="fd__time"><span class="fd__prog"><i></i><span class="fd__knob"></span></span><b data-len="44">0:13 / 0:44</b></div>
+                                </div>
                             </figure>
 
-                            <figure class="fd__clip" style="--top:13%">
+                            <figure class="fd__clip">
                                 <span class="fd__amb" style="background-image:url('assets/reel-debate-amb.jpg')"></span>
-                                <video class="fd__pic" muted loop playsinline preload="none" poster="assets/hero-clip.jpg">
-                                    <source src="assets/hero-clip.webm" type="video/webm">
-                                    <source src="assets/hero-clip.mp4" type="video/mp4">
-                                </video>
-                                <span class="fd__top"><em>DEBATE</em><b>0:14</b></span>
-                                <p class="fd__cap">logic or <mark>emotion?</mark></p>
-                                <div class="fd__who"><span><i></i>@Fronda</span><p>Should we prioritize logic over emotion?</p></div>
-                                <span class="fd__prog"><i></i></span>
-                                <span class="fd__stamp">THE POINT</span>
+                                <div class="fd__media">
+                                    <video class="fd__pic" muted loop playsinline preload="none" poster="assets/hero-clip.jpg" width="596" height="638">
+                                        <source src="assets/hero-clip.webm" type="video/webm">
+                                        <source src="assets/hero-clip.mp4" type="video/mp4">
+                                    </video>
+                                    <span class="fd__who"><i></i>@Fronda</span>
+                                </div>
+                                <div class="fd__under">
+                                    <p class="fd__cap">Should we prioritize logic over emotion in the dis… <b>more</b></p>
+                                    <div class="fd__row">
+                                        <span class="fd__act fd__act--like"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><i>Like</i><b>3,128</b></span>
+                                        <span class="fd__act"><svg viewBox="0 0 24 24"><path d="M12 3.2c5 0 9 3.4 9 7.7s-4 7.7-9 7.7c-1 0-2-.1-2.9-.4L4.6 20.4l1.2-3.9C4 15.1 3 13.1 3 10.9c0-4.3 4-7.7 9-7.7z"/></svg><i>Comment</i><b>842</b></span>
+                                        <span class="fd__act"><svg viewBox="0 0 24 24"><path d="M6.2 3.2h11.6v17.6L12 16.8l-5.8 4z"/></svg><i>Save</i><b>219</b></span>
+                                        <span class="fd__input"><em>Add a comment...</em><span class="fd__send"><svg viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5 12 6l5.5 5.5"/></svg></span></span>
+                                    </div>
+                                    <div class="fd__time"><span class="fd__prog"><i></i><span class="fd__knob"></span></span><b data-len="14">0:04 / 0:14</b></div>
+                                </div>
                             </figure>
 
-                            <figure class="fd__clip fd__clip--full">
-                                <img class="fd__pic" src="assets/reel-tower.jpg" alt="" width="380" height="650" decoding="async">
-                                <span class="fd__top"><em>ENGINEERING</em><b>0:38</b></span>
-                                <p class="fd__cap">built to <mark>bend a little</mark></p>
-                                <div class="fd__who"><span><i></i>@Fronda</span><p>Why tall towers sway on purpose</p></div>
-                                <span class="fd__prog"><i></i></span>
-                                <span class="fd__stamp">THE POINT</span>
+                            <figure class="fd__clip fd__clip--tall">
+                                <span class="fd__amb" style="background-image:url('assets/reel-tower-amb.jpg')"></span>
+                                <div class="fd__media">
+                                    <img class="fd__pic" src="assets/reel-tower.jpg" alt="" width="380" height="650" decoding="async">
+                                    <span class="fd__who"><i></i>@Fronda</span>
+                                </div>
+                                <div class="fd__under">
+                                    <p class="fd__cap">Why tall towers sway on purpose, and why that is… <b>more</b></p>
+                                    <div class="fd__row">
+                                        <span class="fd__act fd__act--like"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><i>Like</i><b>2,951</b></span>
+                                        <span class="fd__act"><svg viewBox="0 0 24 24"><path d="M12 3.2c5 0 9 3.4 9 7.7s-4 7.7-9 7.7c-1 0-2-.1-2.9-.4L4.6 20.4l1.2-3.9C4 15.1 3 13.1 3 10.9c0-4.3 4-7.7 9-7.7z"/></svg><i>Comment</i><b>276</b></span>
+                                        <span class="fd__act"><svg viewBox="0 0 24 24"><path d="M6.2 3.2h11.6v17.6L12 16.8l-5.8 4z"/></svg><i>Save</i><b>338</b></span>
+                                        <span class="fd__input"><em>Add a comment...</em><span class="fd__send"><svg viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5 12 6l5.5 5.5"/></svg></span></span>
+                                    </div>
+                                    <div class="fd__time"><span class="fd__prog"><i></i><span class="fd__knob"></span></span><b data-len="38">0:11 / 0:38</b></div>
+                                </div>
                             </figure>
-
-                            <!-- the app's own buttons: the point lands, then Deep Dive lights up -->
-                            <span class="fd__rail">
-                                <i class="fd__act"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg><span class="fd__lab">Like</span></i>
-                                <i class="fd__act"><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg><span class="fd__lab">Reply</span></i>
-                                <i class="fd__act fd__act--dd"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21M10.5 7.8v5.4M7.8 10.5h5.4"/></svg><span class="fd__lab">Deep Dive</span></i>
-                            </span>
                         </div>
                     </div>
 
@@ -1570,11 +1573,11 @@
     <!-- no three.js: the one 3D scene left, the globe in 06, is a pixel
          canvas in clips.js now, and the 600 KB library blocked the page -->
     <!-- slide 05's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=5.5.0"></script>
+    <script defer src="pixel-field.js?v=5.6.0"></script>
 
     <!-- the feed: the hero phone, the tap-a-question demo in 01, the arena vote, the catch -->
-    <script defer src="clips.js?v=5.5.0"></script>
-    <script defer src="script.js?v=5.5.0"></script>
+    <script defer src="clips.js?v=5.6.0"></script>
+    <script defer src="script.js?v=5.6.0"></script>
 </body>
 
 </html>
