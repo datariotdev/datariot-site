@@ -8827,38 +8827,6 @@ html.lenis body {
     margin: -18px 0 26px;
 }
 
-.hero__marks {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 22px;
-    padding: 0;
-    margin: 0 0 6px;
-}
-
-.hero__mark {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-tech);
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-}
-
-.hero__mark svg {
-    width: 16px;
-    height: 16px;
-    color: var(--brand-500);
-    flex: none;
-}
-
-[data-theme="dark"] .hero__mark svg {
-    color: var(--brand-ice);
-}
-
 /* ---------- the phone is one clip in a vertical feed ---------- */
 .hero__clip-stack {
     position: absolute;
@@ -8959,25 +8927,6 @@ html.lenis body {
 [data-theme="dark"] .hero__float {
     background: rgba(16, 17, 21, 0.97);
     box-shadow: 0 16px 34px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(216, 231, 250, 0.2);
-}
-
-.hero__float--live {
-    top: 44px;
-    right: -14px;
-}
-
-.hero__float--live b {
-    font-weight: 500;
-    color: var(--text-tertiary);
-    letter-spacing: 0.1em;
-}
-
-.hero__float-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #F43F5E;
-    animation: hero-pulse 1.6s ease-in-out infinite;
 }
 
 .hero__float--reply {
@@ -9129,8 +9078,7 @@ html.lenis body {
 }
 
 @media (max-width: 1024px) {
-    .hero__eyebrow,
-    .hero__marks {
+    .hero__eyebrow {
         justify-content: center;
     }
 
@@ -9144,11 +9092,6 @@ html.lenis body {
     .hero__swipe,
     .hero__clip-stack {
         display: none;
-    }
-
-    .hero__float--live {
-        top: 10px;
-        right: 4px;
     }
 }
 
@@ -9166,7 +9109,6 @@ html.lenis body {
 @media (prefers-reduced-motion: reduce) {
     .hero__eyebrow-dot,
     .hero__float,
-    .hero__float-dot,
     .hero__swipe svg,
     .hero__ticker-track {
         animation: none !important;
@@ -10876,7 +10818,6 @@ html.gfx-lite .hw__rec .hw__cube {
     }
 
     .hero__eyebrow-pill,
-    .hero__mark,
     .hero__eyebrow-text {
         font-size: 11px !important;
     }
@@ -13073,10 +13014,6 @@ html.navx-open .brandmark {
     font-weight: 700;
 }
 
-#hero .hero__marks {
-    margin-bottom: 30px;
-}
-
 #hero .hx-cta {
     display: flex;
     flex-wrap: wrap;
@@ -13253,15 +13190,6 @@ html.navx-open .brandmark {
 #hero .hero__float {
     translate: calc(var(--tx) * 26px) calc(var(--ty) * 18px);
     transition: translate .7s cubic-bezier(.2, .8, .2, 1), opacity .45s ease;
-}
-
-#hero .hero__float--live {
-    top: 52px;
-    right: -74px;
-}
-
-#hero .hero__float--live b {
-    min-width: 5ch;
 }
 
 #hero .hero__float--reply {
@@ -13687,11 +13615,6 @@ html.navx-open .brandmark {
     #hero .hero__clip-stack-card--2 { display: none; }
     #hero .hero__clip-stack-card--3 { width: 200px; height: 426px; transform: translateX(72px) rotate(9deg); }
 
-    #hero .hero__float--live {
-        top: -16px;
-        right: 4px;
-    }
-
     /* the phone is narrower here: icons and counts only, so the comment box keeps its words */
     .hx-app__act i {
         display: none;
@@ -13859,16 +13782,83 @@ html.navx-open .brandmark {
     isolation: isolate;
 }
 
+/* the app around the feed, drawn as the hero's phone is (sizes in em, the
+   hero's px over ten): the status bar and the tabs stay put while the clips
+   move under them */
+.fd__top {
+    position: absolute;
+    z-index: 5;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 1.3em 2.4em 1.2em;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(180deg, rgba(5, 7, 13, 0.55), rgba(5, 7, 13, 0));
+    pointer-events: none;
+}
+
+.fd__status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fd__status b {
+    font: 700 1.1em/1 var(--font-sans);
+}
+
+.fd__status i {
+    position: relative;
+    width: 2em;
+    height: 0.9em;
+    border: 0.15em solid #fff;
+    border-radius: 0.3em;
+    opacity: 0.9;
+}
+
+.fd__status i::after {
+    content: '';
+    position: absolute;
+    inset: 0.1em 0.5em 0.1em 0.1em;
+    border-radius: 0.1em;
+    background: #fff;
+}
+
+.fd__tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1.6em;
+    margin-top: 1.2em;
+}
+
+.fd__tabs span {
+    padding-bottom: 0.5em;
+    font: 700 1em/1 var(--font-tech);
+    letter-spacing: 0.14em;
+    opacity: 0.6;
+}
+
+.fd__tabs .is-on {
+    opacity: 1;
+    box-shadow: inset 0 -0.2em 0 #fff;
+}
+
 /* a clip is a page of the feed: the one that is on sits at 0, the ones
-   before it above, the ones after it below (clips.js writes --d) */
+   before it above, the ones after it below (clips.js writes --d). Like the
+   hero's screen it is a column: the clip in the middle of its own light,
+   then the caption, the buttons and the time under it. */
 .fd__clip {
     --d: 1;
     position: absolute;
     inset: 0;
+    display: flex;
+    flex-direction: column;
     margin: 0;
+    padding-top: 5.6em;
     overflow: hidden;
     color: #fff;
-    background: var(--px-black);
+    background: #05070D;
     transform: translate3d(0, calc(var(--d) * 100%), 0);
     transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -13877,17 +13867,7 @@ html.navx-open .brandmark {
     --d: 0;
 }
 
-/* light and dark ends so the words on it always read */
-.fd__clip::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(7, 8, 12, 0.5) 0, rgba(7, 8, 12, 0) 18%, rgba(7, 8, 12, 0) 52%, rgba(7, 8, 12, 0.86) 100%);
-}
-
-/* a landscape clip in a vertical frame: the picture in the middle, its own
-   light behind it, blurred ahead of time so nothing here is a live filter */
+/* the clip's light around it, blurred ahead of time so nothing here is a live filter */
 .fd__amb {
     position: absolute;
     inset: 0;
@@ -13895,26 +13875,32 @@ html.navx-open .brandmark {
     background-position: center;
 }
 
+.fd__media {
+    position: relative;
+    z-index: 1;
+    margin: auto 0;
+    overflow: hidden;
+    background: #0F1014;
+    box-shadow: 0 1.8em 4em rgba(0, 0, 0, 0.45);
+}
+
 .fd__pic {
-    position: absolute;
-    left: 0;
-    top: var(--top, 27%);
+    display: block;
     width: 100%;
     height: auto;
-    display: block;
     transform-origin: 50% 40%;
-    box-shadow: 0 0.8em 2.4em rgba(0, 0, 0, 0.45);
 }
 
 video.fd__pic {
+    aspect-ratio: 596 / 638;
+    object-fit: cover;
     background: #000;
 }
 
-.fd__clip--full .fd__pic {
-    top: 0;
-    height: 100%;
+/* the tower is filmed upright: the clip keeps a portrait frame */
+.fd__clip--tall .fd__pic {
+    aspect-ratio: 4 / 5;
     object-fit: cover;
-    box-shadow: none;
 }
 
 /* a slow push-in, the way a still is filmed */
@@ -13927,121 +13913,197 @@ video.fd__pic {
     to { transform: scale(1.1); }
 }
 
-.fd__top {
-    position: absolute;
-    z-index: 2;
-    left: 1.1em;
-    right: 1.1em;
-    top: 3.9em;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font: 700 0.95em/1 var(--font-tech);
-    letter-spacing: 0.14em;
-}
-
-.fd__top em {
-    padding: 0.5em 0.6em 0.4em;
-    font-style: normal;
-    color: var(--px-black);
-    background: var(--px-ice);
-}
-
-.fd__top b {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-}
-
-.fd__cap {
-    position: absolute;
-    z-index: 2;
-    left: 1.2em;
-    right: 5.6em;
-    bottom: 11.4em;
-    margin: 0;
-    font: 800 1.9em/1.3 var(--font-sans);
-    text-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.75);
-}
-
-.fd__cap mark {
-    padding: 0 0.2em;
-    color: var(--px-black);
-    text-shadow: none;
-    background: var(--px-ice);
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-}
-
-.fd.is-live .fd__clip.is-on .fd__cap {
-    animation: fd-cap 0.35s steps(3, end) 0.6s both;
-}
-
-@keyframes fd-cap {
-    from { opacity: 0; transform: translateY(0.7em); }
-    to { opacity: 1; transform: none; }
-}
-
 .fd__who {
     position: absolute;
-    z-index: 2;
-    left: 1.2em;
-    right: 5.6em;
-    bottom: 2.4em;
-}
-
-.fd__who span {
+    left: 0.8em;
+    bottom: 0.8em;
     display: inline-flex;
     align-items: center;
-    gap: 0.6em;
-    font: 800 1.35em/1 var(--font-sans);
+    gap: 0.56em;
+    font: 800 1.25em/1 var(--font-sans);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
 }
 
 .fd__who i {
     display: grid;
     place-items: center;
-    width: 1.7em;
-    height: 1.7em;
+    width: 1.92em;
+    height: 1.92em;
     border-radius: 50%;
-    background: var(--px-ice);
+    background: #DCEBFF;
+    box-shadow: 0 0 0 0.16em rgba(255, 255, 255, 0.85);
 }
 
 .fd__who i::before {
     content: '';
-    margin-left: 0.15em;
-    border-left: 0.5em solid var(--px-black);
-    border-top: 0.32em solid transparent;
-    border-bottom: 0.32em solid transparent;
+    margin-left: 0.16em;
+    border-left: 0.64em solid var(--brand-500);
+    border-top: 0.4em solid transparent;
+    border-bottom: 0.4em solid transparent;
 }
 
-.fd__who p {
-    margin: 0.7em 0 0;
-    font: 600 1.25em/1.3 var(--font-sans);
-    color: rgba(255, 255, 255, 0.88);
+.fd__under {
+    position: relative;
+    z-index: 2;
+    padding: 1.2em;
+    background: linear-gradient(180deg, rgba(3, 5, 10, 0), rgba(3, 5, 10, 0.72) 26%, rgba(3, 5, 10, 0.9));
 }
 
+.fd__cap {
+    margin: 0 0 0.96em;
+    font: 600 1.15em/1.35 var(--font-sans);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.fd__cap b {
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.fd__row {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+}
+
+.fd__act {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2em;
+    min-width: 3em;
+}
+
+.fd__act svg {
+    width: 1.9em;
+    height: 1.9em;
+    fill: #fff;
+}
+
+.fd__act i {
+    font: 600 0.8em/1 var(--font-sans);
+    font-style: normal;
+    opacity: 0.8;
+}
+
+.fd__act b {
+    font: 700 0.85em/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+}
+
+/* when the point lands, the clip gets a like */
+.fd.is-live .fd__clip.is-on .fd__act--like svg {
+    animation: fd-like 0.6s cubic-bezier(0.3, 1.8, 0.5, 1) var(--fd-t) forwards;
+}
+
+@keyframes fd-like {
+    from { transform: scale(0.5); fill: var(--brand-ice); }
+    to { transform: scale(1); fill: var(--brand-ice); }
+}
+
+.fd__input {
+    flex: 1;
+    min-width: 0;
+    height: 3.4em;
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0 0.4em 0 1.1em;
+    border-radius: 1.7em;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+.fd__input em {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font: 500 1.05em/1 var(--font-sans);
+    font-style: normal;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.fd__send {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.6em;
+    height: 2.6em;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.fd__send svg {
+    width: 1.4em;
+    height: 1.4em;
+    fill: none;
+    stroke: var(--brand-500);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.fd__time {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin-top: 1.2em;
+}
+
+.fd__time b {
+    font: 700 0.95em/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.9;
+}
+
+/* the progress bar: the fill scales, and the knob rides on a layer of the
+   bar's own width that slides along with it, so neither one is squashed */
 .fd__prog {
-    position: absolute;
-    z-index: 3;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 0.4em;
+    position: relative;
+    flex: 1;
+    height: 0.3em;
+    border-radius: 0.2em;
     background: rgba(255, 255, 255, 0.22);
 }
 
 .fd__prog i {
-    display: block;
-    height: 100%;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
     background: #fff;
     transform: scaleX(0.3);
     transform-origin: 0 50%;
+}
+
+.fd__knob {
+    position: absolute;
+    inset: 0;
+    transform: translateX(30%);
+}
+
+.fd__knob::after {
+    content: '';
+    position: absolute;
+    left: -0.55em;
+    top: -0.4em;
+    width: 1.1em;
+    height: 1.1em;
+    border-radius: 50%;
+    background: #fff;
 }
 
 .fd.is-live .fd__clip.is-on .fd__prog i {
     animation: fd-run var(--fd-dur) linear both;
 }
 
+.fd.is-live .fd__clip.is-on .fd__knob {
+    animation: fd-knob var(--fd-dur) linear both;
+}
+
 /* tapped: the clip just loops, the way a clip does */
-.fd.is-manual .fd__clip.is-on .fd__prog i {
+.fd.is-manual .fd__clip.is-on .fd__prog i,
+.fd.is-manual .fd__clip.is-on .fd__knob {
     animation-iteration-count: infinite;
 }
 
@@ -14050,86 +14112,9 @@ video.fd__pic {
     to { transform: scaleX(1); }
 }
 
-/* THE POINT, stamped on the clip the way the catch does it */
-.fd__stamp {
-    position: absolute;
-    z-index: 4;
-    left: 50%;
-    top: 36%;
-    padding: 0.75em 0.95em 0.65em;
-    font: 400 2.4em/1 var(--px-font);
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    color: var(--px-black);
-    background: var(--px-ice);
-    clip-path: var(--px-notch);
-    transform: translate(-50%, 0) rotate(-6deg);
-    opacity: 0;
-}
-
-.fd__clip.is-on .fd__stamp {
-    opacity: 1;
-}
-
-.fd.is-live .fd__clip.is-on .fd__stamp {
-    animation: fd-stamp 0.32s steps(4, end) var(--fd-t) both;
-}
-
-@keyframes fd-stamp {
-    from { transform: translate(-50%, 0) rotate(-6deg) scale(1.9); opacity: 0; }
-    to { transform: translate(-50%, 0) rotate(-6deg) scale(1); opacity: 1; }
-}
-
-/* the app's buttons; when the point has landed, Deep Dive blinks once */
-.fd__rail {
-    position: absolute;
-    z-index: 5;
-    right: 1em;
-    bottom: 5.8em;
-    display: grid;
-    gap: 1em;
-    justify-items: center;
-    color: #fff;
-}
-
-.fd__act {
-    display: grid;
-    justify-items: center;
-    gap: 0.45em;
-    font-style: normal;
-}
-
-.fd__act svg {
-    box-sizing: content-box;
-    width: 1.9em;
-    height: 1.9em;
-    padding: 0.7em;
-    border-radius: 50%;
-    background: rgba(7, 8, 12, 0.6);
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.fd__act:first-child svg {
-    fill: currentColor;
-    stroke: none;
-}
-
-.fd__lab {
-    font: 700 0.85em/1 var(--font-sans);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-.fd.is-live .fd__rail.is-ping .fd__act--dd svg {
-    animation: fd-dd 0.9s steps(2, end) calc(var(--fd-t) + 0.5s) 3 both;
-}
-
-@keyframes fd-dd {
-    from { color: #fff; background: rgba(7, 8, 12, 0.6); }
-    to { color: var(--px-black); background: var(--px-ice); }
+@keyframes fd-knob {
+    from { transform: translateX(0); }
+    to { transform: translateX(100%); }
 }
 
 /* --- the questions --- */
@@ -14224,7 +14209,8 @@ video.fd__pic {
 /* hover or focus holds the clock (the animation shorthands above are the
    more specific rules, so this one has to insist) */
 .fd.is-held .fd__bar,
-.fd.is-held .fd__prog i {
+.fd.is-held .fd__prog i,
+.fd.is-held .fd__knob {
     animation-play-state: paused !important;
 }
 
@@ -14349,6 +14335,17 @@ video.fd__pic {
     color: var(--fs-muted);
 }
 
+/* as the hero's phone does at the same widths: icons and counts only */
+@media (max-width: 1024px) {
+    .fd__act i {
+        display: none;
+    }
+
+    .fd__act {
+        min-width: 2.4em;
+    }
+}
+
 @media (max-width: 900px) {
     .fd {
         grid-template-columns: minmax(0, 1fr);
@@ -14388,10 +14385,9 @@ video.fd__pic {
     }
 
     .fd__clip.is-on img.fd__pic,
-    .fd__clip.is-on .fd__cap,
-    .fd__clip.is-on .fd__stamp,
     .fd__clip.is-on .fd__prog i,
-    .fd__rail .fd__act svg,
+    .fd__clip.is-on .fd__knob,
+    .fd__clip.is-on .fd__act--like svg,
     .fd__bar,
     .fd__pt.is-on .fd__text {
         animation: none !important;

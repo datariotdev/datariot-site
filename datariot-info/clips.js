@@ -56,19 +56,17 @@
         var pop = app.querySelector('.hx-app__pop');
         var input = app.querySelector('.hx-app__input');
         var typed = app.querySelector('[data-typing]');
-        var clock = show.querySelector('[data-live]');
         var reply = show.querySelector('.hero__float--reply');
         var verdict = show.querySelector('.hero__float--verdict');
         var scanN = show.querySelector('[data-scan]');
         if (!video) return;
 
-        var likes = 3128, comments = 842, live = 47, scan = 0, scanTo = 92;
+        var likes = 3128, comments = 842, scan = 0, scanTo = 92;
         var COMMENTS = ['Both. Logic first.', 'Depends on the stakes', 'Feelings are data too'];
-        var pass = 0, lastT = 0, raf = 0, lastAmb = 0, running = false, visible = false, tick = 0, typing = 0;
+        var pass = 0, lastT = 0, raf = 0, lastAmb = 0, running = false, visible = false, typing = 0;
         var lastLabel = '', lastScan = -1;
 
         function fmt(t) { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ':' + (t % 60 < 10 ? '0' : '') + (t % 60); }
-        function two(n) { return (n < 10 ? '0' : '') + n; }
         function num(n) { return n.toLocaleString('en-US'); }
         function on(el, yes) { if (el) el.classList.toggle('is-on', yes); }
 
@@ -143,17 +141,12 @@
             var p = video.play();
             if (p && p.catch) p.catch(function () { });
             raf = requestAnimationFrame(frame);
-            tick = setInterval(function () {
-                live++;
-                if (clock) clock.textContent = two(Math.floor(live / 60)) + ':' + two(live % 60);
-            }, 1000);
         }
 
         function stop() {
             running = false;
             video.pause();
             cancelAnimationFrame(raf);
-            clearInterval(tick);
         }
 
         if (reduced) {
@@ -253,19 +246,18 @@
     }
 
     // ---------- section 01: tap a question, get the point ----------
-    // The phone is a feed of four real clips from the app. Each question on
-    // the right is one of them: tapping it swipes the phone to that clip,
-    // stamps THE POINT on it, and writes the point out underneath. Left
-    // alone, the clips take turns. Every point is checkable; the site sells
-    // short videos that leave you knowing something, so the examples have to
-    // hold up too.
+    // The phone is a feed of four real clips from the app, drawn the way the
+    // hero's phone is. Each question on the right is one of them: tapping it
+    // swipes the phone to that clip and writes the point out underneath; when
+    // the point lands, the clip gets a like. Left alone, the clips take turns.
+    // Every point is checkable; the site sells short videos that leave you
+    // knowing something, so the examples have to hold up too.
     function initFeed() {
         var root = document.getElementById('feedDemo');
         if (!root) return;
         var clips = [].slice.call(root.querySelectorAll('.fd__clip'));
         var qs = [].slice.call(root.querySelectorAll('.fd__q'));
         var pts = [].slice.call(root.querySelectorAll('.fd__pt'));
-        var rail = root.querySelector('.fd__rail');
         var points = root.querySelector('.fd__points');
         if (!clips.length || clips.length !== qs.length || clips.length !== pts.length) return;
         root.classList.add('is-live');
@@ -294,11 +286,33 @@
             });
             pts.forEach(function (p, k) { p.classList.toggle('is-on', k === i); });
             if (again) [clips[i], pts[i], qs[i]].forEach(function (el) { restart(el, 'is-on'); });
-            restart(rail, 'is-ping');
             if (vid && !wasOn && vidClip.classList.contains('is-on')) {
                 try { vid.currentTime = 0; } catch (e) { }
             }
             syncVideo();
+            cur = i;
+            tickTime();
+        }
+
+        // the time under the clip that is on follows its progress bar; the bar
+        // is a CSS animation, so it already stops when the demo is held or off
+        // screen, and without motion the time keeps the value it was written with
+        var cur = 0, timer = 0;
+        function fmt(t) { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ':' + (t % 60 < 10 ? '0' : '') + (t % 60); }
+        function tickTime() {
+            var fill = clips[cur].querySelector('.fd__prog i');
+            var label = clips[cur].querySelector('[data-len]');
+            if (!fill || !label || !fill.getAnimations) return;
+            var anim = fill.getAnimations()[0];
+            var p = anim && anim.effect && anim.effect.getComputedTiming().progress;
+            if (p == null) return;
+            var len = +label.getAttribute('data-len');
+            var text = fmt(p * len) + ' / ' + fmt(len);
+            if (label.textContent !== text) label.textContent = text;
+        }
+        function clock() {
+            clearInterval(timer);
+            timer = visible && !document.hidden && !reduced ? setInterval(tickTime, 250) : 0;
         }
 
         takeTurns(root, qs, function (i, again) {
@@ -310,8 +324,9 @@
         }, function (seen) {
             visible = seen;
             syncVideo();
+            clock();
         });
-        document.addEventListener('visibilitychange', syncVideo);
+        document.addEventListener('visibilitychange', function () { syncVideo(); clock(); });
     }
 
     // ---------- slide 02: one scene, three steps ----------
