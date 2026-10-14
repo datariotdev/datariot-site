@@ -9885,14 +9885,10 @@ body {
 /* the steps on the left, the scene on the right. The clock is the bar under
    the step that is on (clips.js moves on when it ends); a tap takes over. */
 .hw {
-    --hw-rh: 92px;            /* a row of the thread */
-    --hw-gap: 12px;           /* between the answers */
-    --hw-root: 30px;          /* under the first clip, where the wires branch */
-    --hw-ind: 44px;           /* the answers sit in from the first clip */
-    --hw-pad: 26px;
     display: grid;
-    grid-template-columns: minmax(280px, 370px) minmax(0, 1fr);
-    gap: clamp(32px, 5vw, 72px);
+    grid-template-columns: minmax(280px, 400px) auto;
+    justify-content: center;
+    gap: clamp(40px, 7vw, 112px);
     align-items: center;
     margin-top: clamp(40px, 5vw, 64px);
 }
@@ -10000,643 +9996,614 @@ body {
     to { transform: scaleX(1); }
 }
 
-/* --- the scene --- */
+/* --- the scene: the app's Debate Thread, on the phone from slide 01 ---
+   Sizes are in em (the phone's em is a tenth of its width at full size), so
+   the screen scales as a whole. Every state below hangs off data-step. */
 .hw__stage {
-    position: relative;
+    display: grid;
+    place-items: center;
     min-width: 0;
-    height: calc(var(--hw-rh) * 4 + var(--hw-gap) * 2 + var(--hw-root) + var(--hw-pad) * 2);
-    overflow: hidden;
-    color: var(--px-ice);
-    background:
-        radial-gradient(circle at 50% 40%, rgba(218, 230, 247, 0.1), rgba(218, 230, 247, 0) 62%),
-        #0A0B10;
-    border: 2px solid var(--px-ice);
-    border-radius: 14px;
 }
 
-/* the logo is inverted for light pages (a rule on img[src*="logo.png"]);
-   every cube in this scene sits on black */
-#features .hw__cube {
-    filter: none;
+/* the section is black in both themes: the phone takes the outline it has on the dark theme */
+.hw__phone {
+    box-shadow:
+        0 0 0 1px rgba(218, 230, 247, 0.3),
+        0 2.6em 5.4em rgba(0, 0, 0, 0.6);
 }
 
-/* step 1: you film it. A viewfinder: corner marks, the rule of thirds, a
-   REC light, the subtitle as it is said. */
-.hw__rec {
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(90deg, transparent calc(33.333% - 1px), rgba(218, 230, 247, 0.1) 0 33.333%, transparent 0 calc(66.666% - 1px), rgba(218, 230, 247, 0.1) 0 66.666%, transparent 0),
-        linear-gradient(0deg, transparent calc(33.333% - 1px), rgba(218, 230, 247, 0.1) 0 33.333%, transparent 0 calc(66.666% - 1px), rgba(218, 230, 247, 0.1) 0 66.666%, transparent 0);
-    transition: opacity 0.3s steps(4, end);
+.hw__app {
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    background: #05070D;
+    font-family: var(--font-sans);
 }
 
-.hw[data-step="2"] .hw__rec,
-.hw[data-step="3"] .hw__rec {
-    opacity: 0;
+.hw__top {
+    flex: none;
+    padding: 1.3em 1.4em 0.9em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.hw__brk {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    border: 0 solid var(--px-ice);
+.hw__top .fd__status {
+    padding: 0 1em;
 }
 
-.hw__brk--tl { left: 20px; top: 20px; border-width: 3px 0 0 3px; }
-.hw__brk--tr { right: 20px; top: 20px; border-width: 3px 3px 0 0; }
-.hw__brk--bl { left: 20px; bottom: 20px; border-width: 0 0 3px 3px; }
-.hw__brk--br { right: 20px; bottom: 20px; border-width: 0 3px 3px 0; }
+.hw__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-top: 1.5em;
+}
 
-.hw__live {
-    position: absolute;
-    left: 64px;
-    top: 27px;
+.hw__head > b {
+    flex: 1;
+    font: 800 1.35em/1 var(--font-sans);
+}
+
+.hw__back {
+    width: 1.9em;
+    height: 1.9em;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hw__likes {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    font: 700 12px/1 var(--font-tech);
-    letter-spacing: 0.16em;
+    gap: 0.35em;
+    font: 700 1.05em/1 var(--font-sans);
+    color: rgba(255, 255, 255, 0.6);
 }
 
-.hw__live b {
-    font-weight: 700;
-    min-width: 3.2em;
+.hw__likes svg {
+    width: 1.2em;
+    height: 1.2em;
+    fill: currentColor;
+}
+
+.hw__body {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 1em 1em 0;
+}
+
+/* cards, as the app draws them on its dark theme */
+.hw__thesis,
+.hw__bal,
+.hw__arg {
+    border-radius: 1.4em;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.hw__thesis {
+    padding: 1.1em;
+}
+
+.hw__by {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    min-width: 0;
+}
+
+.hw__av {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.1em;
+    height: 2.1em;
+    border-radius: 50%;
+    font: 800 0.95em/1 var(--font-sans);
+    background: #333;
+}
+
+.hw__by > b {
+    min-width: 0;
+    overflow: hidden;
+    font: 700 1.05em/1.1 var(--font-sans);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.hw__by time {
+    flex: none;
+    margin-left: auto;
+    font: 500 0.85em/1 var(--font-sans);
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.hw__side,
+.hw__badge {
+    flex: none;
+    padding: 0.35em 0.5em 0.3em;
+    border-radius: 0.4em;
+    font: 800 0.7em/1 var(--font-sans);
+    letter-spacing: 0.05em;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.hw__arg--for .hw__side,
+.hw__badge {
+    color: #D9E4FF;
+    background: rgba(217, 228, 255, 0.15);
+}
+
+.hw__main {
+    display: flex;
+    gap: 1em;
+    margin-top: 0.9em;
+}
+
+/* a clip: a dark frame, the app's play mark, the length in the corner */
+.hw__vid {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    overflow: hidden;
+    border-radius: 0.8em;
+    background:
+        radial-gradient(120% 90% at 30% 22%, rgba(217, 228, 255, 0.24), rgba(217, 228, 255, 0) 62%),
+        #12151D;
+}
+
+.hw__thesis .hw__vid {
+    width: 5em;
+    height: 6.6em;
+}
+
+.hw__vid--sm {
+    width: 5.4em;
+    height: 3.2em;
+    border-radius: 0.6em;
+}
+
+.hw__vid b {
+    position: absolute;
+    left: 0.5em;
+    bottom: 0.45em;
+    font: 700 0.75em/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+}
+
+.hw__vid--sm b {
+    display: none;
+}
+
+.hw__play {
+    margin-left: 0.2em;
+    border-left: 0.9em solid #fff;
+    border-top: 0.55em solid transparent;
+    border-bottom: 0.55em solid transparent;
+}
+
+.hw__vid--sm .hw__play {
+    border-left-width: 0.7em;
+    border-top-width: 0.42em;
+    border-bottom-width: 0.42em;
 }
 
 .hw__dot {
-    display: block;
-    width: 9px;
-    height: 9px;
-    background: var(--px-ice);
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: #F43F5E;
 }
 
-.hw[data-step="1"] .hw__dot {
+.hw__vid .hw__dot {
+    position: absolute;
+    left: 0.55em;
+    top: 0.55em;
+    opacity: 0;
+}
+
+.hw__claim {
+    min-width: 0;
+}
+
+.hw__claim p {
+    margin: 0.55em 0 0;
+    font: 700 1.25em/1.3 var(--font-sans);
+}
+
+.hw__caret {
+    display: inline-block;
+    width: 0.08em;
+    height: 1em;
+    margin-left: 0.06em;
+    vertical-align: -0.12em;
+    background: #fff;
+    opacity: 0;
+}
+
+.hw__thesis .hw__foot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 2.6em;
+    margin-top: 0.8em;
+}
+
+.hw__stats {
+    position: absolute;
+    inset: 0 auto 0 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35em;
+    font: 500 0.88em/1 var(--font-sans);
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.hw__stats b {
+    color: #fff;
+}
+
+.hw__stats svg,
+.hw__vote svg,
+.hw__reply svg {
+    width: 1.45em;
+    height: 1.45em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hw__stats svg:first-child {
+    color: #D9E4FF;
+}
+
+.hw__dotsep {
+    width: 0.25em;
+    height: 0.25em;
+    margin: 0 0.35em;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.hw__post {
+    padding: 0.7em 1.4em;
+    border-radius: 2em;
+    font: 800 1em/1 var(--font-sans);
+    color: #05070D;
+    background: #fff;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.hw__post.is-hit {
+    transform: scale(0.9);
+    background: #D9E4FF;
+}
+
+/* --- below the thesis: the empty thread, then the balance and the arguments --- */
+.hw__thread {
+    position: relative;
+    margin-top: 0.9em;
+}
+
+.hw__empty {
+    position: absolute;
+    left: 1em;
+    right: 1em;
+    top: 1.2em;
+    margin: 0;
+    font: 500 0.95em/1.45 var(--font-sans);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.45);
+    opacity: 0;
+}
+
+.hw__bal {
+    padding: 0.95em 1.1em;
+}
+
+.hw__bal-t {
+    display: block;
+    font: 800 0.95em/1 var(--font-sans);
+}
+
+.hw__bal-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-top: 0.75em;
+}
+
+.hw__bal-row b {
+    width: 2.4em;
+    font: 800 1.05em/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+}
+
+.hw__bal-row b:first-child {
+    color: #D9E4FF;
+}
+
+.hw__bal-row b:last-child {
+    text-align: right;
+}
+
+.hw__track {
+    position: relative;
+    flex: 1;
+    height: 0.6em;
+    overflow: hidden;
+    border-radius: 0.3em;
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.hw__track i {
+    position: absolute;
+    inset: 0;
+    background: #D9E4FF;
+    transform: scaleX(0.88);
+    transform-origin: 0 50%;
+}
+
+.hw__bal-lab {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.55em;
+    font: 600 0.75em/1 var(--font-sans);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.hw__args-h {
+    display: flex;
+    align-items: center;
+    gap: 0.55em;
+    margin: 1.1em 0.2em 0;
+}
+
+.hw__args-h b {
+    font: 800 1.1em/1 var(--font-sans);
+}
+
+.hw__args-h span {
+    padding: 0.3em 0.55em;
+    border-radius: 0.8em;
+    font: 700 0.8em/1 var(--font-sans);
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hw__args-h em {
+    margin-left: auto;
+    font: 800 0.7em/1 var(--font-sans);
+    font-style: normal;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* the arguments sit in slots (--pos), so the vote can sort them by moving them */
+.hw__args {
+    --ah: 11em;              /* an argument */
+    --ag: 0.7em;             /* between two */
+    position: relative;
+    height: calc(var(--ah) * 2 + var(--ag));
+    margin: 0.7em 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.hw__arg {
+    --pos: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    height: var(--ah);
+    padding: 1em 1.1em 1em 1.5em;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(calc(var(--pos) * (var(--ah) + var(--ag)) + 2em));
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+}
+
+/* the side, as a line down the card's edge: ice for, white against */
+.hw__arg::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0.4em;
+    background: #fff;
+}
+
+.hw__arg--for::before {
+    background: #D9E4FF;
+}
+
+.hw__arg--a { --pos: 0; }
+.hw__arg--b { --pos: 1; }
+
+.hw__say {
+    margin: 0.65em 0 0;
+    font: 500 1.05em/1.35 var(--font-sans);
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.hw__arg .hw__foot {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    margin-top: auto;
+}
+
+.hw__vote,
+.hw__reply {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font: 700 0.95em/1 var(--font-sans);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.hw__vote {
+    padding: 0.45em 0.75em;
+    border-radius: 1.2em;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* a colour, not none, so the fill can wait for the vote (none cannot transition) */
+.hw__vote svg {
+    fill: rgba(217, 228, 255, 0);
+    transition: fill 0.3s ease;
+}
+
+.hw__reply {
+    margin-left: auto;
+}
+
+/* the app's own way to answer: on camera, for or against */
+.hw__stance {
+    flex: none;
+    display: flex;
+    gap: 0.7em;
+    padding: 0.9em 1em 1.4em;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: #05070D;
+}
+
+.hw__vbtn {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    height: 2.9em;
+    border-radius: 1.2em;
+    font: 700 0.95em/1 var(--font-sans);
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.hw__vbtn--for {
+    color: #D9E4FF;
+    background: rgba(217, 228, 255, 0.12);
+}
+
+.hw__vbtn svg {
+    width: 1.4em;
+    height: 1.4em;
+    fill: currentColor;
+}
+
+/* ---- step 1: the clip is recorded, the claim typed, then Post ---- */
+.hw[data-step="1"] .hw__vid--rec .hw__dot {
+    opacity: 1;
     animation: hw-blink 1s steps(1, end) infinite;
+}
+
+.hw[data-step="1"] .hw__vid--rec .hw__play {
+    opacity: 0;
+}
+
+.hw[data-step="1"] .hw__caret {
+    opacity: 1;
+    animation: hw-blink 0.8s steps(1, end) infinite;
+}
+
+.hw[data-step="1"] .hw__stats,
+.hw:not([data-step="1"]) .hw__post {
+    visibility: hidden;
+}
+
+.hw[data-step="1"] .hw__by time {
+    opacity: 0;
+}
+
+/* posted: the thread is open and empty, as the app says it */
+.hw[data-step="1"] .hw__empty {
+    animation: hw-show 0.4s ease 4.9s both;
+}
+
+.hw__bal,
+.hw__args-h {
+    opacity: 0;
+    transform: translateY(0.8em);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ---- step 2: the arguments come in, one after another ---- */
+.hw[data-step="2"] .hw__bal,
+.hw[data-step="2"] .hw__args-h,
+.hw[data-step="3"] .hw__bal,
+.hw[data-step="3"] .hw__args-h {
+    opacity: 1;
+    transform: none;
+}
+
+.hw[data-step="2"] .hw__bal,
+.hw[data-step="2"] .hw__args-h {
+    transition-delay: 0.6s;
+}
+
+.hw[data-step="2"] .hw__arg,
+.hw[data-step="3"] .hw__arg {
+    opacity: 1;
+    transform: translateY(calc(var(--pos) * (var(--ah) + var(--ag))));
+}
+
+.hw[data-step="2"] .hw__arg--a { transition-delay: 0.6s; }
+.hw[data-step="2"] .hw__arg--b { transition-delay: 1.3s; }
+
+.hw[data-step="2"] .hw__track i {
+    transform: scaleX(0.5);
+}
+
+/* ---- step 3: the votes count up, then the list sorts by strength ---- */
+.hw[data-step="3"] .hw__arg--b { --pos: 0; }
+.hw[data-step="3"] .hw__arg--a { --pos: 1; }
+
+.hw[data-step="3"] .hw__arg--a,
+.hw[data-step="3"] .hw__arg--b {
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 2.3s, opacity 0.35s ease, box-shadow 0.4s ease 2.5s, background-color 0.4s ease 2.5s;
+}
+
+.hw[data-step="3"] .hw__arg--b {
+    background: rgba(217, 228, 255, 0.07);
+    box-shadow: inset 0 0 0 1px rgba(217, 228, 255, 0.55);
+}
+
+.hw[data-step="3"] .hw__arg--b .hw__vote {
+    color: #D9E4FF;
+    background: rgba(255, 255, 255, 0.1);
+    transition-delay: 2.5s;
+}
+
+.hw[data-step="3"] .hw__arg--b .hw__vote svg {
+    fill: #D9E4FF;
+    transition-delay: 2.5s;
+}
+
+.hw[data-step="3"] .hw__track i {
+    transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s;
 }
 
 @keyframes hw-blink {
     50% { opacity: 0; }
 }
 
-/* the camera locks on: a dashed square that snaps shut around the cube */
-.hw__lock {
-    position: absolute;
-    left: 50%;
-    top: 41%;
-    width: 232px;
-    height: 232px;
-    margin: -116px 0 0 -116px;
-    border: 2px dashed rgba(218, 230, 247, 0.55);
-}
-
-.hw[data-step="1"] .hw__lock {
-    animation: hw-lock 0.55s steps(4, end) both;
-}
-
-@keyframes hw-lock {
-    from { transform: scale(1.35); opacity: 0; }
-    to { transform: none; opacity: 1; }
-}
-
-.hw__rec .hw__cube {
-    position: absolute;
-    left: 50%;
-    top: 41%;
-    width: 200px;
-    height: 200px;
-    margin: -100px 0 0 -100px;
-    object-fit: contain;
-    animation: hw-bob 3.2s steps(2, end) infinite;
-}
-
-@keyframes hw-bob {
-    50% { translate: 0 -5px; }
-}
-
-.hw__sub {
-    position: absolute;
-    left: 48px;
-    right: 48px;
-    bottom: 96px;
-    margin: 0;
-    min-height: 1.2em;
-    text-align: center;
-    font: 400 26px/1.2 var(--px-font);
-    color: var(--px-ice);
-}
-
-.hw__caret {
-    display: inline;
-    margin-left: 3px;
-    border-left: 0.45em solid var(--px-ice);
-    animation: hw-blink 0.8s steps(1, end) infinite;
-}
-
-.hw__wave {
-    position: absolute;
-    left: 48px;
-    right: 150px;
-    bottom: 40px;
-    height: 28px;
-    display: flex;
-    align-items: flex-end;
-    gap: 5px;
-}
-
-.hw__wave i {
-    flex: 1 1 0;
-    max-width: 6px;
-    height: 100%;
-    background: var(--px-ice);
-    transform: scaleY(0.4);
-    transform-origin: 50% 100%;
-}
-
-.hw__wave i:nth-child(3n) { transform: scaleY(0.75); }
-.hw__wave i:nth-child(4n + 1) { transform: scaleY(0.25); }
-.hw__wave i:nth-child(5n + 2) { transform: scaleY(1); }
-
-.hw[data-step="1"] .hw__wave i {
-    animation: hw-wave 0.8s steps(5, end) infinite alternate;
-}
-
-.hw[data-step="1"] .hw__wave i:nth-child(2n) { animation-delay: -0.2s; }
-.hw[data-step="1"] .hw__wave i:nth-child(3n) { animation-delay: -0.4s; }
-.hw[data-step="1"] .hw__wave i:nth-child(5n) { animation-delay: -0.6s; }
-
-@keyframes hw-wave {
-    from { transform: scaleY(0.2); }
-    to { transform: scaleY(1); }
-}
-
-.hw__post {
-    position: absolute;
-    right: 48px;
-    bottom: 36px;
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    padding: 11px 16px 10px;
-    font: 400 18px/1 var(--px-font);
-    letter-spacing: 0.06em;
-    color: var(--px-black);
-    background: var(--px-ice);
-    clip-path: var(--px-notch-sm);
-}
-
-.hw__post svg {
-    width: 12px;
-    height: 8px;
-}
-
-/* the button goes down, clips.js (a moment before the step is over) */
-.hw__post.is-hit {
-    background: #FFFFFF;
-    transform: translateY(2px);
-}
-
-/* steps 2 and 3: the thread */
-.hw__thread {
-    position: absolute;
-    inset: var(--hw-pad);
-    opacity: 0;
-    transition: opacity 0.3s steps(4, end);
-}
-
-.hw[data-step="2"] .hw__thread,
-.hw[data-step="3"] .hw__thread {
-    opacity: 1;
-}
-
-.hw__row {
-    --pos: 0;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: var(--hw-rh);
-    display: grid;
-    grid-template-columns: 112px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 16px 10px 10px;
-    box-sizing: border-box;
-    color: var(--px-ice);
-    background: #10121A;
-    border: 1.5px solid rgba(218, 230, 247, 0.3);
-    border-radius: 8px;
-}
-
-.hw__row--root {
-    border: 2px solid var(--px-ice);
-    opacity: 0;
-    transition: opacity 0.3s steps(4, end);
-}
-
-.hw[data-step="2"] .hw__row--root,
-.hw[data-step="3"] .hw__row--root {
-    opacity: 1;
-    transition-delay: 0.15s;
-}
-
-/* an answer: in from the left one after another, and the vote sorts them.
-   --k is where it arrives, --pos is where it sits. */
-.hw__row--reply {
-    --pos: var(--k);
-    left: var(--hw-ind);
-    top: calc(var(--hw-rh) + var(--hw-root));
-    opacity: 0;
-    transform: translate(-18px, calc(var(--pos) * (var(--hw-rh) + var(--hw-gap))));
-    transition:
-        opacity 0.3s steps(4, end),
-        transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
-        background-color 0.4s,
-        border-color 0.4s,
-        color 0.4s;
-}
-
-.hw[data-step="2"] .hw__row--reply,
-.hw[data-step="3"] .hw__row--reply {
-    opacity: 1;
-    transform: translate(0, calc(var(--pos) * (var(--hw-rh) + var(--hw-gap))));
-    transition-delay: calc(0.9s + var(--k) * 0.7s), calc(0.9s + var(--k) * 0.7s), 0s, 0s, 0s;
-}
-
-/* step 3: the best answer moves to the top, the others step back */
-.hw[data-step="3"] .hw__row--b { --pos: 0; }
-.hw[data-step="3"] .hw__row--a { --pos: 1; }
-
-.hw[data-step="3"] .hw__row--reply {
-    transition-delay: 0s, 2.3s, 2.8s, 2.8s, 2.8s;
-}
-
-.hw[data-step="3"] .hw__row--a,
-.hw[data-step="3"] .hw__row--c {
-    opacity: 0.5;
-    transition-delay: 2.3s, 2.3s, 0s, 0s, 0s;
-}
-
-/* the wires: a trunk down from the first clip, a branch into every answer */
-.hw__trunk {
-    position: absolute;
-    left: calc(var(--hw-ind) / 2 - 1px);
-    top: var(--hw-rh);
-    width: 2px;
-    height: calc(var(--hw-root) + (var(--hw-rh) + var(--hw-gap)) * 2 + var(--hw-rh) / 2);
-    background: repeating-linear-gradient(180deg, var(--px-ice) 0 4px, transparent 4px 8px);
-    opacity: 0.55;
-    transform: scaleY(0);
-    transform-origin: 50% 0;
-    transition: transform 0.5s steps(8, end);
-}
-
-.hw[data-step="2"] .hw__trunk,
-.hw[data-step="3"] .hw__trunk {
-    transform: none;
-    transition-delay: 0.5s;
-}
-
-.hw__row--reply::before {
-    content: '';
-    position: absolute;
-    right: calc(100% + 1px);
-    top: calc(50% - 1px);
-    width: calc(var(--hw-ind) / 2);
-    height: 2px;
-    background: repeating-linear-gradient(90deg, var(--px-ice) 0 4px, transparent 4px 8px);
-    opacity: 0.55;
-}
-
-.hw__thumb {
-    position: relative;
-    display: grid;
-    place-items: center;
-    height: calc(var(--hw-rh) - 23px);
-    overflow: hidden;
-    background: #0A0B10;
-    border: 1px solid rgba(218, 230, 247, 0.28);
-    transition: border-color 0.4s;
-}
-
-.hw__thumb .hw__cube {
-    width: 64px;
-    height: 64px;
-    object-fit: contain;
-}
-
-/* the first clip faces the answers; the answers face it */
-.hw__row--root .hw__cube {
-    transform: scaleX(-1);
-}
-
-.hw__thumb b {
-    position: absolute;
-    left: 5px;
-    bottom: 4px;
-    font: 700 9px/1 var(--font-tech);
-    letter-spacing: 0.1em;
-    color: var(--px-ice);
-}
-
-.hw__text {
-    display: grid;
-    gap: 6px;
-    min-width: 0;
-}
-
-.hw__who {
-    display: flex;
-    align-items: center;
-    min-width: 0;
-    gap: 8px;
-    font: 700 11px/1 var(--font-tech);
-    letter-spacing: 0.12em;
-    color: var(--st-dim);
-    transition: color 0.4s;
-}
-
-.hw__at {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.hw__who em {
-    flex: none;
-    padding: 3px 5px 2px;
-    font-style: normal;
-    font-size: 9px;
-    letter-spacing: 0.14em;
-    white-space: nowrap;
-}
-
-.hw__op {
-    color: var(--px-black);
-    background: var(--px-ice);
-}
-
-.hw__lqi {
-    color: var(--px-ice);
-    box-shadow: inset 0 0 0 1px rgba(218, 230, 247, 0.5);
-    opacity: 0;
-    transition: opacity 0.3s steps(3, end), color 0.4s, box-shadow 0.4s;
-}
-
-/* Orvelis has read them */
-.hw[data-step="3"] .hw__lqi {
-    opacity: 1;
-    transition-delay: 1.2s, 2.8s, 2.8s;
-}
-
-.hw__say {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    overflow: hidden;
-    font: 600 14px/1.4 var(--font-sans);
-    color: var(--px-ice);
-    transition: color 0.4s;
-}
-
-.hw__side {
-    display: grid;
-    justify-items: end;
-    gap: 8px;
-    min-width: 64px;
-}
-
-.hw__side b {
-    font: 400 24px/1 var(--px-font);
-    transition: color 0.4s;
-}
-
-.hw__lab {
-    font: 700 9px/1 var(--font-tech);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--st-dim);
-}
-
-/* votes are only counted in step 3 */
-.hw__row--reply .hw__side {
-    opacity: 0;
-    transition: opacity 0.3s steps(3, end);
-}
-
-.hw[data-step="3"] .hw__row--reply .hw__side {
-    opacity: 1;
-    transition-delay: 0.4s;
-}
-
-.hw__meter {
-    display: block;
-    width: 64px;
-    height: 6px;
-    background: rgba(218, 230, 247, 0.14);
-}
-
-.hw__meter i {
-    display: block;
-    height: 100%;
-    background: var(--px-ice);
-    clip-path: inset(0 100% 0 0);
-    transition: clip-path 0.9s steps(10, end);
-}
-
-.hw[data-step="3"] .hw__meter i {
-    clip-path: inset(0 calc(100% - var(--v) * 100%) 0 0);
-    transition-delay: 0.6s;
-}
-
-/* the answer that lost is the same ice in dither */
-.hw__row--a .hw__meter i {
-    background: repeating-conic-gradient(var(--px-ice) 0 25%, transparent 0 50%) 0 0 / 4px 4px;
-}
-
-/* the answer that is still being filmed */
-.hw__row--c .hw__thumb {
-    border-style: dashed;
-}
-
-.hw__row--c .hw__dot {
-    position: absolute;
-    left: 7px;
-    top: 7px;
-    width: 7px;
-    height: 7px;
-}
-
-.hw[data-step="2"] .hw__row--c .hw__dot,
-.hw[data-step="3"] .hw__row--c .hw__dot {
-    animation: hw-blink 1s steps(1, end) infinite;
-}
-
-.hw__wave--sm {
-    position: static;
-    width: 56px;
-    height: 22px;
-    gap: 4px;
-}
-
-.hw[data-step="2"] .hw__wave--sm i,
-.hw[data-step="3"] .hw__wave--sm i {
-    animation: hw-wave 0.8s steps(5, end) infinite alternate;
-}
-
-.hw[data-step="2"] .hw__wave--sm i:nth-child(2n),
-.hw[data-step="3"] .hw__wave--sm i:nth-child(2n) {
-    animation-delay: -0.3s;
-}
-
-.hw__row--c .hw__say {
-    color: var(--st-dim);
-    font-weight: 500;
-}
-
-/* the winner: solid ice, with the stamp the catch uses */
-.hw[data-step="3"] .hw__row--b {
-    color: var(--px-black);
-    background: var(--px-ice);
-    border-color: var(--px-ice);
-}
-
-.hw[data-step="3"] .hw__row--b .hw__say,
-.hw[data-step="3"] .hw__row--b .hw__side b,
-.hw[data-step="3"] .hw__row--b .hw__lqi {
-    color: var(--px-black);
-}
-
-.hw[data-step="3"] .hw__row--b .hw__who {
-    color: #3A4252;
-}
-
-.hw[data-step="3"] .hw__row--b .hw__lqi {
-    box-shadow: inset 0 0 0 1px var(--px-black);
-}
-
-.hw[data-step="3"] .hw__row--b .hw__thumb {
-    border-color: rgba(7, 8, 12, 0.5);
-}
-
-.hw[data-step="3"] .hw__row--b .hw__meter {
-    background: rgba(7, 8, 12, 0.18);
-}
-
-.hw[data-step="3"] .hw__row--b .hw__meter i {
-    background: var(--px-black);
-}
-
-/* the row's own colours wait for the vote; so do the words in it */
-.hw[data-step="3"] .hw__row--b .hw__say,
-.hw[data-step="3"] .hw__row--b .hw__who,
-.hw[data-step="3"] .hw__row--b .hw__side b,
-.hw[data-step="3"] .hw__row--b .hw__thumb {
-    transition-delay: 2.8s;
-}
-
-.hw__stamp {
-    position: absolute;
-    right: 24px;
-    top: -27px;
-    z-index: 3;
-    padding: 8px 10px 7px;
-    font: 400 16px/1 var(--px-font);
-    letter-spacing: 0.06em;
-    white-space: nowrap;
-    color: var(--px-ice);
-    background: var(--px-black);
-    clip-path: var(--px-notch-sm);
-    transform: rotate(4deg);
-    opacity: 0;
-}
-
-.hw[data-step="3"] .hw__stamp {
-    opacity: 1;
-    animation: hw-stamp 0.32s steps(4, end) 3.3s both;
-}
-
-@keyframes hw-stamp {
-    from { transform: rotate(4deg) scale(1.9); opacity: 0; }
-    to { transform: rotate(4deg) scale(1); opacity: 1; }
-}
-
-/* the scene is narrower than a row of thumb, words and votes needs: the votes
-   move up beside the name and the words run the full width under it */
-@media (max-width: 1180px) {
-    .hw {
-        --hw-rh: 96px;
-    }
-
-    .hw__row {
-        grid-template-columns: 76px minmax(0, 1fr) auto;
-        grid-template-areas: "thumb who side" "thumb say say";
-        grid-template-rows: auto 1fr;
-        align-items: start;
-        gap: 6px 12px;
-        padding: 8px 12px 8px 8px;
-    }
-
-    .hw__thumb {
-        grid-area: thumb;
-        align-self: center;
-        height: calc(var(--hw-rh) - 19px);
-    }
-
-    .hw__thumb .hw__cube {
-        width: 52px;
-        height: 52px;
-    }
-
-    .hw__thumb b {
-        left: 4px;
-        bottom: 3px;
-        font-size: 8px;
-    }
-
-    .hw__text {
-        display: contents;
-    }
-
-    .hw__who {
-        grid-area: who;
-        align-self: center;
-        min-width: 0;
-    }
-
-    .hw__say {
-        grid-area: say;
-        font-size: 13px;
-        line-height: 1.35;
-    }
-
-    .hw__side {
-        grid-area: side;
-        display: flex;
-        align-items: center;
-        align-self: center;
-        gap: 8px;
-        min-width: 0;
-    }
-
-    .hw__side b {
-        font-size: 18px;
-    }
-
-    .hw__meter {
-        width: 36px;
-    }
-
-    .hw__row--root .hw__op {
-        display: none;
-    }
-
-    .hw__sub {
-        left: 40px;
-        right: 40px;
-        font-size: 22px;
-    }
+@keyframes hw-show {
+    from { opacity: 0; transform: translateY(0.6em); }
+    to { opacity: 1; transform: none; }
 }
 
 @media (max-width: 1000px) {
@@ -10667,80 +10634,9 @@ body {
     #features .hw-br {
         display: inline;
     }
-
-    .hw {
-        --hw-ind: 30px;
-        --hw-pad: 16px;
-    }
-
-    .hw__rec .hw__cube {
-        width: 150px;
-        height: 150px;
-        margin: -75px 0 0 -75px;
-    }
-
-    .hw__lock {
-        width: 180px;
-        height: 180px;
-        margin: -90px 0 0 -90px;
-    }
-
-    .hw__sub {
-        left: 24px;
-        right: 24px;
-        bottom: 86px;
-        font-size: 19px;
-    }
-
-    .hw__wave {
-        left: 28px;
-        right: 150px;
-        bottom: 34px;
-    }
-
-    .hw__post {
-        right: 28px;
-        bottom: 30px;
-        padding: 9px 13px 8px;
-        font-size: 16px;
-    }
-
-    .hw__stamp {
-        right: 14px;
-        font-size: 13px;
-    }
-}
-
-@media (max-width: 520px) {
-    /* the vote count says it; the little bar is for wider scenes */
-    .hw__meter {
-        display: none;
-    }
 }
 
 @media (max-width: 360px) {
-    .hw {
-        --hw-rh: 112px;
-    }
-
-    .hw__row {
-        grid-template-columns: 64px minmax(0, 1fr) auto;
-        gap: 6px 10px;
-    }
-
-    .hw__thumb .hw__cube {
-        width: 44px;
-        height: 44px;
-    }
-
-    .hw__say {
-        -webkit-line-clamp: 4;
-    }
-
-    .hw__row--root .hw__lab {
-        display: none;
-    }
-
     .hw__step {
         grid-template-columns: 40px minmax(0, 1fr);
         column-gap: 10px;
@@ -10755,6 +10651,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .hw__stage *,
     .hw__stage *::before,
+    .hw__stage *::after,
     .hw__bar {
         animation: none !important;
         transition: none !important;
@@ -10763,10 +10660,8 @@ body {
 
 /* where the page is composited in software (clips.js sets html.gfx-lite) the
    loops go; the steps still play */
-html.gfx-lite .hw__wave i,
 html.gfx-lite .hw__dot,
-html.gfx-lite .hw__caret,
-html.gfx-lite .hw__rec .hw__cube {
+html.gfx-lite .hw__caret {
     animation: none !important;
 }
 

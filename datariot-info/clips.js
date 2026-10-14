@@ -330,12 +330,12 @@
     }
 
     // ---------- slide 02: one scene, three steps ----------
-    // The scene is CSS: data-step on #how says which step it is showing, and
-    // every part of it moves by transition. What CSS cannot do is here: the
-    // subtitle that types itself while the clock runs, the reply count and
-    // the votes that count up. Each step runs on one ticker that works the
-    // state out from the time since the step began, and holds still while the
-    // slide is off screen.
+    // The scene is the app's Debate Thread on a phone, and it is CSS: data-step
+    // on #how says which step it is showing, and every part of it moves by
+    // transition. What CSS cannot do is here: the claim that types itself while
+    // the clip's clock runs, the argument count and the votes that count up.
+    // Each step runs on one ticker that works the state out from the time since
+    // the step began, and holds still while the slide is off screen.
     function initHow() {
         var root = document.getElementById('how');
         if (!root) return;
@@ -344,7 +344,7 @@
         var clock = root.querySelector('[data-clock]');
         var typed = root.querySelector('[data-typed]');
         var post = root.querySelector('.hw__post');
-        var replies = root.querySelector('[data-replies]');
+        var replies = [].slice.call(root.querySelectorAll('[data-replies]'));
         var counts = [].slice.call(root.querySelectorAll('[data-to]'));
         var SAY = typed ? typed.textContent : '';
         var ticker = 0, t0 = 0, elapsed = 0, active = 0, visible = false;
@@ -353,6 +353,7 @@
         if (reduced) root.classList.add('is-manual');
 
         function setText(el, s) { if (el && el.textContent !== s) el.textContent = s; }
+        function setAll(list, s) { list.forEach(function (el) { setText(el, s); }); }
         function span(t, a, b) { return Math.max(0, Math.min(1, (t - a) / (b - a))); }
 
         // what the scene reads t ms into a step
@@ -362,10 +363,18 @@
                 setText(clock, '0:' + (secs < 10 ? '0' : '') + secs);
                 setText(typed, SAY.slice(0, Math.floor(span(t, 500, 500 + SAY.length * 70) * SAY.length)));
                 if (post) post.classList.toggle('is-hit', t > 4600);
+                setAll(replies, '0');
+                setAll(counts, '0');
             } else if (step === 1) {
-                setText(replies, t > 1900 ? '2' : t > 1200 ? '1' : '0');
+                // the arguments land at 0.6s and 1.3s (the CSS delays)
+                setText(clock, '0:24');
+                setText(typed, SAY);
+                setAll(replies, t > 1300 ? '2' : t > 600 ? '1' : '0');
+                setAll(counts, '0');
             } else {
-                setText(replies, '2');
+                setText(clock, '0:24');
+                setText(typed, SAY);
+                setAll(replies, '2');
                 var k = 1 - Math.pow(1 - span(t, 600, 2100), 3);
                 counts.forEach(function (el) { setText(el, String(Math.round(k * el.getAttribute('data-to')))); });
             }

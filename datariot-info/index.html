@@ -36,7 +36,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Pixelify+Sans:wght@400..700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=5.6.0" />
+    <link rel="stylesheet" href="style.css?v=5.7.0" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -921,57 +921,66 @@
                         </button></li>
                     </ol>
 
+                    <!-- the scene: the app's Debate Thread, on the same phone as slide 01.
+                         Step 1 your clip goes up as a thesis; step 2 the arguments come
+                         in, on camera, for or against; step 3 the votes sort them by
+                         strength and the clearest one takes the top. clips.js types the
+                         claim, runs the clock and counts; the rest is CSS on data-step. -->
                     <div class="hw__stage" aria-hidden="true">
+                        <div class="fd__phone hw__phone">
+                            <span class="fd__notch"></span>
+                            <div class="fd__screen hw__app">
+                                <div class="hw__top">
+                                    <div class="fd__status"><b>9:41</b><i></i></div>
+                                    <div class="hw__head"><svg class="hw__back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><b>Debate Thread</b><span class="hw__likes"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg>1,204</span></div>
+                                </div>
 
-                        <!-- step 1: you film it -->
-                        <div class="hw__rec">
-                            <i class="hw__brk hw__brk--tl"></i><i class="hw__brk hw__brk--tr"></i><i class="hw__brk hw__brk--bl"></i><i class="hw__brk hw__brk--br"></i>
-                            <span class="hw__live"><i class="hw__dot"></i>REC <b data-clock>0:24</b></span>
-                            <span class="hw__lock"></span>
-                            <img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async">
-                            <p class="hw__sub"><span data-typed>Phones should be banned in class.</span><i class="hw__caret"></i></p>
-                            <span class="hw__wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-                            <span class="hw__post">POST<svg viewBox="0 0 9 6" shape-rendering="crispEdges"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg></span>
-                        </div>
+                                <div class="hw__body">
+                                    <article class="hw__thesis">
+                                        <div class="hw__by"><span class="hw__av">P</span><b>pro_logic_22</b><time>now</time></div>
+                                        <div class="hw__main">
+                                            <span class="hw__vid hw__vid--rec"><i class="hw__dot"></i><i class="hw__play"></i><b data-clock>0:24</b></span>
+                                            <div class="hw__claim">
+                                                <span class="hw__badge">THESIS</span>
+                                                <p><span data-typed>Phones should be banned in class.</span><i class="hw__caret"></i></p>
+                                            </div>
+                                        </div>
+                                        <div class="hw__foot">
+                                            <span class="hw__stats"><svg viewBox="0 0 24 24"><path d="M9.2 17.6h5.6M10 20.6h4M12 3.2a6.1 6.1 0 0 0-3.7 11c.7.6 1 1.3 1 2.1v.3h5.4v-.3c0-.8.3-1.5 1-2.1A6.1 6.1 0 0 0 12 3.2z"/></svg><b>1.2K</b> Reputation<span class="hw__dotsep"></span><svg viewBox="0 0 24 24"><path d="M12 4c4.7 0 8.4 3.1 8.4 7.1s-3.7 7.1-8.4 7.1c-.9 0-1.8-.1-2.6-.4l-4.3 2 1.1-3.6C4.6 14.9 3.6 13.1 3.6 11.1 3.6 7.1 7.3 4 12 4z"/></svg><b data-replies>2</b> Arguments</span>
+                                            <span class="hw__post">Post</span>
+                                        </div>
+                                    </article>
 
-                        <!-- steps 2 and 3: the answers come in, then the vote -->
-                        <div class="hw__thread">
-                            <span class="hw__trunk"></span>
+                                    <div class="hw__thread">
+                                        <p class="hw__empty">No arguments yet. Be the first to logic test this.</p>
 
-                            <div class="hw__row hw__row--root">
-                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:24</b></span>
-                                <span class="hw__text">
-                                    <span class="hw__who"><span class="hw__at">@pro_logic_22</span><em class="hw__op">OP</em></span>
-                                    <span class="hw__say">Phones should be banned in class.</span>
-                                </span>
-                                <span class="hw__side"><b data-replies>2</b><span class="hw__lab">replies</span></span>
-                            </div>
+                                        <div class="hw__bal">
+                                            <span class="hw__bal-t">Logic Balance</span>
+                                            <div class="hw__bal-row"><b data-to="276">276</b><span class="hw__track"><i></i></span><b data-to="38">38</b></div>
+                                            <div class="hw__bal-lab"><span>FOR (1)</span><span>AGAINST (1)</span></div>
+                                        </div>
 
-                            <div class="hw__row hw__row--reply hw__row--a" style="--k:0">
-                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:09</b></span>
-                                <span class="hw__text">
-                                    <span class="hw__who"><span class="hw__at">@d_marek</span><em class="hw__lqi">LQI 31</em></span>
-                                    <span class="hw__say">LOL no. It’s 2026.</span>
-                                </span>
-                                <span class="hw__side"><b data-to="38">38</b><span class="hw__meter"><i style="--v:.14"></i></span></span>
-                            </div>
+                                        <div class="hw__args-h"><b>Arguments</b><span data-replies>2</span><em>BY STRENGTH</em></div>
 
-                            <div class="hw__row hw__row--reply hw__row--b" style="--k:1">
-                                <span class="hw__thumb"><img class="hw__cube" src="assets/logo.png" alt="" width="960" height="960" loading="lazy" decoding="async"><b>0:41</b></span>
-                                <span class="hw__text">
-                                    <span class="hw__who"><span class="hw__at">@nova_k</span><em class="hw__lqi">LQI 94</em></span>
-                                    <span class="hw__say">Ban them in lessons, keep them at lunch. The problem is attention, not phones.</span>
-                                </span>
-                                <span class="hw__side"><b data-to="276">276</b><span class="hw__meter"><i style="--v:.9"></i></span></span>
-                                <span class="hw__stamp">BEST POINT</span>
-                            </div>
+                                        <ol class="hw__args">
+                                            <li class="hw__arg hw__arg--against hw__arg--a">
+                                                <div class="hw__by"><span class="hw__av">D</span><b>d_marek</b><span class="hw__side">AGAINST</span><time>2m</time></div>
+                                                <p class="hw__say">LOL no. It’s 2026.</p>
+                                                <div class="hw__foot"><span class="hw__vid hw__vid--sm"><i class="hw__play"></i><b>0:09</b></span><span class="hw__vote"><svg viewBox="0 0 24 24"><path d="M9.2 17.6h5.6M10 20.6h4M12 3.2a6.1 6.1 0 0 0-3.7 11c.7.6 1 1.3 1 2.1v.3h5.4v-.3c0-.8.3-1.5 1-2.1A6.1 6.1 0 0 0 12 3.2z"/></svg><b data-to="38">38</b></span><span class="hw__reply"><svg viewBox="0 0 24 24"><path d="M12 4c4.7 0 8.4 3.1 8.4 7.1s-3.7 7.1-8.4 7.1c-.9 0-1.8-.1-2.6-.4l-4.3 2 1.1-3.6C4.6 14.9 3.6 13.1 3.6 11.1 3.6 7.1 7.3 4 12 4z"/></svg>Reply</span></div>
+                                            </li>
+                                            <li class="hw__arg hw__arg--for hw__arg--b">
+                                                <div class="hw__by"><span class="hw__av">N</span><b>nova_k</b><span class="hw__side">FOR</span><time>1m</time></div>
+                                                <p class="hw__say">Ban them in lessons, keep them at lunch. The problem is attention, not phones.</p>
+                                                <div class="hw__foot"><span class="hw__vid hw__vid--sm"><i class="hw__play"></i><b>0:41</b></span><span class="hw__vote"><svg viewBox="0 0 24 24"><path d="M9.2 17.6h5.6M10 20.6h4M12 3.2a6.1 6.1 0 0 0-3.7 11c.7.6 1 1.3 1 2.1v.3h5.4v-.3c0-.8.3-1.5 1-2.1A6.1 6.1 0 0 0 12 3.2z"/></svg><b data-to="276">276</b></span><span class="hw__reply"><svg viewBox="0 0 24 24"><path d="M12 4c4.7 0 8.4 3.1 8.4 7.1s-3.7 7.1-8.4 7.1c-.9 0-1.8-.1-2.6-.4l-4.3 2 1.1-3.6C4.6 14.9 3.6 13.1 3.6 11.1 3.6 7.1 7.3 4 12 4z"/></svg>Reply</span></div>
+                                            </li>
+                                        </ol>
+                                    </div>
+                                </div>
 
-                            <div class="hw__row hw__row--reply hw__row--c" style="--k:2">
-                                <span class="hw__thumb"><i class="hw__dot"></i><span class="hw__wave hw__wave--sm"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
-                                <span class="hw__text">
-                                    <span class="hw__who"><span class="hw__at">@tomas.thinks</span></span>
-                                    <span class="hw__say">recording a reply…</span>
-                                </span>
+                                <div class="hw__stance">
+                                    <span class="hw__vbtn hw__vbtn--for"><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg>Video FOR</span>
+                                    <span class="hw__vbtn"><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg>Video AGAINST</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1573,11 +1582,11 @@
     <!-- no three.js: the one 3D scene left, the globe in 06, is a pixel
          canvas in clips.js now, and the 600 KB library blocked the page -->
     <!-- slide 05's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=5.6.0"></script>
+    <script defer src="pixel-field.js?v=5.7.0"></script>
 
     <!-- the feed: the hero phone, the tap-a-question demo in 01, the arena vote, the catch -->
-    <script defer src="clips.js?v=5.6.0"></script>
-    <script defer src="script.js?v=5.6.0"></script>
+    <script defer src="clips.js?v=5.7.0"></script>
+    <script defer src="script.js?v=5.7.0"></script>
 </body>
 
 </html>
