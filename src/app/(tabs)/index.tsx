@@ -19,6 +19,7 @@ import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideo
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
 import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
+import { withAlpha } from '../../lib/utils/color';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -254,6 +255,18 @@ const HomeScreen = () => {
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
+            {/* Feed content fades out under the floating buttons instead of running behind them */}
+            <LinearGradient
+                colors={[
+                    withAlpha(theme.colors.background.primary, 0.98),
+                    withAlpha(theme.colors.background.primary, 0.97),
+                    withAlpha(theme.colors.background.primary, 0),
+                ]}
+                locations={[0, 0.8, 1]}
+                style={[styles.topFade, { height: insets.top + (activeTab === 'trending' ? 156 : 92) }]}
+                pointerEvents="none"
+            />
+
             <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
                 <View style={styles.topNavContent} pointerEvents="box-none">
                     <View style={styles.leftActionsContainer}>
@@ -377,6 +390,13 @@ const styles = StyleSheet.create({
     },
     deckBody: {
         flex: 1,
+    },
+    topFade: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9,
     },
     topNav: {
         position: 'absolute',

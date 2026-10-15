@@ -1,10 +1,13 @@
 import React from 'react';
-import { ScrollView, Text, StyleSheet, Pressable, View, Platform } from 'react-native';
+import { ScrollView, Text, StyleSheet, Pressable, View, Platform, useWindowDimensions } from 'react-native';
 import { useTheme } from '../Theme/ThemeProvider';
 
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
-// On the phone the filters are soft pills; the desktop deck keeps its instrument look
-const SOFT = Platform.OS !== 'web';
+// On a phone (the app, or the site at phone width) the filters are soft pills; the desktop deck keeps its instrument look
+const useSoft = () => {
+    const { width } = useWindowDimensions();
+    return Platform.OS !== 'web' || width <= 768;
+};
 
 interface CategoryPillsProps {
     categories: string[];
@@ -15,6 +18,7 @@ interface CategoryPillsProps {
 export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: CategoryPillsProps) => {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
+    const soft = useSoft();
 
     return (
         <ScrollView
@@ -23,13 +27,14 @@ export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: C
             style={styles.scrollStyle}
             contentContainerStyle={styles.container}
         >
-            {SOFT ? null : <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>}
+            {soft ? null : <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>}
             {categories.map((category) => (
                 <Chip
                     key={category}
                     category={category}
                     isActive={activeCategory === category}
                     isDark={isDark}
+                    soft={soft}
                     theme={theme}
                     onPress={() => onCategoryPress(category)}
                 />
@@ -42,19 +47,21 @@ const Chip = ({
     category,
     isActive,
     isDark,
+    soft,
     theme,
     onPress,
 }: {
     category: string;
     isActive: boolean;
     isDark: boolean;
+    soft: boolean;
     theme: any;
     onPress: () => void;
 }) => {
     const [isHovered, setIsHovered] = React.useState(false);
     const accent = theme.colors.primary.DEFAULT;
 
-    if (SOFT) {
+    if (soft) {
         // Outline pills; the chosen one is solid ice (ink in the light theme) with a dot
         const solid = isDark ? '#DAE6F7' : '#07080C';
         const onSolid = isDark ? '#07080C' : '#DAE6F7';

@@ -5,6 +5,8 @@ import { useTheme } from '../Theme/ThemeProvider';
 import { SectionHeader } from '../Discovery/SectionHeader';
 import { DiscoveryCarousel } from '../Discovery/DiscoveryCarousel';
 import { FeaturedHero } from '../Discovery/FeaturedHero';
+import { ArenaPager } from '../Discovery/ArenaPager';
+import { OriginalsStrip } from '../Discovery/OriginalsStrip';
 import { DeckGrid } from './DeckFeed/DeckGrid';
 import { Video } from '../../lib/supabase/hooks/useVideos';
 
@@ -123,7 +125,11 @@ export function CoubClassicFeed({
                         meta={`${featuredVideos.length} OPEN`}
                         containerStyle={isDesktopWeb ? { paddingHorizontal: 0, paddingTop: 20 } : undefined}
                     />
-                    <FeaturedHero featuredVideos={featuredVideos} onVideoPress={onSelect} />
+                    {isDesktopWeb ? (
+                        <FeaturedHero featuredVideos={featuredVideos} onVideoPress={onSelect} />
+                    ) : (
+                        <ArenaPager featuredVideos={featuredVideos} onVideoPress={onSelect} />
+                    )}
                 </>
             )}
 
@@ -134,7 +140,11 @@ export function CoubClassicFeed({
                 meta={`${synergyVideos.length} PICKS`}
                 containerStyle={isDesktopWeb ? { paddingHorizontal: 0 } : undefined}
             />
-            <DiscoveryCarousel videos={synergyVideos} onSelect={onSelect} />
+            {isDesktopWeb ? (
+                <DiscoveryCarousel videos={synergyVideos} onSelect={onSelect} />
+            ) : (
+                <OriginalsStrip videos={synergyVideos} onSelect={onSelect} />
+            )}
 
             <SectionHeader
                 title="The Deck"
