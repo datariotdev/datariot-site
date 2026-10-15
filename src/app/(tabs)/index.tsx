@@ -352,11 +352,13 @@ const HomeScreen = () => {
                         </Pressable>
                     </View>
 
-                    {/* The row bleeds 16px past the nav padding on both sides.
+                    {/* The row runs edge to edge; its first pill lines up with the buttons above.
+                        An absolute child is placed from the parent's padding edge, so 0 here
+                        is the screen edge (the old -16 pushed "All" against it).
                         Sizing it from the window width overflowed the column
                         and put a horizontal scrollbar on the page (#9). */}
                     {activeTab === 'trending' && (
-                        <View style={[styles.categoryFiltersContainer, { left: -16, right: -16 }]}>
+                        <View style={[styles.categoryFiltersContainer, { left: 0, right: 0 }]}>
                             <CategoryPills
                                 categories={['All', ...VIDEO_CATEGORIES]}
                                 activeCategory={activeCategory || 'All'}

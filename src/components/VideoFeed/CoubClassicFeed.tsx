@@ -5,7 +5,6 @@ import { useTheme } from '../Theme/ThemeProvider';
 import { SectionHeader } from '../Discovery/SectionHeader';
 import { DiscoveryCarousel } from '../Discovery/DiscoveryCarousel';
 import { FeaturedHero } from '../Discovery/FeaturedHero';
-import { ArenaPager } from '../Discovery/ArenaPager';
 import { OriginalsStrip } from '../Discovery/OriginalsStrip';
 import { DeckGrid } from './DeckFeed/DeckGrid';
 import { Video } from '../../lib/supabase/hooks/useVideos';
@@ -125,11 +124,7 @@ export function CoubClassicFeed({
                         meta={`${featuredVideos.length} OPEN`}
                         containerStyle={isDesktopWeb ? { paddingHorizontal: 0, paddingTop: 20 } : undefined}
                     />
-                    {isDesktopWeb ? (
-                        <FeaturedHero featuredVideos={featuredVideos} onVideoPress={onSelect} />
-                    ) : (
-                        <ArenaPager featuredVideos={featuredVideos} onVideoPress={onSelect} />
-                    )}
+                    <FeaturedHero featuredVideos={featuredVideos} onVideoPress={onSelect} />
                 </>
             )}
 

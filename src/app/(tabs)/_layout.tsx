@@ -37,7 +37,7 @@ const TabLayout = () => {
                     // Let the layout's HUD backdrop show through instead of the
                     // navigator's default light scene background.
                     sceneStyle: { backgroundColor: 'transparent' },
-                    tabBarActiveTintColor: theme.colors.primary.DEFAULT,
+                    tabBarActiveTintColor: isDark ? theme.colors.primary.DEFAULT : '#07080C',
                     tabBarInactiveTintColor: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0,0,0,0.4)',
                     tabBarStyle: {
                         display: isDesktopWeb ? 'none' : 'flex',
@@ -108,8 +108,8 @@ const TabLayout = () => {
                                 borderRadius: 22,
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: theme.colors.primary.DEFAULT,
-                                shadowColor: theme.colors.primary.DEFAULT,
+                                backgroundColor: isDark ? theme.colors.primary.DEFAULT : '#07080C',
+                                shadowColor: isDark ? theme.colors.primary.DEFAULT : '#07080C',
                                 shadowOffset: { width: 0, height: 4 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 8,
@@ -118,7 +118,7 @@ const TabLayout = () => {
                                 <Feather
                                     name="plus"
                                     size={22}
-                                    color="#000000"
+                                    color={isDark ? '#000000' : '#FFFFFF'}
                                 />
                             </View>
                         ),
