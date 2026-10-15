@@ -3,9 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import { usePalette } from '../../design-system/palette';
 
 const compact = (n: number) => {
-    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-    return n.toString().padStart(2, '0');
+    if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return String(n);
 };
 
 interface ProfileStatsProps {
@@ -14,29 +14,23 @@ interface ProfileStatsProps {
     arguments: number;
 }
 
-/** Followers, following and arguments as three dot-matrix counters split by columns of dots */
+/** Followers, following and arguments: three numbers with their names under them, split by thin lines */
 export function ProfileStats({ followers, following, arguments: args }: ProfileStatsProps) {
     const p = usePalette();
     const items = [
-        { label: 'FOLLOWERS', value: followers },
-        { label: 'FOLLOWING', value: following },
-        { label: 'ARGUMENTS', value: args },
+        { label: 'Followers', value: followers },
+        { label: 'Following', value: following },
+        { label: 'Arguments', value: args },
     ];
 
     return (
         <View style={styles.row}>
             {items.map((it, i) => (
                 <React.Fragment key={it.label}>
-                    {i > 0 && (
-                        <View style={styles.rule}>
-                            {[0.14, 0.3, 0.5, 0.3, 0.14].map((o, k) => (
-                                <View key={k} style={[styles.ruleDot, { backgroundColor: p.accent, opacity: o }]} />
-                            ))}
-                        </View>
-                    )}
+                    {i > 0 && <View style={[styles.rule, { backgroundColor: p.border }]} />}
                     <View style={styles.cell}>
-                        <Text style={[styles.num, { color: p.text }]}>{compact(it.value || 0)}</Text>
-                        <Text style={[styles.label, { color: p.sub }]}>{it.label}</Text>
+                        <Text style={[styles.num, { color: p.text, fontFamily: p.fonts.bold }]}>{compact(it.value || 0)}</Text>
+                        <Text style={[styles.label, { color: p.sub, fontFamily: p.fonts.regular }]}>{it.label}</Text>
                     </View>
                 </React.Fragment>
             ))}
@@ -49,35 +43,24 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 14,
+        marginTop: 16,
     },
     cell: {
-        minWidth: 98,
+        minWidth: 96,
         paddingHorizontal: 10,
         alignItems: 'center',
     },
     num: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 26,
-        lineHeight: 28,
-        letterSpacing: 1,
-        includeFontPadding: false,
+        fontSize: 20,
+        letterSpacing: -0.3,
+        fontVariant: ['tabular-nums'],
     },
     label: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 10.5,
-        letterSpacing: 1.5,
-        marginTop: 3,
-        includeFontPadding: false,
+        fontSize: 12.5,
+        marginTop: 1,
     },
     rule: {
-        height: 34,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    ruleDot: {
-        width: 3,
-        height: 3,
-        borderRadius: 1.5,
+        width: StyleSheet.hairlineWidth * 2,
+        height: 28,
     },
 });

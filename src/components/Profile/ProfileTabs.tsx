@@ -5,12 +5,10 @@ import { usePalette } from '../../design-system/palette';
 export type ProfileTab = 'videos' | 'posts' | 'saved';
 
 const TABS: { key: ProfileTab; label: string }[] = [
-    { key: 'videos', label: 'ESSENCE' },
-    { key: 'posts', label: 'THESES' },
-    { key: 'saved', label: 'VAULT' },
+    { key: 'videos', label: 'Essence' },
+    { key: 'posts', label: 'Theses' },
+    { key: 'saved', label: 'Vault' },
 ];
-
-const pad = (n: number) => n.toString().padStart(2, '0');
 
 interface ProfileTabsProps {
     active: ProfileTab;
@@ -18,7 +16,7 @@ interface ProfileTabsProps {
     counts: Record<ProfileTab, number>;
 }
 
-/** Three counters that double as tabs; a strip of lit dots slides under the chosen one */
+/** Three tabs with their counts; a short bar slides under the chosen one */
 export function ProfileTabs({ active, onChange, counts }: ProfileTabsProps) {
     const p = usePalette();
     const [width, setWidth] = useState(0);
@@ -43,8 +41,14 @@ export function ProfileTabs({ active, onChange, counts }: ProfileTabsProps) {
                             accessibilityRole="tab"
                             accessibilityState={{ selected: on }}
                         >
-                            <Text style={[styles.num, { color: on ? p.accent : p.faint }]}>{pad(counts[t.key] || 0)}</Text>
-                            <Text style={[styles.label, { color: on ? p.text : p.sub }]}>{t.label}</Text>
+                            <Text style={[styles.label, { color: on ? p.text : p.sub, fontFamily: on ? p.fonts.semibold : p.fonts.medium }]}>
+                                {t.label}
+                            </Text>
+                            <View style={[styles.count, { backgroundColor: on ? p.accent : p.soft }]}>
+                                <Text style={[styles.countText, { color: on ? p.onAccent : p.sub, fontFamily: p.fonts.semibold }]}>
+                                    {counts[t.key] || 0}
+                                </Text>
+                            </View>
                         </Pressable>
                     );
                 })}
@@ -53,11 +57,9 @@ export function ProfileTabs({ active, onChange, counts }: ProfileTabsProps) {
             {width > 0 && (
                 <Animated.View
                     pointerEvents="none"
-                    style={[styles.indicator, { width: width / TABS.length, transform: [{ translateX: x }] }]}
+                    style={[styles.indicatorBox, { width: width / TABS.length, transform: [{ translateX: x }] }]}
                 >
-                    {Array.from({ length: 9 }, (_, i) => (
-                        <View key={i} style={[styles.dot, { backgroundColor: p.accent, opacity: 1 - Math.abs(i - 4) * 0.17 }]} />
-                    ))}
+                    <View style={[styles.indicator, { backgroundColor: p.accent }]} />
                 </Animated.View>
             )}
         </View>
@@ -77,39 +79,39 @@ const styles = StyleSheet.create({
     },
     tab: {
         flex: 1,
-        alignItems: 'center',
-        paddingBottom: 14,
-    },
-    num: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 30,
-        lineHeight: 32,
-        letterSpacing: 1,
-        includeFontPadding: false,
-    },
-    label: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 11,
-        letterSpacing: 1.8,
-        marginTop: 4,
-        includeFontPadding: false,
-    },
-    rule: {
-        height: StyleSheet.hairlineWidth,
-    },
-    indicator: {
-        position: 'absolute',
-        left: 0,
-        bottom: -2,
-        height: 4,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 5,
+        gap: 8,
+        paddingBottom: 14,
     },
-    dot: {
-        width: 4,
-        height: 4,
+    label: {
+        fontSize: 16,
+    },
+    count: {
+        minWidth: 24,
+        height: 22,
+        paddingHorizontal: 7,
+        borderRadius: 11,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    countText: {
+        fontSize: 12,
+        fontVariant: ['tabular-nums'],
+    },
+    rule: {
+        height: StyleSheet.hairlineWidth * 2,
+    },
+    indicatorBox: {
+        position: 'absolute',
+        left: 0,
+        bottom: -1,
+        alignItems: 'center',
+    },
+    indicator: {
+        width: 36,
+        height: 3,
         borderRadius: 2,
     },
 });

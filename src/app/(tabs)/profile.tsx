@@ -16,7 +16,7 @@ import { SignalMap } from '../../components/Profile/SignalMap';
 import { ProfileTabs } from '../../components/Profile/ProfileTabs';
 import { ClipLog, ClipItem } from '../../components/Profile/ClipLog';
 import { ThesisRow } from '../../components/Profile/ThesisRow';
-import { EmptyDots } from '../../components/UI/EmptyDots';
+import { EmptyState } from '../../components/UI/EmptyState';
 import { ProfileStats } from '../../components/Profile/ProfileStats';
 import { AmbientGlow } from '../../components/UI/AmbientGlow';
 
@@ -423,8 +423,8 @@ export default function ProfileScreen() {
             }
             if (videos.length === 0) {
                 return (
-                    <EmptyDots
-                        glyph="clip"
+                    <EmptyState
+                        icon="videocam-outline"
                         title="No clips yet"
                         sub="Share your first video and it lands here."
                         cta="Create"
@@ -445,8 +445,8 @@ export default function ProfileScreen() {
             }
             if (posts.length === 0) {
                 return (
-                    <EmptyDots
-                        glyph="thesis"
+                    <EmptyState
+                        icon="chatbubbles-outline"
                         title="No theses yet"
                         sub="Put a claim out there and let people argue it."
                         cta="Propose a thesis"
@@ -460,8 +460,8 @@ export default function ProfileScreen() {
 
         if (savedItems.length === 0) {
             return (
-                <EmptyDots
-                    glyph="vault"
+                <EmptyState
+                    icon="bookmark-outline"
                     title="The vault is empty"
                     sub="Clips you bookmark will rest here."
                 />

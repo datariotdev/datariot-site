@@ -82,7 +82,6 @@ export default function RootLayout() {
         SpaceGrotesk_500Medium,
         SpaceGrotesk_700Bold,
         // Dot-matrix digits for the video timer (same face as the website's counters)
-        Doto_700Bold: require('../../assets/fonts/Doto_700Bold.ttf'),
         Doto_900Black: require('../../assets/fonts/Doto_900Black.ttf'),
         ...Feather.font,
         ...Ionicons.font,

@@ -4,9 +4,9 @@ import { usePalette } from '../../design-system/palette';
 
 const WEEKS = 14;
 const ROWS = 7;
-const GUTTER = 16;
-const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-const WEEKDAYS: Record<number, string> = { 0: 'M', 2: 'W', 4: 'F' };
+const GUTTER = 30;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const WEEKDAYS: Record<number, string> = { 0: 'Mon', 2: 'Wed', 4: 'Fri' };
 
 // Dot size (share of the cell) and strength for 0, 1, 2, 3-4 and 5+ acts in a day
 const SIZE = [0.16, 0.34, 0.5, 0.66, 0.82];
@@ -14,7 +14,6 @@ const STRENGTH = [0.2, 0.55, 0.7, 0.85, 1];
 
 const dayKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 const level = (n: number) => (n <= 0 ? 0 : n === 1 ? 1 : n === 2 ? 2 : n <= 4 ? 3 : 4);
-const pad = (n: number) => n.toString().padStart(2, '0');
 
 interface SignalMapProps {
     /** When each clip, thesis and argument was made */
@@ -104,12 +103,12 @@ export function SignalMap({ dates }: SignalMapProps) {
         <View style={[styles.card, { backgroundColor: p.card, borderColor: p.border }]}>
             <View style={styles.head}>
                 <View>
-                    <Text style={[styles.title, { color: p.accent }]}>SIGNAL</Text>
+                    <Text style={[styles.title, { color: p.text, fontFamily: p.fonts.bold }]}>Activity</Text>
                     <Text style={[styles.sub, { color: p.sub, fontFamily: p.fonts.regular }]}>Your last 14 weeks</Text>
                 </View>
                 <View style={styles.bigBox}>
-                    <Text style={[styles.big, { color: p.text }]}>{pad(model.total)}</Text>
-                    <Text style={[styles.cap, { color: p.sub }]}>ACTS</Text>
+                    <Text style={[styles.big, { color: p.text, fontFamily: p.fonts.bold }]}>{model.total}</Text>
+                    <Text style={[styles.cap, { color: p.sub, fontFamily: p.fonts.regular }]}>{model.total === 1 ? 'action' : 'actions'}</Text>
                 </View>
             </View>
 
@@ -118,7 +117,7 @@ export function SignalMap({ dates }: SignalMapProps) {
                     {cell > 0 &&
                         Array.from({ length: ROWS }, (_, r) => (
                             <View key={r} style={{ height: rowH, justifyContent: 'center' }}>
-                                <Text style={[styles.dayLabel, { color: p.faint }]}>{WEEKDAYS[r] || ''}</Text>
+                                <Text style={[styles.dayLabel, { color: p.faint, fontFamily: p.fonts.medium }]}>{WEEKDAYS[r] || ''}</Text>
                             </View>
                         ))}
                 </View>
@@ -128,7 +127,7 @@ export function SignalMap({ dates }: SignalMapProps) {
                         {model.labels.map((l, c) => (
                             <View key={c} style={{ width: cell || `${100 / WEEKS}%` as any }}>
                                 {!!l && (
-                                    <Text numberOfLines={1} style={[styles.monthLabel, { color: p.faint }]}>
+                                    <Text numberOfLines={1} style={[styles.monthLabel, { color: p.faint, fontFamily: p.fonts.medium }]}>
                                         {l}
                                     </Text>
                                 )}
@@ -187,23 +186,20 @@ export function SignalMap({ dates }: SignalMapProps) {
             )}
 
             <View style={[styles.stats, { borderColor: p.border }]}>
-                <Stat label="STREAK" value={`${model.streak}`} unit="D" p={p} />
+                <Stat label="Day streak" value={model.streak} p={p} />
                 <View style={[styles.statRule, { backgroundColor: p.border }]} />
-                <Stat label="BEST DAY" value={`${model.best}`} p={p} />
+                <Stat label="Best day" value={model.best} p={p} />
                 <View style={[styles.statRule, { backgroundColor: p.border }]} />
-                <Stat label="ACTIVE" value={`${model.activeDays}`} unit="D" p={p} />
+                <Stat label="Active days" value={model.activeDays} p={p} />
             </View>
         </View>
     );
 }
 
-const Stat = ({ label, value, unit, p }: { label: string; value: string; unit?: string; p: ReturnType<typeof usePalette> }) => (
+const Stat = ({ label, value, p }: { label: string; value: number; p: ReturnType<typeof usePalette> }) => (
     <View style={styles.stat}>
-        <View style={styles.statValueRow}>
-            <Text style={[styles.statValue, { color: p.text }]}>{pad(Number(value))}</Text>
-            {!!unit && <Text style={[styles.statUnit, { color: p.sub }]}>{unit}</Text>}
-        </View>
-        <Text style={[styles.statLabel, { color: p.sub }]}>{label}</Text>
+        <Text style={[styles.statValue, { color: p.text, fontFamily: p.fonts.bold }]}>{value}</Text>
+        <Text style={[styles.statLabel, { color: p.sub, fontFamily: p.fonts.regular }]}>{label}</Text>
     </View>
 );
 
@@ -226,10 +222,8 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
     },
     title: {
-        fontFamily: 'Doto_900Black',
         fontSize: 18,
-        letterSpacing: 1.5,
-        includeFontPadding: false,
+        letterSpacing: -0.2,
     },
     sub: {
         fontSize: 12,
@@ -239,17 +233,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
     },
     big: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 34,
-        lineHeight: 36,
-        letterSpacing: 1,
-        includeFontPadding: false,
+        fontSize: 30,
+        lineHeight: 32,
+        letterSpacing: -0.6,
+        fontVariant: ['tabular-nums'],
     },
     cap: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 10.5,
-        letterSpacing: 1.6,
-        includeFontPadding: false,
+        fontSize: 12.5,
     },
     mapRow: {
         flexDirection: 'row',
@@ -259,9 +249,7 @@ const styles = StyleSheet.create({
         width: GUTTER,
     },
     dayLabel: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 10,
-        includeFontPadding: false,
+        fontSize: 9.5,
     },
     gridCol: {
         flex: 1,
@@ -271,10 +259,7 @@ const styles = StyleSheet.create({
         height: 16,
     },
     monthLabel: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 10,
-        letterSpacing: 0.4,
-        includeFontPadding: false,
+        fontSize: 10.5,
     },
     grid: {
         flexDirection: 'row',
@@ -299,29 +284,13 @@ const styles = StyleSheet.create({
         width: StyleSheet.hairlineWidth,
         height: 30,
     },
-    statValueRow: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-    },
     statValue: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 24,
-        lineHeight: 26,
-        letterSpacing: 1,
-        includeFontPadding: false,
-    },
-    statUnit: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 11,
-        marginLeft: 3,
-        marginBottom: 2,
-        includeFontPadding: false,
+        fontSize: 20,
+        letterSpacing: -0.3,
+        fontVariant: ['tabular-nums'],
     },
     statLabel: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 10,
-        letterSpacing: 1.5,
-        marginTop: 3,
-        includeFontPadding: false,
+        fontSize: 12,
+        marginTop: 2,
     },
 });

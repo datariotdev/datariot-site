@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, Image, ImageSourcePropType, Platform
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
 import { usePalette } from '../../design-system/palette';
-import { DotRule } from '../UI/DotRule';
+import { SectionRule } from '../UI/SectionRule';
 
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
 
@@ -39,13 +39,13 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
     if (Platform.OS !== 'web' || width <= 768) {
         return (
             <View style={[styles.pContainer, containerStyle]}>
-                {index || meta ? <DotRule label={index || ''} right={meta} /> : null}
+                {index || meta ? <SectionRule label={index || ''} right={meta ? meta.toLowerCase() : undefined} /> : null}
                 <View style={styles.pTitleRow}>
                     <Text style={[styles.pTitle, { color: p.text, fontFamily: p.fonts.bold }]}>{title}</Text>
                     {rightImage && !onPressShowAll ? <Image source={rightImage} style={styles.farRightImage} resizeMode="contain" /> : null}
                     {onPressShowAll ? (
                         <Pressable onPress={onPressShowAll} style={styles.showAllButton} hitSlop={8}>
-                            <Text style={[styles.pAll, { color: p.accent }]}>ALL</Text>
+                            <Text style={[styles.pAll, { color: p.accent }]}>See all</Text>
                             <Feather name="arrow-up-right" size={14} color={p.accent} />
                         </Pressable>
                     ) : null}
@@ -104,8 +104,8 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 const styles = StyleSheet.create({
     pContainer: { paddingHorizontal: 20, paddingTop: 34, paddingBottom: 14 },
     pTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
-    pTitle: { fontSize: 28, letterSpacing: -0.7 },
-    pAll: { fontFamily: 'Doto_900Black', fontSize: 14, letterSpacing: 1.4, includeFontPadding: false },
+    pTitle: { fontSize: 28, letterSpacing: -0.6 },
+    pAll: { fontFamily: 'Outfit_600SemiBold', fontSize: 14 },
     pSub: { fontSize: 14, marginTop: 3 },
     container: {
         flexDirection: 'row',

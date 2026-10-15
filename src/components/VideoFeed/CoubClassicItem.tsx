@@ -4,16 +4,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
-import { useTheme } from '../Theme/ThemeProvider';
+import { usePalette } from '../../design-system/palette';
 import { Avatar } from '../UI/Avatar';
-import { HalftoneArt } from './MosaicFeed/HalftoneArt';
-import { FeedVideo, Viewfinder, realThumb, formatNumber, formatClock, ago } from './feedMedia';
+import { PosterArt } from '../UI/PosterArt';
+import { FeedVideo, realThumb, formatNumber, formatClock, ago } from './feedMedia';
 
 const ICE = '#DAE6F7';
-const INK = '#07080C';
-const GLASS = 'rgba(7, 8, 12, 0.62)';
-const GLASS_LINE = 'rgba(218, 230, 247, 0.24)';
-const METER_DOTS = 22;
+const GLASS = 'rgba(10, 12, 18, 0.5)';
+const GLASS_LINE = 'rgba(255, 255, 255, 0.16)';
+// The one place the dot-matrix face stays: how long a clip is
+const DURATION_FONT = 'Doto_900Black';
 
 interface FeedItemProps {
     item: any;
@@ -25,29 +25,26 @@ interface FeedItemProps {
     onSelect: () => void;
 }
 
+const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
-interface RailButtonProps {
+interface ActionProps {
     icon: keyof typeof Ionicons.glyphMap;
     count?: number;
     on?: boolean;
     label: string;
     onPress: () => void;
     scale?: Animated.Value;
+    color: string;
+    onColor: string;
 }
 
-/** A round glass button with its count in dot-matrix digits underneath */
-const RailButton = ({ icon, count, on, label, onPress, scale }: RailButtonProps) => (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label} style={styles.railItem}>
-        <Animated.View
-            style={[
-                styles.railBtn,
-                on ? { backgroundColor: ICE, borderColor: ICE } : null,
-                scale ? { transform: [{ scale }] } : null,
-            ]}
-        >
-            <Ionicons name={icon} size={21} color={on ? INK : '#FFFFFF'} />
+/** An icon with its count beside it, the way a post's action bar reads */
+const Action = ({ icon, count, on, label, onPress, scale, color, onColor }: ActionProps) => (
+    <Pressable onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel={label} style={styles.action}>
+        <Animated.View style={scale ? { transform: [{ scale }] } : null}>
+            <Ionicons name={icon} size={22} color={on ? onColor : color} />
         </Animated.View>
-        {count !== undefined ? <Text style={styles.railCount}>{formatNumber(count)}</Text> : null}
+        {count !== undefined ? <Text style={[styles.actionCount, { color }]}>{formatNumber(count)}</Text> : null}
     </Pressable>
 );
 
@@ -60,33 +57,28 @@ export const CoubClassicItem = memo(({
     onMore,
     onSelect,
 }: FeedItemProps) => {
+    const p = usePalette();
     const [muted, setMuted] = useState(true);
     const [progress, setProgress] = useState(0);
     const [durationMs, setDurationMs] = useState(0);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const { width: windowWidth } = useWindowDimensions();
-    const { mode } = useTheme();
 
     const isWeb = Platform.OS === 'web';
-    const isMobileWeb = isWeb && windowWidth <= 768;
-    const isDark = mode === 'dark';
-
-    const gutter = isWeb ? (isMobileWeb ? 12 : 16) : 16;
-    const cardWidth = Math.min(isWeb && !isMobileWeb ? 680 : windowWidth - gutter * 2, 680);
-    const cardHeight = Math.min(Math.round(cardWidth * 1.22), 560);
+    const gutter = isWeb && windowWidth <= 768 ? 12 : 16;
+    const cardWidth = Math.min(windowWidth - gutter * 2, 680);
+    const mediaWidth = cardWidth - 12;
+    const mediaHeight = Math.min(Math.round(mediaWidth * 1.16), 540);
 
     const router = useRouter();
     const isFocused = useIsFocused();
     const thumb = realThumb(item.thumbnailUrl);
-    const playing = isActive && isFocused && !isPaused;
 
-    // Animation for the like button
     const likeScale = useRef(new Animated.Value(1)).current;
-
     const handleLike = () => {
         Animated.sequence([
-            Animated.spring(likeScale, { toValue: 1.3, useNativeDriver: true, speed: 50, bounciness: 10 }),
+            Animated.spring(likeScale, { toValue: 1.35, useNativeDriver: true, speed: 50, bounciness: 12 }),
             Animated.spring(likeScale, { toValue: 1, useNativeDriver: true, speed: 50, bounciness: 10 }),
         ]).start();
         onLike();
@@ -99,23 +91,21 @@ export const CoubClassicItem = memo(({
     const stats = item.logicStats;
     const voted = !!stats && stats.forScore + stats.againstScore > 0;
     const forPct = voted ? Math.round(stats.forPercentage) : 0;
-    const lit = voted ? Math.round((stats.forPercentage / 100) * METER_DOTS) : 0;
     const when = ago(item.createdAt);
+    const meta = [`${formatNumber(item.views)} views`, when && `${when} ago`.replace('now ago', 'just now')].filter(Boolean).join('  ·  ');
 
     return (
-        <View style={[styles.card, { width: '100%', paddingHorizontal: gutter }]}>
+        <View style={[styles.outer, { paddingHorizontal: gutter }]}>
             <View
                 style={[
-                    styles.frame,
-                    { width: cardWidth, height: cardHeight },
-                    isDark
-                        ? { borderColor: 'rgba(218, 230, 247, 0.12)' }
-                        : { borderColor: 'rgba(7, 8, 12, 0.08)', shadowColor: '#1E2A55', shadowOpacity: 0.16, shadowRadius: 22, shadowOffset: { width: 0, height: 12 }, elevation: 8 },
+                    styles.card,
+                    { width: cardWidth, backgroundColor: p.card, borderColor: p.border },
+                    !p.isDark && styles.cardShadow,
                 ]}
             >
-                {/* The clip, or a dot picture of it when it has none */}
-                <Pressable style={StyleSheet.absoluteFill} onPress={() => setIsPaused(p => !p)} accessibilityLabel={isPaused ? 'Play' : 'Pause'}>
-                    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#06070A' }]}>
+                {/* The clip */}
+                <View style={[styles.media, { height: mediaHeight }]}>
+                    <Pressable style={StyleSheet.absoluteFill} onPress={() => setIsPaused(v => !v)} accessibilityLabel={isPaused ? 'Play' : 'Pause'}>
                         {item.videoUrl ? (
                             <FeedVideo
                                 url={item.videoUrl}
@@ -130,123 +120,117 @@ export const CoubClassicItem = memo(({
                                 }}
                             />
                         ) : (
-                            <HalftoneArt seed={String(item.id)} isDark />
+                            <PosterArt seed={String(item.id)} isDark />
                         )}
-                    </View>
-                </Pressable>
+                    </Pressable>
 
-                {/* Shade so the white text and buttons always read */}
-                <LinearGradient colors={['rgba(7, 8, 12, 0.55)', 'rgba(7, 8, 12, 0)']} style={styles.topShade} pointerEvents="none" />
-                <LinearGradient
-                    colors={['rgba(7, 8, 12, 0)', 'rgba(7, 8, 12, 0.55)', 'rgba(7, 8, 12, 0.94)']}
-                    locations={[0, 0.5, 1]}
-                    style={styles.bottomShade}
-                    pointerEvents="none"
-                />
+                    <LinearGradient colors={['rgba(7, 8, 12, 0.45)', 'rgba(7, 8, 12, 0)']} style={styles.topShade} pointerEvents="none" />
+                    <LinearGradient colors={['rgba(7, 8, 12, 0)', 'rgba(7, 8, 12, 0.5)']} style={styles.bottomShade} pointerEvents="none" />
 
-                {/* Keeps the buttons readable on a bright picture */}
-                <LinearGradient
-                    colors={['rgba(7, 8, 12, 0)', 'rgba(7, 8, 12, 0.5)']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.rightShade}
-                    pointerEvents="none"
-                />
-
-                <Viewfinder on={playing} />
-
-                {isPaused && (
-                    <View style={styles.pauseOverlay} pointerEvents="none">
-                        <View style={styles.pauseDisc}>
-                            <Ionicons name="play" size={30} color={INK} style={{ marginLeft: 3 }} />
+                    {isPaused && (
+                        <View style={styles.center} pointerEvents="none">
+                            <View style={styles.playDisc}>
+                                <Ionicons name="play" size={28} color="#FFFFFF" style={{ marginLeft: 3 }} />
+                            </View>
                         </View>
-                    </View>
-                )}
+                    )}
 
-                {/* Top row: what it is, and the two things you can do with the picture */}
-                <View style={styles.topRow} pointerEvents="box-none">
-                    <View style={styles.chip}>
-                        <View style={[styles.chipDot, playing && { backgroundColor: ICE }]} />
-                        <Text style={styles.chipText} numberOfLines={1}>
-                            {String(item.category || 'trending').toUpperCase()}
-                        </Text>
-                    </View>
-                    <View style={styles.topBtns}>
-                        <Pressable onPress={() => setMuted(m => !m)} accessibilityLabel={muted ? 'Unmute' : 'Mute'} style={styles.roundSm}>
+                    <View style={styles.topRow} pointerEvents="box-none">
+                        <View style={styles.chip}>
+                            <Text style={styles.chipText} numberOfLines={1}>
+                                {capitalize(String(item.category || 'Trending'))}
+                            </Text>
+                        </View>
+                        <Pressable onPress={() => setMuted(m => !m)} accessibilityLabel={muted ? 'Unmute' : 'Mute'} hitSlop={6} style={styles.round}>
                             <Ionicons name={muted ? 'volume-mute' : 'volume-high'} size={17} color="#FFFFFF" />
                         </Pressable>
-                        <Pressable onPress={onSelect} accessibilityLabel="Open full screen" style={styles.roundSm}>
-                            <Ionicons name="expand-outline" size={17} color="#FFFFFF" />
-                        </Pressable>
+                    </View>
+
+                    {durationMs > 0 && (
+                        <View style={styles.durPill} pointerEvents="none">
+                            <Text style={styles.durText}>{formatClock(durationMs)}</Text>
+                        </View>
+                    )}
+
+                    <View style={styles.track} pointerEvents="none">
+                        <View style={[styles.fill, { width: `${progress * 100}%` }]} />
                     </View>
                 </View>
 
-                {/* Right rail */}
-                <View style={styles.rail} pointerEvents="box-none">
-                    <RailButton
-                        icon={item.isLiked ? 'star' : 'star-outline'}
-                        count={item.likes}
-                        on={item.isLiked}
-                        label="Like"
-                        onPress={handleLike}
-                        scale={likeScale}
-                    />
-                    <RailButton icon="chatbubble-outline" count={item.comments} label="Comments" onPress={onComment} />
-                    <RailButton
-                        icon={item.isSaved ? 'bookmark' : 'bookmark-outline'}
-                        count={item.saved || item.shares || 0}
-                        on={item.isSaved}
-                        label="Save"
-                        onPress={onSave}
-                    />
-                    <RailButton icon="ellipsis-horizontal" label="More" onPress={onMore} />
-                </View>
+                {/* Who, what, and what people think */}
+                <View style={styles.body}>
+                    <View style={styles.authorRow}>
+                        <Pressable onPress={handleNavigateProfile} style={styles.author}>
+                            <Avatar uri={item.avatarUrl} name={item.author || '?'} size={36} />
+                            <View style={{ flexShrink: 1 }}>
+                                <Text style={[styles.name, { color: p.text, fontFamily: p.fonts.semibold }]} numberOfLines={1}>
+                                    {item.author || 'Unknown'}
+                                </Text>
+                                <Text style={[styles.meta, { color: p.sub, fontFamily: p.fonts.regular }]} numberOfLines={1}>
+                                    {meta}
+                                </Text>
+                            </View>
+                        </Pressable>
+                        <Pressable onPress={onMore} hitSlop={8} accessibilityLabel="More" style={[styles.moreBtn, { backgroundColor: p.soft }]}>
+                            <Ionicons name="ellipsis-horizontal" size={18} color={p.sub} />
+                        </Pressable>
+                    </View>
 
-                {/* Bottom: who, what, who is winning */}
-                <View style={styles.info} pointerEvents="box-none">
-                    <Pressable onPress={handleNavigateProfile} style={styles.authorRow}>
-                        <Avatar uri={item.avatarUrl} name={item.author || '?'} size={30} />
-                        <Text style={styles.author} numberOfLines={1}>
-                            {item.author || 'Unknown'}
-                        </Text>
-                        {!!when && <Text style={styles.when}>{when}</Text>}
-                    </Pressable>
+                    {!!item.title && (
+                        <Pressable onPress={() => setIsExpanded(e => !e)}>
+                            <Text style={[styles.title, { color: p.text, fontFamily: p.fonts.bold }]} numberOfLines={isExpanded ? undefined : 2}>
+                                {item.title}
+                            </Text>
+                        </Pressable>
+                    )}
 
-                    <Pressable onPress={() => setIsExpanded(e => !e)}>
-                        <Text style={styles.title} numberOfLines={isExpanded ? undefined : 2}>
-                            {item.title || ''}
-                        </Text>
-                    </Pressable>
-
-                    {!!item.hashtag && <Text style={styles.hashtag}>{`#${String(item.hashtag).toUpperCase()}`}</Text>}
+                    {!!item.hashtag && (
+                        <Text style={[styles.hashtag, { color: p.sub, fontFamily: p.fonts.medium }]}>{`#${item.hashtag}`}</Text>
+                    )}
 
                     {stats ? (
-                        <View style={styles.meterWrap}>
-                            <View style={styles.meter}>
-                                {Array.from({ length: METER_DOTS }, (_, i) => (
-                                    <View key={i} style={[styles.mDot, { opacity: voted ? (i < lit ? 1 : 0.22) : 0.2 }]} />
-                                ))}
+                        <View style={styles.balance}>
+                            <View style={styles.balanceLabels}>
+                                <Text style={[styles.balanceText, { color: p.text, fontFamily: p.fonts.semibold }]}>
+                                    {voted ? `For ${forPct}%` : 'No votes yet'}
+                                </Text>
+                                {voted && (
+                                    <Text style={[styles.balanceText, { color: p.sub, fontFamily: p.fonts.semibold }]}>{`${100 - forPct}% Against`}</Text>
+                                )}
                             </View>
-                            <View style={styles.meterCaps}>
-                                <Text style={styles.cap}>{voted ? `FOR ${forPct}%` : 'NO VOTES YET'}</Text>
-                                {voted && <Text style={[styles.cap, { opacity: 0.6 }]}>{`AGAINST ${100 - forPct}%`}</Text>}
+                            <View style={[styles.balanceTrack, { backgroundColor: p.soft }]}>
+                                {voted && <View style={[styles.balanceFill, { width: `${forPct}%`, backgroundColor: p.accent }]} />}
                             </View>
                         </View>
                     ) : null}
 
-                    <View style={styles.footer}>
-                        <View style={styles.views}>
-                            <Ionicons name="play" size={10} color={ICE} />
-                            <Text style={styles.footNum}>{formatNumber(item.views)}</Text>
-                        </View>
-                        {durationMs > 0 && <Text style={styles.footNum}>{formatClock(durationMs)}</Text>}
+                    <View style={[styles.actions, { borderTopColor: p.border }]}>
+                        <Action
+                            icon={item.isLiked ? 'star' : 'star-outline'}
+                            count={item.likes}
+                            on={item.isLiked}
+                            label="Like"
+                            onPress={handleLike}
+                            scale={likeScale}
+                            color={p.text}
+                            onColor={p.accent}
+                        />
+                        <Action icon="chatbubble-outline" count={item.comments} label="Comments" onPress={onComment} color={p.text} onColor={p.accent} />
+                        <Action
+                            icon={item.isSaved ? 'bookmark' : 'bookmark-outline'}
+                            count={item.saved || item.shares || 0}
+                            on={item.isSaved}
+                            label="Save"
+                            onPress={onSave}
+                            color={p.text}
+                            onColor={p.accent}
+                        />
+                        <View style={{ flex: 1 }} />
+                        <Pressable onPress={onSelect} accessibilityLabel="Watch full screen" style={[styles.watch, { backgroundColor: p.accent }]}>
+                            <Ionicons name="expand" size={14} color={p.onAccent} />
+                            <Text style={[styles.watchText, { color: p.onAccent, fontFamily: p.fonts.semibold }]}>Watch</Text>
+                        </Pressable>
                     </View>
-                </View>
-
-                {/* Progress, same ice line as the full-screen player */}
-                <View style={styles.progressTrack} pointerEvents="none">
-                    <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-                    {progress > 0 && <View style={[styles.progressDot, { left: `${progress * 100}%` }]} />}
                 </View>
             </View>
         </View>
@@ -265,118 +249,110 @@ export const CoubClassicItem = memo(({
 CoubClassicItem.displayName = 'CoubClassicItem';
 
 const styles = StyleSheet.create({
-    card: {
-        marginBottom: 22,
+    outer: {
+        width: '100%',
         alignItems: 'center',
+        marginBottom: 18,
     },
-    frame: {
-        borderRadius: 30,
+    card: {
+        borderRadius: 28,
         borderWidth: 1,
+        padding: 6,
+    },
+    cardShadow: {
+        shadowColor: '#1E2A55',
+        shadowOpacity: 0.12,
+        shadowRadius: 20,
+        shadowOffset: { width: 0, height: 10 },
+        elevation: 6,
+    },
+    media: {
+        borderRadius: 22,
         overflow: 'hidden',
         backgroundColor: '#06070A',
     },
-    topShade: { position: 'absolute', left: 0, right: 0, top: 0, height: 96 },
-    rightShade: { position: 'absolute', right: 0, top: 0, bottom: 0, width: 110 },
-    bottomShade: { position: 'absolute', left: 0, right: 0, bottom: 0, height: '62%' },
-    pauseOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
-    pauseDisc: { width: 68, height: 68, borderRadius: 34, backgroundColor: ICE, alignItems: 'center', justifyContent: 'center' },
-
+    topShade: { position: 'absolute', left: 0, right: 0, top: 0, height: 80 },
+    bottomShade: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 80 },
+    center: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+    playDisc: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        backgroundColor: GLASS,
+        borderWidth: 1,
+        borderColor: GLASS_LINE,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     topRow: {
         position: 'absolute',
-        top: 14,
-        left: 14,
-        right: 14,
+        top: 12,
+        left: 12,
+        right: 12,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
     },
     chip: {
-        maxWidth: '58%',
-        flexDirection: 'row',
-        alignItems: 'center',
+        maxWidth: '70%',
         height: 30,
         paddingHorizontal: 12,
         borderRadius: 15,
+        justifyContent: 'center',
         backgroundColor: GLASS,
         borderWidth: 1,
         borderColor: GLASS_LINE,
     },
-    chipDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: 'rgba(218, 230, 247, 0.45)', marginRight: 8 },
-    chipText: { flexShrink: 1, fontFamily: 'Doto_900Black', fontSize: 13, letterSpacing: 1, color: ICE, includeFontPadding: false },
-    topBtns: { flexDirection: 'row', gap: 8 },
-    roundSm: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+    chipText: { fontFamily: 'Outfit_600SemiBold', fontSize: 13, color: '#FFFFFF' },
+    round: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
         backgroundColor: GLASS,
         borderWidth: 1,
         borderColor: GLASS_LINE,
         alignItems: 'center',
         justifyContent: 'center',
     },
-
-    rail: {
+    durPill: {
         position: 'absolute',
         right: 12,
-        bottom: 66,
-        alignItems: 'center',
-        gap: 8,
-    },
-    railItem: { alignItems: 'center', gap: 3 },
-    railBtn: {
-        width: 46,
-        height: 46,
-        borderRadius: 23,
+        bottom: 14,
+        height: 26,
+        paddingHorizontal: 10,
+        borderRadius: 13,
+        justifyContent: 'center',
         backgroundColor: GLASS,
         borderWidth: 1,
         borderColor: GLASS_LINE,
+    },
+    durText: { fontFamily: DURATION_FONT, fontSize: 14, letterSpacing: 0.6, color: '#FFFFFF', includeFontPadding: false },
+    track: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 3, backgroundColor: 'rgba(255, 255, 255, 0.18)' },
+    fill: { height: '100%', backgroundColor: ICE },
+
+    body: { paddingHorizontal: 10, paddingTop: 14, paddingBottom: 4 },
+    authorRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+    author: { flexDirection: 'row', alignItems: 'center', gap: 10, flexShrink: 1 },
+    name: { fontSize: 15 },
+    meta: { fontSize: 12.5, marginTop: 1 },
+    moreBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+    title: { fontSize: 19, lineHeight: 25, letterSpacing: -0.3, marginTop: 12 },
+    hashtag: { fontSize: 13.5, marginTop: 4 },
+    balance: { marginTop: 14 },
+    balanceLabels: { flexDirection: 'row', justifyContent: 'space-between' },
+    balanceText: { fontSize: 12.5 },
+    balanceTrack: { height: 6, borderRadius: 3, overflow: 'hidden', marginTop: 6 },
+    balanceFill: { height: '100%', borderRadius: 3 },
+    actions: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        gap: 22,
+        marginTop: 14,
+        paddingTop: 12,
+        borderTopWidth: StyleSheet.hairlineWidth,
     },
-    railCount: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 13,
-        letterSpacing: 0.6,
-        color: '#FFFFFF',
-        textShadowColor: 'rgba(0, 0, 0, 0.6)',
-        textShadowOffset: { width: 0, height: 0 },
-        textShadowRadius: 4,
-        includeFontPadding: false,
-    },
-
-    info: {
-        position: 'absolute',
-        left: 16,
-        right: 74,
-        bottom: 16,
-    },
-    authorRow: { flexDirection: 'row', alignItems: 'center', gap: 9, marginBottom: 10 },
-    author: { flexShrink: 1, fontFamily: 'Outfit_600SemiBold', fontSize: 14.5, color: 'rgba(255, 255, 255, 0.92)' },
-    when: { fontFamily: 'Doto_700Bold', fontSize: 12, letterSpacing: 1, color: 'rgba(218, 230, 247, 0.78)', includeFontPadding: false },
-    title: { fontFamily: 'Outfit_700Bold', fontSize: 22, lineHeight: 27, letterSpacing: -0.4, color: '#FFFFFF' },
-    hashtag: { fontFamily: 'Doto_700Bold', fontSize: 13, letterSpacing: 1.2, color: ICE, marginTop: 6, includeFontPadding: false },
-    meterWrap: { marginTop: 12 },
-    meter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-    mDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: ICE },
-    meterCaps: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
-    cap: { fontFamily: 'Doto_700Bold', fontSize: 11.5, letterSpacing: 1.3, color: '#FFFFFF', includeFontPadding: false },
-    footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, marginRight: -58 },
-    views: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-    footNum: { fontFamily: 'Doto_900Black', fontSize: 15, letterSpacing: 0.6, color: 'rgba(226, 235, 250, 0.95)', includeFontPadding: false },
-
-    progressTrack: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 4, backgroundColor: 'rgba(218, 230, 247, 0.16)' },
-    progressFill: { height: '100%', backgroundColor: ICE, borderTopRightRadius: 4, borderBottomRightRadius: 4 },
-    progressDot: {
-        position: 'absolute',
-        top: -3,
-        width: 9,
-        height: 9,
-        borderRadius: 4.5,
-        marginLeft: -4.5,
-        backgroundColor: ICE,
-        shadowColor: ICE,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.8,
-        shadowRadius: 6,
-    },
+    action: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    actionCount: { fontFamily: 'Outfit_600SemiBold', fontSize: 14, fontVariant: ['tabular-nums'] },
+    watch: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 34, paddingHorizontal: 14, borderRadius: 17 },
+    watchText: { fontSize: 13.5 },
 });

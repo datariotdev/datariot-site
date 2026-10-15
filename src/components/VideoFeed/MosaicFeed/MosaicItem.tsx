@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { theme } from '@design-system/theme';
-import { HalftoneArt } from './HalftoneArt';
+import { PosterArt } from '../../UI/PosterArt';
 
 const GRID_SPACING = 12;
 // Item width is handled by flex and numColumns in parent
@@ -73,7 +73,6 @@ const MosaicVideo = ({ videoUrl, isActive, isScreenFocused, onFailed }: MosaicVi
 
 const ICE = '#DAE6F7';
 const INK = '#07080C';
-const pad2 = (n: number) => n.toString().padStart(2, '0');
 
 export const MosaicItem = memo(({ video, index = 0, isActive, isScreenFocused, onPress }: MosaicItemProps) => {
     const { mode } = useTheme();
@@ -108,7 +107,7 @@ export const MosaicItem = memo(({ video, index = 0, isActive, isScreenFocused, o
                 ) : realThumb ? (
                     <Image source={{ uri: realThumb }} style={StyleSheet.absoluteFill} resizeMode="cover" />
                 ) : (
-                    <HalftoneArt seed={String(video.id || video.title || index)} isDark={isDark} />
+                    <PosterArt seed={String(video.id || video.title || index)} isDark={isDark} />
                 )}
 
                 {/* Fade so the text reads without a hard black slab */}
@@ -131,17 +130,11 @@ export const MosaicItem = memo(({ video, index = 0, isActive, isScreenFocused, o
                             },
                         ]}
                     >
-                        <View style={[styles.categoryDot, { backgroundColor: onDark ? ICE : INK }]} />
                         <Text style={[styles.categoryText, { color: onDark ? ICE : INK }]} numberOfLines={1}>
-                            {String(video.category).toUpperCase()}
+                            {String(video.category).charAt(0).toUpperCase() + String(video.category).slice(1)}
                         </Text>
                     </View>
                 )}
-
-                {/* Contact-sheet frame number */}
-                <Text style={[styles.frameNo, { color: onDark ? 'rgba(218, 230, 247, 0.9)' : 'rgba(7, 8, 12, 0.55)' }]}>
-                    {pad2(index + 1)}
-                </Text>
 
                 <View style={styles.bottomOverlay}>
                     <Text style={[styles.title, { color: fg }]} numberOfLines={2}>
@@ -197,30 +190,10 @@ const styles = StyleSheet.create({
         borderRadius: 11,
         borderWidth: 1,
     },
-    categoryDot: {
-        width: 4,
-        height: 4,
-        borderRadius: 2,
-        marginRight: 6,
-    },
     categoryText: {
         flexShrink: 1,
-        fontSize: 11,
-        letterSpacing: 0.6,
-        fontFamily: 'Doto_900Black',
-        includeFontPadding: false,
-    },
-    frameNo: {
-        position: 'absolute',
-        top: 11,
-        right: 12,
-        textShadowColor: 'rgba(0, 0, 0, 0.55)',
-        textShadowOffset: { width: 0, height: 0 },
-        textShadowRadius: 4,
-        fontSize: 14,
-        letterSpacing: 1,
-        fontFamily: 'Doto_900Black',
-        includeFontPadding: false,
+        fontSize: 12,
+        fontFamily: 'Outfit_600SemiBold',
     },
     bottomOverlay: {
         position: 'absolute',
@@ -252,9 +225,8 @@ const styles = StyleSheet.create({
         gap: 3,
     },
     statsText: {
-        fontSize: 14,
-        letterSpacing: 0.5,
-        fontFamily: 'Doto_900Black',
-        includeFontPadding: false,
+        fontSize: 12,
+        fontFamily: 'Outfit_600SemiBold',
+        fontVariant: ['tabular-nums'],
     },
 });

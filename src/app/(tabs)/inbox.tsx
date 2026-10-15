@@ -6,8 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { ChatItem } from '../../components/UI/ChatItem';
 import { Avatar } from '../../components/UI/Avatar';
 import { OrbitGlyph } from '../../components/UI/OrbitGlyph';
-import { DotRule } from '../../components/UI/DotRule';
-import { EmptyDots } from '../../components/UI/EmptyDots';
+import { SectionRule } from '../../components/UI/SectionRule';
+import { EmptyState } from '../../components/UI/EmptyState';
 import { useRouter } from 'expo-router';
 import { useChats } from '../../lib/supabase/hooks/useChats';
 import { supabase } from '../../lib/supabase/client';
@@ -23,7 +23,6 @@ interface Profile {
     avatar_url: string | null;
 }
 
-const pad = (n: number) => n.toString().padStart(2, '0');
 
 /** Orvelis is pinned above the conversations: a tool, not a person, so it has no unread count or time. */
 function OrvelisCard({ onPress }: { onPress: () => void }) {
@@ -37,7 +36,7 @@ function OrvelisCard({ onPress }: { onPress: () => void }) {
         >
             <OrbitGlyph color={p.onAccent} size={42} />
             <View style={{ flex: 1 }}>
-                <Text style={[styles.orvTitle, { color: p.onAccent }]}>ORVELIS</Text>
+                <Text style={[styles.orvTitle, { color: p.onAccent, fontFamily: p.fonts.bold }]}>Orvelis</Text>
                 <Text style={[styles.orvSub, { color: p.onAccent, fontFamily: p.fonts.regular }]}>Ask anything, or test an argument.</Text>
             </View>
             <View style={[styles.orvGo, { backgroundColor: p.onAccent }]}>
@@ -165,9 +164,8 @@ export default function InboxScreen() {
                 <View>
                     <Text style={[styles.title, { color: p.text, fontFamily: p.fonts.bold }]}>{isSearching ? 'New message' : 'Messages'}</Text>
                     <View style={styles.sub}>
-                        <View style={[styles.subDot, { backgroundColor: p.accent }]} />
                         <Text style={[styles.subText, { color: p.sub }]}>
-                            {isSearching ? 'FIND A CREATOR' : `${pad(chats.length)} ${chats.length === 1 ? 'THREAD' : 'THREADS'}`}
+                            {isSearching ? 'Find a creator to write to' : `${chats.length} ${chats.length === 1 ? 'conversation' : 'conversations'}`}
                         </Text>
                     </View>
                 </View>
@@ -200,7 +198,7 @@ export default function InboxScreen() {
                     <OrvelisCard onPress={() => handleChatPress('ai-bot')} />
                     {chats.length > 0 && (
                         <View style={styles.rule}>
-                            <DotRule label="THREADS" right={pad(chats.length)} />
+                            <SectionRule label="Conversations" right={String(chats.length)} />
                         </View>
                     )}
                 </>
@@ -256,8 +254,8 @@ export default function InboxScreen() {
                     loading ? (
                         <View style={{ paddingTop: 40 }}><ActivityIndicator color={p.sub} /></View>
                     ) : (
-                        <EmptyDots
-                            glyph="thesis"
+                        <EmptyState
+                            icon="chatbubbles-outline"
                             title="No conversations yet"
                             sub="Find a creator whose video made you think and say so."
                             cta="Find someone"
@@ -289,11 +287,10 @@ const styles = StyleSheet.create({
     titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 16 },
     title: { fontSize: 34, letterSpacing: -0.9 },
     sub: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-    subDot: { width: 5, height: 5, borderRadius: 2.5, marginRight: 8 },
-    subText: { fontFamily: 'Doto_700Bold', fontSize: 13, letterSpacing: 1.6, includeFontPadding: false },
+    subText: { fontFamily: 'Outfit_500Medium', fontSize: 14 },
     roundBtn: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
     orv: { flexDirection: 'row', alignItems: 'center', gap: 14, marginHorizontal: 16, paddingHorizontal: 16, paddingVertical: 16, borderRadius: 26 },
-    orvTitle: { fontFamily: 'Doto_900Black', fontSize: 21, letterSpacing: 1.6, includeFontPadding: false },
+    orvTitle: { fontSize: 20, letterSpacing: -0.2 },
     orvSub: { fontSize: 13.5, marginTop: 2, opacity: 0.72 },
     orvGo: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
     bottomFade: { position: 'absolute', left: 0, right: 0, bottom: 0 },

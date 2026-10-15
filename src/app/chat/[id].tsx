@@ -9,9 +9,8 @@ import { useMessages, ChatMessage } from '../../lib/supabase/hooks/useMessages';
 import { supabase } from '../../lib/supabase/client';
 import { usePalette } from '../../design-system/palette';
 import { Avatar } from '../../components/UI/Avatar';
-import { DotChevron } from '../../components/UI/DotChevron';
-import { DotRule } from '../../components/UI/DotRule';
-import { HalftoneArt } from '../../components/VideoFeed/MosaicFeed/HalftoneArt';
+import { SectionRule } from '../../components/UI/SectionRule';
+import { PosterArt } from '../../components/UI/PosterArt';
 
 const RUN_GAP_MS = 5 * 60 * 1000;
 
@@ -152,7 +151,7 @@ export default function ChatScreen() {
             <View>
                 {day ? (
                     <View style={styles.dayWrap}>
-                        <DotRule label={day.toUpperCase()} centered />
+                        <SectionRule label={day} centered />
                     </View>
                 ) : null}
 
@@ -161,13 +160,13 @@ export default function ChatScreen() {
                         <Pressable
                             onPress={() => setPlaying(m.media_url)}
                             accessibilityLabel="Play video"
-                            style={[styles.video, { backgroundColor: p.isDark ? '#0A0B10' : '#EEF3FC', borderColor: p.border }]}
+                            style={[styles.video, { backgroundColor: '#0A0B10', borderColor: p.border }]}
                         >
-                            <HalftoneArt seed={m.id} isDark={p.isDark} />
+                            <PosterArt seed={m.id} isDark glyph={false} />
                             <View style={[styles.playDisc, { backgroundColor: p.accent }]}>
                                 <Ionicons name="play" size={22} color={p.onAccent} style={{ marginLeft: 2 }} />
                             </View>
-                            <Text style={[styles.videoLabel, { color: p.sub }]}>VIDEO</Text>
+                            <Text style={[styles.videoLabel, { fontFamily: p.fonts.semibold }]}>Video</Text>
                         </Pressable>
                     ) : (
                         <View
@@ -180,7 +179,7 @@ export default function ChatScreen() {
                             <Text selectable style={[styles.msgText, { color: mine ? p.onAccent : p.text, fontFamily: p.fonts.regular }]}>{m.content}</Text>
                         </View>
                     )}
-                    {endsRun ? <Text style={[styles.time, { color: p.faint }]}>{String(m.time).toUpperCase()}</Text> : null}
+                    {endsRun ? <Text style={[styles.time, { color: p.faint, fontFamily: p.fonts.regular }]}>{m.time}</Text> : null}
                 </View>
             </View>
         );
@@ -192,13 +191,13 @@ export default function ChatScreen() {
 
             <View style={[styles.header, { paddingTop: insets.top + 6, borderBottomColor: p.border }]}>
                 <Pressable onPress={goBack} hitSlop={8} accessibilityLabel="Back" style={styles.back}>
-                    <DotChevron color={p.text} />
+                    <Ionicons name="chevron-back" size={26} color={p.text} />
                 </Pressable>
                 <Pressable onPress={openProfile} disabled={!userId} style={styles.who}>
                     <Avatar uri={avatar} name={title} size={40} />
                     <View style={{ flexShrink: 1 }}>
                         <Text numberOfLines={1} style={[styles.whoName, { color: p.text, fontFamily: p.fonts.bold }]}>{title}</Text>
-                        {userId ? <Text style={[styles.whoSub, { color: p.sub }]}>VIEW PROFILE</Text> : null}
+                        {userId ? <Text style={[styles.whoSub, { color: p.sub, fontFamily: p.fonts.regular }]}>View profile</Text> : null}
                     </View>
                 </Pressable>
                 <View style={{ width: 44 }} />
@@ -286,7 +285,7 @@ const styles = StyleSheet.create({
     back: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
     who: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, minHeight: 44 },
     whoName: { fontSize: 16 },
-    whoSub: { fontFamily: 'Doto_700Bold', fontSize: 11, letterSpacing: 1.5, marginTop: 2, includeFontPadding: false },
+    whoSub: { fontSize: 12, marginTop: 1 },
     center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, gap: 8 },
     emptyTitle: { fontSize: 18, marginTop: 10 },
     emptySub: { fontSize: 14.5, textAlign: 'center' },
@@ -299,10 +298,10 @@ const styles = StyleSheet.create({
     tailRight: { borderBottomRightRadius: 6 },
     tailLeft: { borderBottomLeftRadius: 6 },
     msgText: { fontSize: 15.5, lineHeight: 21 },
-    time: { fontFamily: 'Doto_700Bold', fontSize: 11.5, letterSpacing: 0.8, marginHorizontal: 4, includeFontPadding: false },
+    time: { fontSize: 11.5, marginHorizontal: 4 },
     video: { width: 230, height: 150, borderRadius: 22, borderWidth: 1, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
     playDisc: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center' },
-    videoLabel: { position: 'absolute', left: 14, bottom: 11, fontFamily: 'Doto_900Black', fontSize: 13, letterSpacing: 1.4, includeFontPadding: false },
+    videoLabel: { position: 'absolute', left: 14, bottom: 12, fontSize: 13, color: 'rgba(255, 255, 255, 0.85)' },
     composer: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, paddingHorizontal: 12, paddingTop: 10, borderTopWidth: StyleSheet.hairlineWidth },
     round: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
     input: {

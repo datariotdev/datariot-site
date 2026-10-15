@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { encodeVideoUrl } from '@lib/utils/url';
 import { usePalette } from '../../design-system/palette';
-import { HalftoneArt } from '../VideoFeed/MosaicFeed/HalftoneArt';
+import { PosterArt } from '../UI/PosterArt';
 
 export interface ClipItem {
     id: string;
@@ -18,11 +18,9 @@ export interface ClipItem {
     createdAt?: string;
 }
 
-const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const ICE = '#DAE6F7';
 const INK = '#07080C';
-
-const pad = (n: number) => n.toString().padStart(2, '0');
 
 const compact = (n: number) => {
     if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
@@ -52,13 +50,12 @@ const PausedFrame = ({ url }: { url: string }) => {
 
 interface ClipTileProps {
     item: ClipItem;
-    frame: number;
     wide?: boolean;
     latest?: boolean;
     onPress: () => void;
 }
 
-const ClipTile = memo(({ item, frame, wide, latest, onPress }: ClipTileProps) => {
+const ClipTile = memo(({ item, wide, latest, onPress }: ClipTileProps) => {
     const p = usePalette();
     const scale = useRef(new Animated.Value(1)).current;
     const thumb = realThumb(item.thumbnailUrl);
@@ -87,7 +84,7 @@ const ClipTile = memo(({ item, frame, wide, latest, onPress }: ClipTileProps) =>
                     ) : item.videoUrl ? (
                         <PausedFrame url={item.videoUrl} />
                     ) : (
-                        <HalftoneArt seed={item.id} isDark={p.isDark} />
+                        <PosterArt seed={item.id} isDark={p.isDark} />
                     )}
                 </View>
 
@@ -102,8 +99,7 @@ const ClipTile = memo(({ item, frame, wide, latest, onPress }: ClipTileProps) =>
 
                 {latest ? (
                     <View style={styles.latest}>
-                        <View style={styles.latestDot} />
-                        <Text style={styles.latestText}>LATEST</Text>
+                        <Text style={styles.latestText}>Latest</Text>
                     </View>
                 ) : (
                     !!item.category && (
@@ -116,15 +112,13 @@ const ClipTile = memo(({ item, frame, wide, latest, onPress }: ClipTileProps) =>
                                 },
                             ]}
                         >
-                            <View style={[styles.chipDot, { backgroundColor: onDark ? ICE : INK }]} />
                             <Text style={[styles.chipText, { color: onDark ? ICE : INK }]} numberOfLines={1}>
-                                {String(item.category).toUpperCase()}
+                                {String(item.category).charAt(0).toUpperCase() + String(item.category).slice(1)}
                             </Text>
                         </View>
                     )
                 )}
 
-                <Text style={[styles.frame, { color: onDark ? 'rgba(218, 230, 247, 0.9)' : 'rgba(7, 8, 12, 0.55)' }]}>{pad(frame)}</Text>
 
                 <View style={styles.bottom}>
                     {!!item.title && (
@@ -135,9 +129,9 @@ const ClipTile = memo(({ item, frame, wide, latest, onPress }: ClipTileProps) =>
                     <View style={styles.footer}>
                         <View style={styles.views}>
                             <Ionicons name="play" size={10} color={onDark ? ICE : INK} />
-                            <Text style={[styles.footNum, { color: fg }]}>{compact(item.views || 0)}</Text>
+                            <Text style={[styles.viewsText, { color: fg }]}>{compact(item.views || 0)}</Text>
                         </View>
-                        {!!item.duration && <Text style={[styles.footNum, { color: fgSoft }]}>{clock(item.duration)}</Text>}
+                        {!!item.duration && <Text style={[styles.duration, { color: fgSoft }]}>{clock(item.duration)}</Text>}
                     </View>
                 </View>
             </Pressable>
@@ -146,18 +140,14 @@ const ClipTile = memo(({ item, frame, wide, latest, onPress }: ClipTileProps) =>
 });
 ClipTile.displayName = 'ClipTile';
 
-/** A month heading: the name, a dotted rule that fades out, and how many clips it holds */
+/** A month heading: the name, a hairline, and how many clips it holds */
 const MonthRule = ({ label, count }: { label: string; count: number }) => {
     const p = usePalette();
     return (
         <View style={styles.rule}>
-            <Text style={[styles.ruleLabel, { color: p.accent }]}>{label}</Text>
-            <View style={styles.ruleDots}>
-                {Array.from({ length: 22 }, (_, i) => (
-                    <View key={i} style={[styles.ruleDot, { backgroundColor: p.accent, opacity: Math.max(0.06, 0.8 - i * 0.04) }]} />
-                ))}
-            </View>
-            <Text style={[styles.ruleCount, { color: p.faint }]}>{pad(count)}</Text>
+            <Text style={[styles.ruleLabel, { color: p.text, fontFamily: p.fonts.semibold }]}>{label}</Text>
+            <View style={[styles.ruleLine, { backgroundColor: p.border }]} />
+            <Text style={[styles.ruleCount, { color: p.sub, fontFamily: p.fonts.medium }]}>{count === 1 ? '1 clip' : `${count} clips`}</Text>
         </View>
     );
 };
@@ -175,7 +165,7 @@ export function ClipLog({ items, onPress }: ClipLogProps) {
             const d = it.createdAt ? new Date(it.createdAt) : null;
             const valid = d && !isNaN(d.getTime());
             const key = valid ? `${d!.getFullYear()}-${d!.getMonth()}` : 'undated';
-            const label = valid ? `${MONTHS[d!.getMonth()]} ${d!.getFullYear()}` : 'CLIPS';
+            const label = valid ? `${MONTHS[d!.getMonth()]} ${d!.getFullYear()}` : 'Clips';
             const last = out[out.length - 1];
             if (last && last.key === key) last.items.push(it);
             else out.push({ key, label, items: [it] });
@@ -183,7 +173,6 @@ export function ClipLog({ items, onPress }: ClipLogProps) {
         return out;
     }, [items]);
 
-    let frame = 0;
     return (
         <View style={styles.wrap}>
             {groups.map((g, gi) => {
@@ -193,12 +182,12 @@ export function ClipLog({ items, onPress }: ClipLogProps) {
                     <View key={g.key}>
                         <MonthRule label={g.label} count={g.items.length} />
                         {lead && (
-                            <ClipTile item={lead} frame={++frame} wide latest onPress={() => onPress(lead.id)} />
+                            <ClipTile item={lead} wide latest onPress={() => onPress(lead.id)} />
                         )}
                         {rest.length > 0 && (
                             <View style={[styles.grid, lead ? { marginTop: 12 } : null]}>
                                 {rest.map(it => (
-                                    <ClipTile key={it.id} item={it} frame={++frame} onPress={() => onPress(it.id)} />
+                                    <ClipTile key={it.id} item={it} onPress={() => onPress(it.id)} />
                                 ))}
                             </View>
                         )}
@@ -224,28 +213,16 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     ruleLabel: {
-        fontFamily: 'Doto_900Black',
         fontSize: 16,
-        letterSpacing: 1.2,
-        includeFontPadding: false,
+        letterSpacing: -0.2,
     },
-    ruleDots: {
+    ruleLine: {
         flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        height: StyleSheet.hairlineWidth * 2,
         marginHorizontal: 12,
     },
-    ruleDot: {
-        width: 3,
-        height: 3,
-        borderRadius: 1.5,
-    },
     ruleCount: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 15,
-        letterSpacing: 1,
-        includeFontPadding: false,
+        fontSize: 13,
     },
     grid: {
         flexDirection: 'row',
@@ -276,19 +253,10 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         backgroundColor: ICE,
     },
-    latestDot: {
-        width: 5,
-        height: 5,
-        borderRadius: 2.5,
-        backgroundColor: INK,
-        marginRight: 6,
-    },
     latestText: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 12,
-        letterSpacing: 1.2,
+        fontFamily: 'Outfit_600SemiBold',
+        fontSize: 12.5,
         color: INK,
-        includeFontPadding: false,
     },
     chip: {
         position: 'absolute',
@@ -302,30 +270,10 @@ const styles = StyleSheet.create({
         borderRadius: 11,
         borderWidth: 1,
     },
-    chipDot: {
-        width: 4,
-        height: 4,
-        borderRadius: 2,
-        marginRight: 6,
-    },
     chipText: {
         flexShrink: 1,
-        fontFamily: 'Doto_900Black',
-        fontSize: 11,
-        letterSpacing: 0.6,
-        includeFontPadding: false,
-    },
-    frame: {
-        position: 'absolute',
-        top: 11,
-        right: 12,
-        textShadowColor: 'rgba(0, 0, 0, 0.55)',
-        textShadowOffset: { width: 0, height: 0 },
-        textShadowRadius: 4,
-        fontFamily: 'Doto_900Black',
-        fontSize: 14,
-        letterSpacing: 1,
-        includeFontPadding: false,
+        fontFamily: 'Outfit_600SemiBold',
+        fontSize: 12,
     },
     bottom: {
         position: 'absolute',
@@ -354,7 +302,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 5,
     },
-    footNum: {
+    viewsText: {
+        fontFamily: 'Outfit_600SemiBold',
+        fontSize: 13,
+        fontVariant: ['tabular-nums'],
+    },
+    duration: {
         fontFamily: 'Doto_900Black',
         fontSize: 14,
         letterSpacing: 0.5,

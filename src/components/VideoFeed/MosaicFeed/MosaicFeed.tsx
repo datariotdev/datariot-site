@@ -93,15 +93,7 @@ export function MosaicFeed({
                         <Text style={[styles.headerSub, { color: isDark ? 'rgba(218, 230, 247, 0.62)' : '#44507A', fontFamily: theme.typography.fontFamilies.regular }]}>
                             Curated for your Creator DNA
                         </Text>
-                        {/* A dotted rule that fades out */}
-                        <View style={styles.dotRule}>
-                            {Array.from({ length: 28 }, (_, i) => (
-                                <View
-                                    key={i}
-                                    style={[styles.ruleDot, { backgroundColor: accent, opacity: Math.max(0.06, 0.9 - i * 0.034) }]}
-                                />
-                            ))}
-                        </View>
+                        <View style={[styles.rule, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.10)' }]} />
                     </View>
                 }
                 keyExtractor={(item) => item.id}
@@ -158,32 +150,24 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
     },
     dateText: {
-        fontFamily: 'Doto_900Black',
+        fontFamily: 'Outfit_700Bold',
         fontSize: 30,
-        letterSpacing: 1,
         lineHeight: 32,
-        includeFontPadding: false,
+        letterSpacing: -0.5,
+        fontVariant: ['tabular-nums'],
     },
     dateCaption: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 11,
-        letterSpacing: 1.5,
-        includeFontPadding: false,
+        fontFamily: 'Outfit_600SemiBold',
+        fontSize: 12,
+        letterSpacing: 1,
     },
     headerSub: {
         fontSize: 13,
         marginTop: 4,
     },
-    dotRule: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: 14,
-    },
-    ruleDot: {
-        width: 3,
-        height: 3,
-        borderRadius: 1.5,
+    rule: {
+        height: StyleSheet.hairlineWidth * 2,
+        marginTop: 16,
     },
     bottomFade: {
         position: 'absolute',

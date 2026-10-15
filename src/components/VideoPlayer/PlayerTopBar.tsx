@@ -1,19 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated, Easing, useWindowDimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
+import { Ionicons } from '@expo/vector-icons';
 
 const ICE = '#DAE6F7';
 const INK = '#07080C';
-
-// A 5x5 dot-matrix cross, drawn dot by dot like the Doto digits
-const X_DOTS: Array<[number, number]> = [
-    [0, 0], [1, 1], [2, 2], [3, 3], [4, 4],
-    [4, 0], [3, 1], [1, 3], [0, 4],
-];
-const DOT = 3;
-const GAP = 2;
-
-const pad = (n: number) => n.toString().padStart(2, '0');
 
 interface PlayerTopBarProps {
     index: number;
@@ -59,14 +50,7 @@ export function PlayerTopBar({ index, total, onClose, onAsk }: PlayerTopBarProps
             {/* Close: a cross made of dots */}
             <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close" style={styles.closeHit}>
                 <BlurView intensity={30} tint="dark" style={styles.closeGlass}>
-                    <View style={styles.xBox}>
-                        {X_DOTS.map(([cx, cy]) => (
-                            <View
-                                key={`${cx}${cy}`}
-                                style={[styles.xDot, { left: cx * (DOT + GAP), top: cy * (DOT + GAP) }]}
-                            />
-                        ))}
-                    </View>
+                    <Ionicons name="close" size={22} color={ICE} />
                 </BlurView>
             </Pressable>
 
@@ -74,9 +58,9 @@ export function PlayerTopBar({ index, total, onClose, onAsk }: PlayerTopBarProps
             <View style={styles.center} pointerEvents="none">
                 <BlurView intensity={30} tint="dark" style={styles.counter}>
                     <Animated.View style={[styles.liveDot, { opacity: liveOpacity }]} />
-                    <Text style={styles.counterText}>{pad(index + 1)}</Text>
+                    <Text style={styles.counterText}>{index + 1}</Text>
                     <Text style={styles.counterSlash}>/</Text>
-                    <Text style={styles.counterTotal}>{pad(Math.max(total, 1))}</Text>
+                    <Text style={styles.counterTotal}>{Math.max(total, 1)}</Text>
                 </BlurView>
                 {total > 1 && (
                     <View style={styles.rail}>
@@ -102,7 +86,7 @@ export function PlayerTopBar({ index, total, onClose, onAsk }: PlayerTopBarProps
                         </Animated.View>
                         <View style={styles.orbCore} />
                     </View>
-                    {!compact && <Text style={styles.askText}>ORVELIS</Text>}
+                    {!compact && <Text style={styles.askText}>Orvelis</Text>}
                 </Pressable>
             </View>
         </View>
@@ -132,17 +116,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(218,230,247,0.26)',
     },
-    xBox: {
-        width: 5 * DOT + 4 * GAP,
-        height: 5 * DOT + 4 * GAP,
-    },
-    xDot: {
-        position: 'absolute',
-        width: DOT,
-        height: DOT,
-        borderRadius: DOT / 2,
-        backgroundColor: ICE,
-    },
     center: {
         position: 'absolute',
         left: 0,
@@ -169,22 +142,22 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     counterText: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 19,
-        letterSpacing: 1,
+        fontFamily: 'Outfit_700Bold',
+        fontSize: 15,
         color: ICE,
+        fontVariant: ['tabular-nums'],
     },
     counterSlash: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 17,
+        fontFamily: 'Outfit_500Medium',
+        fontSize: 15,
         color: 'rgba(218,230,247,0.45)',
-        marginHorizontal: 3,
+        marginHorizontal: 4,
     },
     counterTotal: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 17,
-        letterSpacing: 1,
-        color: 'rgba(218,230,247,0.6)',
+        fontFamily: 'Outfit_500Medium',
+        fontSize: 15,
+        color: 'rgba(218,230,247,0.65)',
+        fontVariant: ['tabular-nums'],
     },
     rail: {
         flexDirection: 'row',
@@ -257,9 +230,8 @@ const styles = StyleSheet.create({
     },
     askText: {
         marginLeft: 8,
-        fontFamily: 'Doto_900Black',
+        fontFamily: 'Outfit_700Bold',
         fontSize: 15,
-        letterSpacing: 1.2,
         color: INK,
     },
 });

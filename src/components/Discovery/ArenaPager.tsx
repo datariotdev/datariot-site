@@ -3,12 +3,11 @@ import { View, Text, StyleSheet, Pressable, FlatList, Animated, Easing, useWindo
 import { LinearGradient } from 'expo-linear-gradient';
 import { Avatar } from '../UI/Avatar';
 import { usePalette } from '../../design-system/palette';
-import { FeedVideo, Viewfinder, realThumb, formatNumber } from '../VideoFeed/feedMedia';
+import { FeedVideo, realThumb, formatNumber } from '../VideoFeed/feedMedia';
 
 const ICE = '#DAE6F7';
-const GLASS = 'rgba(7, 8, 12, 0.62)';
-const GLASS_LINE = 'rgba(218, 230, 247, 0.24)';
-const METER_DOTS = 22;
+const GLASS = 'rgba(10, 12, 18, 0.5)';
+const GLASS_LINE = 'rgba(255, 255, 255, 0.16)';
 const GAP = 12;
 const SIDE = 16;
 
@@ -56,7 +55,6 @@ export function ArenaPager({ featuredVideos, onVideoPress }: ArenaPagerProps) {
         const tally = item.logicStats;
         const voted = !!tally && tally.forScore + tally.againstScore > 0;
         const pro = voted ? Math.round(tally!.forPercentage) : 0;
-        const lit = voted ? Math.round((tally!.forPercentage / 100) * METER_DOTS) : 0;
 
         return (
             <Pressable
@@ -81,16 +79,15 @@ export function ArenaPager({ featuredVideos, onVideoPress }: ArenaPagerProps) {
                     style={styles.bottomShade}
                     pointerEvents="none"
                 />
-                <Viewfinder on={current} />
 
                 <View style={styles.top} pointerEvents="none">
                     <View style={styles.live}>
                         <Animated.View style={[styles.liveDot, { opacity: blink.interpolate({ inputRange: [0, 1], outputRange: [0.35, 1] }) }]} />
-                        <Text style={styles.liveText}>LIVE</Text>
+                        <Text style={styles.liveText}>Live</Text>
                     </View>
                     <View style={styles.watch}>
                         <Text style={styles.watchNum}>{formatNumber(item.views)}</Text>
-                        <Text style={styles.watchCap}>WATCHING</Text>
+                        <Text style={styles.watchCap}>watching</Text>
                     </View>
                 </View>
 
@@ -105,16 +102,12 @@ export function ArenaPager({ featuredVideos, onVideoPress }: ArenaPagerProps) {
                         {item.title}
                     </Text>
 
-                    <View style={styles.meter}>
-                        {Array.from({ length: METER_DOTS }, (_, k) => (
-                            <View key={k} style={[styles.mDot, { opacity: voted ? (k < lit ? 1 : 0.22) : 0.2 }]} />
-                        ))}
-                    </View>
                     <View style={styles.caps}>
-                        <Text style={styles.cap}>{voted ? `FOR ${pro}%` : 'NO VERDICT YET'}</Text>
-                        <Text style={[styles.cap, { opacity: 0.65 }]}>
-                            {voted ? `${100 - pro}% AGAINST` : 'THE FLOOR IS OPEN'}
-                        </Text>
+                        <Text style={styles.cap}>{voted ? `For ${pro}%` : 'No verdict yet'}</Text>
+                        <Text style={[styles.cap, { opacity: 0.7 }]}>{voted ? `${100 - pro}% Against` : 'The floor is open'}</Text>
+                    </View>
+                    <View style={styles.barTrack}>
+                        {voted && <View style={[styles.barFill, { width: `${pro}%` }]} />}
                     </View>
                 </View>
             </Pressable>
@@ -156,7 +149,7 @@ export function ArenaPager({ featuredVideos, onVideoPress }: ArenaPagerProps) {
 
 const styles = StyleSheet.create({
     card: {
-        borderRadius: 30,
+        borderRadius: 28,
         overflow: 'hidden',
         backgroundColor: '#06070A',
         borderWidth: 1,
@@ -184,18 +177,28 @@ const styles = StyleSheet.create({
         borderColor: GLASS_LINE,
     },
     liveDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#F0616D', marginRight: 8 },
-    liveText: { fontFamily: 'Doto_900Black', fontSize: 13, letterSpacing: 1.4, color: ICE, includeFontPadding: false },
-    watch: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },
-    watchNum: { fontFamily: 'Doto_900Black', fontSize: 20, letterSpacing: 1, color: '#FFFFFF', includeFontPadding: false },
-    watchCap: { fontFamily: 'Doto_700Bold', fontSize: 11, letterSpacing: 1.5, color: 'rgba(218, 230, 247, 0.7)', includeFontPadding: false },
+    liveText: { fontFamily: 'Outfit_600SemiBold', fontSize: 13, color: '#FFFFFF' },
+    watch: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        height: 30,
+        paddingHorizontal: 12,
+        borderRadius: 15,
+        backgroundColor: GLASS,
+        borderWidth: 1,
+        borderColor: GLASS_LINE,
+    },
+    watchNum: { fontFamily: 'Outfit_700Bold', fontSize: 13, color: '#FFFFFF', fontVariant: ['tabular-nums'] },
+    watchCap: { fontFamily: 'Outfit_500Medium', fontSize: 13, color: 'rgba(255, 255, 255, 0.75)' },
     info: { position: 'absolute', left: 18, right: 18, bottom: 18 },
     authorRow: { flexDirection: 'row', alignItems: 'center', gap: 9, marginBottom: 10 },
     author: { flexShrink: 1, fontFamily: 'Outfit_600SemiBold', fontSize: 14.5, color: 'rgba(255, 255, 255, 0.92)' },
     title: { fontFamily: 'Outfit_700Bold', fontSize: 27, lineHeight: 32, letterSpacing: -0.6, color: '#FFFFFF' },
-    meter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 16 },
-    mDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: ICE },
-    caps: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 7 },
-    cap: { fontFamily: 'Doto_700Bold', fontSize: 12, letterSpacing: 1.3, color: '#FFFFFF', includeFontPadding: false },
+    caps: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
+    cap: { fontFamily: 'Outfit_600SemiBold', fontSize: 13, color: '#FFFFFF' },
+    barTrack: { height: 6, borderRadius: 3, overflow: 'hidden', marginTop: 7, backgroundColor: 'rgba(255, 255, 255, 0.18)' },
+    barFill: { height: '100%', borderRadius: 3, backgroundColor: ICE },
     rail: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 5, marginTop: 14 },
     tick: { width: 6, height: 4, borderRadius: 2 },
     tickOn: { width: 22 },

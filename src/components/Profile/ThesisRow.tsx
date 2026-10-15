@@ -4,11 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { usePalette } from '../../design-system/palette';
 import { Post } from '@lib/supabase/hooks/usePosts';
 
-const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-const METER = 24;
-
-const pad = (n: number) => n.toString().padStart(2, '0');
-
 interface ThesisRowProps {
     item: Post;
     index: number;
@@ -16,16 +11,15 @@ interface ThesisRowProps {
     onDelete?: () => void;
 }
 
-/** One of the user's theses: the claim, who is winning it as a row of dots, and how loud it got */
-export function ThesisRow({ item, index, onPress, onDelete }: ThesisRowProps) {
+/** One of the user's theses: the claim, who is winning it, and how much it was argued */
+export function ThesisRow({ item, onPress, onDelete }: ThesisRowProps) {
     const p = usePalette();
     const d = new Date(item.createdAt);
-    const dateLabel = isNaN(d.getTime()) ? '' : `${pad(d.getDate())} ${MONTHS[d.getMonth()]}`;
+    const dateLabel = isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
     const stats = item.logicStats;
     const voted = !!stats && stats.forScore + stats.againstScore > 0;
     const forPct = voted ? Math.round(stats!.forPercentage) : 0;
-    const lit = voted ? Math.round((stats!.forPercentage / 100) * METER) : 0;
 
     return (
         <Pressable
@@ -38,12 +32,11 @@ export function ThesisRow({ item, index, onPress, onDelete }: ThesisRowProps) {
         >
             <View style={styles.top}>
                 <View style={styles.topLeft}>
-                    <Text style={[styles.idx, { color: p.accent }]}>T{pad(index + 1)}</Text>
-                    {!!dateLabel && <Text style={[styles.date, { color: p.faint }]}>{dateLabel}</Text>}
+                    {!!dateLabel && <Text style={[styles.date, { color: p.sub, fontFamily: p.fonts.medium }]}>{dateLabel}</Text>}
                     {item.isAiAssisted && (
-                        <View style={[styles.oracle, { borderColor: p.border }]}>
-                            <Ionicons name="sparkles" size={10} color={p.accent} />
-                            <Text style={[styles.oracleText, { color: p.accent }]}>ORACLE</Text>
+                        <View style={[styles.oracle, { backgroundColor: p.soft }]}>
+                            <Ionicons name="sparkles" size={11} color={p.text} />
+                            <Text style={[styles.oracleText, { color: p.text, fontFamily: p.fonts.semibold }]}>Oracle</Text>
                         </View>
                     )}
                 </View>
@@ -52,9 +45,9 @@ export function ThesisRow({ item, index, onPress, onDelete }: ThesisRowProps) {
                         onPress={onDelete}
                         hitSlop={8}
                         accessibilityLabel="Delete thesis"
-                        style={[styles.trash, { borderColor: p.border }]}
+                        style={[styles.trash, { backgroundColor: p.soft }]}
                     >
-                        <Ionicons name="trash-outline" size={15} color={p.faint} />
+                        <Ionicons name="trash-outline" size={15} color={p.sub} />
                     </Pressable>
                 )}
             </View>
@@ -66,31 +59,27 @@ export function ThesisRow({ item, index, onPress, onDelete }: ThesisRowProps) {
                 {!!item.imageUrl && <Image source={{ uri: item.imageUrl }} style={[styles.thumb, { backgroundColor: p.soft }]} />}
             </View>
 
-            <View style={styles.meter}>
-                {Array.from({ length: METER }, (_, i) => (
-                    <View
-                        key={i}
-                        style={[
-                            styles.mDot,
-                            { backgroundColor: p.accent, opacity: voted ? (i < lit ? 1 : 0.2) : 0.16 },
-                        ]}
-                    />
-                ))}
+            <View style={styles.balanceLabels}>
+                <Text style={[styles.balanceText, { color: voted ? p.text : p.sub, fontFamily: p.fonts.semibold }]}>
+                    {voted ? `For ${forPct}%` : 'No votes yet'}
+                </Text>
+                {voted && <Text style={[styles.balanceText, { color: p.sub, fontFamily: p.fonts.semibold }]}>{`${100 - forPct}% Against`}</Text>}
             </View>
-            <View style={styles.meterCaps}>
-                <Text style={[styles.cap, { color: voted ? p.text : p.sub }]}>{voted ? `FOR ${forPct}%` : 'NO VOTES YET'}</Text>
-                {voted && <Text style={[styles.cap, { color: p.sub }]}>{`AGAINST ${100 - forPct}%`}</Text>}
+            <View style={[styles.track, { backgroundColor: p.soft }]}>
+                {voted && <View style={[styles.fill, { width: `${forPct}%`, backgroundColor: p.accent }]} />}
             </View>
 
             <View style={[styles.foot, { borderColor: p.border }]}>
                 <View style={styles.stat}>
-                    <Ionicons name="chatbubble-ellipses-outline" size={14} color={p.faint} />
-                    <Text style={[styles.statNum, { color: p.text }]}>{pad(item.comments || 0)}</Text>
-                    <Text style={[styles.statCap, { color: p.sub }]}>ARGUMENTS</Text>
+                    <Ionicons name="chatbubble-ellipses-outline" size={16} color={p.sub} />
+                    <Text style={[styles.statNum, { color: p.text, fontFamily: p.fonts.semibold }]}>{item.comments || 0}</Text>
+                    <Text style={[styles.statCap, { color: p.sub, fontFamily: p.fonts.regular }]}>
+                        {(item.comments || 0) === 1 ? 'argument' : 'arguments'}
+                    </Text>
                 </View>
                 <View style={styles.stat}>
-                    <Ionicons name="heart-outline" size={14} color={p.faint} />
-                    <Text style={[styles.statNum, { color: p.text }]}>{pad(item.likes || 0)}</Text>
+                    <Ionicons name="heart-outline" size={16} color={p.sub} />
+                    <Text style={[styles.statNum, { color: p.text, fontFamily: p.fonts.semibold }]}>{item.likes || 0}</Text>
                 </View>
             </View>
         </Pressable>
@@ -112,45 +101,31 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 12,
+        marginBottom: 10,
     },
     topLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
-    },
-    idx: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 16,
-        letterSpacing: 1,
-        includeFontPadding: false,
+        gap: 8,
     },
     date: {
-        fontFamily: 'Doto_700Bold',
         fontSize: 13,
-        letterSpacing: 1,
-        includeFontPadding: false,
     },
     oracle: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
-        height: 20,
-        paddingHorizontal: 7,
-        borderRadius: 10,
-        borderWidth: 1,
+        height: 22,
+        paddingHorizontal: 8,
+        borderRadius: 11,
     },
     oracleText: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 10.5,
-        letterSpacing: 1,
-        includeFontPadding: false,
+        fontSize: 11.5,
     },
     trash: {
         width: 30,
         height: 30,
         borderRadius: 15,
-        borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -170,27 +145,23 @@ const styles = StyleSheet.create({
         height: 68,
         borderRadius: 16,
     },
-    meter: {
+    balanceLabels: {
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: 16,
     },
-    mDot: {
-        width: 5,
-        height: 5,
-        borderRadius: 2.5,
+    balanceText: {
+        fontSize: 12.5,
     },
-    meterCaps: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8,
+    track: {
+        height: 6,
+        borderRadius: 3,
+        overflow: 'hidden',
+        marginTop: 6,
     },
-    cap: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 11.5,
-        letterSpacing: 1.3,
-        includeFontPadding: false,
+    fill: {
+        height: '100%',
+        borderRadius: 3,
     },
     foot: {
         flexDirection: 'row',
@@ -206,15 +177,10 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     statNum: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 16,
-        letterSpacing: 0.8,
-        includeFontPadding: false,
+        fontSize: 14,
+        fontVariant: ['tabular-nums'],
     },
     statCap: {
-        fontFamily: 'Doto_700Bold',
-        fontSize: 10.5,
-        letterSpacing: 1.3,
-        includeFontPadding: false,
+        fontSize: 13,
     },
 });

@@ -469,10 +469,9 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     tabText: {
-        fontFamily: 'Doto_900Black',
-        fontSize: 10.5,
-        letterSpacing: 0,
-        includeFontPadding: false,
+        fontFamily: 'Outfit_600SemiBold',
+        fontSize: 12,
+        letterSpacing: 0.3,
     },
     loadingContainer: {
         flex: 1,
