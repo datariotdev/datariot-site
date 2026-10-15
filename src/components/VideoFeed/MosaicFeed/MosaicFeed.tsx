@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, ViewToken, Dimensions, Platform } from 'react-native';
+import { View, StyleSheet, FlatList, ViewToken, Dimensions, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MosaicItem } from './MosaicItem';
 import { useTheme } from '../../Theme/ThemeProvider';
@@ -26,21 +26,11 @@ export function MosaicFeed({
     paddingTop = 0,
     paddingBottom = 40,
 }: MosaicFeedProps) {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+    const { theme } = useTheme();
     const { width } = Dimensions.get('window');
     const isWeb = Platform.OS === 'web' && width > 768;
     const numColumns = isWeb ? 3 : 2;
-    const accent = isDark ? '#DAE6F7' : '#07080C';
-    const dim = isDark ? 'rgba(218, 230, 247, 0.5)' : 'rgba(7, 8, 12, 0.45)';
     const bg = theme.colors.background.primary as string;
-    const today = useMemo(() => {
-        const d = new Date();
-        return {
-            day: d.getDate().toString().padStart(2, '0'),
-            month: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][d.getMonth()],
-        };
-    }, []);
     const [viewableItems, setViewableItems] = useState<Set<string>>(new Set());
 
     const onViewableItemsChanged = useCallback(
@@ -79,23 +69,6 @@ export function MosaicFeed({
             <FlatList
                 data={videos}
                 renderItem={renderItem}
-                ListHeaderComponent={
-                    <View style={styles.header}>
-                        <View style={styles.headerTop}>
-                            <Text style={[styles.headerTitle, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}>
-                                Daily Synergy
-                            </Text>
-                            <View style={styles.dateBox}>
-                                <Text style={[styles.dateText, { color: accent }]}>{today.day}</Text>
-                                <Text style={[styles.dateCaption, { color: dim }]}>{today.month}</Text>
-                            </View>
-                        </View>
-                        <Text style={[styles.headerSub, { color: isDark ? 'rgba(218, 230, 247, 0.62)' : '#44507A', fontFamily: theme.typography.fontFamilies.regular }]}>
-                            Curated for your Creator DNA
-                        </Text>
-                        <View style={[styles.rule, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.12)' : 'rgba(7, 8, 12, 0.10)' }]} />
-                    </View>
-                }
                 keyExtractor={(item) => item.id}
                 key={isWeb ? 'web-mosaic' : 'mobile-mosaic'}
                 numColumns={numColumns}
@@ -106,7 +79,7 @@ export function MosaicFeed({
                 onEndReachedThreshold={0.5}
                 columnWrapperStyle={styles.columnWrapper}
                 contentContainerStyle={{
-                    paddingTop: paddingTop + GRID_SPACING,
+                    paddingTop: paddingTop + GRID_SPACING + 6,
                     paddingBottom: paddingBottom + 80,
                     paddingHorizontal: GRID_SPACING,
                 }}
@@ -131,43 +104,6 @@ export function MosaicFeed({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    header: {
-        paddingHorizontal: 6,
-        paddingTop: 20,
-        paddingBottom: 18,
-    },
-    headerTop: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
-    },
-    headerTitle: {
-        fontSize: 28,
-        letterSpacing: -0.5,
-    },
-    dateBox: {
-        alignItems: 'flex-end',
-    },
-    dateText: {
-        fontFamily: 'Outfit_700Bold',
-        fontSize: 30,
-        lineHeight: 32,
-        letterSpacing: -0.5,
-        fontVariant: ['tabular-nums'],
-    },
-    dateCaption: {
-        fontFamily: 'Outfit_600SemiBold',
-        fontSize: 12,
-        letterSpacing: 1,
-    },
-    headerSub: {
-        fontSize: 13,
-        marginTop: 4,
-    },
-    rule: {
-        height: StyleSheet.hairlineWidth * 2,
-        marginTop: 16,
     },
     bottomFade: {
         position: 'absolute',

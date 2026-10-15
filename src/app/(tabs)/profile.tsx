@@ -12,7 +12,6 @@ import { encodeVideoUrl } from '@lib/utils/url';
 import Animated, { useAnimatedScrollHandler, useSharedValue, useAnimatedStyle, interpolate, Extrapolation, SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { SignalMap } from '../../components/Profile/SignalMap';
 import { ProfileTabs } from '../../components/Profile/ProfileTabs';
 import { ClipLog, ClipItem } from '../../components/Profile/ClipLog';
 import { ThesisRow } from '../../components/Profile/ThesisRow';
@@ -67,7 +66,7 @@ const StickyHeader = ({ scrollY, user, handleSignOut, router }: { scrollY: Share
     );
 };
 
-const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setActiveTab, activityDates, counts }: any) => {
+const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setActiveTab, counts }: any) => {
     const router = useRouter();
 
     const bannerStyle = useAnimatedStyle(() => {
@@ -114,10 +113,8 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
 
             {/* Content Below Banner */}
             <View style={styles.headerContent}>
-                {/* Top Profile Section */}
-                <View style={styles.profileTopSection}>
+                <View style={styles.avatarRow}>
                     <View style={styles.avatarContainer}>
-
                         <View style={[styles.avatar, { overflow: 'hidden', borderColor: theme.colors.background.primary, backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
                             {profile?.avatar_url ? (
                                 <Image source={{ uri: profile.avatar_url }} style={StyleSheet.absoluteFill} />
@@ -131,38 +128,46 @@ const ProfileHeader = ({ profile, user, scrollY, headerImageUrl, activeTab, setA
                         <View style={[styles.onlineDot, { borderColor: theme.colors.background.primary }]} />
                     </View>
 
-                    <View style={styles.infoColumn}>
-                        <View style={styles.nameRow}>
-                            <Text style={[styles.displayName, { color: theme.colors.text.primary }]}>
-                                {profile?.display_name || user.email?.split('@')[0] || 'User'}
-                            </Text>
-                            <Pressable
-                                style={styles.iconicEditBtn}
-                                onPress={() => router.push('/edit-profile')}
-                            >
-                                <Ionicons name="create-outline" size={18} color={isDark ? theme.colors.primary.DEFAULT : theme.colors.text.primary} />
-                            </Pressable>
-                        </View>
-                        <Text style={[styles.username, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>
-                            &gt; @{profile?.username || user.email?.split('@')[0]}
-                        </Text>
-
-                        <ProfileStats
-                            followers={profile?.followers_count || 0}
-                            following={profile?.following_count || 0}
-                            arguments={profile?.arguments_count || 0}
-                        />
-                    </View>
+                    <Pressable
+                        onPress={() => router.push('/edit-profile')}
+                        style={({ pressed }) => [
+                            styles.editBtn,
+                            { borderColor: isDark ? 'rgba(218, 230, 247, 0.22)' : 'rgba(7, 8, 12, 0.16)' },
+                            pressed && { opacity: 0.7 },
+                        ]}
+                    >
+                        <Ionicons name="create-outline" size={15} color={theme.colors.text.primary} />
+                        <Text style={[styles.editText, { color: theme.colors.text.primary }]}>Edit profile</Text>
+                    </Pressable>
                 </View>
 
-                <View style={styles.bioSection}>
+                <View style={styles.infoColumn}>
+                    <Text style={[styles.displayName, { color: theme.colors.text.primary }]} numberOfLines={1}>
+                        {profile?.display_name || user.email?.split('@')[0] || 'User'}
+                    </Text>
+
+                    {/* The handle as a small tag: the @ in its own little disc */}
+                    <View style={[styles.handle, { backgroundColor: isDark ? 'rgba(218, 230, 247, 0.08)' : 'rgba(7, 8, 12, 0.05)' }]}>
+                        <View style={[styles.handleAt, { backgroundColor: isDark ? '#DAE6F7' : '#07080C' }]}>
+                            <Text style={[styles.handleAtText, { color: isDark ? '#07080C' : '#DAE6F7' }]}>@</Text>
+                        </View>
+                        <Text style={[styles.handleText, { color: theme.colors.text.primary }]} numberOfLines={1}>
+                            {profile?.username || user.email?.split('@')[0]}
+                        </Text>
+                    </View>
+
                     <Text style={[styles.bioText, { color: theme.colors.text.secondary }]}>
                         {profile?.bio || 'passionate creator • sharing knowledge • learning every day'}
                     </Text>
+
+                    <ProfileStats
+                        followers={profile?.followers_count || 0}
+                        following={profile?.following_count || 0}
+                        arguments={profile?.arguments_count || 0}
+                    />
                 </View>
             </View>
 
-            <SignalMap dates={activityDates} />
             <ProfileTabs active={activeTab} onChange={setActiveTab} counts={counts} />
         </View>
     );
@@ -174,7 +179,6 @@ export default function ProfileScreen() {
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [activeTab, setActiveTab] = useState<'posts' | 'videos' | 'saved'>('videos');
-    const [commentDates, setCommentDates] = useState<string[]>([]);
     const [savedItems, setSavedItems] = useState<ClipItem[]>([]);
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
@@ -246,16 +250,6 @@ export default function ProfileScreen() {
         return getProfileCoverImage(user?.id || 'default');
     }, [user?.id, profile?.banner_url, getProfileCoverImage]);
 
-
-    // Everything the user has made, dated, for the activity map
-    const activityDates = React.useMemo(
-        () => [
-            ...videos.map(v => v.createdAt),
-            ...posts.map(po => po.createdAt),
-            ...commentDates,
-        ],
-        [videos, posts, commentDates]
-    );
 
     const counts = {
         videos: profile?.videos_count ?? videos.length,
@@ -335,15 +329,6 @@ export default function ProfileScreen() {
                 .from('comments')
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id);
-
-            // When the user's arguments were made, for the activity map
-            const { data: commentRows } = await supabase
-                .from('comments')
-                .select('created_at')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-                .limit(400);
-            setCommentDates((commentRows || []).map((r: any) => r.created_at).filter(Boolean));
 
             if (profileData) {
                 setProfile({
@@ -494,7 +479,6 @@ export default function ProfileScreen() {
                             headerImageUrl={headerImageUrl}
                             activeTab={activeTab}
                             setActiveTab={setActiveTab}
-                            activityDates={activityDates}
                             counts={counts}
                         />
                         {renderContent()}
@@ -581,88 +565,97 @@ const styles = StyleSheet.create({
     },
 
     // Profile Top Section
-    profileTopSection: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingHorizontal: theme.spacing.lg,
-        marginBottom: theme.spacing.xs,
-        marginTop: -60, // Overlap the larger banner
-        paddingTop: 0,
+    avatarRow: {
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        marginTop: -46, // Overlap the banner
     },
     avatarContainer: {
-        marginBottom: 8,
         position: 'relative',
     },
     avatar: {
-        width: 84,
-        height: 84,
-        borderRadius: 42,
+        width: 92,
+        height: 92,
+        borderRadius: 46,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 4,
     },
     onlineDot: {
         position: 'absolute',
-        bottom: 2,
-        right: 2,
-        width: 14,
-        height: 14,
-        borderRadius: 7,
+        bottom: 4,
+        right: 4,
+        width: 16,
+        height: 16,
+        borderRadius: 8,
         backgroundColor: '#D9E4FF',
-        borderWidth: 2,
+        borderWidth: 3,
     },
     avatarText: {
-        fontSize: 32,
-        fontWeight: 'bold',
+        fontSize: 34,
+        fontFamily: 'Outfit_700Bold',
+    },
+    editBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        height: 36,
+        paddingHorizontal: 14,
+        borderRadius: 18,
+        borderWidth: 1,
+        marginBottom: 6,
+    },
+    editText: {
+        fontFamily: 'Outfit_600SemiBold',
+        fontSize: 13.5,
     },
     infoColumn: {
-        alignItems: 'center',
-        width: '100%',
-    },
-    nameRow: {
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
+        paddingHorizontal: 20,
+        marginTop: 12,
+        alignItems: 'flex-start',
     },
     displayName: {
-        fontSize: 22,
-        fontWeight: '900',
-        marginBottom: 2,
-        textAlign: 'center',
-        maxWidth: '70%',
+        fontFamily: 'Outfit_800ExtraBold',
+        fontSize: 27,
+        letterSpacing: -0.7,
+        maxWidth: '100%',
     },
-    iconicEditBtn: {
-        position: 'absolute',
-        right: 16,
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: 'rgba(255,255,255,0.05)',
+    handle: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 7,
+        height: 28,
+        paddingLeft: 4,
+        paddingRight: 12,
+        borderRadius: 14,
+        marginTop: 6,
+        maxWidth: '100%',
+    },
+    handleAt: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    username: {
-        fontSize: 14,
-        marginBottom: 10,
-        opacity: 0.7,
+    handleAtText: {
+        fontFamily: 'Outfit_700Bold',
+        fontSize: 12,
+        marginTop: -1,
     },
-
-    // Bio
-    bioSection: {
-        paddingHorizontal: theme.spacing.lg,
-        marginTop: 4,
-        alignItems: 'center',
+    handleText: {
+        fontFamily: 'Outfit_600SemiBold',
+        fontSize: 14,
+        flexShrink: 1,
     },
     bioText: {
-        fontSize: 14,
-        color: 'rgba(255,255,255,0.7)',
-        lineHeight: 20,
-        marginBottom: 14,
-        textAlign: 'center',
+        fontFamily: 'Outfit_400Regular',
+        fontSize: 15,
+        lineHeight: 21,
+        marginTop: 12,
     },
-
-    // Compact Stats
 
     // Empty & Loading
     loadingContainer: {

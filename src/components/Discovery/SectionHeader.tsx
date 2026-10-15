@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Pressable, Image, ImageSourcePropType, Platform
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
 import { usePalette } from '../../design-system/palette';
-import { SectionRule } from '../UI/SectionRule';
 
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
 
@@ -35,11 +34,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
     const accent = theme.colors.primary.DEFAULT;
     const rule = isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(0, 0, 0, 0.10)';
 
-    // On the phone: a numbered dotted rule, then the title in plain type
+    // On the phone: just the section's name, small, no numbering or tagline
     if (Platform.OS !== 'web' || width <= 768) {
         return (
             <View style={[styles.pContainer, containerStyle]}>
-                {index || meta ? <SectionRule label={index || ''} right={meta ? meta.toLowerCase() : undefined} /> : null}
                 <View style={styles.pTitleRow}>
                     <Text style={[styles.pTitle, { color: p.text, fontFamily: p.fonts.bold }]}>{title}</Text>
                     {rightImage && !onPressShowAll ? <Image source={rightImage} style={styles.farRightImage} resizeMode="contain" /> : null}
@@ -50,7 +48,6 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
                         </Pressable>
                     ) : null}
                 </View>
-                {subtitle ? <Text style={[styles.pSub, { color: p.sub, fontFamily: p.fonts.regular }]}>{subtitle}</Text> : null}
             </View>
         );
     }
@@ -102,11 +99,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 };
 
 const styles = StyleSheet.create({
-    pContainer: { paddingHorizontal: 20, paddingTop: 34, paddingBottom: 14 },
-    pTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
-    pTitle: { fontSize: 28, letterSpacing: -0.6 },
+    pContainer: { paddingHorizontal: 16, paddingTop: 26, paddingBottom: 12 },
+    pTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    pTitle: { fontSize: 20, letterSpacing: -0.3 },
     pAll: { fontFamily: 'Outfit_600SemiBold', fontSize: 14 },
-    pSub: { fontSize: 14, marginTop: 3 },
     container: {
         flexDirection: 'row',
         paddingHorizontal: 16,

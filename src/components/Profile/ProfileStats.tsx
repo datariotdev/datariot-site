@@ -14,7 +14,7 @@ interface ProfileStatsProps {
     arguments: number;
 }
 
-/** Followers, following and arguments: three numbers with their names under them, split by thin lines */
+/** Followers, following and arguments in one quiet line under the bio */
 export function ProfileStats({ followers, following, arguments: args }: ProfileStatsProps) {
     const p = usePalette();
     const items = [
@@ -25,14 +25,11 @@ export function ProfileStats({ followers, following, arguments: args }: ProfileS
 
     return (
         <View style={styles.row}>
-            {items.map((it, i) => (
-                <React.Fragment key={it.label}>
-                    {i > 0 && <View style={[styles.rule, { backgroundColor: p.border }]} />}
-                    <View style={styles.cell}>
-                        <Text style={[styles.num, { color: p.text, fontFamily: p.fonts.bold }]}>{compact(it.value || 0)}</Text>
-                        <Text style={[styles.label, { color: p.sub, fontFamily: p.fonts.regular }]}>{it.label}</Text>
-                    </View>
-                </React.Fragment>
+            {items.map(it => (
+                <Text key={it.label} style={[styles.item, { color: p.sub, fontFamily: p.fonts.regular }]}>
+                    <Text style={[styles.num, { color: p.text, fontFamily: p.fonts.semibold }]}>{compact(it.value || 0)}</Text>
+                    {` ${it.label}`}
+                </Text>
             ))}
         </View>
     );
@@ -41,26 +38,17 @@ export function ProfileStats({ followers, following, arguments: args }: ProfileS
 const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 16,
+        columnGap: 18,
+        rowGap: 4,
+        marginTop: 12,
     },
-    cell: {
-        minWidth: 96,
-        paddingHorizontal: 10,
-        alignItems: 'center',
+    item: {
+        fontSize: 14,
     },
     num: {
-        fontSize: 20,
-        letterSpacing: -0.3,
+        fontSize: 14.5,
         fontVariant: ['tabular-nums'],
-    },
-    label: {
-        fontSize: 12.5,
-        marginTop: 1,
-    },
-    rule: {
-        width: StyleSheet.hairlineWidth * 2,
-        height: 28,
     },
 });
