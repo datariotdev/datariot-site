@@ -2,7 +2,7 @@
   <img src="./assets/logo.jpg" width="120" height="120" style="border-radius: 28px; box-shadow: 0 12px 36px rgba(0, 102, 255, 0.25); margin-bottom: 20px;" />
 
   # DATARIOT
-  ### *Short videos with a point — explore ideas, examine the reasoning, and join the conversation.*
+  ### *Short videos with a point. Ideas worth exploring. Arguments worth answering.*
 
   <p align="center">
     <a href="https://expo.dev"><img src="https://img.shields.io/badge/Platform-Expo%20%7C%20React%20Native-0066FF?style=for-the-badge&logo=expo&logoColor=white" alt="Platform" /></a>
@@ -23,10 +23,10 @@
 
 ## Philosophy and Vision
 
-**Datariot** is a next-generation vertical video debate arena and cognitive feed platform. Designed as a high-fidelity alternative to mindless, dopamine-loop scrolling, Datariot shifts the focus to logic, structured discourse, and educational value. 
+**Datariot** is a short-form video platform for people who want more from their feed. Discover a perspective, unpack the logic behind it, and respond with a video of your own—not a throwaway comment. It turns passive scrolling into a place where curiosity, evidence, and well-made arguments matter more than empty engagement.
 
 > [!NOTE]  
-> **The Mission:** Transform short-form scrolling habits into an engine for intellectual growth. We filter the noise, rewarding well-constructed arguments, clear evidence, and verified reasoning.
+> **The Mission:** Turn short-form video into a space for sharper thinking: less noise, more signal; fewer hot takes, better conversations.
 
 ---
 
