@@ -1,0 +1,262 @@
+/* ===========================================
+   DATARIOT DOCS — Minimalism & Readability
+   =========================================== */
+
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --accent: #0EA5E9;
+    --border: #e5e7eb;
+    --code-bg: #f3f4f6;
+    --font-main: 'JetBrains Mono', monospace;
+    --sidebar-width: 280px;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --accent: #0EA5E9;
+    --border: #374151;
+    --code-bg: #111827;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Header */
+.header {
+    height: 64px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-primary);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.header__inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+
+.header__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header__logo {
+    height: 32px;
+    width: 32px;
+    border-radius: 6px;
+}
+
+.header__title {
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+}
+
+.header__title span {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* Search */
+.search {
+    margin-bottom: 24px;
+}
+
+.search__input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.search__input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+/* Layout */
+.layout {
+    display: flex;
+    max-width: 1400px;
+    margin: 64px auto 0;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    height: calc(100vh - 64px);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    padding: 32px 24px;
+    overflow-y: auto;
+    background: var(--bg-secondary);
+}
+
+.sidebar__section {
+    margin-bottom: 32px;
+}
+
+.sidebar__label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+}
+
+.sidebar__nav {
+    list-style: none;
+}
+
+.sidebar__link {
+    display: block;
+    padding: 8px 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.sidebar__link:hover,
+.sidebar__link.active {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+/* Content */
+.content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 48px 64px;
+    max-width: 900px;
+}
+
+.doc-section {
+    margin-bottom: 64px;
+    scroll-margin-top: 100px;
+}
+
+.doc-section__title {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+}
+
+.doc-section__subtitle {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 32px 0 16px;
+}
+
+p {
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+}
+
+th {
+    text-align: left;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+/* Code */
+pre {
+    background: var(--code-bg);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+}
+
+code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* Callouts */
+.callout {
+    padding: 16px 24px;
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--accent);
+    margin: 24px 0;
+}
+
+.callout__title {
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 32px 24px;
+    }
+}

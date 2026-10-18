@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Datariot — Technical Documentation</title>
+    <meta name="description" content="Technical documentation for the Datariot educational platform." />
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@datariot_xyz">
+    <meta name="twitter:title" content="Datariot — Technical Documentation">
+    <meta name="twitter:description"
+        content="Technical documentation for the Datariot educational platform focusing on AI-guided synthesis of knowledge.">
+    <meta name="twitter:image" content="https://docs.datariot.xyz/assets/twitter-card-v3.png">
+
+    <!-- Open Graph data -->
+    <meta property="og:title" content="Datariot — Technical Documentation">
+    <meta property="og:description"
+        content="Technical documentation for the Datariot educational platform focusing on AI-guided synthesis of knowledge.">
+    <meta property="og:image" content="https://docs.datariot.xyz/assets/twitter-card-v3.png">
+    <meta property="og:url" content="https://docs.datariot.xyz/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__brand">
+                <img src="assets/logo.jpg" alt="Datariot" class="header__logo">
+                <span class="header__title">DATARIOT <span>Internal Docs</span></span>
+            </div>
+            <div class="header__links">
+                <a href="https://info.datariot.xyz" class="header__link">Landing Site</a>
+                <a href="https://datariot.xyz" class="header__link">Web App</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Layout -->
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="search">
+                <input type="text" class="search__input" id="searchInput" placeholder="Search technical docs...">
+            </div>
+            <div class="sidebar__section">
+                <div class="sidebar__label">Getting Started</div>
+                <ul class="sidebar__nav">
+                    <li><a href="#overview" class="sidebar__link active" data-section="overview">System Overview</a>
+                    </li>
+                    <li><a href="#structure" class="sidebar__link" data-section="structure">Project Structure</a></li>
+                    <li><a href="#setup" class="sidebar__link" data-section="setup">Backend Setup</a></li>
+                </ul>
+            </div>
+            <div class="sidebar__section">
+                <div class="sidebar__label">Reference</div>
+                <ul class="sidebar__nav">
+                    <li><a href="#database" class="sidebar__link" data-section="database">Database Schema</a></li>
+                    <li><a href="#environment" class="sidebar__link" data-section="environment">Environment Config</a>
+                    </li>
+                    <li><a href="#deployment" class="sidebar__link" data-section="deployment">Vercel Rewrites</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Overview -->
+            <section class="doc-section" id="overview">
+                <h1 class="doc-section__title">System Overview</h1>
+                <p>Datariot is a cross-platform educational short-video platform built with a modern mobile-first stack.
+                    It focuses on structured intellectual discourse and AI-guided synthesis of knowledge.</p>
+
+                <h3 class="doc-section__subtitle">Tech Stack</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Layer</th>
+                            <th>Technology</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Frontend</strong></td>
+                            <td>React Native + Expo (v50+)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Navigation</strong></td>
+                            <td>Expo Router (File-based)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backend</strong></td>
+                            <td>Supabase (PostgreSQL, Auth, Storage)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI Engine</strong></td>
+                            <td>OpenAI GPT-4</td>
+                        </tr>
+                        <tr>
+                            <td><strong>State</strong></td>
+                            <td>Zustand</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Structure -->
+            <section class="doc-section" id="structure">
+                <h2 class="doc-section__title">Project Structure</h2>
+                <p>The repository follows a monorepo-lite structure managed by Vercel subdomains.</p>
+                <pre>
+/datariot
+├── datariot-docs/    # This documentation site
+├── datariot-info/    # Main landing page (marketing)
+├── datariot-xyz/     # Production web build of the Expo app
+├── src/              # Expo application source code
+│   ├── app/          # Expo Router pages
+│   ├── components/   # UI components
+│   ├── lib/          # Utilities (Supabase, API clients)
+│   └── constants/    # Global constants & Theme
+├── vercel.json       # Routing & subdomain configuration
+└── package.json      # Main project dependencies
+                </pre>
+            </section>
+
+            <!-- Backend Setup -->
+            <section class="doc-section" id="setup">
+                <h2 class="doc-section__title">Backend Setup (Supabase)</h2>
+                <p>Follow these steps to initialize the database and services on Supabase.</p>
+
+                <h3 class="doc-section__subtitle">1. Database Initialization</h3>
+                <p>Execute the schema found in <code>src/lib/supabase/schema.sql</code> using the Supabase SQL Editor to
+                    create all necessary tables, relationships, and RLS policies.</p>
+
+                <h3 class="doc-section__subtitle">2. Storage Buckets</h3>
+                <p>Create a public bucket named <code>videos</code> for hosting video assets.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Policy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SELECT</strong></td>
+                            <td>Public (All)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>INSERT</strong></td>
+                            <td>Authenticated User</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DELETE</strong></td>
+                            <td>Owner / Admin</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Database Schema -->
+            <section class="doc-section" id="database">
+                <h2 class="doc-section__title">Database Schema</h2>
+                <p>The core tables and their primary fields are detailed below. For the full OpenAPI specification,
+                    refer to <code>full_db_schema.json</code>.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>profiles</code></td>
+                            <td>User profiles, avatars, and logic scores.</td>
+                        </tr>
+                        <tr>
+                            <td><code>videos</code></td>
+                            <td>Video metadata, URLs, and creator mapping.</td>
+                        </tr>
+                        <tr>
+                            <td><code>debates</code></td>
+                            <td>Structured debate threads and logic scoring.</td>
+                        </tr>
+                        <tr>
+                            <td><code>later_actions</code></td>
+                            <td>User "Watch Later" interactions.</td>
+                        </tr>
+                        <tr>
+                            <td><code>leaderboard</code></td>
+                            <td>Calculated rankings for the Creator DNA section.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Environment Config -->
+            <section class="doc-section" id="environment">
+                <h2 class="doc-section__title">Environment Configuration</h2>
+                <p>Configuration is managed via <code>.env</code>. Do not commit this file to version control.</p>
+                <pre>
+EXPO_PUBLIC_SUPABASE_URL=https://[YOUR_ID].supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=[YOUR_ANON_KEY]
+SUPABASE_SERVICE_ROLE_KEY=[SECRET_ROLE_KEY]
+OPENAI_API_KEY=[OPENAI_KEY]
+                </pre>
+            </section>
+
+            <!-- Vercel Rewrites -->
+            <section class="doc-section" id="deployment">
+                <h2 class="doc-section__title">Vercel Rewrites</h2>
+                <p>The platform uses host-based rewrites in <code>vercel.json</code> to serve content from directories
+                    based on the requested subdomain.</p>
+                <ul>
+                    <li><strong>docs.datariot.xyz</strong> → <code>/datariot-docs/</code></li>
+                    <li><strong>info.datariot.xyz</strong> → <code>/datariot-info/</code></li>
+                    <li><strong>datariot.xyz</strong> → <code>/datariot-xyz/</code></li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

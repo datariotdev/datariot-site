@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms of Service — Datariot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .legal {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 120px 40px 80px;
+        }
+
+        .legal h1 {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .legal .legal__updated {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 40px;
+        }
+
+        .legal h2 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            margin: 36px 0 12px;
+        }
+
+        .legal p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .legal ul {
+            padding-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        .legal li {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .legal a {
+            color: var(--accent-2);
+            text-decoration: underline;
+        }
+
+        .legal__back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 32px;
+            transition: color 0.3s;
+        }
+
+        .legal__back:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-overlay"></div>
+    <main class="legal">
+        <a href="index.html" class="legal__back">← Back to Home</a>
+        <h1>Terms of Service</h1>
+        <p class="legal__updated">Last updated: March 25, 2026</p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using Datariot, you agree to be bound by these Terms of Service. If you do not agree, please
+            do not use the platform.</p>
+
+        <h2>2. Eligibility</h2>
+        <p>You must be at least 13 years old to use Datariot. By using the platform, you represent that you meet this
+            age
+            requirement.</p>
+
+        <h2>3. Account Responsibilities</h2>
+        <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities
+            that occur under your account. You agree to notify us immediately of any unauthorized use.</p>
+
+        <h2>4. Content Guidelines</h2>
+        <p>When creating content on Datariot, you agree to:</p>
+        <ul>
+            <li>Only upload content you have the right to share</li>
+            <li>Create educational, informative, or constructive content</li>
+            <li>Not post misleading, harmful, or hateful material</li>
+            <li>Respect intellectual property rights of others</li>
+            <li>Engage in debates respectfully and with evidence-based argumentation</li>
+        </ul>
+
+        <h2>5. Debate Arena Rules</h2>
+        <p>In the Debate Arena, all arguments must be:</p>
+        <ul>
+            <li>Evidence-based and logically sound</li>
+            <li>Respectful toward opposing viewpoints</li>
+            <li>Free from personal attacks (ad hominem)</li>
+            <li>Original and not plagiarized</li>
+        </ul>
+        <p>Violation of these rules may result in Logic Score penalties or account restrictions.</p>
+
+        <h2>6. Intellectual Property</h2>
+        <p>You retain ownership of content you create. By uploading content, you grant Datariot a non-exclusive,
+            worldwide license to display, distribute, and promote your content on the platform.</p>
+
+        <h2>7. Prohibited Activities</h2>
+        <p>You may not:</p>
+        <ul>
+            <li>Use bots, scrapers, or automated tools to access the platform</li>
+            <li>Attempt to manipulate Logic Scores or engagement metrics</li>
+            <li>Harass, threaten, or impersonate other users</li>
+            <li>Upload malware or attempt to compromise platform security</li>
+        </ul>
+
+        <h2>8. Termination</h2>
+        <p>We reserve the right to suspend or terminate accounts that violate these terms, with or without notice.</p>
+
+        <h2>9. Limitation of Liability</h2>
+        <p>Datariot is provided "as is" without warranties. We are not liable for any indirect, incidental, or
+            consequential damages arising from your use of the platform.</p>
+
+        <h2>10. Changes to Terms</h2>
+        <p>We may update these terms. Continued use after changes constitutes acceptance of the new terms.</p>
+
+        <h2>11. Contact</h2>
+        <p>Questions about these Terms? Contact us at <a href="mailto:legal@datariot.xyz">legal@datariot.xyz</a>.</p>
+    </main>
+    <script>
+        const savedTheme = localStorage.getItem('datariot-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</body>
+
+</html>

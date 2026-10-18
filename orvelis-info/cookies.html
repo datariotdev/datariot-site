@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Policy — Datariot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .legal {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 120px 40px 80px;
+        }
+
+        .legal h1 {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .legal .legal__updated {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 40px;
+        }
+
+        .legal h2 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            margin: 36px 0 12px;
+        }
+
+        .legal p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .legal ul {
+            padding-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        .legal li {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .legal a {
+            color: var(--accent-2);
+            text-decoration: underline;
+        }
+
+        .legal table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 13px;
+        }
+
+        .legal th,
+        .legal td {
+            text-align: left;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+        }
+
+        .legal th {
+            background: var(--surface);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .legal td {
+            color: var(--text-secondary);
+        }
+
+        .legal__back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 32px;
+            transition: color 0.3s;
+        }
+
+        .legal__back:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-overlay"></div>
+    <main class="legal">
+        <a href="index.html" class="legal__back">← Back to Home</a>
+        <h1>Cookie Policy</h1>
+        <p class="legal__updated">Last updated: March 25, 2026</p>
+
+        <h2>1. What Are Cookies</h2>
+        <p>Cookies are small text files stored on your device when you visit a website. They help us remember your
+            preferences and improve your experience on Datariot.</p>
+
+        <h2>2. Types of Cookies We Use</h2>
+        <table>
+            <tr>
+                <th>Cookie Type</th>
+                <th>Purpose</th>
+                <th>Duration</th>
+            </tr>
+            <tr>
+                <td><strong>Essential</strong></td>
+                <td>Required for the platform to function (authentication, security)</td>
+                <td>Session</td>
+            </tr>
+            <tr>
+                <td><strong>Preferences</strong></td>
+                <td>Remember your settings (theme, language, feed preferences)</td>
+                <td>1 year</td>
+            </tr>
+            <tr>
+                <td><strong>Analytics</strong></td>
+                <td>Help us understand how the platform is used to improve features</td>
+                <td>90 days</td>
+            </tr>
+            <tr>
+                <td><strong>Performance</strong></td>
+                <td>Monitor platform performance and loading speeds</td>
+                <td>30 days</td>
+            </tr>
+        </table>
+
+        <h2>3. Local Storage</h2>
+        <p>We also use browser localStorage to store your theme preference (dark/light mode). This data stays on your
+            device and is not transmitted to our servers.</p>
+
+        <h2>4. Third-Party Cookies</h2>
+        <p>We may use third-party services that set their own cookies:</p>
+        <ul>
+            <li><strong>Supabase:</strong> Authentication and database services</li>
+            <li><strong>Analytics:</strong> Anonymous usage statistics</li>
+        </ul>
+
+        <h2>5. Managing Cookies</h2>
+        <p>You can control cookies through your browser settings. Note that disabling essential cookies may prevent
+            certain features from working properly.</p>
+
+        <h2>6. Contact</h2>
+        <p>Questions about our cookie usage? Contact us at <a
+                href="mailto:privacy@datariot.xyz">privacy@datariot.xyz</a>.
+        </p>
+    </main>
+    <script>
+        const savedTheme = localStorage.getItem('datariot-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</body>
+
+</html>
