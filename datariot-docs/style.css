@@ -10,7 +10,7 @@
     --accent: #0EA5E9;
     --border: #e5e7eb;
     --code-bg: #f3f4f6;
-    --font-main: 'JetBrains Mono', monospace;
+    --font-main: 'Inter', sans-serif;
     --sidebar-width: 280px;
 }
 
@@ -165,6 +165,7 @@ a:hover {
 /* Content */
 .content {
     flex: 1;
+    min-width: 0;
     margin-left: var(--sidebar-width);
     padding: 48px 64px;
     max-width: 900px;
@@ -252,11 +253,73 @@ code {
 /* Mobile */
 @media (max-width: 768px) {
     .sidebar {
-        display: none;
+        display: block;
+        top: 64px;
+        bottom: 0;
+        left: 0;
+        width: min(320px, 88vw);
+        height: auto;
+        z-index: 120;
+        visibility: hidden;
+        transform: translateX(-100%);
+        transition: transform .2s ease, visibility .2s;
     }
 
     .content {
         margin-left: 0;
         padding: 32px 24px;
     }
+}
+
+/* Orvelis product guide and accessible navigation */
+html { scroll-behavior: smooth; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip-link { position: fixed; top: -80px; left: 16px; z-index: 200; padding: 12px; background: var(--bg-primary); }
+.skip-link:focus { top: 8px; }
+.header__links { display: flex; align-items: center; gap: 24px; font-size: 14px; }
+.mobile-menu, .sidebar-overlay { display: none; }
+.search__status { font-size: 12px; margin: 8px 0 0; }
+.search__status:empty { display: none; }
+.doc-eyebrow { display: block; color: #0369a1; font: 500 11px/1.5 'JetBrains Mono', monospace; letter-spacing: .08em; }
+.orvelis-intro > .doc-eyebrow { margin-bottom: 20px; }
+.orvelis-intro > .doc-section__title { font-size: clamp(34px, 4vw, 49px); line-height: 1.12; letter-spacing: -.045em; margin-bottom: 24px; }
+.doc-lede { font-size: 20px; line-height: 1.6; color: var(--text-primary); }
+.doc-steps { padding-left: 24px; color: var(--text-secondary); }
+.doc-steps li { padding: 0 0 14px 6px; }
+.doc-steps strong, .doc-section > p > strong { color: var(--text-primary); }
+.availability { border-left-color: #0369a1; }
+.callout p:last-child { margin-bottom: 0; }
+.callout__title { color: var(--text-primary); }
+.doc-example { margin: 26px 0; padding: 24px; background: #f0f9ff; border-radius: 12px; }
+.doc-example__label { display: block; color: #0369a1; font: 500 10px/1.6 'JetBrains Mono', monospace; letter-spacing: .07em; margin-bottom: 12px; }
+.doc-example blockquote { font-size: 19px; font-weight: 500; line-height: 1.6; letter-spacing: -.02em; margin-bottom: 14px; }
+.doc-example p { margin-bottom: 0; }
+.doc-note { font-size: 13px; line-height: 1.8; }
+.guide-jumps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; margin-top: 32px; }
+.guide-jumps a { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); color: #0369a1; font-size: 14px; }
+.feature-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.status-badge { display: inline-flex; padding: 4px 10px; color: #854d0e; background: #fef9c3; border-radius: 100px; font-size: 11px; font-weight: 600; }
+.prompt-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 24px 0; }
+.prompt-list li { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 13px; color: var(--text-secondary); }
+
+@media (max-width: 768px) {
+    .sidebar.open { visibility: visible; transform: translateX(0); }
+    .sidebar-overlay { display: block; position: fixed; inset: 64px 0 0; z-index: 110; border: 0; background: rgba(17, 24, 39, .4); }
+    .mobile-menu { display: inline-flex; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-primary); color: var(--text-primary); font: inherit; cursor: pointer; }
+    .header__inner { padding: 0 16px; }
+    .header__links { gap: 12px; font-size: 12px; }
+    .header__title { font-size: 15px; }
+    .header__title span, .header__link:first-of-type { display: none; }
+    .header__brand { gap: 8px; }
+    .doc-section__title { font-size: 28px; line-height: 1.25; }
+    .doc-lede { font-size: 18px; }
+    .doc-example { padding: 20px; }
+    .doc-example blockquote { font-size: 17px; }
+    .guide-jumps { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .sidebar { transition: none; }
 }

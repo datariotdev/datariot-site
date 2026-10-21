@@ -1,86 +1,89 @@
-/* ===========================================
-   DATARIOT DOCS — Interactivity
-   =========================================== */
-
+/* Datariot docs: navigation, mobile contents and full-text section search. */
 document.addEventListener('DOMContentLoaded', () => {
-    // === Active sidebar link tracking ===
-    const sections = document.querySelectorAll('.doc-section');
-    const sidebarLinks = document.querySelectorAll('.sidebar__link');
+    const sections = [...document.querySelectorAll('.doc-section')];
+    const sidebarLinks = [...document.querySelectorAll('.sidebar__link')];
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const menuButton = document.getElementById('mobileMenuBtn');
+    const searchInput = document.getElementById('searchInput');
+    const searchStatus = document.getElementById('searchStatus');
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.id;
-                sidebarLinks.forEach(link => {
-                    link.classList.toggle('active', link.getAttribute('data-section') === id);
-                });
-            }
+    function setActive(id) {
+        sidebarLinks.forEach(link => {
+            const active = link.dataset.section === id;
+            link.classList.toggle('active', active);
+            if (active) link.setAttribute('aria-current', 'location');
+            else link.removeAttribute('aria-current');
         });
-    }, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+    }
 
-    sections.forEach(s => observer.observe(s));
+    function setMenu(open, returnFocus = false) {
+        sidebar?.classList.toggle('open', open);
+        if (overlay) overlay.hidden = !open;
+        menuButton?.setAttribute('aria-expanded', String(open));
+        if (open) searchInput?.focus();
+        else if (returnFocus) menuButton?.focus();
+    }
 
-    // === Smooth scroll ===
+    menuButton?.addEventListener('click', () => {
+        setMenu(menuButton.getAttribute('aria-expanded') !== 'true');
+    });
+    overlay?.addEventListener('click', () => setMenu(false, true));
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && menuButton?.getAttribute('aria-expanded') === 'true') {
+            setMenu(false, true);
+        }
+    });
+    window.matchMedia('(max-width: 768px)').addEventListener('change', () => setMenu(false));
+
     sidebarLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.getElementById(link.getAttribute('data-section'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
+        link.addEventListener('click', () => {
+            // Keep native anchors, URL hashes and reduced-motion behavior.
+            setActive(link.dataset.section);
+            if (menuButton?.getAttribute('aria-expanded') === 'true') {
+                setMenu(false);
+                const section = document.getElementById(link.dataset.section);
+                section?.setAttribute('tabindex', '-1');
+                section?.focus({ preventScroll: true });
             }
-
-            // Close mobile sidebar
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
         });
     });
 
-    // === Mobile menu ===
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('show');
-        });
+    function updateActiveSection() {
+        const visible = sections.filter(section => !section.hidden);
+        const current = [...visible].reverse().find(section => section.getBoundingClientRect().top <= 140) || visible[0];
+        if (current) setActive(current.id);
     }
-
-    if (overlay) {
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
+    let scrollQueued = false;
+    window.addEventListener('scroll', () => {
+        if (scrollQueued) return;
+        scrollQueued = true;
+        requestAnimationFrame(() => {
+            updateActiveSection();
+            scrollQueued = false;
         });
-    }
+    }, { passive: true });
+    window.addEventListener('hashchange', updateActiveSection);
 
-    // === Search ===
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-
-            sidebarLinks.forEach(link => {
-                const text = link.textContent.toLowerCase();
-                const li = link.parentElement;
-                if (!query || text.includes(query)) {
-                    li.style.display = '';
-                } else {
-                    li.style.display = 'none';
-                }
-            });
-
-            // Also highlight matching sections in content
-            sections.forEach(section => {
-                const text = section.textContent.toLowerCase();
-                if (!query || text.includes(query)) {
-                    section.style.opacity = '1';
-                } else {
-                    section.style.opacity = '0.3';
-                }
-            });
+    searchInput?.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase().trim();
+        let count = 0;
+        sections.forEach(section => {
+            const matches = !query || section.textContent.toLowerCase().includes(query);
+            section.hidden = !matches;
+            if (matches) count++;
+            const link = sidebarLinks.find(item => item.dataset.section === section.id);
+            if (link) link.parentElement.hidden = !matches;
         });
-    }
+        if (searchStatus) {
+            searchStatus.textContent = query
+                ? (count ? `${count} matching section${count === 1 ? '' : 's'}` : 'No sections found. Try another word.')
+                : '';
+        }
+        document.querySelectorAll('.sidebar__section').forEach(group => {
+            group.hidden = ![...group.querySelectorAll('li')].some(item => !item.hidden);
+        });
+        updateActiveSection();
+    });
+    updateActiveSection();
 });

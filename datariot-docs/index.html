@@ -4,21 +4,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Datariot — Technical Documentation</title>
-    <meta name="description" content="Technical documentation for the Datariot educational platform." />
+    <title>Datariot Docs — Orvelis AI & Platform Guide</title>
+    <meta name="description" content="Learn how Orvelis AI works: Deep Dive, video questions, and the planned features that help you follow ideas further." />
 
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@datariot_xyz">
-    <meta name="twitter:title" content="Datariot — Technical Documentation">
+    <meta name="twitter:title" content="Datariot Docs — Orvelis AI & Platform Guide">
     <meta name="twitter:description"
-        content="Technical documentation for the Datariot educational platform focusing on AI-guided synthesis of knowledge.">
+        content="Explore Orvelis AI: understand a clip, follow your questions, and discover what is planned for Datariot.">
     <meta name="twitter:image" content="https://docs.datariot.xyz/assets/twitter-card-v3.png">
 
     <!-- Open Graph data -->
-    <meta property="og:title" content="Datariot — Technical Documentation">
+    <meta property="og:title" content="Datariot Docs — Orvelis AI & Platform Guide">
     <meta property="og:description"
-        content="Technical documentation for the Datariot educational platform focusing on AI-guided synthesis of knowledge.">
+        content="Explore Orvelis AI: understand a clip, follow your questions, and discover what is planned for Datariot.">
     <meta property="og:image" content="https://docs.datariot.xyz/assets/twitter-card-v3.png">
     <meta property="og:url" content="https://docs.datariot.xyz/">
     <meta property="og:type" content="website">
@@ -28,34 +28,51 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=orvelis-guide-1" />
 </head>
 
 <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <!-- Header -->
     <header class="header">
         <div class="header__inner">
             <div class="header__brand">
                 <img src="assets/logo.jpg" alt="Datariot" class="header__logo">
-                <span class="header__title">DATARIOT <span>Internal Docs</span></span>
+                <span class="header__title">DATARIOT <span>Docs</span></span>
             </div>
             <div class="header__links">
+                <button class="mobile-menu" id="mobileMenuBtn" type="button" aria-expanded="false" aria-controls="sidebar">Contents</button>
                 <a href="https://info.datariot.xyz" class="header__link">Landing Site</a>
                 <a href="https://datariot.xyz" class="header__link">Web App</a>
             </div>
         </div>
     </header>
 
+    <button class="sidebar-overlay" id="sidebarOverlay" type="button" aria-label="Close contents" hidden></button>
+
     <!-- Layout -->
     <div class="layout">
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar" aria-label="Documentation contents">
             <div class="search">
-                <input type="text" class="search__input" id="searchInput" placeholder="Search technical docs...">
+                <label class="sr-only" for="searchInput">Search documentation</label>
+                <input type="search" class="search__input" id="searchInput" placeholder="Search the docs...">
+                <p class="search__status" id="searchStatus" role="status" aria-live="polite"></p>
+            </div>
+            <div class="sidebar__section">
+                <div class="sidebar__label">Orvelis AI</div>
+                <ul class="sidebar__nav">
+                    <li><a href="#orvelis" class="sidebar__link active" data-section="orvelis" aria-current="location">How Orvelis works</a></li>
+                    <li><a href="#go-deeper" class="sidebar__link" data-section="go-deeper">Follow your question</a></li>
+                    <li><a href="#missing-context" class="sidebar__link" data-section="missing-context">Find the missing context</a></li>
+                    <li><a href="#knowledge-memory" class="sidebar__link" data-section="knowledge-memory">Remember what you learned</a></li>
+                    <li><a href="#video-replies" class="sidebar__link" data-section="video-replies">Build a video reply</a></li>
+                    <li><a href="#bring-a-clip" class="sidebar__link" data-section="bring-a-clip">Bring a clip to Datariot</a></li>
+                </ul>
             </div>
             <div class="sidebar__section">
                 <div class="sidebar__label">Getting Started</div>
                 <ul class="sidebar__nav">
-                    <li><a href="#overview" class="sidebar__link active" data-section="overview">System Overview</a>
+                    <li><a href="#overview" class="sidebar__link" data-section="overview">System Overview</a>
                     </li>
                     <li><a href="#structure" class="sidebar__link" data-section="structure">Project Structure</a></li>
                     <li><a href="#setup" class="sidebar__link" data-section="setup">Backend Setup</a></li>
@@ -73,10 +90,115 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="content">
+        <main class="content" id="main-content">
+            <section class="doc-section orvelis-intro" id="orvelis" aria-labelledby="orvelis-title">
+                <span class="doc-eyebrow">THE ORVELIS GUIDE</span>
+                <h1 class="doc-section__title" id="orvelis-title">A short video.<br>A question worth following.</h1>
+                <p class="doc-lede">Orvelis is the AI inside Datariot. Start with an idea in a clip, ask what is behind it, and decide where your curiosity takes you next.</p>
+                <p>A useful video can leave you with more questions than answers. Orvelis helps you unpack the topic, explore another perspective and bring your own thinking into the conversation.</p>
+
+                <div class="callout availability">
+                    <p class="callout__title">Beta foundation &amp; planned features</p>
+                    <p>Deep Dive and video Q&amp;A are the foundation in the current beta. The five features marked <strong>Planned</strong> below show where Orvelis is headed. Their examples illustrate the intended experience; availability will be announced as each feature ships.</p>
+                </div>
+
+                <h2 class="doc-section__subtitle">Start with Deep Dive</h2>
+                <ol class="doc-steps">
+                    <li><strong>Find an idea.</strong> Open a video that makes you curious.</li>
+                    <li><strong>Open Orvelis.</strong> In the video options, choose <strong>Orvelis AI Deep Dive</strong>.</li>
+                    <li><strong>Get your bearings.</strong> Read the summary, explore three key terms and browse suggested videos, articles or podcasts.</li>
+                    <li><strong>Ask your question.</strong> Use the chat to ask for a simpler explanation, a concrete example or a closer look at an assumption.</li>
+                </ol>
+                <div class="doc-example">
+                    <span class="doc-example__label">A QUESTION YOU CAN ASK</span>
+                    <blockquote>“The video says correlation does not prove causation. Can you explain that with an everyday example?”</blockquote>
+                    <p>Keep asking follow-up questions in the same chat to explore the topic at your own pace.</p>
+                </div>
+                <p class="doc-note">In the current beta, Deep Dive uses the video's title and description as context. It may miss details in the spoken audio or visuals. Suggested resources need checking; an AI explanation is not proof that a claim is true.</p>
+                <nav class="guide-jumps" aria-label="Explore planned Orvelis features">
+                    <a href="#go-deeper">Follow a question <span aria-hidden="true">↗</span></a>
+                    <a href="#missing-context">Check the context <span aria-hidden="true">↗</span></a>
+                    <a href="#knowledge-memory">Find an old idea <span aria-hidden="true">↗</span></a>
+                    <a href="#video-replies">Make your point <span aria-hidden="true">↗</span></a>
+                    <a href="#bring-a-clip">Start with a link <span aria-hidden="true">↗</span></a>
+                </nav>
+            </section>
+
+            <section class="doc-section" id="go-deeper" aria-labelledby="go-deeper-title">
+                <div class="feature-heading"><span class="doc-eyebrow">01 / FOLLOW YOUR QUESTION</span><span class="status-badge">Planned</span></div>
+                <h2 class="doc-section__title" id="go-deeper-title">You choose what comes next.</h2>
+                <p>The planned continuation connects your question to an explanation and relevant Datariot videos. You can follow the part that matters to you, through different creators and perspectives.</p>
+                <ul class="prompt-list" aria-label="Example questions">
+                    <li>Explain it more simply</li><li>Show a real example</li><li>Find a strong counterargument</li><li>How can I use this?</li>
+                </ul>
+                <div class="doc-example">
+                    <span class="doc-example__label">EXAMPLE SCENARIO</span>
+                    <blockquote>“I'm learning to code. Which parts of this video about AI and programmers actually affect me?”</blockquote>
+                    <p>Orvelis would explain the relevant tasks, then suggest clips showing practical examples and a different view. Ask another question to keep shaping the route.</p>
+                </div>
+                <p><strong>Why it matters:</strong> your next video follows a question you chose. You can stay with an idea long enough to understand it.</p>
+            </section>
+
+            <section class="doc-section" id="missing-context" aria-labelledby="missing-context-title">
+                <div class="feature-heading"><span class="doc-eyebrow">02 / FIND THE MISSING CONTEXT</span><span class="status-badge">Planned</span></div>
+                <h2 class="doc-section__title" id="missing-context-title">Look behind a confident claim.</h2>
+                <p>Orvelis is intended to separate the claim, the evidence offered and the assumptions connecting them. The planned analysis would link concerns to the relevant moment in a clip, with original sources and human video replies where available.</p>
+                <div class="doc-example">
+                    <span class="doc-example__label">EXAMPLE SCENARIO</span>
+                    <blockquote>“AI will replace all programmers in two years.”</blockquote>
+                    <p>A useful response would ask whether the evidence concerns one coding task or an entire profession, surface the original research if available, and show a relevant response from a developer.</p>
+                </div>
+                <p>Facts, interpretations and predictions should be distinguishable. Where sources are missing, disagree or leave the question open, Orvelis should make that uncertainty clear. A timestamped concern points you back to the clip so you can judge it in context.</p>
+                <p><strong>Why it matters:</strong> you get a way to examine an argument and hear another perspective before deciding what you think.</p>
+            </section>
+
+            <section class="doc-section" id="knowledge-memory" aria-labelledby="knowledge-memory-title">
+                <div class="feature-heading"><span class="doc-eyebrow">03 / REMEMBER WHAT YOU LEARNED</span><span class="status-badge">Planned</span></div>
+                <h2 class="doc-section__title" id="knowledge-memory-title">Find the idea you almost forgot.</h2>
+                <p>The planned personal memory would let you search clips you saved, and your watch history if you choose to enable it, using the details you remember. Orvelis would return the relevant clip or moment and help reconnect it to related ideas.</p>
+                <div class="doc-example">
+                    <span class="doc-example__label">EXAMPLE SCENARIO</span>
+                    <blockquote>“Find that video explaining why a periscope camera is not always better than a regular telephoto.”</blockquote>
+                    <p>Return to the explanation, revisit the original creator and collect related clips in a personal topic collection, such as “What I learned about cameras.”</p>
+                </div>
+                <p>You would choose whether to include viewing history in your personal memory. This feature is planned as an opt-in experience.</p>
+                <p><strong>Why it matters:</strong> useful clips become something you can return to and build on.</p>
+            </section>
+
+            <section class="doc-section" id="video-replies" aria-labelledby="video-replies-title">
+                <div class="feature-heading"><span class="doc-eyebrow">04 / BUILD A VIDEO REPLY</span><span class="status-badge">Planned</span></div>
+                <h2 class="doc-section__title" id="video-replies-title">Turn a reaction into a clear point.</h2>
+                <p>The planned reply assistant would help you work out exactly what you agree or disagree with, find supporting evidence and make a short outline for your response.</p>
+                <div class="doc-example">
+                    <span class="doc-example__label">EXAMPLE SCENARIO</span>
+                    <blockquote>“I disagree with the conclusion, but I can't explain why. Help me structure a 30-second reply.”</blockquote>
+                    <p>Orvelis would help you identify the disputed assumption and organize your own argument: state the claim, give one concrete reason or example, and explain the conclusion.</p>
+                </div>
+                <p>You review the evidence and record the reply yourself. Datariot's on-camera posting format keeps your voice and perspective at the center of the exchange.</p>
+                <p><strong>Why it matters:</strong> you have a starting point for joining the conversation, even when recording your first response feels difficult.</p>
+            </section>
+
+            <section class="doc-section" id="bring-a-clip" aria-labelledby="bring-a-clip-title">
+                <div class="feature-heading"><span class="doc-eyebrow">05 / BRING A CLIP TO DATARIOT</span><span class="status-badge">Planned</span></div>
+                <h2 class="doc-section__title" id="bring-a-clip-title">Start with something you saw elsewhere.</h2>
+                <p>The planned link workflow would let you bring a video URL and ask a specific question. Where the content is accessible and supported, Orvelis would help explain the claim and connect it to sources and discussions on Datariot.</p>
+                <div class="doc-example">
+                    <span class="doc-example__label">EXAMPLE SCENARIO</span>
+                    <blockquote>“I saw this clip on another platform. What evidence supports its main claim?”</blockquote>
+                    <p>Explore the available evidence and related Datariot videos. A shareable explanation would give others a link to the full discussion and the sources behind it.</p>
+                </div>
+                <p>Support will depend on access to the original content. A private, deleted or otherwise inaccessible video cannot be treated as if Orvelis has watched it.</p>
+                <p><strong>Why it matters:</strong> a question that started elsewhere can lead to a deeper conversation here.</p>
+                <div class="callout">
+                    <p class="callout__title">Help shape Orvelis</p>
+                    <p>Datariot is in beta. <a href="https://datariot.xyz">Explore the web app</a> or <a href="https://discord.gg/KvBpEVrk2">join our Discord community</a> to ask about access and tell us which experience you want to try first.</p>
+                </div>
+            </section>
+
+
             <!-- Overview -->
             <section class="doc-section" id="overview">
-                <h1 class="doc-section__title">System Overview</h1>
+                <h2 class="doc-section__title">System Overview</h2>
                 <p>Datariot is a cross-platform educational short-video platform built with a modern mobile-first stack.
                     It focuses on structured intellectual discourse and AI-guided synthesis of knowledge.</p>
 
@@ -231,7 +353,7 @@ OPENAI_API_KEY=[OPENAI_KEY]
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=orvelis-guide-1"></script>
 </body>
 
 </html>
