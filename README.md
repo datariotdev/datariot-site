@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./assets/logo.jpg" width="120" height="120" style="border-radius: 28px; box-shadow: 0 12px 36px rgba(0, 102, 255, 0.25); margin-bottom: 20px;" />
+  <img src="./assets/logo.jpg?v=brand-20261021" width="120" height="120" style="border-radius: 28px; box-shadow: 0 12px 36px rgba(0, 102, 255, 0.25); margin-bottom: 20px;" />
 
   # DATARIOT
   ### *Short videos with a point. Ideas worth exploring. Arguments worth answering.*

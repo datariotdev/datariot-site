@@ -9,7 +9,7 @@
     "scheme": "datariot",
     "splash": {
       "image": "./assets/logo.jpg",
-      "resizeMode": "cover",
+      "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
@@ -27,7 +27,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.jpg",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
       "package": "com.datariot.app",
@@ -39,7 +39,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/logo.jpg",
+      "favicon": "./assets/favicon.png",
       "bundler": "metro",
       "baseUrl": ""
     },
