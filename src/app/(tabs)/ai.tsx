@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInDown, FadeInUp, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, withDelay, Easing } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { generateVideoAnalysis, chatWithAI, generateDailyInsight, VideoAnalysis, DailyInsight } from '../../lib/ai/client';
+import { generateVideoAnalysis, chatWithAI, generateDailyInsight, getAIErrorMessage, VideoAnalysis, DailyInsight } from '../../lib/ai/client';
 
 const { width } = Dimensions.get('window');
 
@@ -26,8 +26,8 @@ const uniqueId = () => `msg_${Date.now()}_${++_msgIdCounter}`;
 
 // Example prompts for first-time users
 const EXAMPLE_PROMPTS = [
-    { iconType: 'material', iconName: 'lightning-bolt', color: '#A5C6FF', text: 'Daily insight', tool: 'insight' as ToolType, desc: 'Focus reading' },
-    { iconType: 'material', iconName: 'microscope', color: '#10B981', text: 'Analyze content', tool: 'analyze' as ToolType, desc: 'Truth scan' },
+    { iconType: 'material', iconName: 'lightning-bolt', color: '#A5C6FF', text: 'Learning exercise', tool: 'insight' as ToolType, desc: 'One practical next step' },
+    { iconType: 'material', iconName: 'microscope', color: '#10B981', text: 'Analyze content', tool: 'analyze' as ToolType, desc: 'Examine a text or claim' },
     { iconType: 'material', iconName: 'brain', color: '#8B5CF6', text: 'What can you do?', tool: 'chat' as ToolType, desc: 'Capabilities' },
     { iconType: 'feather', iconName: 'lightbulb', color: '#EC4899', text: 'Tell me something interesting', tool: 'chat' as ToolType, desc: 'Random insight' },
 ];
@@ -192,16 +192,16 @@ const AIIntroCard = ({ theme, isDark }: { theme: any, isDark: boolean }) => {
                 </View>
                 <View style={styles.introHeaderText}>
                     <Text style={[styles.introTitle, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}>
-                        ORVELIS COGNITIVE CORE
+                        EXPLORE WITH ORVELIS
                     </Text>
                     <Text style={[styles.introSubtitle, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.tech }]}>
-                        SECURE SYNAPSE NODE // V1.0.0
+                        UNDERSTAND · QUESTION · APPLY
                     </Text>
                 </View>
             </View>
 
             <Text style={[styles.introDesc, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.regular }]}>
-                Engineered at the intersection of media forensics and high-fidelity intelligence synthesis. Orvelis is designed to stress-test concepts through strategic dialogue, analyze narrative parameters, and generate deep cognitive focus insight readings in real-time.
+                Understand an idea, work through an example, or compare the strongest arguments. Orvelis uses the text you provide and the current conversation. For a video discussion, open Deep Dive from the feed.
             </Text>
 
             <View style={[styles.introDivider, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)' }]} />
@@ -209,18 +209,18 @@ const AIIntroCard = ({ theme, isDark }: { theme: any, isDark: boolean }) => {
             <View style={styles.introMetaRow}>
                 <View style={styles.introMetaCol}>
                     <Text style={[styles.introMetaLabel, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.tech }]}>
-                        STRATEGIC DEPTH
+                        YOUR CONTEXT
                     </Text>
                     <Text style={[styles.introMetaVal, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.semibold }]}>
-                        SYNTHETIC COGNITION
+                        TEXT & CONVERSATION
                     </Text>
                 </View>
                 <View style={styles.introMetaCol}>
                     <Text style={[styles.introMetaLabel, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.tech }]}>
-                        SYNC STATUS
+                        NEXT STEP
                     </Text>
                     <Text style={[styles.introMetaVal, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.semibold }]}>
-                        ⚡ REAL-TIME LATENCY
+                        ASK A FOLLOW-UP
                     </Text>
                 </View>
             </View>
@@ -234,7 +234,7 @@ export default function AIScreen() {
         {
             id: 'init',
             role: 'assistant',
-            content: "Welcome to the synapse. Select an analysis module below or introduce a query to initiate dialogue.",
+            content: "Ask a question, paste a claim to examine, or open Deep Dive from a video to discuss its ideas.",
             type: 'text'
         }
     ]);
@@ -257,113 +257,60 @@ export default function AIScreen() {
         }, 150);
     }, []);
 
-    const handleExamplePrompt = (prompt: typeof EXAMPLE_PROMPTS[0]) => {
+    const busy = useRef(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const historyForModel = () => messages.filter(m => m.id !== 'init').map(m => ({ role: m.role, content: m.data ? JSON.stringify(m.data) : m.content }));
+
+    const sendQuestion = async (question: string) => {
+        if (!question.trim() || busy.current) return;
+        busy.current = true;
+        setErrorMessage('');
         setShowSuggestions(false);
-        setSelectedTool(prompt.tool);
-
-        if (prompt.tool === 'chat') {
-            // Immediately send as a message
-            const userMsg: Message = { id: uniqueId(), role: 'user', content: prompt.text, type: 'text' };
-            setMessages(prev => [...prev, userMsg]);
-            setLoading(true);
-            scrollToBottom();
-
-            const history = messages.map(m => ({ role: m.role, content: m.content }));
-            chatWithAI(prompt.text, history).then(response => {
-                setMessages(prev => [...prev, {
-                    id: uniqueId(),
-                    role: 'assistant',
-                    content: response,
-                    type: 'text'
-                }]);
-            }).catch(console.error).finally(() => {
-                setLoading(false);
-                scrollToBottom();
-            });
-        } else {
-            handleToolSelect(prompt.tool);
-        }
-    };
-
-    const handleSendMessage = async () => {
-        if (!inputText.trim()) return;
-
-        // Hide suggestions after first message
-        setShowSuggestions(false);
-
-        const userMsg: Message = { id: uniqueId(), role: 'user', content: inputText, type: 'text' };
-        setMessages(prev => [...prev, userMsg]);
-        const textToSend = inputText;
-        setInputText('');
         setLoading(true);
+        const userMsg: Message = { id: uniqueId(), role: 'user', content: question, type: 'text' };
+        setMessages(previous => [...previous, userMsg]);
+        setInputText('');
         scrollToBottom();
-
         try {
-            const history = messages.map(m => ({ role: m.role, content: m.content }));
-            const response = await chatWithAI(textToSend, history);
-
-            setMessages(prev => [...prev, {
-                id: uniqueId(),
-                role: 'assistant',
-                content: response,
-                type: 'text'
-            }]);
-        } catch (e) {
-            console.error(e);
-            setMessages(prev => [...prev, {
-                id: uniqueId(),
-                role: 'assistant',
-                content: "Connection disrupted. I'm operating in local mode — try again or ask me something I can handle offline.",
-                type: 'text'
-            }]);
+            if (selectedTool === 'analyze') {
+                const analysis = await generateVideoAnalysis(question);
+                setMessages(previous => [...previous, { id: uniqueId(), role: 'assistant', content: 'Text analysis', type: 'analysis', data: analysis }]);
+                setSelectedTool('chat');
+            } else {
+                const response = await chatWithAI(question, historyForModel());
+                setMessages(previous => [...previous, { id: uniqueId(), role: 'assistant', content: response, type: 'text' }]);
+            }
+        } catch (error) {
+            setErrorMessage(getAIErrorMessage(error));
+            setInputText(current => current || question);
+            setMessages(previous => previous.filter(m => m.id !== userMsg.id));
         } finally {
+            busy.current = false;
             setLoading(false);
             scrollToBottom();
         }
     };
-
+    const handleSendMessage = () => void sendQuestion(inputText.trim());
     const handleToolSelect = async (tool: ToolType) => {
+        if (busy.current) return;
         setSelectedTool(tool);
         setShowSuggestions(false);
-
-        if (tool === 'insight') {
-            setLoading(true);
-            scrollToBottom();
-            try {
-                const insight = await generateDailyInsight();
-                setMessages(prev => [...prev, {
-                    id: uniqueId(),
-                    role: 'assistant',
-                    content: 'Daily Insight Generated',
-                    type: 'insight',
-                    data: insight
-                }]);
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
-                scrollToBottom();
-            }
-        } else if (tool === 'analyze') {
-            setLoading(true);
-            scrollToBottom();
-            try {
-                const analysis = await generateVideoAnalysis();
-                setMessages(prev => [...prev, {
-                    id: uniqueId(),
-                    role: 'assistant',
-                    content: 'Analysis Complete',
-                    type: 'analysis',
-                    data: analysis
-                }]);
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
-                scrollToBottom();
-            }
-        }
-        // For 'chat', just switch tool — don't trigger anything
+        setErrorMessage('');
+        // Analyze requires actual user text. Selecting the tool never invents a video.
+        if (tool !== 'insight') return;
+        busy.current = true;
+        setLoading(true);
+        try {
+            const insight = await generateDailyInsight();
+            setMessages(previous => [...previous, { id: uniqueId(), role: 'assistant', content: 'Learning exercise', type: 'insight', data: insight }]);
+            setSelectedTool('chat');
+        } catch (error) { setErrorMessage(getAIErrorMessage(error)); }
+        finally { busy.current = false; setLoading(false); scrollToBottom(); }
+    };
+    const handleExamplePrompt = (prompt: typeof EXAMPLE_PROMPTS[0]) => {
+        if (busy.current) return;
+        if (prompt.tool === 'chat') void sendQuestion(prompt.text);
+        else void handleToolSelect(prompt.tool);
     };
 
     const renderMessage = ({ item }: { item: Message }) => {
@@ -383,16 +330,9 @@ export default function AIScreen() {
                         <View style={styles.cardHeaderIcon}>
                             <MaterialCommunityIcons name="lightning-bolt" size={16} color={theme.colors.primary.DEFAULT} />
                         </View>
-                        <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>DAILY INSIGHT</Text>
+                        <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>LEARNING EXERCISE</Text>
                     </View>
-                    <Text style={[styles.insightScore, { color: theme.colors.text.primary }]}>{insight.score}</Text>
-                    <View style={styles.insightStatusRow}>
-                        <Text style={[styles.insightStatus, { color: theme.colors.primary.DEFAULT }]}>{insight.status}</Text>
-                        <View style={[styles.trendBadge, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)' }]}>
-                            <Ionicons name="trending-up" size={12} color="#10B981" />
-                            <Text style={styles.trendText}>{insight.trend}</Text>
-                        </View>
-                    </View>
+                    <Text style={[styles.insightStatus, { color: theme.colors.primary.DEFAULT }]}>{insight.status}</Text>
                     <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{insight.message}</Text>
                 </Animated.View>
             );
@@ -413,7 +353,7 @@ export default function AIScreen() {
                         <View style={[styles.cardHeaderIcon, { backgroundColor: isDark ? 'rgba(139, 92, 246, 0.05)' : 'rgba(139, 92, 246, 0.02)' }]}>
                             <Feather name="eye" size={14} color="#8B5CF6" />
                         </View>
-                        <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>TRUTH ANALYSIS</Text>
+                        <Text style={[styles.cardTitle, { color: theme.colors.text.primary }]}>TEXT ANALYSIS</Text>
                     </View>
 
                     <View style={styles.analysisSection}>
@@ -424,7 +364,7 @@ export default function AIScreen() {
                     </View>
                     <View style={styles.analysisSection}>
                         <View style={[styles.analysisLabelBadge, { backgroundColor: isDark ? 'rgba(239, 68, 68, 0.05)' : 'rgba(239, 68, 68, 0.02)' }]}>
-                            <Text style={[styles.analysisLabel, { color: '#EF4444' }]}>MANIPULATION</Text>
+                            <Text style={[styles.analysisLabel, { color: '#EF4444' }]}>ASSUMPTIONS & GAPS</Text>
                         </View>
                         <Text style={[styles.cardText, { color: theme.colors.text.secondary }]}>{analysis.manipulation}</Text>
                     </View>
@@ -466,7 +406,7 @@ export default function AIScreen() {
     const getPlaceholder = () => {
         switch (selectedTool) {
             case 'insight': return "Ask about your insight...";
-            case 'analyze': return "Ask about the analysis...";
+            case 'analyze': return "Paste the text or claim to examine...";
             default: return "Ask Orvelis anything...";
         }
     };
@@ -486,7 +426,7 @@ export default function AIScreen() {
                         </View>
                         <View>
                             <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>Orvelis</Text>
-                            <Text style={[styles.headerSubtitle, { color: theme.colors.text.muted }]}>AI Core • Online</Text>
+                            <Text style={[styles.headerSubtitle, { color: theme.colors.text.muted }]}>Learn · Discuss · Explore</Text>
                         </View>
                     </View>
                     <View style={styles.headerStatusWrapper}>
@@ -572,7 +512,9 @@ export default function AIScreen() {
                         ))}
                     </View>
 
-                    {/* Input Area — always editable */}
+                    {selectedTool === 'analyze' && <Text style={{ color: theme.colors.text.secondary, paddingHorizontal: 20, paddingBottom: 8 }}>Paste a claim or transcript below. Orvelis will analyze that text.</Text>}
+                    {!!errorMessage && <Text accessibilityRole="alert" style={{ color: theme.colors.text.secondary, paddingHorizontal: 20, paddingBottom: 8 }}>{errorMessage}</Text>}
+                    {/* Input Area */}
                     <View style={[styles.inputContainer, { borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
                         <View style={[styles.inputWrapper, {
                             backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
@@ -582,6 +524,7 @@ export default function AIScreen() {
                                 style={[styles.input, { color: theme.colors.text.primary }]}
                                 placeholder={getPlaceholder()}
                                 placeholderTextColor={theme.colors.text.muted}
+                                maxLength={6000}
                                 value={inputText}
                                 onChangeText={setInputText}
                                 onSubmitEditing={handleSendMessage}
@@ -599,7 +542,7 @@ export default function AIScreen() {
                                         : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
                                 }
                             ]}
-                            disabled={!inputText.trim()}
+                            disabled={loading || !inputText.trim()}
                             activeOpacity={0.7}
                         >
                             <Ionicons

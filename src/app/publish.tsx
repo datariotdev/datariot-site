@@ -9,7 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../lib/supabase/hooks/useAuth';
 import { VIDEO_CATEGORIES, CATEGORY_DISPLAY_NAMES, VideoCategory } from '../lib/constants/categories';
 import { supabase } from '../lib/supabase/client';
-import { generateDebateSeed, generateVideoAnalysis, DebateSeed } from '../lib/ai/client';
+import { generateDebateSeed, getAIErrorMessage, DebateSeed } from '../lib/ai/client';
 import { useTheme } from '../components/Theme/ThemeProvider';
 
 const showAlert = (title: string, message: string) => {
@@ -262,50 +262,22 @@ export default function PublishScreen() {
         }
     };
 
-    // Verification State
-    const [isVerifying, setIsVerifying] = useState(false);
-    const [verificationStatus, setVerificationStatus] = useState<'idle' | 'verified' | 'rejected'>('idle');
-
-    useEffect(() => {
-        if (videoUri) {
-            verifyVideoContent();
-        } else {
-            setVerificationStatus('idle');
-        }
-    }, [videoUri]);
-
-    const verifyVideoContent = async () => {
-        setIsVerifying(true);
-        setVerificationStatus('idle');
-
-        try {
-            // Real AI Analysis
-            const analysis = await generateVideoAnalysis();
-            if (analysis) {
-                setVerificationStatus('verified');
-            } else {
-                setVerificationStatus('rejected');
-            }
-        } catch (error) {
-            console.error("AI Verification error:", error);
-            setVerificationStatus('idle');
-        } finally {
-            setIsVerifying(false);
-        }
-    };
-
     const handleAISuggest = async () => {
+        if (suggesting) return;
+        if (!caption.trim()) {
+            showAlert('Add a topic', 'Describe your video or thesis first so Orvelis has something to work with.');
+            return;
+        }
         setSuggesting(true);
         try {
-            const seed = await generateDebateSeed(caption || "New Video");
+            const seed = await generateDebateSeed(caption.trim());
             if (seed) {
                 setCaption(seed.thesis);
                 setAiSeed(seed);
-                setVerificationStatus('verified');
             }
         } catch (error) {
             console.error("AI Suggestion error:", error);
-            showAlert("Error", "AI is currently resting. Try again soon!");
+            showAlert("Orvelis", getAIErrorMessage(error));
         } finally {
             setSuggesting(false);
         }
@@ -324,13 +296,13 @@ export default function PublishScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={handlePost}
-                    disabled={uploading || isVerifying || (isVideoSelection && verificationStatus !== 'verified')}
+                    disabled={uploading}
                     style={[
                         styles.postButton,
                         {
                             backgroundColor: isDark ? '#D9E4FF' : '#4C6EF5',
                         },
-                        (uploading || isVerifying || (isVideoSelection && verificationStatus !== 'verified')) && styles.disabledButton
+                        (uploading) && styles.disabledButton
                     ]}
                 >
                     {uploading ? (
@@ -433,32 +405,7 @@ export default function PublishScreen() {
                                 nativeControls={false}
                             />
 
-                            {/* Verification Overlay */}
-                            {isVerifying && (
-                                <View style={styles.verificationOverlay}>
-                                    <ActivityIndicator size="large" color={isDark ? '#D9E4FF' : '#4C6EF5'} />
-                                    <Text style={[styles.verificationText, { fontFamily: theme.typography.fontFamilies.medium }]}>Verifying AI Content...</Text>
-                                </View>
-                            )}
 
-                            {/* Verification Badges */}
-                            {!isVerifying && verificationStatus === 'verified' && (
-                                <View style={[styles.videoBadge, { backgroundColor: 'rgba(34, 197, 94, 0.9)' }]}>
-                                    <Ionicons name="checkmark-circle" size={14} color="white" />
-                                    <Text style={[styles.videoBadgeText, { fontFamily: theme.typography.fontFamilies.bold }]}>AI Verified</Text>
-                                </View>
-                            )}
-
-                            {!isVerifying && verificationStatus === 'rejected' && (
-                                <View style={styles.errorOverlay}>
-                                    <Ionicons name="alert-circle" size={48} color="#ef4444" />
-                                    <Text style={[styles.errorTitle, { fontFamily: theme.typography.fontFamilies.bold }]}>Verification Failed</Text>
-                                    <Text style={[styles.errorText, { fontFamily: theme.typography.fontFamilies.regular }]}>
-                                        This video does not appear to be high-quality content.
-                                        Please upload engaging short videos only.
-                                    </Text>
-                                </View>
-                            )}
                         </View>
                     )}
 

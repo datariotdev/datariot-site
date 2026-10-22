@@ -8,6 +8,7 @@ export interface Video {
     videoUrl: string;
     title: string;
     description: string;
+    transcript?: string;
     author: string;
     authorId: string;
     avatarUrl?: string;
@@ -55,21 +56,15 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     const formatVideo = useCallback((video: any, profile?: any, isLiked: boolean = false): Video => {
         const authorName = profile?.display_name || profile?.username || profile?.nickname || 'Unknown';
 
-        // Sanitize title: remove Russian strings and specific placeholders
-        let sanitizedTitle = video.title || '';
-        const isPlaceholder = !sanitizedTitle ||
-            sanitizedTitle.length <= 2 ||
-            sanitizedTitle.toLowerCase().includes('video') ||
-            sanitizedTitle.toLowerCase().includes('название') || // "Title" in Russian
-            /[а-яА-ЯёЁ]/.test(sanitizedTitle); // Detect any Cyrillic characters
-
-        const finalTitle = !isPlaceholder ? sanitizedTitle : `Orvelis ${video.category || 'Strategic'} Insight #${video.id.slice(0, 4)}`;
+        // Preserve the author's title and language for display and AI context.
+        const finalTitle = typeof video.title === 'string' ? video.title.trim() : '';
 
         return {
             id: video.id,
             videoUrl: encodeVideoUrl(video.url || video.s3_url) || '',
             title: finalTitle,
             description: video.description || '',
+            transcript: typeof video.transcript === 'string' ? video.transcript : undefined,
             author: authorName,
             authorId: video.user_id || '',
             avatarUrl: profile?.avatar_url || 'https://i.pravatar.cc/150?u=' + video.user_id,
