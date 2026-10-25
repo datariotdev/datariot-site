@@ -9569,12 +9569,12 @@ body {
 #ai-core .aic-score { display: flex; align-items: baseline; gap: 10px; }
 
 #ai-core .aic-score-num {
-    font: 400 60px/.8 var(--px-font);
+    font: 700 60px/.8 var(--px-font);
     color: var(--px-ink);
 }
 
 #ai-core .aic-score-unit {
-    font: 400 20px/1 var(--px-font);
+    font: 700 20px/1 var(--px-font);
     color: var(--px-accent);
 }
 
@@ -9635,7 +9635,7 @@ body {
 }
 
 #ai-core .aic-foot-item b {
-    font: 400 30px/.8 var(--px-font);
+    font: 700 30px/.8 var(--px-font);
     color: var(--px-ink);
 }
 
@@ -9658,7 +9658,7 @@ body {
 
 #ai-core .section__title {
     margin: 0 0 26px;
-    font: 400 50px/1.05 var(--px-font);
+    font: 700 50px/1.05 var(--px-font);
     letter-spacing: 0.01em;
     text-transform: uppercase;
     color: var(--px-ink);
@@ -9685,7 +9685,7 @@ body {
     padding: 34px 20px;
     background: var(--px-panel);
     clip-path: var(--px-notch);
-    font: 400 30px/1 var(--px-font);
+    font: 700 30px/1 var(--px-font);
     color: var(--px-ink);
     white-space: nowrap;
 }
@@ -9718,7 +9718,7 @@ body {
     position: absolute;
     left: 24px;
     top: 20px;
-    font: 400 20px/1 var(--px-font);
+    font: 700 20px/1 var(--px-font);
     color: var(--px-accent);
 }
 
@@ -9726,7 +9726,7 @@ body {
 
 #ai-core .aic-mod h4 {
     margin: 0 0 9px;
-    font: 400 20px/1.1 var(--px-font);
+    font: 700 20px/1.1 var(--px-font);
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--px-ink);
@@ -9864,7 +9864,7 @@ body {
 
 #features .section__title {
     margin: 0;
-    font: 400 50px/1.1 var(--px-font);
+    font: 700 50px/1.1 var(--px-font);
     letter-spacing: 0.01em;
     color: var(--px-ice);
 }
@@ -9927,7 +9927,7 @@ body {
 
 .hw__h {
     align-self: center;
-    font: 400 22px/1.1 var(--px-font);
+    font: 700 22px/1.1 var(--px-font);
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--px-ice);
@@ -11349,7 +11349,7 @@ html.gfx-lite .hw__caret {
    the scroll. Slides 02 and 04 are the logo's black; 05 draws its own field.
    ========================================================================== */
 :root {
-    --px-font: 'Pixelify Sans', 'JetBrains Mono', ui-monospace, monospace;
+    --px-font: var(--font-tech); /* Match the Feed / Circle navigation typeface. */
     --px-black: #07080C;      /* the logo's black */
     --px-ice: #DAE6F7;        /* the logo's line colour */
     --px-dissolve-top: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h3v3h-3zM12 0h3v3h-3zM18 0h3v3h-3zM24 0h3v3h-3zM60 0h3v3h-3zM6 6h3v3h-3zM18 6h3v3h-3zM54 6h3v3h-3zM60 6h3v3h-3zM66 6h3v3h-3zM0 12h3v3h-3zM6 12h3v3h-3zM12 12h3v3h-3zM18 12h3v3h-3zM24 12h3v3h-3zM48 12h3v3h-3zM54 12h3v3h-3zM60 12h3v3h-3zM66 12h3v3h-3zM72 12h3v3h-3zM3 15h3v3h-3zM15 15h3v3h-3zM63 15h3v3h-3zM0 18h3v3h-3zM6 18h3v3h-3zM12 18h3v3h-3zM18 18h3v3h-3zM24 18h3v3h-3zM42 18h3v3h-3zM54 18h3v3h-3zM60 18h3v3h-3zM66 18h3v3h-3zM78 18h3v3h-3zM21 21h3v3h-3zM57 21h3v3h-3zM0 24h3v3h-3zM6 24h3v3h-3zM12 24h3v3h-3zM18 24h3v3h-3zM24 24h3v3h-3zM36 24h3v3h-3zM42 24h3v3h-3zM48 24h3v3h-3zM54 24h3v3h-3zM60 24h3v3h-3zM66 24h3v3h-3zM72 24h3v3h-3zM78 24h3v3h-3zM84 24h3v3h-3zM3 27h3v3h-3zM15 27h3v3h-3zM21 27h3v3h-3zM51 27h3v3h-3zM57 27h3v3h-3zM63 27h3v3h-3zM75 27h3v3h-3zM0 30h3v3h-3zM6 30h3v3h-3zM12 30h3v3h-3zM18 30h3v3h-3zM24 30h3v3h-3zM30 30h3v3h-3zM42 30h3v3h-3zM48 30h3v3h-3zM54 30h3v3h-3zM60 30h3v3h-3zM66 30h3v3h-3zM72 30h3v3h-3zM78 30h3v3h-3zM90 30h3v3h-3zM3 33h3v3h-3zM9 33h3v3h-3zM15 33h3v3h-3zM21 33h3v3h-3zM57 33h3v3h-3zM63 33h3v3h-3zM69 33h3v3h-3zM0 36h3v3h-3zM6 36h3v3h-3zM12 36h9v3h-9zM24 36h3v3h-3zM30 36h3v3h-3zM36 36h3v3h-3zM42 36h3v3h-3zM48 36h3v3h-3zM54 36h3v3h-3zM60 36h9v3h-9zM72 36h3v3h-3zM78 36h3v3h-3zM84 36h3v3h-3zM90 36h3v3h-3zM3 39h3v3h-3zM9 39h3v3h-3zM15 39h3v3h-3zM21 39h3v3h-3zM27 39h3v3h-3zM39 39h3v3h-3zM51 39h3v3h-3zM57 39h3v3h-3zM63 39h3v3h-3zM69 39h3v3h-3zM75 39h3v3h-3zM0 42h3v3h-3zM6 42h3v3h-3zM12 42h3v3h-3zM18 42h3v3h-3zM24 42h3v3h-3zM30 42h3v3h-3zM36 42h3v3h-3zM42 42h3v3h-3zM48 42h3v3h-3zM54 42h9v3h-9zM66 42h3v3h-3zM72 42h3v3h-3zM78 42h3v3h-3zM84 42h3v3h-3zM90 42h3v3h-3zM3 45h3v3h-3zM9 45h3v3h-3zM15 45h3v3h-3zM21 45h3v3h-3zM45 45h3v3h-3zM51 45h3v3h-3zM57 45h3v3h-3zM63 45h3v3h-3zM69 45h3v3h-3zM75 45h3v3h-3zM81 45h3v3h-3zM93 45h3v3h-3zM0 48h9v3h-9zM12 48h9v3h-9zM24 48h3v3h-3zM30 48h3v3h-3zM36 48h3v3h-3zM42 48h3v3h-3zM48 48h3v3h-3zM54 48h15v3h-15zM72 48h3v3h-3zM78 48h3v3h-3zM84 48h3v3h-3zM90 48h3v3h-3zM3 51h3v3h-3zM9 51h3v3h-3zM15 51h3v3h-3zM21 51h3v3h-3zM27 51h3v3h-3zM39 51h3v3h-3zM45 51h3v3h-3zM51 51h3v3h-3zM57 51h3v3h-3zM63 51h3v3h-3zM69 51h3v3h-3zM75 51h3v3h-3zM81 51h3v3h-3zM87 51h3v3h-3zM93 51h3v3h-3zM0 54h3v3h-3zM6 54h21v3h-21zM30 54h3v3h-3zM36 54h3v3h-3zM42 54h3v3h-3zM48 54h3v3h-3zM54 54h15v3h-15zM72 54h3v3h-3zM78 54h3v3h-3zM84 54h3v3h-3zM90 54h3v3h-3zM3 57h3v3h-3zM9 57h3v3h-3zM15 57h3v3h-3zM21 57h3v3h-3zM27 57h3v3h-3zM33 57h3v3h-3zM39 57h3v3h-3zM45 57h3v3h-3zM51 57h3v3h-3zM57 57h3v3h-3zM63 57h3v3h-3zM69 57h3v3h-3zM75 57h3v3h-3zM81 57h3v3h-3zM93 57h3v3h-3zM0 60h33v3h-33zM36 60h9v3h-9zM48 60h21v3h-21zM72 60h9v3h-9zM84 60h3v3h-3zM90 60h3v3h-3zM3 63h3v3h-3zM9 63h3v3h-3zM15 63h3v3h-3zM21 63h3v3h-3zM27 63h3v3h-3zM33 63h3v3h-3zM39 63h3v3h-3zM45 63h3v3h-3zM51 63h3v3h-3zM57 63h9v3h-9zM69 63h3v3h-3zM75 63h3v3h-3zM81 63h3v3h-3zM87 63h3v3h-3zM93 63h3v3h-3zM0 66h27v3h-27zM30 66h3v3h-3zM36 66h3v3h-3zM42 66h9v3h-9zM54 66h21v3h-21zM78 66h3v3h-3zM84 66h3v3h-3zM90 66h6v3h-6zM3 69h3v3h-3zM9 69h3v3h-3zM15 69h9v3h-9zM27 69h3v3h-3zM33 69h3v3h-3zM39 69h3v3h-3zM45 69h3v3h-3zM51 69h9v3h-9zM63 69h3v3h-3zM69 69h3v3h-3zM75 69h3v3h-3zM81 69h3v3h-3zM87 69h3v3h-3zM93 69h3v3h-3zM0 72h33v3h-33zM36 72h45v3h-45zM84 72h12v3h-12zM0 75h6v3h-6zM9 75h21v3h-21zM33 75h3v3h-3zM39 75h3v3h-3zM45 75h3v3h-3zM51 75h15v3h-15zM69 75h3v3h-3zM75 75h3v3h-3zM81 75h3v3h-3zM87 75h3v3h-3zM93 75h3v3h-3zM0 78h87v3h-87zM90 78h6v3h-6zM3 81h9v3h-9zM15 81h9v3h-9zM27 81h3v3h-3zM33 81h3v3h-3zM39 81h3v3h-3zM45 81h3v3h-3zM51 81h21v3h-21zM75 81h3v3h-3zM81 81h3v3h-3zM87 81h3v3h-3zM93 81h3v3h-3zM0 84h96v3h-96zM0 87h30v3h-30zM33 87h9v3h-9zM45 87h33v3h-33zM81 87h3v3h-3zM87 87h3v3h-3zM93 87h3v3h-3zM0 90h96v3h-96zM0 93h30v3h-30zM33 93h3v3h-3zM39 93h9v3h-9zM51 93h21v3h-21zM75 93h9v3h-9zM87 93h3v3h-3zM93 93h3v3h-3z'/%3E%3C/svg%3E");
@@ -12770,7 +12770,7 @@ html.navx-open .brandmark { opacity: 0; pointer-events: none; }
 
 #hero .hx-title {
     margin: 0 0 24px;
-    font: 400 clamp(46px, 5.6vw, 92px)/0.98 var(--px-font);
+    font: 700 clamp(46px, 5.6vw, 92px)/0.98 var(--px-font);
     letter-spacing: 0.005em;
     color: var(--text-primary);
     text-transform: none;
@@ -12811,7 +12811,7 @@ html.navx-open .brandmark { opacity: 0; pointer-events: none; }
     gap: 12px;
     height: 54px;
     padding: 0 24px;
-    font: 400 19px/1 var(--px-font);
+    font: 700 19px/1 var(--px-font);
     letter-spacing: 0.02em;
     color: var(--brand-on);
     text-decoration: none;
@@ -13413,13 +13413,13 @@ html.navx-open .brandmark { opacity: 0; pointer-events: none; }
 .iface__head .section__title,
 .gnet__head .section__title,
 #beta .beta__info .section__title {
-    font: 400 clamp(32px, 3.4vw, 50px)/1.04 var(--px-font);
+    font: 700 clamp(32px, 3.4vw, 50px)/1.04 var(--px-font);
     letter-spacing: 0.005em;
     text-transform: none;
 }
 
 .dev__cap h3 {
-    font: 400 clamp(17px, 1.4vw, 21px)/1.15 var(--px-font);
+    font: 700 clamp(17px, 1.4vw, 21px)/1.15 var(--px-font);
     letter-spacing: 0.01em;
     text-transform: none;
 }
@@ -13485,7 +13485,7 @@ html.navx-open .brandmark { opacity: 0; pointer-events: none; }
 
 .feedsec__title {
     margin: 0;
-    font: 400 clamp(40px, 4.6vw, 70px)/1 var(--px-font);
+    font: 700 clamp(40px, 4.6vw, 70px)/1 var(--px-font);
     letter-spacing: 0.005em;
     color: var(--fs-ink);
     text-transform: none;
@@ -14234,7 +14234,7 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
     }
 
     #hero .hx-title {
-        font-size: clamp(40px, 12vw, 56px);
+        font-size: clamp(28px, 8.4vw, 50px);
     }
 
     #hero .hx-join,
@@ -14353,7 +14353,7 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
 
 .faq__title {
     margin: 22px 0 20px;
-    font: 400 clamp(40px, 4.4vw, 64px)/1 var(--px-font);
+    font: 700 clamp(40px, 4.4vw, 64px)/1 var(--px-font);
     letter-spacing: 0.005em;
     color: var(--fq-ink);
     text-transform: none;
@@ -14416,7 +14416,7 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
 }
 
 .faq__q {
-    font: 400 21px/1.2 var(--px-font);
+    font: 700 21px/1.2 var(--px-font);
     letter-spacing: 0.01em;
     color: var(--fq-ink);
 }
@@ -14565,7 +14565,7 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
 
 .foot__word {
     display: block;
-    font: 400 40px/1 var(--px-font);
+    font: 700 40px/1 var(--px-font);
     letter-spacing: 0.04em;
     color: var(--px-ice);
 }
@@ -14584,7 +14584,7 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
     gap: 12px;
     margin-top: 8px;
     padding: 15px 22px 14px;
-    font: 400 19px/1 var(--px-font);
+    font: 700 19px/1 var(--px-font);
     letter-spacing: 0.02em;
     color: var(--px-black);
     text-decoration: none;
