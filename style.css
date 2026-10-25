@@ -65,6 +65,7 @@
     --font-lcd: 'Doto', 'JetBrains Mono', ui-monospace, monospace;
     --font-tech: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
     --font-editorial: 'Manrope', sans-serif;
+    --font-headline: 'Syne', var(--font-sans);
 
     --sidebar-width: 72px;
     --sidebar-width-expanded: 240px;
@@ -9726,7 +9727,7 @@ body {
 
 #ai-core .aic-mod h4 {
     margin: 0 0 9px;
-    font: 700 20px/1.1 var(--px-font);
+    font: 700 20px/1.1 var(--font-sans);
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--px-ink);
@@ -9864,7 +9865,7 @@ body {
 
 #features .section__title {
     margin: 0;
-    font: 700 50px/1.1 var(--px-font);
+    font: 700 50px/1.1 var(--font-sans);
     letter-spacing: 0.01em;
     color: var(--px-ice);
 }
@@ -9927,7 +9928,7 @@ body {
 
 .hw__h {
     align-self: center;
-    font: 700 22px/1.1 var(--px-font);
+    font: 700 22px/1.1 var(--font-sans);
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--px-ice);
@@ -12770,8 +12771,8 @@ html.navx-open .brandmark { opacity: 0; pointer-events: none; }
 
 #hero .hx-title {
     margin: 0 0 24px;
-    font: 700 clamp(46px, 5.6vw, 92px)/0.98 var(--px-font);
-    letter-spacing: 0.005em;
+    font: 700 clamp(46px, 5.6vw, 92px)/1.02 var(--font-headline);
+    letter-spacing: -0.045em;
     color: var(--text-primary);
     text-transform: none;
     text-wrap: balance;
@@ -12811,7 +12812,7 @@ html.navx-open .brandmark { opacity: 0; pointer-events: none; }
     gap: 12px;
     height: 54px;
     padding: 0 24px;
-    font: 700 19px/1 var(--px-font);
+    font: 700 19px/1 var(--font-sans);
     letter-spacing: 0.02em;
     color: var(--brand-on);
     text-decoration: none;
@@ -13413,13 +13414,13 @@ html.navx-open .brandmark { opacity: 0; pointer-events: none; }
 .iface__head .section__title,
 .gnet__head .section__title,
 #beta .beta__info .section__title {
-    font: 700 clamp(32px, 3.4vw, 50px)/1.04 var(--px-font);
-    letter-spacing: 0.005em;
+    font: 700 clamp(32px, 3.4vw, 50px)/1.04 var(--font-headline);
+    letter-spacing: -0.045em;
     text-transform: none;
 }
 
 .dev__cap h3 {
-    font: 700 clamp(17px, 1.4vw, 21px)/1.15 var(--px-font);
+    font: 700 clamp(17px, 1.4vw, 21px)/1.15 var(--font-sans);
     letter-spacing: 0.01em;
     text-transform: none;
 }
@@ -13485,8 +13486,8 @@ html.navx-open .brandmark { opacity: 0; pointer-events: none; }
 
 .feedsec__title {
     margin: 0;
-    font: 700 clamp(40px, 4.6vw, 70px)/1 var(--px-font);
-    letter-spacing: 0.005em;
+    font: 700 clamp(40px, 4.6vw, 70px)/1 var(--font-headline);
+    letter-spacing: -0.045em;
     color: var(--fs-ink);
     text-transform: none;
 }
@@ -14234,7 +14235,7 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
     }
 
     #hero .hx-title {
-        font-size: clamp(28px, 8.4vw, 50px);
+        font-size: clamp(34px, 9.6vw, 52px);
     }
 
     #hero .hx-join,
@@ -14353,8 +14354,8 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
 
 .faq__title {
     margin: 22px 0 20px;
-    font: 700 clamp(40px, 4.4vw, 64px)/1 var(--px-font);
-    letter-spacing: 0.005em;
+    font: 700 clamp(40px, 4.4vw, 64px)/1 var(--font-headline);
+    letter-spacing: -0.045em;
     color: var(--fq-ink);
     text-transform: none;
 }
@@ -14416,7 +14417,7 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
 }
 
 .faq__q {
-    font: 700 21px/1.2 var(--px-font);
+    font: 700 21px/1.2 var(--font-sans);
     letter-spacing: 0.01em;
     color: var(--fq-ink);
 }
@@ -14565,8 +14566,8 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
 
 .foot__word {
     display: block;
-    font: 700 40px/1 var(--px-font);
-    letter-spacing: 0.04em;
+    font: 700 40px/1 var(--font-headline);
+    letter-spacing: -0.045em;
     color: var(--px-ice);
 }
 
@@ -14584,7 +14585,7 @@ html.gfx-lite .fd__clip.is-on img.fd__pic {
     gap: 12px;
     margin-top: 8px;
     padding: 15px 22px 14px;
-    font: 700 19px/1 var(--px-font);
+    font: 700 19px/1 var(--font-sans);
     letter-spacing: 0.02em;
     color: var(--px-black);
     text-decoration: none;
