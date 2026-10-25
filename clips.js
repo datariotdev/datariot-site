@@ -397,47 +397,91 @@
         }, reduced ? 2 : 0);
     }
 
-    // ---------- slide 04: an explicitly illustrative vote ----------
+    // ---------- slide 04: local debate demo, with authored counterquestions ----------
     function initArena() {
         var ar = document.getElementById('arena');
         if (!ar) return;
+        var topics = {
+            work: {
+                question: 'Where does our best work happen?',
+                sides: {
+                    'for': { label: 'remote work', position: 'THE CASE FOR REMOTE', title: ['Less office.', 'More focus.'], quote: 'Great work needs room to think, not another commute. Let people choose where they do it best.', challenge: 'If everyone works alone, how do new teammates learn the things nobody thinks to write down?' },
+                    'against': { label: 'working together', position: 'THE CASE FOR TOGETHER', title: ['Same room.', 'New ideas.'], quote: 'You can schedule a call. You can’t schedule every unexpected idea, or every moment someone needs a mentor.', challenge: 'If being together is the advantage, what evidence would show it outweighs the commute and constant interruptions?' }
+                }
+            },
+            ai: {
+                question: 'Does AI make us better thinkers?',
+                sides: {
+                    'for': { label: 'AI as a thinking partner', position: 'THE CASE FOR A THINKING PARTNER', title: ['Less busywork.', 'Bigger questions.'], quote: 'Let AI handle the first draft. Spend your energy asking better questions, testing ideas and finding what’s missing.', challenge: 'If AI gives you a convincing but wrong answer, have you kept enough of the skill to catch the mistake?' },
+                    'against': { label: 'thinking for ourselves', position: 'THE CASE FOR DOING THE WORK', title: ['Easy answers.', 'Rusty instincts.'], quote: 'The struggle is part of learning. When a tool does all the thinking, we can lose the ability to judge its answer.', challenge: 'Could using AI to challenge your reasoning build the very skill you’re worried it will replace?' }
+                }
+            },
+            creativity: {
+                question: 'What makes an original idea possible?',
+                sides: {
+                    'for': { label: 'creative constraints', position: 'THE CASE FOR CONSTRAINTS', title: ['Fewer options.', 'Sharper ideas.'], quote: 'A deadline, a tiny budget, one camera. Limits force you to make choices you would never make with unlimited resources.', challenge: 'When do useful constraints become barriers that stop a promising idea from ever getting made?' },
+                    'against': { label: 'creative freedom', position: 'THE CASE FOR FREEDOM', title: ['Room to play.', 'Space to fail.'], quote: 'Original work needs experiments with no guaranteed payoff. Give people the time and freedom to follow a strange idea.', challenge: 'Without a deadline or a boundary, how do you know when exploration has turned into avoiding a decision?' }
+                }
+            }
+        };
+        var topic = 'work';
         var sides = { 'for': ar.querySelector('.ar-side--for'), 'against': ar.querySelector('.ar-side--against') };
-        var barF = ar.querySelector('.ar-bar__for'), barA = ar.querySelector('.ar-bar__against');
-        var nF = ar.querySelector('[data-for]'), nA = ar.querySelector('[data-against]');
-        var note = ar.querySelector('[data-note]'), status = ar.querySelector('[data-status]');
-        var votes = { 'for': 5, 'against': 5 }, mine = null;
+        var reset = ar.querySelector('.ar__reset');
+        var challenge = ar.querySelector('[data-challenge]');
+        var challengeLabel = ar.querySelector('[data-challenge-label]');
 
-        function draw() {
-            var total = votes['for'] + votes['against'];
-            var pf = Math.round(votes['for'] / total * 100);
-            if (barF) barF.style.flexGrow = votes['for'];
-            if (barA) barA.style.flexGrow = votes['against'];
-            if (nF) nF.textContent = pf + '%';
-            if (nA) nA.textContent = (100 - pf) + '%';
-            if (note) note.textContent = mine ? 'YOUR PICK: ' + mine.toUpperCase() : 'TRY A VOTE';
-            return pf;
+        function clearPick() {
+            ar.removeAttribute('data-pick');
+            Object.keys(sides).forEach(function (key) {
+                var side = sides[key];
+                side.classList.remove('is-picked');
+                side.querySelector('.ar-vote').setAttribute('aria-pressed', 'false');
+                side.querySelector('[data-vote-label]').textContent = 'Back this take';
+                side.querySelector('.ar-vote__icon').textContent = '↗';
+            });
+            reset.hidden = true;
+            challengeLabel.textContent = 'YOUR TURN';
+            challenge.textContent = 'Which take earns your vote? Pick one to reveal its toughest question.';
         }
 
-        ar.querySelectorAll('.ar-vote').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var side = btn.getAttribute('data-side');
-                if (mine === side) return;
-                if (mine) votes[mine]--;
-                votes[side]++;
-                mine = side;
-                ar.classList.add('is-voted');
-                ['for', 'against'].forEach(function (s) {
-                    if (!sides[s]) return;
-                    sides[s].classList.toggle('is-picked', s === side);
-                    var b = sides[s].querySelector('.ar-vote');
-                    if (b) b.setAttribute('aria-pressed', s === side ? 'true' : 'false');
+        ar.querySelectorAll('.ar-topic').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var next = button.getAttribute('data-topic');
+                if (!topics[next] || next === topic) return;
+                topic = next;
+                ar.querySelectorAll('.ar-topic').forEach(function (b) { b.setAttribute('aria-pressed', b === button ? 'true' : 'false'); });
+                ar.querySelector('[data-question]').textContent = topics[topic].question;
+                Object.keys(sides).forEach(function (key) {
+                    var data = topics[topic].sides[key], side = sides[key];
+                    side.querySelector('[data-position]').textContent = data.position;
+                    var heading = side.querySelector('[data-title]');
+                    heading.replaceChildren(document.createTextNode(data.title[0]), document.createElement('br'), document.createTextNode(data.title[1]));
+                    side.querySelector('[data-quote]').textContent = '“' + data.quote + '”';
+                    side.querySelector('.ar-vote').setAttribute('aria-label', 'Back take ' + (key === 'for' ? 'A: ' : 'B: ') + data.label);
                 });
-                var pf = draw();
-                if (status) status.textContent = 'Demo vote selected. Example balance: ' + pf + '% for, ' + (100 - pf) + '% against.';
+                clearPick();
+                challenge.textContent = topics[topic].question + ' Pick a take to reveal its toughest question.';
             });
         });
-        draw();
-
+        ar.querySelectorAll('.ar-vote').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var key = button.getAttribute('data-side');
+                clearPick();
+                ar.setAttribute('data-pick', key);
+                sides[key].classList.add('is-picked');
+                button.setAttribute('aria-pressed', 'true');
+                button.querySelector('[data-vote-label]').textContent = 'You backed this';
+                button.querySelector('.ar-vote__icon').textContent = '✓';
+                challengeLabel.textContent = 'YOU BACKED ' + (key === 'for' ? 'A' : 'B') + ' · NOW TEST IT';
+                challenge.textContent = topics[topic].sides[key].challenge;
+                reset.hidden = false;
+            });
+        });
+        reset.addEventListener('click', function () {
+            var lastPick = ar.getAttribute('data-pick') || 'for';
+            clearPick();
+            sides[lastPick].querySelector('.ar-vote').focus();
+        });
     }
 
     // ---------- 06: the globe, in pixels ----------

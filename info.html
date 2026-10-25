@@ -35,7 +35,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Syne:wght@600..800&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=type-mix-20261025" />
+    <link rel="stylesheet" href="style.css?v=arena-20261025" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -1088,39 +1088,53 @@
             <span class="feed-sr" data-curiosity-status role="status" aria-live="polite" aria-atomic="true"></span>
         </section>
 
-        <!-- 04 — THE ARENA: an open stage for two competing ideas. -->
+        <!-- 04 — THE ARENA: try a position, then test its strongest assumption. -->
         <section class="section arena-section" id="debates" data-inview aria-labelledby="arenaTitle">
             <div class="arena__inner">
-                <div class="arena__masthead"><span class="arena__chapter"><b>04</b> THE ARENA</span><span class="arena__mode">EXAMPLE DEBATE<br>WORK &amp; CULTURE</span></div>
+                <div class="arena__masthead">
+                    <span class="arena__chapter"><b>04</b> THE ARENA</span>
+                    <span class="arena__edition">STRONG IDEAS. OPEN MINDS.</span>
+                </div>
                 <div class="arena__header">
-                    <h2 class="arena__title" id="arenaTitle">Together.<br>Or better <em>apart?</em></h2>
-                    <p class="arena__lede">One question. Two ways to see it.<br>Back the argument that earns your vote.</p>
+                    <h2 class="arena__title" id="arenaTitle">Change<br><em>my mind.</em><span class="arena__asterisk" aria-hidden="true">✳</span></h2>
+                    <div class="arena__intro">
+                        <span class="arena__eyebrow">A DIFFERENT KIND OF FACE-OFF</span>
+                        <p>Two takes. One question.<br>The best argument wins you over.</p>
+                        <span class="arena__instruction">Pick a topic. Back a take. Test it.</span>
+                    </div>
                 </div>
                 <div class="ar" id="arena">
+                    <div class="ar__topic-row">
+                        <span class="ar__topic-label">PICK YOUR DEBATE <span aria-hidden="true">↘</span></span>
+                        <div class="ar__topics" role="group" aria-label="Debate topic">
+                            <button type="button" class="ar-topic" data-topic="work" aria-pressed="true">01 / Work</button>
+                            <button type="button" class="ar-topic" data-topic="ai" aria-pressed="false">02 / AI</button>
+                            <button type="button" class="ar-topic" data-topic="creativity" aria-pressed="false">03 / Creativity</button>
+                        </div>
+                    </div>
+                    <p class="ar__question" data-question>Where does our best work happen?</p>
                     <div class="ar-sides">
-                        <article class="ar-side ar-side--for">
-                            <span class="ar__position">THE CASE FOR REMOTE</span>
-                            <h3>Find your<br>focus.</h3>
-                            <blockquote>“Less commuting, fewer interruptions. Give people the space to do their best work.”</blockquote>
-                            <span class="ar__voice">— @nova_k</span>
-                            <button class="ar-vote" type="button" data-side="for" aria-pressed="false" aria-label="Back the argument for remote work"><span class="ar-vote__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Back this take</span></button>
+                        <article class="ar-side ar-side--for" aria-labelledby="arenaTakeA">
+                            <div class="ar__position"><span class="ar__letter" aria-hidden="true">A</span><span data-position>THE CASE FOR REMOTE</span><span class="ar__picked">YOUR PICK</span></div>
+                            <h3 id="arenaTakeA" data-title>Less office.<br>More focus.</h3>
+                            <blockquote data-quote>“Great work needs room to think, not another commute. Let people choose where they do it best.”</blockquote>
+                            <button class="ar-vote" type="button" data-side="for" aria-pressed="false" aria-label="Back take A: remote work"><span data-vote-label>Back this take</span><span class="ar-vote__icon" aria-hidden="true">↗</span></button>
                         </article>
-                        <div class="ar__pivot" aria-hidden="true"><b>vs</b><span>LET IDEAS MEET.</span></div>
-                        <article class="ar-side ar-side--against">
-                            <span class="ar__position">THE CASE FOR TOGETHER</span>
-                            <h3>Keep the<br>connection.</h3>
-                            <blockquote>“Focus matters. So does learning from the people around you. Who mentors the new hires?”</blockquote>
-                            <span class="ar__voice">— @d_marek</span>
-                            <button class="ar-vote" type="button" data-side="against" aria-pressed="false" aria-label="Back the argument against remote work"><span class="ar-vote__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Back this take</span></button>
+                        <div class="ar__pivot" aria-hidden="true"><span>VS</span><svg viewBox="0 0 150 200" fill="none"><ellipse cx="75" cy="100" rx="58" ry="91" transform="rotate(30 75 100)"/><ellipse cx="75" cy="100" rx="58" ry="91" transform="rotate(-30 75 100)"/><path d="M75 0v35m0 130v35M0 100h25m100 0h25"/></svg></div>
+                        <article class="ar-side ar-side--against" aria-labelledby="arenaTakeB">
+                            <div class="ar__position"><span class="ar__letter" aria-hidden="true">B</span><span data-position>THE CASE FOR TOGETHER</span><span class="ar__picked">YOUR PICK</span></div>
+                            <h3 id="arenaTakeB" data-title>Same room.<br>New ideas.</h3>
+                            <blockquote data-quote>“You can schedule a call. You can’t schedule every unexpected idea, or every moment someone needs a mentor.”</blockquote>
+                            <button class="ar-vote" type="button" data-side="against" aria-pressed="false" aria-label="Back take B: working together"><span data-vote-label>Back this take</span><span class="ar-vote__icon" aria-hidden="true">↗</span></button>
                         </article>
                     </div>
-                    <div class="ar-result">
-                        <div class="ar-nums" aria-hidden="true"><span>FOR <b data-for>50%</b></span><span data-note>TRY A VOTE</span><span><b data-against>50%</b> AGAINST</span></div>
-                        <div class="ar-bar" aria-hidden="true"><i class="ar-bar__for"></i><i class="ar-bar__against"></i></div>
-                        <p class="ar__example-note">Example balance. Your choice changes this demo.</p>
-                        <span class="feed-sr" aria-live="polite" data-status></span>
+                    <div class="ar__challenge" aria-live="polite" aria-atomic="true">
+                        <span class="ar__challenge-icon" aria-hidden="true">↳</span>
+                        <div><span class="ar__challenge-label" data-challenge-label>YOUR TURN</span><p data-challenge>Which take earns your vote? Pick one to reveal its toughest question.</p></div>
+                        <button class="ar__reset" type="button" hidden>Start again <span aria-hidden="true">↺</span></button>
                     </div>
-                    <div class="ar__footer"><span>The strongest argument deserves a closer look.</span><a href="#ai-core">See it with Orvelis <span aria-hidden="true">↗</span></a></div>
+                    <div class="ar__footer"><span>Interactive example · your choice stays on this page</span><a href="#ai-core">Go deeper with Orvelis <span aria-hidden="true">↗</span></a></div>
+                    <noscript><p class="ar__noscript">Enable JavaScript to switch topics and try the debate.</p></noscript>
                 </div>
             </div>
         </section>
@@ -1517,7 +1531,7 @@
     <script defer src="pixel-field.js?v=5.7.5"></script>
 
     <!-- the feed: the hero phone, the tap-a-question demo in 01, the arena vote and the globe -->
-    <script defer src="clips.js?v=5.7.9"></script>
+    <script defer src="clips.js?v=arena-20261025"></script>
     <script defer src="curiosity.js?v=1.0.0"></script>
     <script defer src="script.js?v=5.7.2"></script>
 </body>
