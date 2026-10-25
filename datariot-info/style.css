@@ -11498,7 +11498,7 @@ html.gfx-lite .hw__caret {
     #debates *, #debates *::before, #debates *::after { transition: none !important; animation: none !important; }
 }
 
-/* 07 / EARLY ACCESS — an open invitation and a real community handoff. */
+/* 07 / DISCORD — announcements on the shared page background. */
 #beta {
     --access-ink: #152035;
     --access-muted: #5C6D87;
@@ -11522,7 +11522,7 @@ html.gfx-lite .hw__caret {
     --access-action: #D1E3FC;
     --access-on: #152035;
 }
-#beta::before { content: ''; position: absolute; z-index: -1; inset: -5% -15% -20% 32%; pointer-events: none; background: radial-gradient(ellipse at 65% 47%,var(--access-wash),transparent 64%); opacity: .9; }
+#beta::before { content: none; }
 .access__inner { width: min(1120px,100%); margin: 0 auto; }
 .access__masthead { display: flex; justify-content: space-between; align-items: center; gap: 20px; color: var(--access-muted); font: 750 9px/1.5 var(--font-sans); letter-spacing: .13em; }
 .access__masthead > span:first-child { display: inline-flex; align-items: center; gap: 13px; }
@@ -11566,7 +11566,6 @@ html.gfx-lite .hw__caret {
     .access__masthead b { font-size: 25px; }
     .access__layout { grid-template-columns: minmax(0,1fr); padding: 38px 0 45px; gap: 40px; }
     .access__copy h2 { font-size: clamp(47px,9.7vw,70px); }
-    .access__copy h2 br:last-of-type { display: none; }
     .access__lede { margin-top: 25px; font-size: 16px; }
     .access__invitation { max-width: 42ch; font-size: 13px; }
     .access__gesture { display: none; }
