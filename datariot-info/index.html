@@ -435,6 +435,137 @@
 @media(max-width:360px){#catch .cq-topic b{font-size:12px}#catch .cq-topic small{font-size:7px}#catch .cq-sheet__top{font-size:7px}}
 
 </style>
+<style id="arena-duel-design">
+/* The Arena — a compact editorial face-off, on the shared page background. */
+#debates.arena-duel {--duel-ink:#172232;--duel-muted:#56647a;--duel-blue:#345ae4;--duel-line:#d5deeb;--duel-paper:#fff;--duel-tint:#e0e9ff;--arena-ink:var(--duel-ink);--arena-muted:var(--duel-muted);--arena-accent:var(--duel-blue);padding:80px 32px!important;scroll-margin-top:86px}
+[data-theme="dark"] #debates.arena-duel {--duel-ink:#edf2fc;--duel-muted:#a6b5cc;--duel-blue:#a9bcff;--duel-line:#35425a;--duel-paper:#192333;--duel-tint:#263451}
+#debates .arena__inner {width:min(1120px,100%)}
+#debates .arena__masthead {border-top:1px solid var(--duel-line);padding-top:23px;gap:15px}
+#debates .arena__chapter {font:9px/1.5 var(--font-tech,monospace);letter-spacing:.1em;gap:12px;color:var(--duel-ink)}
+#debates .arena__chapter b {font:500 22px/1 var(--font-tech,monospace);letter-spacing:-.06em;color:var(--duel-blue)}
+#debates .arena__edition {font:8px/1.5 var(--font-tech,monospace);letter-spacing:.06em;color:var(--duel-muted)}
+#debates .arena__header {grid-template-columns:1.2fr 1fr;align-items:end;gap:80px;margin:46px 0 48px}
+#debates .arena__title {font:700 clamp(58px,7.4vw,100px)/.92 'Syne',sans-serif;letter-spacing:-.065em;color:var(--duel-ink)}
+#debates .arena__title em {color:var(--duel-blue)}
+#debates .arena__asterisk {font:45px/1 sans-serif;color:var(--duel-blue);top:3px;right:-55px;transform:none}
+#debates .arena__eyebrow {font:8px/1.6 var(--font-tech,monospace);letter-spacing:.06em;color:var(--duel-muted)}
+#debates .arena__intro p {font:500 23px/1.3 var(--font-sans,sans-serif);letter-spacing:-.04em;color:var(--duel-ink);margin:17px 0 14px}
+#debates .arena__instruction {font:12px/1.6 var(--font-sans,sans-serif);color:var(--duel-muted)}
+#debates .ar__topic-row {display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:35px;border-top:1px solid var(--duel-line);border-bottom:0;padding:20px 0 0}
+#debates .ar__topic-label {font:9px/1.5 var(--font-tech,monospace);letter-spacing:.07em;color:var(--duel-muted)}
+#debates .ar__topic-label>span {font:20px/1 sans-serif;margin-left:15px;color:var(--duel-blue)}
+#debates .ar__topics {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;width:100%}
+#debates .ar-topic {position:relative;display:flex;align-items:center;justify-content:start;gap:12px;min-height:49px;padding:10px 0;border:0;border-bottom:1px solid var(--duel-line);border-radius:0;background:transparent;color:var(--duel-muted);font:500 13px/1.5 var(--font-sans,sans-serif);white-space:nowrap;transition:color .2s}
+#debates .ar-topic>span {font:8px/1.5 var(--font-tech,monospace);opacity:.8}
+#debates .ar-topic>i {font:normal 19px/1 sans-serif;margin-left:auto;opacity:0;color:var(--duel-blue);transition:opacity .2s}
+#debates .ar-topic:hover {background:transparent;color:var(--duel-ink)}
+#debates .ar-topic[aria-pressed="true"] {background:transparent;color:var(--duel-blue);border-bottom:3px solid var(--duel-blue)}
+#debates .ar-topic[aria-pressed="true"]>i {opacity:1}
+#debates .duel-question {padding:34px 0 26px}
+#debates .duel-question>span {font:8px/1.5 var(--font-tech,monospace);color:var(--duel-muted);letter-spacing:.1em}
+#debates .ar__question {font:600 clamp(27px,3.5vw,43px)/1.14 'Syne',sans-serif;letter-spacing:-.045em;color:var(--duel-ink);max-width:24ch;margin:12px 0 0}
+#debates .ar-sides {position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:stretch}
+#debates .ar-side {position:relative;display:flex;flex-direction:column;align-items:stretch;padding:0;border:0;border-radius:5px;background:var(--duel-paper);box-shadow:0 12px 40px #18325405;overflow:hidden;transition:box-shadow .2s,transform .2s}
+#debates .ar-side--for {background:var(--duel-tint)}
+#debates .duel-art {position:relative;display:flex;align-items:center;justify-content:space-between;height:125px;padding:25px 30px 15px;overflow:hidden;border-bottom:1px solid var(--duel-line);color:var(--duel-blue)}
+#debates .duel-art::before {content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 23px,var(--duel-blue) 23px 24px);opacity:.035;pointer-events:none}
+#debates .ar__letter {position:static;display:block;width:auto;height:auto;border:0;border-radius:0;background:transparent;color:var(--duel-blue);font:700 87px/.9 'Syne',sans-serif;letter-spacing:-.08em}
+#debates .ar-side--against .ar__letter {color:var(--duel-ink)}
+#debates .duel-art svg {display:block;width:50%;height:82px;margin-left:15px;opacity:.7}
+#debates .ar__picked {position:absolute;right:18px;top:13px;font:7px/1.5 var(--font-tech,monospace);color:var(--duel-blue);letter-spacing:.06em;visibility:hidden}
+#debates .duel-body {padding:26px 30px 28px;display:flex;flex-direction:column;flex:1}
+#debates .ar__position {display:block;min-height:15px;font:8px/1.6 var(--font-tech,monospace);color:var(--duel-muted);letter-spacing:.07em}
+#debates .ar-side h3 {min-height:80px;font:600 clamp(30px,3.4vw,43px)/1.04 'Syne',sans-serif;letter-spacing:-.05em;color:var(--duel-ink);margin:16px 0 19px}
+#debates .ar-side blockquote {font:400 14px/1.75 var(--font-sans,sans-serif);letter-spacing:-.01em;color:var(--duel-muted);max-width:39ch;margin:0 0 28px}
+#debates .ar-vote {display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:48px;padding:0;margin-top:auto;border:0;border-top:1px solid var(--duel-line);border-radius:0;background:transparent;color:var(--duel-ink);font:600 13px/1.5 var(--font-sans,sans-serif);transition:color .2s}
+#debates .ar-vote__icon {display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:50%;color:var(--duel-blue);background:var(--duel-paper);font:24px/1 sans-serif;transition:background .2s,color .2s}
+#debates .ar-side--against .ar-vote__icon {background:var(--duel-tint)}
+#debates .ar-vote:hover {background:transparent;color:var(--duel-blue)}
+#debates .ar-vote:hover .ar-vote__icon {color:var(--duel-paper);background:var(--duel-blue)}
+#debates .ar-side.is-picked {box-shadow:inset 0 0 0 2px var(--duel-blue),0 12px 40px #18325408;transform:translateY(-3px)}
+#debates .ar-side.is-picked .ar-vote {color:var(--duel-blue);background:transparent}
+#debates .ar-side.is-picked .ar__letter {color:var(--duel-blue);background:transparent}
+#debates .ar-side.is-picked .ar-vote__icon {background:var(--duel-blue);color:var(--duel-paper)}
+#debates .ar-side.is-picked .ar__picked {visibility:visible}
+#debates .ar__pivot {position:absolute;left:50%;top:93px;z-index:2;transform:translateX(-50%);display:grid;place-items:center;align-self:auto;width:43px;height:43px;padding:0;gap:0;background:var(--bg-main,#f1f5fc);border:1px solid var(--duel-line);border-radius:50%}
+#debates .ar__pivot::after {display:none}
+#debates .ar__pivot span {font:700 12px/1 'Syne',sans-serif;color:var(--duel-blue);letter-spacing:-.04em;transform:rotate(-9deg)}
+#debates .ar__challenge {display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:start;gap:15px;margin-top:24px;padding:23px 25px;border:0;border-left:3px solid var(--duel-blue);background:var(--duel-paper);border-radius:0 3px 3px 0}
+#debates .ar__challenge-icon {font:30px/1 sans-serif;align-self:start;color:var(--duel-blue);padding-top:4px}
+#debates .ar__challenge-label {font:8px/1.5 var(--font-tech,monospace);letter-spacing:.07em;color:var(--duel-blue)}
+#debates .ar__challenge p {font:400 14px/1.6 var(--font-sans,sans-serif);color:var(--duel-ink);margin:8px 0 0;max-width:65ch}
+#debates .ar__reset {grid-column:auto;justify-self:auto;padding:4px 0 4px 10px;min-height:40px;color:var(--duel-blue);background:transparent;font:500 11px/1.5 var(--font-sans,sans-serif)}
+#debates .ar__reset[hidden] {display:none!important}
+#debates .ar__footer {margin-top:19px;gap:14px;font:10px/1.7 var(--font-sans,sans-serif);color:var(--duel-muted);align-items:center;flex-direction:row}
+#debates .ar__footer a {display:inline-flex;align-items:center;gap:12px;font:600 12px/1.5 var(--font-sans,sans-serif);color:var(--duel-ink)}
+#debates .ar__footer a>span {font:21px/1 sans-serif;color:var(--duel-blue);margin:0}
+#debates button:focus-visible,#debates a:focus-visible {outline:2px solid var(--duel-blue);outline-offset:4px}
+@media(max-width:850px) {
+ #debates .arena__header {gap:45px}
+ #debates .arena__title {font-size:65px}
+ #debates .arena__asterisk {font-size:34px;right:-40px}
+ #debates .arena__intro p {font-size:19px}
+ #debates .ar__topic-row {grid-template-columns:1fr 2.5fr;gap:25px}
+ #debates .ar__topics {gap:12px}
+ #debates .ar-topic {font-size:12px;gap:8px}
+ #debates .duel-body {padding:23px}
+ #debates .ar-side h3 {font-size:34px}
+ #debates .ar-side blockquote {font-size:13px}
+}
+@media(max-width:620px) {
+ #debates.arena-duel {padding:45px 22px 45px!important}
+ #debates .arena__masthead {padding-top:18px;gap:12px}
+ #debates .arena__chapter {font-size:8px;gap:9px;letter-spacing:.06em}
+ #debates .arena__chapter b {font-size:22px}
+ #debates .arena__edition {font-size:7px;text-align:right;max-width:20ch}
+ #debates .arena__header {grid-template-columns:minmax(0,1fr);margin:32px 0 29px;gap:21px}
+ #debates .arena__title {font-size:clamp(52px,14vw,76px);line-height:.92}
+ #debates .arena__asterisk {font-size:32px;right:-40px;top:3px}
+ #debates .arena__intro {padding:0}
+ #debates .arena__eyebrow {font-size:7px;letter-spacing:.05em}
+ #debates .arena__intro p {font-size:16px;max-width:36ch;margin:8px 0 8px;line-height:1.5}
+ #debates .arena__intro p br {display:none}
+ #debates .arena__instruction {font-size:11px}
+ #debates .ar__topic-row {grid-template-columns:minmax(0,1fr);gap:9px;padding:15px 0 0}
+ #debates .ar__topic-label {font-size:8px}
+ #debates .ar__topic-label>span {font-size:19px}
+ #debates .ar__topics {gap:14px}
+ #debates .ar-topic {min-height:46px;padding:7px 0;gap:8px;font-size:12px;flex:initial}
+ #debates .ar-topic>span {font-size:8px}
+ #debates .ar-topic>i {font-size:17px}
+ #debates .duel-question {padding:24px 0 23px}
+ #debates .duel-question>span {font-size:7px;letter-spacing:.07em}
+ #debates .ar__question {font-size:29px;line-height:1.1;margin-top:11px;max-width:20ch}
+ #debates .ar-sides {grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ #debates .ar-side {padding:0;border-radius:4px}
+ #debates .duel-art {height:90px;padding:19px 16px 13px}
+ #debates .ar__letter {font-size:62px}
+ #debates .duel-art svg {width:54%;height:53px;margin-left:8px;opacity:.55}
+ #debates .ar__picked {top:7px;right:8px;font-size:6px;letter-spacing:.02em}
+ #debates .duel-body {padding:19px 16px 12px}
+ #debates .ar__position {font-size:7px;line-height:1.65;letter-spacing:.025em;min-height:26px}
+ #debates .ar-side h3 {font-size:clamp(20px,5.6vw,28px);line-height:1.1;min-height:72px;margin:9px 0 12px;letter-spacing:-.04em}
+ #debates .ar-side blockquote {font-size:12px;line-height:1.7;letter-spacing:-.01em;margin-bottom:19px;max-width:none}
+ #debates .ar-vote {font-size:11px;gap:6px;min-height:47px;line-height:1.4}
+ #debates .ar-vote__icon {width:25px;height:25px;font-size:19px}
+ #debates .ar__pivot {top:67px;width:31px;height:31px;padding:0}
+ #debates .ar__pivot span {font-size:9px}
+ #debates .ar__challenge {grid-template-columns:23px minmax(0,1fr);padding:20px 17px;gap:11px;margin-top:20px}
+ #debates .ar__challenge-icon {font-size:25px}
+ #debates .ar__challenge-label {font-size:7px;letter-spacing:.04em}
+ #debates .ar__challenge p {font-size:12px;line-height:1.65;margin-top:7px}
+ #debates .ar__reset {grid-column:2;justify-self:start;padding:0;min-height:35px;font-size:11px}
+ #debates .ar__footer {flex-direction:column-reverse;align-items:start;gap:12px;font-size:9px}
+ #debates .ar__footer a {font-size:11px}
+}
+@media(max-width:360px) {#debates.arena-duel{padding-left:18px!important;padding-right:18px!important}#debates .ar-topic{font-size:11px;gap:6px}#debates .ar__topics{gap:12px}#debates .duel-body{padding-left:13px;padding-right:13px}#debates .ar-side h3{font-size:20px}#debates .ar-side blockquote{font-size:11.5px}#debates .ar-vote{font-size:10px}#debates .ar__question{font-size:27px}}
+@media(prefers-reduced-motion:reduce) {#debates .ar-side,#debates .ar-topic,#debates .ar-topic>i,#debates .ar-vote,#debates .ar-vote__icon{transition:none}#debates .ar-side.is-picked{transform:none}}
+
+/* Readable small type on phone screens. */
+@media(max-width:620px){#debates .ar__position{font-size:8px;line-height:1.6}#debates .ar__picked{font-size:7px}#debates .ar__topic-label{font-size:9px}#debates .duel-question>span{font-size:8px}#debates .ar__challenge-label{font-size:8px}#debates .ar-side blockquote{font-size:12.5px;line-height:1.7}#debates .ar-vote{font-size:12px}}
+@media(max-width:360px){#debates .ar-side blockquote{font-size:12px}#debates .ar-vote{font-size:11px}}
+
+</style>
 </head>
 
 <body>
@@ -1138,56 +1269,56 @@
         </section>
 
 
-        <!-- 03 — THE ARENA: try a position, then test its strongest assumption. -->
-        <section class="section arena-section" id="debates" data-inview aria-labelledby="arenaTitle">
+        <!-- The Arena: two perspectives, one question worth thinking about. -->
+        <section class="section arena-section arena-duel" id="debates" data-inview aria-labelledby="arenaTitle">
             <div class="arena__inner">
-                <div class="arena__masthead">
-                    <span class="arena__chapter"><b>03</b> THE ARENA</span>
-                    <span class="arena__edition">STRONG IDEAS. OPEN MINDS.</span>
-                </div>
+                <div class="arena__masthead"><span class="arena__chapter"><b>03</b> THE ARENA</span><span class="arena__edition">OPEN MINDS. STRONGER IDEAS.</span></div>
                 <div class="arena__header">
                     <h2 class="arena__title" id="arenaTitle">Change<br><em>my mind.</em><span class="arena__asterisk" aria-hidden="true">✳</span></h2>
-                    <div class="arena__intro">
-                        <span class="arena__eyebrow">A DIFFERENT KIND OF FACE-OFF</span>
-                        <p>Two takes. One question.<br>The best argument wins you over.</p>
-                        <span class="arena__instruction">Pick a topic. Back a take. Test it.</span>
-                    </div>
+                    <div class="arena__intro"><span class="arena__eyebrow">A LITTLE FRICTION. A BETTER IDEA.</span><p>Two takes worth hearing.<br>Which one moves you?</p><span class="arena__instruction">Back a take. Then test what you believe.</span></div>
                 </div>
                 <div class="ar" id="arena">
                     <div class="ar__topic-row">
-                        <span class="ar__topic-label">PICK YOUR DEBATE <span aria-hidden="true">↘</span></span>
+                        <span class="ar__topic-label">PICK A QUESTION <span aria-hidden="true">↘</span></span>
                         <div class="ar__topics" role="group" aria-label="Debate topic">
-                            <button type="button" class="ar-topic" data-topic="work" aria-pressed="true">01 / Work</button>
-                            <button type="button" class="ar-topic" data-topic="ai" aria-pressed="false">02 / AI</button>
-                            <button type="button" class="ar-topic" data-topic="creativity" aria-pressed="false">03 / Creativity</button>
+                            <button type="button" class="ar-topic" data-topic="work" aria-pressed="true"><span>01</span> Work <i aria-hidden="true">↗</i></button>
+                            <button type="button" class="ar-topic" data-topic="ai" aria-pressed="false"><span>02</span> AI <i aria-hidden="true">↗</i></button>
+                            <button type="button" class="ar-topic" data-topic="creativity" aria-pressed="false"><span>03</span> Creativity <i aria-hidden="true">↗</i></button>
                         </div>
                     </div>
-                    <p class="ar__question" data-question>Where does our best work happen?</p>
+                    <div class="duel-question"><span>THE QUESTION ON THE TABLE</span><h3 class="ar__question" data-question>Where does our best work happen?</h3></div>
                     <div class="ar-sides">
                         <article class="ar-side ar-side--for" aria-labelledby="arenaTakeA">
-                            <div class="ar__position"><span class="ar__letter" aria-hidden="true">A</span><span data-position>THE CASE FOR REMOTE</span><span class="ar__picked">YOUR PICK</span></div>
-                            <h3 id="arenaTakeA" data-title>Less office.<br>More focus.</h3>
-                            <blockquote data-quote>“Great work needs room to think, not another commute. Let people choose where they do it best.”</blockquote>
-                            <button class="ar-vote" type="button" data-side="for" aria-pressed="false" aria-label="Back take A: remote work"><span data-vote-label>Back this take</span><span class="ar-vote__icon" aria-hidden="true">↗</span></button>
+                            <div class="duel-art" aria-hidden="true"><span class="ar__letter">A</span><svg viewBox="0 0 180 90" fill="none"><path d="M5 65h130m-22-23 23 23-23 23M19 44h115m-22-23 23 23-23 23M34 23h100m-22-21 23 21-23 23" stroke="currentColor" stroke-width="1.2"/><path d="M55 3h120v82" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="2 4"/></svg><span class="ar__picked">YOUR PICK ✓</span></div>
+                            <div class="duel-body">
+                                <div class="ar__position"><span data-position>THE CASE FOR REMOTE</span></div>
+                                <h3 id="arenaTakeA" data-title>Less office.<br>More focus.</h3>
+                                <blockquote data-quote>“Great work needs room to think, not another commute. Let people choose where they do it best.”</blockquote>
+                                <button class="ar-vote" type="button" data-side="for" aria-pressed="false" aria-label="Back take A: remote work"><span data-vote-label>Back this take</span><span class="ar-vote__icon" aria-hidden="true">↗</span></button>
+                            </div>
                         </article>
-                        <div class="ar__pivot" aria-hidden="true"><span>VS</span><svg viewBox="0 0 150 200" fill="none"><ellipse cx="75" cy="100" rx="58" ry="91" transform="rotate(30 75 100)"/><ellipse cx="75" cy="100" rx="58" ry="91" transform="rotate(-30 75 100)"/><path d="M75 0v35m0 130v35M0 100h25m100 0h25"/></svg></div>
+                        <div class="ar__pivot" aria-hidden="true"><span>VS</span></div>
                         <article class="ar-side ar-side--against" aria-labelledby="arenaTakeB">
-                            <div class="ar__position"><span class="ar__letter" aria-hidden="true">B</span><span data-position>THE CASE FOR TOGETHER</span><span class="ar__picked">YOUR PICK</span></div>
-                            <h3 id="arenaTakeB" data-title>Same room.<br>New ideas.</h3>
-                            <blockquote data-quote>“You can schedule a call. You can’t schedule every unexpected idea, or every moment someone needs a mentor.”</blockquote>
-                            <button class="ar-vote" type="button" data-side="against" aria-pressed="false" aria-label="Back take B: working together"><span data-vote-label>Back this take</span><span class="ar-vote__icon" aria-hidden="true">↗</span></button>
+                            <div class="duel-art" aria-hidden="true"><span class="ar__letter">B</span><svg viewBox="0 0 180 90" fill="none"><path d="M175 65H45m22-23L44 65l23 23M161 44H46m22-23L45 44l23 23M146 23H46M68 2 45 23l23 23" stroke="currentColor" stroke-width="1.2"/><path d="M125 3H5v82" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="2 4"/></svg><span class="ar__picked">YOUR PICK ✓</span></div>
+                            <div class="duel-body">
+                                <div class="ar__position"><span data-position>THE CASE FOR TOGETHER</span></div>
+                                <h3 id="arenaTakeB" data-title>Same room.<br>New ideas.</h3>
+                                <blockquote data-quote>“You can schedule a call. You can’t schedule every unexpected idea, or every moment someone needs a mentor.”</blockquote>
+                                <button class="ar-vote" type="button" data-side="against" aria-pressed="false" aria-label="Back take B: working together"><span data-vote-label>Back this take</span><span class="ar-vote__icon" aria-hidden="true">↗</span></button>
+                            </div>
                         </article>
                     </div>
                     <div class="ar__challenge" aria-live="polite" aria-atomic="true">
-                        <span class="ar__challenge-icon" aria-hidden="true">↳</span>
-                        <div><span class="ar__challenge-label" data-challenge-label>YOUR TURN</span><p data-challenge>Which take earns your vote? Pick one to reveal its toughest question.</p></div>
+                        <span class="ar__challenge-icon" aria-hidden="true">✳</span>
+                        <div><span class="ar__challenge-label" data-challenge-label>YOUR TURN</span><p data-challenge>Pick the take you believe. We’ll give it a harder question.</p></div>
                         <button class="ar__reset" type="button" hidden>Start again <span aria-hidden="true">↺</span></button>
                     </div>
-                    <div class="ar__footer"><span>Interactive example · your choice stays on this page</span><a href="#ai-core">Go deeper with Orvelis <span aria-hidden="true">↗</span></a></div>
+                    <div class="ar__footer"><span>Interactive example · your choice stays on this page</span><a href="#ai-core">Meet the thinking layer <span aria-hidden="true">↗</span></a></div>
                     <noscript><p class="ar__noscript">Enable JavaScript to switch topics and try the debate.</p></noscript>
                 </div>
             </div>
         </section>
+
         <!-- ORVELIS AI CORE SECTION -->
         <section class="section section--ai" id="ai-core" data-inview>
             <!-- the dithered wave behind the slide: pixel-field.js draws it,
