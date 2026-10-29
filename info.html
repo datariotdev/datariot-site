@@ -308,6 +308,95 @@
         }
     </script>
     <link rel="icon" href="/datariot-info/favicon.ico?v=brand-20261021" />
+<style id="orvelis-editorial">
+/* Orvelis editorial showcase, 29 October 2026. Scoped to the existing section. */
+#catch.ov { --ov-ink: #172128; --ov-muted: #5d6977; --ov-blue: #3458dc; --ov-line: #d5dce7; --ov-paper: #fff; --ov-tint: #e9eef9; padding: 90px 32px 70px !important; color: var(--ov-ink); scroll-margin-top: 90px; }
+[data-theme="dark"] #catch.ov { --ov-ink: #e8edf5; --ov-muted: #a4b0c1; --ov-blue: #a2b3ff; --ov-line: #323d50; --ov-paper: #171e2a; --ov-tint: #1c263a; }
+.ov *, .ov *::before, .ov *::after { box-sizing: border-box; }
+.ov__inner { max-width: 1160px; margin: 0 auto; }
+.ov__mast { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--ov-line); font: 10px/1.5 var(--font-tech, monospace); letter-spacing: .09em; }
+.ov__mast>span:first-child { display: flex; align-items: center; gap: 10px; }
+.ov__mast i { font: normal 24px/1 sans-serif; color: var(--ov-blue); }
+.ov__head { display: grid; grid-template-columns: 1.3fr 1fr; align-items: end; gap: 40px; padding: 48px 0 68px; }
+.ov__head h2 { position: relative; width: fit-content; font: 700 clamp(56px, 7.5vw, 96px)/.95 'Syne', sans-serif; letter-spacing: -.065em; margin: 0; color: var(--ov-ink); }
+.ov__head h2 em { font-style: normal; color: var(--ov-blue); }
+.ov__head h2>span { position: absolute; top: 8px; right: -58px; font: 300 54px/1 var(--font-sans, sans-serif); color: var(--ov-blue); }
+.ov__head>div { padding-left: 20px; }
+.ov__head p { margin: 0 0 15px; font: 500 26px/1.2 var(--font-sans, sans-serif); letter-spacing: -.04em; color: var(--ov-ink); }
+.ov__head>div>span { font: 13px/1.7 var(--font-sans, sans-serif); color: var(--ov-muted); }
+.ov__grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 80px; }
+.ov__module { min-width: 0; padding: 30px 0 44px; border-top: 1px solid var(--ov-line); display: flex; flex-direction: column; }
+.ov__label { display: flex; align-items: center; justify-content: space-between; font: 10px/1.5 var(--font-tech, monospace); letter-spacing: .11em; margin-bottom: 22px; color: var(--ov-blue); }
+.ov__label i { font: normal 26px/1 sans-serif; }
+.ov h3 { margin: 0 0 14px; font: 600 clamp(27px, 3.1vw, 38px)/1.1 'Syne', sans-serif; letter-spacing: -.045em; color: var(--ov-ink); }
+.ov h3 em { font-style: normal; color: var(--ov-muted); }
+.ov__intro { font: 13px/1.65 var(--font-sans, sans-serif); color: var(--ov-muted); margin: 0 0 30px; }
+.ov-note { position: relative; background: var(--ov-paper); border-radius: 2px 2px 0 0; box-shadow: 0 14px 35px #1d35500b; margin-bottom: 14px; }
+.ov-note__image { position: relative; overflow: hidden; height: 180px; background: #dde4e9; }
+.ov-note__image img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 44%; filter: saturate(.6); }
+.ov-note__image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg,#101d2c8c,transparent 55%); }
+.ov-note__image>span { position: absolute; z-index: 1; bottom: 14px; color: #fff; font: 9px/1.5 var(--font-tech, monospace); letter-spacing: .08em; }
+.ov-note__image>span:first-of-type { left: 20px; }.ov-note__image>span:last-of-type { right: 20px; }
+.ov-note__body { padding: 24px 28px 28px; }
+.ov-note__meta { display: flex; justify-content: space-between; gap: 8px; color: var(--ov-muted); font: 8px/1.5 var(--font-tech, monospace); letter-spacing: .06em; }
+.ov-note__meta>span:first-child { display: flex; align-items: center; gap: 6px; color: var(--ov-blue); }.ov-note__meta i { font: normal 15px/1 sans-serif; }
+.ov-note h4 { font: 600 40px/1.02 'Syne', sans-serif; letter-spacing: -.045em; margin: 23px 0 16px; color: var(--ov-ink); }
+.ov-note h4 em { font-style: normal; color: var(--ov-blue); }
+.ov-note__body>p { font: 13px/1.7 var(--font-sans,sans-serif); color: var(--ov-muted); margin: 0; max-width: 38ch; }
+.ov-note__stats { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--ov-line); display: flex; gap: 32px; align-items: center; }
+.ov-note__stats>div { display: grid; gap: 3px; }.ov-note__stats b { font: 500 26px/1.2 var(--font-tech,monospace); letter-spacing: -.06em; color: var(--ov-ink); }.ov-note__stats div>span { font: 10px/1.5 var(--font-sans,sans-serif); color: var(--ov-muted); }
+.ov-note__seal { margin-left: auto; font: 42px/1 sans-serif; color: var(--ov-blue); }
+.ov-note__edge { height: 7px; position: absolute; bottom: -6px; left: 0; right: 0; background: linear-gradient(135deg,var(--ov-paper) 50%,transparent 50%) 0 0/12px 12px,linear-gradient(225deg,var(--ov-paper) 50%,transparent 50%) 0 0/12px 12px; }
+.ov__foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: auto; padding-top: 20px; color: var(--ov-muted); font: 8px/1.6 var(--font-tech,monospace); letter-spacing: .06em; }
+.ov-link { display: inline-flex; align-items: center; gap: 16px; color: var(--ov-ink); font: 600 12px/1.5 var(--font-sans,sans-serif); text-decoration: none; padding: 5px 0; border-bottom: 1px solid var(--ov-line); transition: color .2s,border-color .2s; }.ov-link>span { font: 22px/1 sans-serif; color: var(--ov-blue); }.ov-link:hover { color: var(--ov-blue); border-color: var(--ov-blue); }.ov-link:focus-visible { outline: 2px solid var(--ov-blue); outline-offset: 5px; }
+.ov-dna { padding: 22px 0 0; position: relative; }
+.ov-dna__top { display: flex; justify-content: space-between; gap: 8px; font: 8px/1.5 var(--font-tech,monospace); letter-spacing: .07em; color: var(--ov-muted); }
+.ov-dna__portrait { position: relative; height: 280px; width: 100%; margin: 6px 0 10px; }
+.ov-dna__portrait svg { height: 100%; width: 100%; display: block; opacity: .85; }
+.ov-dna__score { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 7px; }
+.ov-dna__score>b { font: 500 86px/.95 var(--font-sans,sans-serif); letter-spacing: -.09em; color: var(--ov-ink); background: radial-gradient(ellipse,var(--bg-main,#f1f5fc) 35%,transparent 70%); padding: 18px 24px 0 10px; }.ov-dna__score>b>span { color: var(--ov-blue); }.ov-dna__score>span { font: 8px/1.5 var(--font-tech,monospace); letter-spacing: .12em; color: var(--ov-muted); background: var(--bg-main,#f1f5fc); }
+.ov-dna__percentile { position: absolute; right: 0; bottom: 27px; color: var(--ov-blue); font: 9px/1.4 var(--font-tech,monospace); }.ov-dna__percentile b { font-size: 24px; letter-spacing: -.07em; }
+.ov-dna__standing { display: flex; justify-content: space-between; gap: 10px; padding: 15px 0; border-top: 1px solid var(--ov-line); border-bottom: 1px solid var(--ov-line); font: 11px/1.5 var(--font-sans,sans-serif); color: var(--ov-muted); }.ov-dna__standing strong { color: var(--ov-blue); font-weight: 600; }
+.ov-dna__tracks { display: grid; gap: 17px; padding: 26px 0; }.ov-dna__tracks>div { display: grid; grid-template-columns: 92px 1fr 25px; align-items: center; gap: 12px; font: 11px/1.3 var(--font-sans,sans-serif); }.ov-dna__tracks b { font: 10px/1.3 var(--font-tech,monospace); text-align: right; color: var(--ov-blue); }.ov-dna__track { background: var(--ov-line); height: 4px; overflow: hidden; }.ov-dna__track i { display: block; width: var(--score); height: 100%; background: var(--ov-blue); }
+.ov-dna__insight { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--ov-line); padding: 18px 0 0; color: var(--ov-muted); font: 12px/1.6 var(--font-sans,sans-serif); margin: 0; }.ov-dna__insight>span:first-child { font: 32px/1 sans-serif; color: var(--ov-blue); }.ov-dna__insight strong { color: var(--ov-ink); font-weight: 500; }
+.ov__debate,.ov__capital { padding-top: 30px; }
+.ov-tree { padding: 10px 0 22px; }.ov-tree__root { display: flex; align-items: center; gap: 12px; padding: 17px 18px; background: var(--ov-paper); border: 1px solid var(--ov-line); border-radius: 4px; }.ov-tree__root>span { width: 38px; height: 44px; background: var(--ov-tint); display: grid; place-items: center; color: var(--ov-blue); font-size: 13px; border-radius: 3px; }.ov-tree__root>div { display: grid; gap: 5px; }.ov-tree__root small,.ov-tree__branches small { font: 8px/1.5 var(--font-tech,monospace); color: var(--ov-muted); letter-spacing: .07em; }.ov-tree__root b { font: 500 15px/1.4 var(--font-sans,sans-serif); color: var(--ov-ink); }.ov-tree__root>i { margin-left: auto; font: normal 24px/1 sans-serif; color: var(--ov-blue); }
+.ov-tree__branches { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding-top: 35px; position: relative; }.ov-tree__branches::before { content: ''; position: absolute; top: 0; height: 18px; border-left: 1px solid var(--ov-blue); left: 50%; }.ov-tree__branches::after { content: ''; position: absolute; top: 17px; left: 24%; width: 52%; height: 18px; border: 1px solid var(--ov-blue); border-bottom: 0; border-radius: 7px 7px 0 0; }.ov-tree__branches>div { padding: 16px 13px; background: var(--ov-tint); border-radius: 4px; display: flex; flex-direction: column; align-items: start; gap: 9px; }.ov-tree__sign { font: 22px/1 sans-serif; color: var(--ov-blue); }.ov-tree__branches b { font: 500 13px/1.35 var(--font-sans,sans-serif); color: var(--ov-ink); }.ov-tree__branches>div>span:last-child { font: 10px/1.4 var(--font-sans,sans-serif); color: var(--ov-muted); }
+.ov-cred { display: flex; gap: 17px; align-items: center; padding: 22px 0 34px; }.ov-cred__spark { font: 64px/1 sans-serif; color: var(--ov-blue); }.ov-cred>div { display: grid; gap: 10px; }.ov-cred small { font: 7px/1.5 var(--font-tech,monospace); letter-spacing: .06em; color: var(--ov-muted); }.ov-cred b { font: 500 clamp(40px,4.2vw,58px)/1 var(--font-sans,sans-serif); letter-spacing: -.08em; color: var(--ov-ink); }.ov-cred b span { font: 11px/1.5 var(--font-tech,monospace); color: var(--ov-muted); letter-spacing: 0; margin-left: 10px; }.ov-cred__list { list-style: none; margin: 0; padding: 0; }.ov-cred__list li { display: flex; align-items: center; justify-content: space-between; gap: 15px; border-top: 1px solid var(--ov-line); padding: 19px 0; }.ov-cred__list li>span { display: flex; gap: 14px; align-items: center; font: 12px/1.5 var(--font-sans,sans-serif); color: var(--ov-ink); }.ov-cred__list i { font: normal 9px/1.5 var(--font-tech,monospace); color: var(--ov-muted); }.ov-cred__list b { font: 500 12px/1.5 var(--font-tech,monospace); color: var(--ov-blue); }
+.ov__end { border-top: 1px solid var(--ov-line); padding: 36px 0 0; display: flex; align-items: center; gap: 20px; }.ov__end>span { color: var(--ov-blue); font: 48px/1 sans-serif; }.ov__end p { color: var(--ov-muted); font: 16px/1.4 var(--font-sans,sans-serif); margin: 0; letter-spacing: -.02em; }.ov__end strong { font-weight: 500; color: var(--ov-ink); }.ov__end a { margin-left: auto; }
+/* Opaque header prevents scrolling text from colliding with the fixed brand. */
+.site-topbar { position: fixed; inset: 0 0 auto; height: 86px; background: var(--bg-main,#f1f5fc); border-bottom: 1px solid var(--border, #d5dce7); z-index: 29000; pointer-events: none; }
+.brandmark { z-index: 29001; }.navx-trigger { z-index: 30000; }
+html.navx-open .site-topbar { visibility: hidden; }
+section[id] { scroll-margin-top: 90px; }
+@media(min-width:1500px) { #catch.ov { padding-left: 50px !important; padding-right: 50px !important; } }
+@media(max-width:800px) { .ov__grid { column-gap: 38px; }.ov-note__body { padding: 22px; }.ov-note h4 { font-size: 34px; }.ov__head h2>span { right: -38px; font-size: 38px; }.ov__head>div { padding-left: 0; }.ov__foot { gap: 10px; }.ov__head p { font-size: 22px; }.ov-dna__portrait { height: 250px; } }
+@media(max-width:620px) {
+ #catch.ov { padding: 50px 24px 45px !important; }.ov__mast { font-size: 8px; letter-spacing: .035em; gap: 10px; padding-bottom: 16px; }.ov__mast>span:last-child { font-size: 7px; }.ov__mast i { font-size: 20px; }.ov__head { grid-template-columns: 1fr; gap: 24px; padding: 35px 0 40px; }.ov__head h2 { font-size: clamp(48px,13.8vw,76px); }.ov__head h2>span { right: -42px; top: 5px; font-size: 38px; }.ov__head>div { display: flex; gap: 25px; align-items: start; }.ov__head p { font-size: 17px; margin: 0; flex: 1; }.ov__head>div>span { font-size: 10px; line-height: 1.7; flex: 1.25; }.ov__grid { grid-template-columns: minmax(0,1fr); }.ov__module { padding: 25px 0 36px; }.ov__label { margin-bottom: 18px; font-size: 9px; }.ov h3 { font-size: 33px; }.ov__intro { font-size: 12px; margin-bottom: 24px; }.ov-note__image { height: 174px; }.ov-note__body { padding: 23px 24px 26px; }.ov-note h4 { font-size: 38px; }.ov-note__body>p { font-size: 12px; }.ov-note__stats { gap: 28px; }.ov__foot { font-size: 7px; padding-top: 23px; }.ov-link { font-size: 11px; gap: 10px; }.ov-dna { padding-top: 3px; }.ov-dna__portrait { height: 270px; }.ov-dna__standing { font-size: 12px; }.ov-dna__tracks>div { font-size: 12px; grid-template-columns: 94px 1fr 24px; }.ov-dna__insight { font-size: 12px; }.ov-tree__branches>div { padding: 17px; }.ov-cred { padding: 16px 0 26px; }.ov-cred b { font-size: 51px; }.ov-cred__spark { font-size: 55px; }.ov-cred small { font-size: 7px; }.ov__end { gap: 12px; flex-wrap: wrap; padding-top: 25px; }.ov__end p { font-size: 14px; }.ov__end>span { font-size: 36px; }.ov__end a { font-size: 10px; }.site-topbar { height: 76px; }
+}
+@media(max-width:360px) { #catch.ov { padding-left: 18px !important; padding-right: 18px !important; }.ov__head>div { gap: 15px; }.ov h3 { font-size: 30px; }.ov-note__body { padding: 20px; }.ov-note__meta { font-size: 7px; }.ov-note__stats { gap: 24px; }.ov__end a { margin-left: 48px; } }
+@media(prefers-reduced-motion:reduce) { .ov-link { transition: none; } }
+
+.ov-passport { background:var(--ov-paper); padding:25px; margin-top:8px; color:var(--ov-ink); border-top:3px solid var(--ov-blue); box-shadow:0 14px 35px #1d355009; }
+.ov-passport__head {display:flex;justify-content:space-between;gap:12px;font:8px/1.5 var(--font-tech,monospace);letter-spacing:.04em;color:var(--ov-muted);padding-bottom:23px;border-bottom:1px solid var(--ov-line)}
+.ov-passport__identity {display:flex;align-items:center;gap:25px;padding:30px 0}
+.ov-passport__letter {position:relative;font:700 110px/.9 'Syne',sans-serif;color:var(--ov-blue);letter-spacing:-.09em;padding-right:12px}
+.ov-passport__letter>span {position:absolute;font:26px/1 sans-serif;top:-2px;right:0}
+.ov-passport__identity>div {display:grid;gap:8px;min-width:0}
+.ov-passport__identity small {font:8px/1.5 var(--font-tech,monospace);color:var(--ov-muted);letter-spacing:.1em}
+.ov-passport__identity strong {font:600 clamp(25px,2.8vw,34px)/1.1 'Syne',sans-serif;letter-spacing:-.04em}
+.ov-passport__identity div>span {font:10px/1.5 var(--font-sans,sans-serif);color:var(--ov-muted)}
+.ov-passport__numbers {display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--ov-line);border-bottom:1px solid var(--ov-line);padding:22px 0;gap:15px}
+.ov-passport__numbers>div {display:grid;gap:8px}.ov-passport__numbers>div+div{border-left:1px solid var(--ov-line);padding-left:23px}
+.ov-passport__numbers b {font:500 56px/1 var(--font-sans,sans-serif);letter-spacing:-.07em}.ov-passport__numbers b>span {font:11px/1 var(--font-tech,monospace);letter-spacing:0;color:var(--ov-muted);margin-left:5px}
+.ov-passport__numbers small {font:7px/1.7 var(--font-tech,monospace);letter-spacing:.02em;color:var(--ov-muted)}
+.ov-passport__scale {display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;padding:28px 0 0}.ov-passport__scale>span {border-top:3px solid var(--ov-line);padding-top:9px;font:8px/1.8 var(--font-tech,monospace);color:var(--ov-muted)}.ov-passport__scale b {font:10px/2 var(--font-sans,sans-serif);font-weight:500}.ov-passport__scale .is-current {border-color:var(--ov-blue);color:var(--ov-blue)}
+.ov-passport__note {position:relative;font:12px/1.7 var(--font-sans,sans-serif);padding:28px 0 26px 32px;color:var(--ov-muted);margin:0}.ov-passport__note>span {position:absolute;left:0;top:30px;font:25px/1 sans-serif;color:var(--ov-blue)}
+.ov-passport__footer {display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--ov-line);padding-top:20px;font:7px/1.5 var(--font-tech,monospace);color:var(--ov-muted)}
+.ov-passport__barcode {display:block;width:60px;height:20px;background:repeating-linear-gradient(90deg,var(--ov-ink) 0 1px,transparent 1px 3px,var(--ov-ink) 3px 5px,transparent 5px 8px,var(--ov-ink) 8px 9px,transparent 9px 11px);opacity:.55}
+@media(max-width:620px){.ov-passport{padding:23px}.ov-passport__identity{gap:20px}.ov-passport__letter{font-size:95px}.ov-passport__numbers b{font-size:49px}.ov-passport__identity strong{font-size:27px}}
+
+</style>
 </head>
 
 <body>
@@ -343,6 +432,7 @@
     <!-- The icon rail is gone: the MENU overlay above is the only navigation. -->
 
     <!-- Fixed brand mark; balances the MENU trigger now that the icon rail is gone. -->
+    <div class="site-topbar" aria-hidden="true"></div>
     <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
         <img class="brandmark__logo" src="assets/datariot-mark.jpg?v=brand-20261021" alt="" aria-hidden="true" width="40" height="40" decoding="async">
         <span class="brandmark__word">datariot</span>
@@ -956,40 +1046,69 @@
         </section>
 
         <!-- Curiosity in motion: choose a real clip and discover its point. -->
-        <section class="catch" id="catch" aria-labelledby="catchTitle" data-inview>
-            <div class="catch__inner">
-                <div class="catch__copy">
-                    <span class="catch__label"><i aria-hidden="true"></i> FOLLOW THAT LITTLE SPARK.</span>
-                    <h2 class="catch__title" id="catchTitle">Small clips.<br>Big <em>aha.</em><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 3v34M3 20h34M8 8l24 24M8 32 24-24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></h2>
-                    <p class="catch__lede">Start with a question. Follow the idea.<br>Leave with something worth passing on.</p>
-                    <div class="catch__questions" role="group" aria-label="Choose a question to explore" hidden>
-                        <span class="catch__pick-label">WHERE WILL YOUR CURIOSITY GO?</span>
-                        <button class="catch__question is-selected" type="button" data-curiosity="0" aria-pressed="true"><img src="assets/reel-bear.jpg" alt="" width="44" height="44" loading="lazy" decoding="async"><span><small>NATURE · 0:31</small>Why polar bears look white</span><i aria-hidden="true">↗</i></button>
-                        <button class="catch__question" type="button" data-curiosity="1" aria-pressed="false"><img src="assets/reel-lidar.jpg" alt="" width="44" height="44" loading="lazy" decoding="async"><span><small>TECHNOLOGY · 0:44</small>How a car sees the street</span><i aria-hidden="true">↗</i></button>
-                        <button class="catch__question" type="button" data-curiosity="2" aria-pressed="false"><img src="assets/reel-tower.jpg" alt="" width="44" height="44" loading="lazy" decoding="async"><span><small>ARCHITECTURE · 0:38</small>Why skyscrapers sway</span><i aria-hidden="true">↗</i></button>
-                    </div>
-                    <a class="catch__link" href="#manifesto" data-featured-clip="0">Explore this clip <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <!-- ORVELIS: from a short clip to a lasting idea -->
+        <section class="catch ov" id="catch" aria-labelledby="catchTitle" data-inview>
+            <div class="ov__inner">
+                <div class="ov__mast"><span><i aria-hidden="true">✳</i> ORVELIS / THE THINKING LAYER</span><span>CLIPS → CLARITY</span></div>
+                <header class="ov__head">
+                    <h2 id="catchTitle">Small clips.<br><em>Big aha.</em><span aria-hidden="true">↗</span></h2>
+                    <div><p>The video is just<br>the beginning.</p><span>A clear takeaway. A stronger argument.<br>A little more you, every time.</span></div>
+                </header>
+                <div class="ov__grid">
+                    <article class="ov__module ov__takeaway" aria-labelledby="ovTakeawayTitle">
+                        <div class="ov__label"><span>01 / THE TAKEAWAY</span><i aria-hidden="true">↘</i></div>
+                        <h3 id="ovTakeawayTitle">A moment watched.<br><em>An idea kept.</em></h3>
+                        <p class="ov__intro">Orvelis pulls the point out of the clip.<br>So the useful part stays with you.</p>
+                        <div class="ov-note">
+                            <div class="ov-note__image"><img src="assets/reel-bear.jpg" alt="A polar bear from the featured nature clip" width="600" height="350" loading="lazy" decoding="async"><span>FIELD NOTE / 001</span><span>0:31 ↗</span></div>
+                            <div class="ov-note__body">
+                                <div class="ov-note__meta"><span><i aria-hidden="true">✳</i> THE POINT, BY ORVELIS</span><span>NATURE</span></div>
+                                <h4>Looks white.<br><em>Isn’t white.</em></h4>
+                                <p>Polar bear fur has no white pigment. Translucent hairs scatter light, creating the white appearance. The skin underneath is black.</p>
+                                <div class="ov-note__stats"><div><b>04</b><span>Sources checked</span></div><div><b>00</b><span>Fallacies flagged</span></div><span class="ov-note__seal" aria-label="Illustrative Orvelis analysis">✳</span></div>
+                            </div>
+                            <div class="ov-note__edge" aria-hidden="true"></div>
+                        </div>
+                        <div class="ov__foot"><span>ILLUSTRATIVE ANALYSIS</span><a class="ov-link" href="#manifesto">Find the point in the feed <span aria-hidden="true">↗</span></a></div>
+                    </article>
+
+                    <article class="ov__module ov__dna" aria-labelledby="ovDnaTitle">
+                        <div class="ov__label"><span>02 / CREATOR DNA</span><i aria-hidden="true">↘</i></div>
+                        <h3 id="ovDnaTitle">Your ideas.<br><em>Your reputation.</em></h3>
+                        <p class="ov__intro">A profile built on the substance of your ideas.<br>Clarity, evidence, consistency.</p>
+                        <div class="ov-passport">
+                            <div class="ov-passport__head"><span>ORVELIS / CREATOR RECORD</span><span>EXAMPLE 001</span></div>
+                            <div class="ov-passport__identity"><span class="ov-passport__letter" aria-hidden="true">A<span>↗</span></span><div><small>STANDING</small><strong>Authority</strong><span>Built on better arguments.</span></div></div>
+                            <div class="ov-passport__numbers"><div><b>97<span>/100</span></b><small>LOGIC CONSISTENCY</small></div><div><b>3<span>%</span></b><small>TOP IN SCIENCE &amp; TECH</small></div></div>
+                            <div class="ov-passport__scale" aria-label="Example progression from Explorer through Thinker to Authority"><span>01<br><b>Explorer</b></span><span>02<br><b>Thinker</b></span><span class="is-current">03<br><b>Authority ↗</b></span></div>
+                            <p class="ov-passport__note"><span aria-hidden="true">✳</span>Every clear idea leaves a mark.<br>Your next one moves you forward.</p>
+                            <div class="ov-passport__footer"><span>SUBSTANCE OVER FOLLOWERS.</span><span class="ov-passport__barcode" aria-hidden="true"></span></div>
+                        </div>
+                        <div class="ov__foot"><span>ILLUSTRATIVE PROFILE</span><span>SUBSTANCE BUILDS STANDING.</span></div>
+                    </article>
+
+                    <article class="ov__module ov__debate" aria-labelledby="ovDebateTitle">
+                        <div class="ov__label"><span>03 / VIDEO DEBATES</span><i aria-hidden="true">↘</i></div>
+                        <h3 id="ovDebateTitle">One point.<br><em>More perspectives.</em></h3>
+                        <p class="ov__intro">A reply adds a branch. The conversation grows.<br>Orvelis keeps the reasoning in view.</p>
+                        <div class="ov-tree" aria-label="An original claim branches into a supporting video and a challenging video">
+                            <div class="ov-tree__root"><span aria-hidden="true">▶</span><div><small>THE ORIGINAL CLIP</small><b>Make your point.</b></div><i aria-hidden="true">↗</i></div>
+                            <div class="ov-tree__branches"><div><span class="ov-tree__sign" aria-hidden="true">+</span><small>BUILD ON IT</small><b>A new angle.</b><span>Video reply ↗</span></div><div><span class="ov-tree__sign" aria-hidden="true">↗</span><small>CHALLENGE IT</small><b>A better question.</b><span>Video reply ↗</span></div></div>
+                        </div>
+                        <div class="ov__foot"><span>AN IDEA CAN GO EITHER WAY.</span><a class="ov-link" href="#debates">Step into the arena <span aria-hidden="true">↗</span></a></div>
+                    </article>
+
+                    <article class="ov__module ov__capital" aria-labelledby="ovCapitalTitle">
+                        <div class="ov__label"><span>04 / INTELLECTUAL CAPITAL</span><i aria-hidden="true">↘</i></div>
+                        <h3 id="ovCapitalTitle">Stay curious.<br><em>It adds up.</em></h3>
+                        <p class="ov__intro">Explore, contribute, bring a fresh mind.<br>Turn curiosity into Cred.</p>
+                        <div class="ov-cred"><span class="ov-cred__spark" aria-hidden="true">✳</span><div><small>THE VALUE OF A GOOD CONNECTION</small><b>+1,500<span>Cred</span></b></div></div>
+                        <ul class="ov-cred__list"><li><span><i aria-hidden="true">01</i> Refer 3 sharp minds</span><b>+1,500</b></li><li><span><i aria-hidden="true">02</i> Verify a takeaway</span><b>+50</b></li><li><span><i aria-hidden="true">03</i> Explore 10 clips</span><b>+500</b></li></ul>
+                        <div class="ov__foot"><span>ILLUSTRATIVE REWARDS</span><a class="ov-link" href="#beta">Follow what’s next <span aria-hidden="true">↗</span></a></div>
+                    </article>
                 </div>
-                <div class="catch__visual">
-                    <span class="catch__halo" aria-hidden="true"></span>
-                    <span class="catch__big-word" aria-hidden="true">aha!</span>
-                    <span class="catch__sticker" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2c1.2 6 4 8.8 10 10-6 1.2-8.8 4-10 10-1.2-6-4-8.8-10-10 6-1.2 8.8-4 10-10Z" fill="currentColor"/></svg>WAIT, REALLY?</span>
-                    <a class="catch__feature" href="#manifesto" data-featured-clip="0" aria-label="Explore the polar bear clip in the feed">
-                        <img class="catch__poster" src="assets/reel-bear.jpg" alt="A polar bear in the featured Datariot clip" width="464" height="238" loading="lazy" decoding="async">
-                        <span class="catch__film-meta"><span data-curiosity-topic>01 / NATURE</span><span data-curiosity-duration>0:31</span></span>
-                        <span class="catch__open" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                        <h3 data-curiosity-title>Why aren’t polar bears actually white?</h3>
-                    </a>
-                    <aside class="catch__idea" aria-label="A takeaway from the featured clip">
-                        <span class="catch__idea-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none"><path d="m7 14 5 5L22 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                        <span class="catch__idea-label">AND THEN IT CLICKS.</span>
-                        <p><span data-curiosity-lead>Their fur is clear.</span><br><em data-curiosity-point>It only looks white.</em></p>
-                        <span class="catch__idea-foot" data-curiosity-foot>A little context changes the picture.</span>
-                    </aside>
-                    <span class="catch__caption"><i aria-hidden="true"></i> ONE CLIP. A NEW WAY TO SEE IT.</span>
-                </div>
+                <div class="ov__end"><span>✳</span><p>Less noise.<br><strong>More to take with you.</strong></p><a class="ov-link" href="#ai-core">Meet Orvelis <span aria-hidden="true">↗</span></a></div>
             </div>
-            <span class="feed-sr" data-curiosity-status role="status" aria-live="polite" aria-atomic="true"></span>
         </section>
 
         <!-- 03 — THE ARENA: try a position, then test its strongest assumption. -->
