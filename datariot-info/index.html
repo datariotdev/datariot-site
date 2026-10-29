@@ -567,110 +567,62 @@
 
 </style>
 <style id="discord-invitation-design">
-/* Discord invitation. Clean Manrope typography, platform ink and ice only. */
-#beta.discord-invitation {--dc-ink:#07080C;--dc-muted:rgba(7,8,12,.62);--dc-paper:#fff;--dc-soft:#EEF3FC;--dc-line:rgba(7,8,12,.10);--dc-accent:var(--brand-ink,#07080C);--dc-on:#DAE6F7;--dc-back:#E0E8F4;display:block;min-height:0;padding:85px 32px 65px!important;background:transparent!important;color:var(--dc-ink);overflow:hidden;isolation:isolate;scroll-margin-top:86px;font-family:var(--font-sans,'Manrope',sans-serif)}
-[data-theme="dark"] #beta.discord-invitation {--dc-ink:#F1F2F5;--dc-muted:rgba(241,242,245,.62);--dc-paper:#0E1017;--dc-soft:#171A23;--dc-line:rgba(217,228,255,.12);--dc-accent:var(--brand-ice,#DAE6F7);--dc-on:#07080C;--dc-back:#1C2230}
-#beta .dc-inner {width:min(1120px,100%);margin:0 auto}
-#beta .dc-mast {display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid var(--dc-line);padding-top:23px;color:var(--dc-muted);font:600 9px/1.5 var(--font-tech,monospace);letter-spacing:.07em}
-#beta .dc-mast>span:first-child {display:flex;align-items:center;gap:13px;color:var(--dc-ink)}
-#beta .dc-mast b {font:500 21px/1 var(--font-tech,monospace);letter-spacing:-.05em}
-#beta .dc-layout {display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(40px,7vw,95px);align-items:center;padding:70px 0 68px}
-#beta .dc-copy {min-width:0}
-#beta .dc-kicker {display:flex;align-items:center;gap:8px;color:var(--dc-muted);font:600 8px/1.5 var(--font-tech,monospace);letter-spacing:.06em}
-#beta .dc-kicker i {font:normal 19px/1 sans-serif;color:var(--dc-ink)}
-#beta .dc-copy h2 {font:800 clamp(48px,5.7vw,76px)/1.02 'Manrope',sans-serif;color:var(--dc-ink);letter-spacing:-.065em;text-transform:none;margin:23px 0 0}
-#beta .dc-copy h2>span {color:var(--dc-ink);font:inherit;letter-spacing:inherit}
-#beta .dc-lede {margin:27px 0 0;color:var(--dc-muted);font:400 16px/1.7 'Manrope',sans-serif;letter-spacing:-.02em;max-width:37ch}
-#beta .dc-signoff {display:flex;align-items:center;gap:15px;margin-top:48px}
-#beta .dc-signoff__line {height:42px;width:2px;background:var(--dc-ink);flex:none}
-#beta .dc-signoff p {margin:0;color:var(--dc-muted);font:400 12px/1.7 'Manrope',sans-serif;letter-spacing:-.01em}
-#beta .dc-signoff strong {color:var(--dc-ink);font-weight:600}
-#beta .dc-signoff__arrow {font:300 48px/1 'Manrope',sans-serif;color:var(--dc-ink);margin-left:20px;align-self:start}
-#beta .dc-pass-wrap {position:relative;min-width:0;isolation:isolate;margin-right:7px}
-#beta .dc-pass-back {position:absolute;inset:8px -8px -8px 8px;border-radius:5px;background:var(--dc-back);transform:rotate(1.8deg);z-index:-1}
-#beta .dc-pass {position:relative;display:grid;grid-template-columns:35px minmax(0,1fr);background:var(--dc-paper);color:var(--dc-ink);border-radius:5px;box-shadow:0 18px 55px rgba(7,8,12,.055);overflow:hidden}
-#beta .dc-pass__rail {display:flex;align-items:center;justify-content:space-between;gap:30px;flex-direction:column;padding:24px 0 20px;background:var(--dc-soft);border-right:1px solid var(--dc-line)}
-#beta .dc-pass__rail>span {writing-mode:vertical-rl;transform:rotate(180deg);font:500 7px/1.5 var(--font-tech,monospace);letter-spacing:.1em;color:var(--dc-muted)}
-#beta .dc-pass__rail>b {font:500 10px/1.5 var(--font-tech,monospace);color:var(--dc-ink)}
-#beta .dc-pass__main {min-width:0;padding-top:28px}
-#beta .dc-pass__brand {display:flex;align-items:center;gap:10px;margin:0 25px;padding-bottom:23px;border-bottom:1px solid var(--dc-line)}
-#beta .dc-pass__brand img {display:block;flex:none;width:38px;height:38px;object-fit:contain;border-radius:2px}
-#beta .dc-pass__brand>div {display:grid;gap:5px}
-#beta .dc-pass__brand b {color:var(--dc-ink);font:800 20px/1 'Manrope',sans-serif;letter-spacing:-.055em}
-#beta .dc-pass__brand div>span {color:var(--dc-muted);font:500 7px/1.5 var(--font-tech,monospace);letter-spacing:.07em}
-#beta .dc-pass__stamp {display:grid;place-items:center;margin-left:auto;border:1px solid var(--dc-line);border-radius:50%;width:34px;height:34px;color:var(--dc-ink);font:24px/1 sans-serif}
-#beta .dc-pass__content {padding:23px 25px 14px}
-#beta .dc-pass__eyebrow {color:var(--dc-muted);font:500 8px/1.5 var(--font-tech,monospace);letter-spacing:.06em}
-#beta .dc-pass__updates {list-style:none;padding:0;margin:18px 0 0;display:grid;gap:0}
-#beta .dc-pass__updates li {display:grid;grid-template-columns:18px minmax(0,1fr) 14px;align-items:center;gap:10px;padding:13px 0;border-top:1px solid var(--dc-line);font:500 12px/1.45 'Manrope',sans-serif;letter-spacing:-.015em;color:var(--dc-ink)}
-#beta .dc-pass__index {font:500 8px/1.5 var(--font-tech,monospace);letter-spacing:0;color:var(--dc-muted)}
-#beta .dc-pass__updates i {font:normal 15px/1 sans-serif;color:var(--dc-muted)}
-#beta .dc-pass__tear {position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 25px;color:var(--dc-muted)}
-#beta .dc-pass__tear::before,#beta .dc-pass__tear::after {content:'';position:absolute;width:16px;height:16px;top:50%;transform:translateY(-50%);border-radius:50%;background:var(--bg-main,#F1F5FC)}
-#beta .dc-pass__tear::before {left:-8px}
-#beta .dc-pass__tear::after {right:-8px}
-#beta .dc-pass__tear>span {height:1px;flex:1;background:repeating-linear-gradient(90deg,var(--dc-line) 0 3px,transparent 3px 6px)}
-#beta .dc-pass__tear>b {font:500 7px/1.5 var(--font-tech,monospace);letter-spacing:.08em;white-space:nowrap}
-#beta .dc-pass__action {padding:12px 25px 0}
-#beta .dc-join {display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px 20px;min-height:76px;background:var(--dc-accent);color:var(--dc-on);border:0;border-radius:3px;text-decoration:none;box-shadow:0 6px 17px rgba(7,8,12,.08);transition:transform .2s,box-shadow .2s}
-#beta .dc-join__text {display:grid;gap:6px}
-#beta .dc-join__text>b {font:750 16px/1.3 'Manrope',sans-serif;letter-spacing:-.025em;color:inherit}
-#beta .dc-join__text>span {font:400 10px/1.5 'Manrope',sans-serif;color:inherit;opacity:.78;letter-spacing:0}
-#beta .dc-join__arrow {font:32px/1 'Manrope',sans-serif;color:inherit;flex:none;transition:transform .2s}
-#beta .dc-join:hover {transform:translateY(-2px);box-shadow:0 10px 24px rgba(7,8,12,.12)}
-#beta .dc-join:hover .dc-join__arrow {transform:translate(2px,-2px)}
-#beta .dc-join:focus-visible {outline:2px solid var(--dc-accent);outline-offset:5px}
-#beta .dc-pass__action>p {font:400 10px/1.7 'Manrope',sans-serif;letter-spacing:-.01em;color:var(--dc-muted);margin:12px 1px 0;max-width:36ch}
-#beta .dc-pass__footer {display:flex;align-items:center;justify-content:space-between;gap:15px;padding:25px;color:var(--dc-muted);font:500 6px/1.5 var(--font-tech,monospace);letter-spacing:.08em}
-#beta .dc-pass__barcode {display:block;flex:none;width:45px;height:16px;opacity:.5;background:repeating-linear-gradient(90deg,var(--dc-ink) 0 1px,transparent 1px 3px,var(--dc-ink) 3px 5px,transparent 5px 8px)}
-#beta .dc-bottom {display:flex;align-items:center;gap:18px;padding-top:23px;border-top:1px solid var(--dc-line);color:var(--dc-muted);font:500 8px/1.5 var(--font-tech,monospace);letter-spacing:.08em}
-#beta .dc-bottom>span:nth-child(2) {color:var(--dc-ink)}
-#beta .dc-bottom>i {font:normal 24px/1 sans-serif;color:var(--dc-ink);margin-left:auto}
-@media(max-width:900px) {#beta .dc-layout{gap:40px}#beta .dc-copy h2{font-size:55px}#beta .dc-pass{grid-template-columns:28px minmax(0,1fr)}#beta .dc-pass__brand{margin-left:20px;margin-right:20px}#beta .dc-pass__content{padding-left:20px;padding-right:20px}#beta .dc-pass__action{padding-left:20px;padding-right:20px}#beta .dc-join{padding:17px 16px}#beta .dc-join__text>b{font-size:14px}#beta .dc-pass__updates li{font-size:11px;gap:8px}#beta .dc-signoff__arrow{margin-left:0}}
-@media(max-width:660px) {
- #beta.discord-invitation{padding:43px 24px 42px!important}
- #beta .dc-mast{padding-top:18px;gap:12px;font-size:8px;letter-spacing:.04em}
- #beta .dc-mast b{font-size:19px}
- #beta .dc-mast>span:first-child{gap:9px}
- #beta .dc-mast>span:last-child{font-size:7px;text-align:right;max-width:16ch}
- #beta .dc-layout{grid-template-columns:minmax(0,1fr);padding:33px 0 37px;gap:29px}
- #beta .dc-kicker{font-size:7px;letter-spacing:.035em;gap:7px}
- #beta .dc-kicker i{font-size:18px}
- #beta .dc-copy h2{font-size:clamp(43px,12.8vw,67px);line-height:1.02;margin-top:18px;letter-spacing:-.06em}
- #beta .dc-lede{font-size:13px;line-height:1.7;margin-top:19px;max-width:37ch}
- #beta .dc-signoff{display:none}
- #beta .dc-pass-wrap{width:100%;max-width:440px;margin:0 auto}
- #beta .dc-pass-back{inset:7px -5px -6px 7px;transform:rotate(1.3deg)}
- #beta .dc-pass{grid-template-columns:27px minmax(0,1fr)}
- #beta .dc-pass__rail{padding:20px 0 18px;gap:20px}
- #beta .dc-pass__rail>span{font-size:6px;letter-spacing:.06em}
- #beta .dc-pass__rail>b{font-size:9px}
- #beta .dc-pass__main{padding-top:22px}
- #beta .dc-pass__brand{margin:0 21px;padding-bottom:19px;gap:8px}
- #beta .dc-pass__brand img{width:32px;height:32px}
- #beta .dc-pass__brand b{font-size:19px}
- #beta .dc-pass__brand div>span{font-size:7px;letter-spacing:.04em}
- #beta .dc-pass__stamp{width:29px;height:29px;font-size:21px}
- #beta .dc-pass__content{padding:18px 21px 8px}
- #beta .dc-pass__eyebrow{font-size:7px;letter-spacing:.04em}
- #beta .dc-pass__updates{margin-top:14px}
- #beta .dc-pass__updates li{padding:12px 0;font-size:11.5px;line-height:1.4;gap:8px;grid-template-columns:16px minmax(0,1fr) 13px}
- #beta .dc-pass__index{font-size:7px}
- #beta .dc-pass__updates i{font-size:14px}
- #beta .dc-pass__tear{padding:10px 21px;gap:10px}
- #beta .dc-pass__tear>b{font-size:6px;letter-spacing:.05em}
- #beta .dc-pass__action{padding:8px 18px 0}
- #beta .dc-join{min-height:74px;padding:16px 17px;gap:8px}
- #beta .dc-join__text>b{font-size:15px}
- #beta .dc-join__text>span{font-size:10px}
- #beta .dc-join__arrow{font-size:28px}
- #beta .dc-pass__action>p{font-size:10px;margin:12px 1px 0}
- #beta .dc-pass__footer{padding:21px;font-size:6px;letter-spacing:.04em}
- #beta .dc-pass__barcode{height:13px;width:36px}
- #beta .dc-bottom{gap:12px;padding-top:20px;font-size:7px;letter-spacing:.04em}
- #beta .dc-bottom>i{font-size:21px}
+/* Clear value, one bold Discord invitation. Platform ink and ice only. */
+#beta.discord-invitation{--dc-ink:#07080C;--dc-muted:rgba(7,8,12,.62);--dc-paper:#fff;--dc-line:rgba(7,8,12,.10);--dc-accent:var(--brand-ink,#07080C);--dc-on:#DAE6F7;display:block;min-height:0;padding:85px 32px 65px!important;background:transparent!important;color:var(--dc-ink);overflow:hidden;isolation:isolate;scroll-margin-top:86px;font-family:var(--font-sans,'Manrope',sans-serif)}
+[data-theme="dark"] #beta.discord-invitation{--dc-ink:#F1F2F5;--dc-muted:rgba(241,242,245,.62);--dc-paper:#0E1017;--dc-line:rgba(217,228,255,.12);--dc-accent:var(--brand-ice,#DAE6F7);--dc-on:#07080C}
+#beta .dc-inner{width:min(1120px,100%);margin:0 auto}
+#beta .dc-mast{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid var(--dc-line);padding-top:23px;color:var(--dc-muted);font:600 9px/1.5 var(--font-tech,monospace);letter-spacing:.07em}
+#beta .dc-mast>span:first-child{display:flex;align-items:center;gap:13px;color:var(--dc-ink)}
+#beta .dc-mast b{font:500 21px/1 var(--font-tech,monospace);letter-spacing:-.05em}
+#beta .dc-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(40px,7vw,95px);align-items:center;padding:56px 0 20px}
+#beta .dc-copy{min-width:0}
+#beta .dc-copy h2{font:800 clamp(48px,5.7vw,76px)/1.02 'Manrope',sans-serif;color:var(--dc-ink);letter-spacing:-.065em;text-transform:none;margin:0}
+#beta .dc-copy h2>span{color:var(--dc-ink);font:inherit;letter-spacing:inherit}
+#beta .dc-lede{margin:27px 0 0;color:var(--dc-muted);font:400 16px/1.7 'Manrope',sans-serif;letter-spacing:-.02em;max-width:37ch}
+#beta .dc-pass-wrap{min-width:0}
+#beta .dc-pass{display:block;background:var(--dc-paper);color:var(--dc-ink);border-radius:5px;box-shadow:0 18px 55px rgba(7,8,12,.045);overflow:hidden}
+#beta .dc-pass__main{min-width:0;padding-top:27px}
+#beta .dc-pass__brand{display:flex;align-items:center;gap:10px;margin:0 26px;padding-bottom:22px;border-bottom:1px solid var(--dc-line)}
+#beta .dc-pass__brand img{display:block;flex:none;width:38px;height:38px;object-fit:contain;border-radius:2px}
+#beta .dc-pass__brand>div{display:grid;gap:5px}
+#beta .dc-pass__brand b{color:var(--dc-ink);font:800 20px/1 'Manrope',sans-serif;letter-spacing:-.055em}
+#beta .dc-pass__brand div>span{color:var(--dc-muted);font:500 8px/1.5 var(--font-tech,monospace);letter-spacing:.07em}
+#beta .dc-pass__content{padding:7px 26px 0}
+#beta .dc-pass__updates{list-style:none;padding:0;margin:0}
+#beta .dc-pass__updates li{padding:13px 0;font:500 14px/1.5 'Manrope',sans-serif;letter-spacing:-.015em;color:var(--dc-ink)}
+#beta .dc-pass__updates li+li{border-top:1px solid var(--dc-line)}
+#beta .dc-pass__action{padding:17px 24px 26px}
+#beta .dc-join{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:20px;min-height:86px;background:var(--dc-accent);color:var(--dc-on);border:0;border-radius:3px;text-decoration:none;box-shadow:0 6px 17px rgba(7,8,12,.08);transition:transform .2s,box-shadow .2s}
+#beta .dc-join__text{display:block;min-width:0}
+#beta .dc-join__text>b{display:block;font:800 26px/1.15 'Manrope',sans-serif;letter-spacing:-.035em;color:inherit;white-space:nowrap}
+#beta .dc-join__arrow{font:34px/1 'Manrope',sans-serif;color:inherit;flex:none;transition:transform .2s}
+#beta .dc-join:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(7,8,12,.12)}
+#beta .dc-join:hover .dc-join__arrow{transform:translate(2px,-2px)}
+#beta .dc-join:focus-visible{outline:2px solid var(--dc-accent);outline-offset:5px}
+@media(max-width:900px){#beta .dc-layout{gap:40px}#beta .dc-copy h2{font-size:55px}#beta .dc-pass__brand{margin-left:22px;margin-right:22px}#beta .dc-pass__content{padding-left:22px;padding-right:22px}#beta .dc-pass__action{padding-left:20px;padding-right:20px}#beta .dc-join{padding:20px 18px;gap:10px}#beta .dc-join__text>b{font-size:22px}#beta .dc-join__arrow{font-size:28px}}
+@media(max-width:740px){
+#beta.discord-invitation{padding:43px 24px 42px!important}
+#beta .dc-mast{padding-top:18px;gap:12px;font-size:8px;letter-spacing:.04em}
+#beta .dc-mast b{font-size:19px}
+#beta .dc-mast>span:first-child{gap:9px}
+#beta .dc-mast>span:last-child{font-size:7px;text-align:right;max-width:16ch}
+#beta .dc-layout{grid-template-columns:minmax(0,1fr);padding:33px 0 0;gap:28px}
+#beta .dc-copy h2{font-size:clamp(43px,12.8vw,67px);line-height:1.02;letter-spacing:-.06em}
+#beta .dc-lede{font-size:13px;line-height:1.7;margin-top:19px;max-width:37ch}
+#beta .dc-pass-wrap{width:100%;max-width:440px;margin:0 auto}
+#beta .dc-pass__main{padding-top:23px}
+#beta .dc-pass__brand{margin:0 23px;padding-bottom:19px;gap:9px}
+#beta .dc-pass__brand img{width:34px;height:34px}
+#beta .dc-pass__brand b{font-size:20px}
+#beta .dc-pass__brand div>span{font-size:7px;letter-spacing:.04em}
+#beta .dc-pass__content{padding:6px 23px 0}
+#beta .dc-pass__updates li{padding:12px 0;font-size:13px;line-height:1.5}
+#beta .dc-pass__action{padding:16px 20px 23px}
+#beta .dc-join{min-height:84px;padding:20px 18px;gap:10px}
+#beta .dc-join__text>b{font-size:24px}
+#beta .dc-join__arrow{font-size:28px}
 }
-@media(max-width:360px){#beta.discord-invitation{padding-left:19px!important;padding-right:19px!important}#beta .dc-copy h2{font-size:44px}#beta .dc-pass__brand{margin-left:18px;margin-right:18px}#beta .dc-pass__content{padding-left:18px;padding-right:18px}#beta .dc-pass__updates li{font-size:11px}#beta .dc-join__text>b{font-size:14px}#beta .dc-pass__stamp{width:26px;height:26px;font-size:20px}}
+@media(max-width:360px){#beta.discord-invitation{padding-left:19px!important;padding-right:19px!important}#beta .dc-copy h2{font-size:44px}#beta .dc-pass__brand{margin-left:21px;margin-right:21px}#beta .dc-pass__content{padding-left:21px;padding-right:21px}#beta .dc-pass__action{padding-left:18px;padding-right:18px}#beta .dc-join{padding-left:16px;padding-right:16px;gap:8px}#beta .dc-join__text>b{font-size:22px}#beta .dc-join__arrow{font-size:26px}}
 @media(prefers-reduced-motion:reduce){#beta .dc-join,#beta .dc-join__arrow{transition:none}#beta .dc-join:hover{transform:none}#beta .dc-join:hover .dc-join__arrow{transform:none}}
 
 </style>
@@ -1677,36 +1629,27 @@
                 <div class="dc-mast"><span><b>06</b> THE NEXT CHAPTER</span><span>DATARIOT / DISCORD</span></div>
                 <div class="dc-layout">
                     <div class="dc-copy">
-                        <span class="dc-kicker"><i aria-hidden="true">✳</i> A LITTLE CLOSER TO WHAT’S NEXT.</span>
                         <h2 id="accessTitle">You’re early.<br><span>Stay close.</span></h2>
                         <p class="dc-lede">New releases. The next move for Orvelis.<br>Hear it straight from Datariot.</p>
-                        <div class="dc-signoff"><span class="dc-signoff__line" aria-hidden="true"></span><p>The next chapter is taking shape.<br><strong>Be here when it lands.</strong></p><span class="dc-signoff__arrow" aria-hidden="true">↘</span></div>
                     </div>
                     <div class="dc-pass-wrap">
-                        <div class="dc-pass-back" aria-hidden="true"></div>
                         <div class="dc-pass">
-                            <div class="dc-pass__rail" aria-hidden="true"><span>DATARIOT — YOUR INVITATION</span><b>06</b></div>
                             <div class="dc-pass__main">
-                                <div class="dc-pass__brand"><img src="assets/datariot-mark.jpg?v=brand-20261028" alt="" width="42" height="42" loading="lazy" decoding="async"><div><b>datariot</b><span>OFFICIAL DISCORD</span></div><span class="dc-pass__stamp" aria-hidden="true">✳</span></div>
+                                <div class="dc-pass__brand"><img src="assets/datariot-mark.jpg?v=brand-20261028" alt="" width="42" height="42" loading="lazy" decoding="async"><div><b>datariot</b><span>OFFICIAL DISCORD</span></div></div>
                                 <div class="dc-pass__content">
-                                    <span class="dc-pass__eyebrow">GET IT FROM THE SOURCE.</span>
                                     <ul class="dc-pass__updates" aria-label="What to follow on Discord">
-                                        <li><span class="dc-pass__index" aria-hidden="true">01</span><span>Launch announcements</span><i aria-hidden="true">·</i></li>
-                                        <li><span class="dc-pass__index" aria-hidden="true">02</span><span>New releases &amp; features</span><i aria-hidden="true">·</i></li>
-                                        <li><span class="dc-pass__index" aria-hidden="true">03</span><span>What’s next for Orvelis</span><i aria-hidden="true">·</i></li>
+                                        <li><span>Launch announcements</span></li>
+                                        <li><span>New releases &amp; features</span></li>
+                                        <li><span>What’s next for Orvelis</span></li>
                                     </ul>
                                 </div>
-                                <div class="dc-pass__tear" aria-hidden="true"><span></span><b>YOUR NEXT STEP</b><span></span></div>
                                 <div class="dc-pass__action">
-                                    <a class="dc-join" href="https://discord.gg/SKWCux4bb" target="_blank" rel="noopener noreferrer" aria-describedby="discordJoinHint"><span class="dc-join__text"><b>Join our Discord</b><span>Come for what’s next.</span></span><span class="dc-join__arrow" aria-hidden="true">↗</span></a>
-                                    <p id="discordJoinHint">Join Datariot and turn on announcement notifications.</p>
+                                    <a class="dc-join" href="https://discord.gg/SKWCux4bb" target="_blank" rel="noopener noreferrer"><span class="dc-join__text"><b>Join our Discord</b></span><span class="dc-join__arrow" aria-hidden="true">↗</span></a>
                                 </div>
-                                <div class="dc-pass__footer"><span>DIRECT FROM DATARIOT.</span><span class="dc-pass__barcode" aria-hidden="true"></span></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="dc-bottom"><span>LESS CATCHING UP.</span><span>MORE BEING THERE.</span><i aria-hidden="true">✳</i></div>
             </div>
         </section>
 
