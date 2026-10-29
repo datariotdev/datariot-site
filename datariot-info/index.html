@@ -308,6 +308,133 @@
         }
     </script>
     <link rel="icon" href="/datariot-info/favicon.ico?v=brand-20261021" />
+<style id="curiosity-editorial">
+/* The curiosity spread. All overrides are scoped to this section. */
+#catch.curiosity-edit { --cq-ink:#172232; --cq-muted:#637084; --cq-blue:#345ae4; --cq-line:#d7dfe9; --cq-paper:#fff; --cq-tint:#eaf0ff; padding:85px 32px 90px!important; overflow:hidden; scroll-margin-top:86px; color:var(--cq-ink); }
+[data-theme="dark"] #catch.curiosity-edit { --cq-ink:#edf2fc; --cq-muted:#a5b3ca; --cq-blue:#acbeff; --cq-line:#354258; --cq-paper:#172132; --cq-tint:#23324c; }
+#catch .cq-shell { width:min(1150px,100%); margin:auto; }
+#catch .cq-mast { display:flex;justify-content:space-between;align-items:center;gap:20px;border-top:1px solid var(--cq-line);padding:20px 0;font:9px/1.5 var(--font-tech,monospace);letter-spacing:.07em;color:var(--cq-muted); }
+#catch .cq-mast>span:first-child {display:flex;gap:9px;align-items:center;color:var(--cq-ink)}
+#catch .cq-mast i {color:var(--cq-blue);font:normal 25px/1 sans-serif}
+#catch .cq-layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,7vw,100px);align-items:center;padding-top:35px}
+#catch .cq-copy {min-width:0}
+#catch .cq-kicker {display:flex;gap:20px;align-items:center;font:9px/1.5 var(--font-tech,monospace);letter-spacing:.1em;color:var(--cq-blue)}
+#catch .cq-kicker>span {font:25px/1 sans-serif}
+#catch .cq-title {position:relative;width:fit-content;margin:23px 0 25px;color:var(--cq-ink);font:700 clamp(48px,5.2vw,76px)/.98 'Syne',sans-serif;letter-spacing:-.06em;text-transform:none}
+#catch .cq-title em {font-style:normal;color:var(--cq-blue)}
+#catch .cq-title>span {display:inline-block;color:var(--cq-blue);font:38px/1 sans-serif;vertical-align:top;margin:9px 0 0 14px}
+#catch .cq-lede {margin:0;color:var(--cq-muted);font:400 16px/1.65 var(--font-sans,sans-serif);letter-spacing:-.02em}
+#catch .cq-questions {display:block;width:100%;margin:37px 0 0}
+#catch .cq-pick {display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font:8px/1.5 var(--font-tech,monospace);letter-spacing:.08em;color:var(--cq-muted)}
+#catch .cq-pick>span:last-child {font:20px/1 sans-serif;color:var(--cq-blue)}
+#catch .cq-topics {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+#catch .cq-topic {appearance:none;display:flex;flex-direction:column;align-items:start;position:relative;min-width:0;padding:0 0 13px;border:0;background:transparent;color:var(--cq-ink);text-align:left;cursor:pointer;border-radius:0}
+#catch .cq-topic__image {position:relative;display:block;width:100%;aspect-ratio:1.32;overflow:hidden;border-radius:4px;margin-bottom:13px;background:var(--cq-line)}
+#catch .cq-topic__image img {display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.3);opacity:.7;transition:filter .2s,opacity .2s,transform .3s}
+#catch .cq-topic.is-selected img,#catch .cq-topic:hover img {filter:saturate(.9);opacity:1}
+#catch .cq-topic:hover img {transform:scale(1.05)}
+#catch .cq-topic__image i {position:absolute;left:7px;top:7px;color:#fff;font:normal 8px/1 var(--font-tech,monospace);padding:5px;background:#17223275;border-radius:2px}
+#catch .cq-topic__selected {position:absolute;right:0;bottom:0;background:var(--cq-blue);color:var(--cq-paper);width:25px;height:25px;display:grid;place-items:center;font:20px/1 sans-serif;opacity:0;transition:opacity .2s}
+#catch .cq-topic.is-selected .cq-topic__selected {opacity:1}
+#catch .cq-topic small {font:8px/1.6 var(--font-tech,monospace);letter-spacing:.04em;color:var(--cq-muted);margin:0 0 3px;max-width:100%}
+#catch .cq-topic b {font:600 14px/1.4 var(--font-sans,sans-serif);letter-spacing:-.02em}
+#catch .cq-topic__line {position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--cq-line)}
+#catch .cq-topic.is-selected .cq-topic__line {height:3px;background:var(--cq-blue)}
+#catch .cq-topic.is-selected small {color:var(--cq-blue)}
+#catch .cq-topic:focus-visible {outline:2px solid var(--cq-blue);outline-offset:5px}
+#catch .cq-process {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:33px;padding-top:20px;border-top:1px solid var(--cq-line);color:var(--cq-muted);font:8px/1.5 var(--font-tech,monospace);letter-spacing:.04em}
+#catch .cq-process i {font:normal 16px/1 sans-serif;color:var(--cq-blue)}
+#catch .cq-process b {font-weight:500;color:var(--cq-blue)}
+#catch .cq-sheet {display:block;position:relative;isolation:isolate;width:100%;min-width:0;margin:0;padding:0;background:var(--cq-paper);border-radius:4px;box-shadow:0 20px 65px #1c3c6c0b;transform:none;}
+#catch .cq-sheet::before {content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--cq-blue)}
+#catch .cq-sheet__top {display:flex;justify-content:space-between;align-items:center;gap:15px;padding:22px 24px 18px;font:7px/1.5 var(--font-tech,monospace);letter-spacing:.06em;color:var(--cq-muted)}
+#catch .cq-sheet__top>span:first-child {color:var(--cq-blue)}
+#catch .cq-feature {display:block;position:relative;width:100%;aspect-ratio:auto;justify-self:auto;overflow:visible;margin:0;padding:0;background:transparent;color:var(--cq-ink);border:0;border-radius:0;box-shadow:none;transform:none;animation:none;text-decoration:none}
+#catch .cq-feature::after {display:none}
+#catch .cq-feature__media {position:relative;margin:0 14px;aspect-ratio:1.7;overflow:hidden;border-radius:2px;background:var(--cq-line)}
+#catch .cq-feature__media::after {content:'';position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#17223255);pointer-events:none}
+#catch .cq-feature .catch__poster {display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.75);transition:transform .35s}
+#catch .cq-feature:hover .catch__poster {transform:scale(1.035)}
+#catch .cq-feature__duration {position:absolute;z-index:1;left:14px;bottom:14px;color:#fff;font:10px/1.4 var(--font-tech,monospace);letter-spacing:.03em}
+#catch .cq-feature__arrow {position:absolute;z-index:1;right:14px;bottom:12px;display:grid;place-items:center;width:40px;height:40px;background:#fff;color:#172232;font:30px/1 sans-serif;border-radius:50%}
+#catch .cq-feature__copy {padding:23px 27px 24px}
+#catch .cq-feature__topic {display:block;color:var(--cq-blue);font:8px/1.6 var(--font-tech,monospace);letter-spacing:.09em}
+#catch .cq-feature h3 {position:static;max-width:none;margin:11px 0 17px;color:var(--cq-ink);font:600 clamp(25px,2.5vw,34px)/1.09 'Syne',sans-serif;letter-spacing:-.045em;text-transform:none}
+#catch .cq-feature__action {display:flex;justify-content:space-between;align-items:center;color:var(--cq-muted);font:11px/1.5 var(--font-sans,sans-serif)}
+#catch .cq-feature__action>span {color:var(--cq-blue);font:21px/1 sans-serif}
+#catch .cq-feature:focus-visible {outline:2px solid var(--cq-blue);outline-offset:5px}
+#catch .cq-idea {display:block;position:relative;z-index:1;justify-self:auto;width:auto;min-height:0;margin:0 14px;padding:20px 20px 23px;background:var(--cq-tint);color:var(--cq-ink);border:0;border-radius:2px;box-shadow:none;transform:none;animation:none}
+#catch .cq-idea__label {display:flex;align-items:center;gap:7px;font:7px/1.5 var(--font-tech,monospace);color:var(--cq-blue);letter-spacing:.07em}
+#catch .cq-idea__label>span:first-child {font:20px/1 sans-serif}
+#catch .cq-idea__annotation {margin-left:auto;font:20px/1 sans-serif}
+#catch .cq-idea p {margin:15px 0 12px;color:var(--cq-ink);font:600 26px/1.12 'Syne',sans-serif;letter-spacing:-.04em}
+#catch .cq-idea p em {font-style:normal;color:var(--cq-blue)}
+#catch .cq-idea .catch__idea-foot {display:block;color:var(--cq-muted);font:11px/1.65 var(--font-sans,sans-serif);max-width:40ch}
+#catch .cq-sheet__foot {display:flex;justify-content:space-between;align-items:center;padding:20px 24px;color:var(--cq-muted);font:6px/1.6 var(--font-tech,monospace);letter-spacing:.07em}
+#catch .cq-code {display:block;width:46px;height:15px;background:repeating-linear-gradient(90deg,var(--cq-ink) 0 1px,transparent 1px 3px,var(--cq-ink) 3px 5px,transparent 5px 7px);opacity:.4}
+/* Keep the fixed brand legible while content passes beneath it. */
+.curiosity-topbar {position:fixed;inset:0 0 auto;height:86px;background:var(--bg-main,#f1f5fc);border-bottom:1px solid var(--border,#d7dfe9);z-index:29000;pointer-events:none}
+.brandmark {z-index:29001}html.navx-open .curiosity-topbar {visibility:hidden}
+@media(max-width:850px) {
+ #catch .cq-layout {gap:35px}
+ #catch .cq-title {font-size:53px}
+ #catch .cq-title>span {font-size:28px;margin-left:7px}
+ #catch .cq-topic b {font-size:12px}
+ #catch .cq-topic small {font-size:6px}
+ #catch .cq-topics {gap:10px}
+ #catch .cq-feature__copy {padding:21px}
+ #catch .cq-sheet__top {padding-left:20px;padding-right:20px;font-size:6px}
+ #catch .cq-idea p {font-size:23px}
+}
+@media(max-width:660px) {
+ #catch.curiosity-edit {padding:43px 22px 55px!important}
+ #catch .cq-mast {padding:16px 0;font-size:8px;letter-spacing:.03em}
+ #catch .cq-mast>span:last-child {display:none}
+ #catch .cq-mast::after {content:'01 — 03';font:8px/1.5 var(--font-tech,monospace);color:var(--cq-muted)}
+ #catch .cq-layout {grid-template-columns:minmax(0,1fr);gap:29px;padding-top:27px}
+ #catch .cq-kicker {font-size:8px;gap:13px}
+ #catch .cq-kicker>span {font-size:21px}
+ #catch .cq-title {font-size:clamp(45px,12.5vw,69px);margin:18px 0 18px}
+ #catch .cq-title>span {font-size:31px;margin:5px 0 0 9px}
+ #catch .cq-lede {font-size:13px;line-height:1.65}
+ #catch .cq-questions {margin-top:27px}
+ #catch .cq-pick {font-size:7px;margin-bottom:12px}
+ #catch .cq-topics {gap:11px}
+ #catch .cq-topic__image {margin-bottom:10px;aspect-ratio:1.25}
+ #catch .cq-topic__image i {font-size:7px;left:5px;top:5px;padding:4px}
+ #catch .cq-topic__selected {width:22px;height:22px;font-size:18px}
+ #catch .cq-topic small {font-size:6.5px;letter-spacing:.02em}
+ #catch .cq-topic b {font-size:12px;line-height:1.4}
+ #catch .cq-process {margin-top:22px;padding-top:17px;font-size:6.5px;gap:8px}
+ #catch .cq-sheet__top {padding:19px 20px 16px;font-size:6px;letter-spacing:.03em}
+ #catch .cq-feature__media {margin:0 11px;aspect-ratio:1.6}
+ #catch .cq-feature__copy {padding:20px 23px}
+ #catch .cq-feature h3 {font-size:29px;line-height:1.08;margin:10px 0 17px}
+ #catch .cq-feature__topic {font-size:7px}
+ #catch .cq-feature__arrow {width:34px;height:34px;font-size:26px;right:11px;bottom:11px}
+ #catch .cq-feature__duration {font-size:9px;left:12px;bottom:11px}
+ #catch .cq-idea {margin:0 11px;padding:18px 19px 22px}
+ #catch .cq-idea p {font-size:25px;margin-top:15px}
+ #catch .cq-idea .catch__idea-foot {font-size:10px;line-height:1.7}
+ #catch .cq-sheet__foot {padding:18px 21px;font-size:5.5px}
+ .curiosity-topbar {height:76px}
+}
+@media(max-width:360px) {#catch.curiosity-edit {padding-left:18px!important;padding-right:18px!important}#catch .cq-topic small{font-size:6px}#catch .cq-topic b{font-size:11px}#catch .cq-feature h3{font-size:26px}#catch .cq-idea p{font-size:23px}}
+@media(prefers-reduced-motion:reduce) {#catch .cq-topic__image img,#catch .cq-feature .catch__poster,#catch .cq-topic__selected{transition:none}#catch.is-changing .catch__poster,#catch.is-changing .catch__idea p{animation:none}}
+
+/* Keep the small editorial labels readable at phone widths. */
+#catch .cq-mast {font-size:10px}
+#catch .cq-topic small {font-size:9px}
+#catch .cq-pick {font-size:9px}
+#catch .cq-sheet__top {font-size:8px}
+#catch .cq-feature__topic {font-size:9px}
+#catch .cq-idea__label {font-size:9px}
+#catch .cq-sheet__foot {font-size:7px}
+@media(max-width:850px){#catch .cq-topic small{font-size:8px}#catch .cq-sheet__top{font-size:7px}}
+@media(max-width:660px){#catch .cq-mast{font-size:9px}#catch .cq-kicker{font-size:9px}#catch .cq-mast::after{font-size:9px}#catch .cq-pick{font-size:8px}#catch .cq-topic small{font-size:8px}#catch .cq-topic b{font-size:13px}#catch .cq-process{font-size:8px}#catch .cq-sheet__top{font-size:8px}#catch .cq-feature__topic{font-size:9px}#catch .cq-idea__label{font-size:8px}#catch .cq-sheet__foot{font-size:7px}}
+@media(max-width:360px){#catch .cq-topic b{font-size:12px}#catch .cq-topic small{font-size:7px}#catch .cq-sheet__top{font-size:7px}}
+
+</style>
 </head>
 
 <body>
@@ -343,6 +470,7 @@
     <!-- The icon rail is gone: the MENU overlay above is the only navigation. -->
 
     <!-- Fixed brand mark; balances the MENU trigger now that the icon rail is gone. -->
+    <div class="curiosity-topbar" aria-hidden="true"></div>
     <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
         <img class="brandmark__logo" src="assets/datariot-mark.jpg?v=brand-20261021" alt="" aria-hidden="true" width="40" height="40" decoding="async">
         <span class="brandmark__word">datariot</span>
@@ -955,42 +1083,60 @@
             </div>
         </section>
 
-        <!-- Curiosity in motion: choose a real clip and discover its point. -->
-        <section class="catch" id="catch" aria-labelledby="catchTitle" data-inview>
-            <div class="catch__inner">
-                <div class="catch__copy">
-                    <span class="catch__label"><i aria-hidden="true"></i> FOLLOW THAT LITTLE SPARK.</span>
-                    <h2 class="catch__title" id="catchTitle">Small clips.<br>Big <em>aha.</em><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 3v34M3 20h34M8 8l24 24M8 32 24-24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></h2>
-                    <p class="catch__lede">Start with a question. Follow the idea.<br>Leave with something worth passing on.</p>
-                    <div class="catch__questions" role="group" aria-label="Choose a question to explore" hidden>
-                        <span class="catch__pick-label">WHERE WILL YOUR CURIOSITY GO?</span>
-                        <button class="catch__question is-selected" type="button" data-curiosity="0" aria-pressed="true"><img src="assets/reel-bear.jpg" alt="" width="44" height="44" loading="lazy" decoding="async"><span><small>NATURE · 0:31</small>Why polar bears look white</span><i aria-hidden="true">↗</i></button>
-                        <button class="catch__question" type="button" data-curiosity="1" aria-pressed="false"><img src="assets/reel-lidar.jpg" alt="" width="44" height="44" loading="lazy" decoding="async"><span><small>TECHNOLOGY · 0:44</small>How a car sees the street</span><i aria-hidden="true">↗</i></button>
-                        <button class="catch__question" type="button" data-curiosity="2" aria-pressed="false"><img src="assets/reel-tower.jpg" alt="" width="44" height="44" loading="lazy" decoding="async"><span><small>ARCHITECTURE · 0:38</small>Why skyscrapers sway</span><i aria-hidden="true">↗</i></button>
+        <!-- Curiosity field notes: choose a question, take something with you. -->
+        <section class="catch curiosity-edit" id="catch" aria-labelledby="catchTitle" data-inview>
+            <div class="cq-shell">
+                <div class="cq-mast"><span><i aria-hidden="true">✳</i> ORVELIS / FIELD NOTES</span><span>A LITTLE CURIOSITY GOES A LONG WAY.</span></div>
+                <div class="cq-layout">
+                    <div class="cq-copy">
+                        <span class="cq-kicker">FOLLOW THE QUESTION <span aria-hidden="true">↘</span></span>
+                        <h2 id="catchTitle" class="cq-title">Small clips.<br>Big <em>aha.</em><span aria-hidden="true">✳</span></h2>
+                        <p class="cq-lede">Start with a question.<br>Leave with a different way to see it.</p>
+                        <div class="catch__questions cq-questions" role="group" aria-label="Choose a question to explore" hidden>
+                            <div class="cq-pick"><span>PICK YOUR FIRST “WHY”</span><span aria-hidden="true">↓</span></div>
+                            <div class="cq-topics">
+                                <button class="cq-topic is-selected" type="button" data-curiosity="0" aria-pressed="true" aria-label="Why polar bears look white">
+                                    <span class="cq-topic__image"><img src="assets/reel-bear.jpg" alt="" width="150" height="110" loading="lazy" decoding="async"><i aria-hidden="true">01</i><span class="cq-topic__selected" aria-hidden="true">↗</span></span>
+                                    <small>NATURE</small><b>Why white?</b><span class="cq-topic__line" aria-hidden="true"></span>
+                                </button>
+                                <button class="cq-topic" type="button" data-curiosity="1" aria-pressed="false" aria-label="How a car sees the street">
+                                    <span class="cq-topic__image"><img src="assets/reel-lidar.jpg" alt="" width="150" height="110" loading="lazy" decoding="async"><i aria-hidden="true">02</i><span class="cq-topic__selected" aria-hidden="true">↗</span></span>
+                                    <small>TECHNOLOGY</small><b>A car’s eyes.</b><span class="cq-topic__line" aria-hidden="true"></span>
+                                </button>
+                                <button class="cq-topic" type="button" data-curiosity="2" aria-pressed="false" aria-label="Why skyscrapers sway">
+                                    <span class="cq-topic__image"><img src="assets/reel-tower.jpg" alt="" width="150" height="110" loading="lazy" decoding="async"><i aria-hidden="true">03</i><span class="cq-topic__selected" aria-hidden="true">↗</span></span>
+                                    <small>ARCHITECTURE</small><b>Built to sway.</b><span class="cq-topic__line" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cq-process" aria-hidden="true"><span>A QUESTION</span><i>→</i><span>A CLIP</span><i>→</i><b>AN AHA.</b></div>
                     </div>
-                    <a class="catch__link" href="#manifesto" data-featured-clip="0">Explore this clip <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                </div>
-                <div class="catch__visual">
-                    <span class="catch__halo" aria-hidden="true"></span>
-                    <span class="catch__big-word" aria-hidden="true">aha!</span>
-                    <span class="catch__sticker" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2c1.2 6 4 8.8 10 10-6 1.2-8.8 4-10 10-1.2-6-4-8.8-10-10 6-1.2 8.8-4 10-10Z" fill="currentColor"/></svg>WAIT, REALLY?</span>
-                    <a class="catch__feature" href="#manifesto" data-featured-clip="0" aria-label="Explore the polar bear clip in the feed">
-                        <img class="catch__poster" src="assets/reel-bear.jpg" alt="A polar bear in the featured Datariot clip" width="464" height="238" loading="lazy" decoding="async">
-                        <span class="catch__film-meta"><span data-curiosity-topic>01 / NATURE</span><span data-curiosity-duration>0:31</span></span>
-                        <span class="catch__open" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                        <h3 data-curiosity-title>Why aren’t polar bears actually white?</h3>
-                    </a>
-                    <aside class="catch__idea" aria-label="A takeaway from the featured clip">
-                        <span class="catch__idea-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none"><path d="m7 14 5 5L22 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                        <span class="catch__idea-label">AND THEN IT CLICKS.</span>
-                        <p><span data-curiosity-lead>Their fur is clear.</span><br><em data-curiosity-point>It only looks white.</em></p>
-                        <span class="catch__idea-foot" data-curiosity-foot>A little context changes the picture.</span>
-                    </aside>
-                    <span class="catch__caption"><i aria-hidden="true"></i> ONE CLIP. A NEW WAY TO SEE IT.</span>
+                    <div class="catch__visual cq-sheet">
+                        <div class="cq-sheet__top"><span>THE CURIOSITY FILE</span><span>↘ OPEN A NEW PERSPECTIVE</span></div>
+                        <a class="catch__feature cq-feature" href="#manifesto" data-featured-clip="0" aria-label="Explore the polar bear clip in the feed">
+                            <div class="cq-feature__media">
+                                <img class="catch__poster" src="assets/reel-bear.jpg" alt="A polar bear in the featured Datariot clip" width="600" height="360" loading="lazy" decoding="async">
+                                <span class="cq-feature__duration" data-curiosity-duration>0:31</span>
+                                <span class="cq-feature__arrow" aria-hidden="true">↗</span>
+                            </div>
+                            <div class="cq-feature__copy">
+                                <span class="cq-feature__topic" data-curiosity-topic>01 / NATURE</span>
+                                <h3 data-curiosity-title>Why aren’t polar bears actually white?</h3>
+                                <span class="cq-feature__action">Explore this clip <span aria-hidden="true">↗</span></span>
+                            </div>
+                        </a>
+                        <aside class="catch__idea cq-idea" aria-label="A takeaway from the featured clip">
+                            <div class="cq-idea__label"><span aria-hidden="true">✳</span> THE AHA, BY ORVELIS <span class="cq-idea__annotation" aria-hidden="true">↳</span></div>
+                            <p><span data-curiosity-lead>Their fur is clear.</span><br><em data-curiosity-point>It only looks white.</em></p>
+                            <span class="catch__idea-foot" data-curiosity-foot>A little context changes the picture.</span>
+                        </aside>
+                        <div class="cq-sheet__foot"><span>ONE CLIP. SOMETHING TO KEEP.</span><span class="cq-code" aria-hidden="true"></span></div>
+                    </div>
                 </div>
             </div>
             <span class="feed-sr" data-curiosity-status role="status" aria-live="polite" aria-atomic="true"></span>
         </section>
+
 
         <!-- 03 — THE ARENA: try a position, then test its strongest assumption. -->
         <section class="section arena-section" id="debates" data-inview aria-labelledby="arenaTitle">
