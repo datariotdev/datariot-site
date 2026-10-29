@@ -33,7 +33,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Syne:wght@600..800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Syne:wght@600..800&family=Instrument+Serif:ital@0;1&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="style.css?v=discord-20261025" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
@@ -909,6 +909,118 @@
         }
 
     </style>
+    <style id="arena-editorial-refresh">
+/* Arena: a readable editorial heading and a stable topic selector. */
+#debates .arena__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 5vw, 72px);
+    margin: 32px 0 28px;
+    padding: clamp(28px, 4vw, 48px);
+    border: 1px solid var(--duel-line, var(--border));
+    border-radius: 28px;
+    background: var(--duel-paper, rgba(255,255,255,.78));
+}
+#debates .arena__title {
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    font: 800 clamp(64px, 6.8vw, 96px)/.98 'Manrope', sans-serif;
+    letter-spacing: -.065em;
+    color: var(--duel-ink, var(--text-primary));
+}
+#debates .arena__title > span { display: block; }
+#debates .arena__title em {
+    display: block;
+    margin-top: 2px;
+    color: inherit;
+    font: italic 400 1.2em/.98 'Instrument Serif', Georgia, serif;
+    letter-spacing: -.035em;
+}
+#debates .arena__intro { padding: 0; min-width: 0; }
+#debates .arena__eyebrow {
+    display: block;
+    font: 600 10px/1.5 var(--font-tech, monospace);
+    letter-spacing: .09em;
+    color: var(--duel-muted, var(--text-secondary));
+}
+#debates .arena__intro .arena__intro-lead {
+    margin: 18px 0 14px;
+    max-width: 25ch;
+    font: 650 clamp(22px, 2.3vw, 30px)/1.25 'Manrope', sans-serif;
+    letter-spacing: -.035em;
+    color: var(--duel-ink, var(--text-primary));
+}
+#debates .arena__intro .arena__instruction {
+    display: block;
+    max-width: 31ch;
+    margin: 0;
+    font: 400 14px/1.7 'Manrope', sans-serif;
+    letter-spacing: 0;
+    color: var(--duel-muted, var(--text-secondary));
+}
+#debates .ar__topic-row { border-top: 0; padding-top: 0; gap: 24px; }
+#debates .ar__topic-label { font-size: 10px; letter-spacing: .05em; }
+#debates .ar__topics {
+    gap: 4px;
+    padding: 5px;
+    border: 1px solid var(--duel-line, var(--border));
+    border-radius: 16px;
+    background: var(--duel-tint, var(--surface-2));
+}
+#debates .ar-topic {
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 11px;
+    font: 550 13px/1.4 'Manrope', sans-serif;
+    color: var(--duel-muted, var(--text-secondary));
+    transition: background .2s ease, color .2s ease;
+}
+#debates .ar-topic > i { display: none; }
+#debates .ar-topic > span { font-size: 9px; }
+#debates .ar-topic:hover { background: var(--duel-paper, var(--surface)); }
+#debates .ar-topic[aria-pressed="true"] {
+    border: 0;
+    background: var(--duel-ink, var(--text-primary));
+    color: var(--duel-paper, var(--bg-main));
+}
+#debates .duel-question { padding: 30px 0 24px; }
+#debates .duel-question > span { font-size: 10px; letter-spacing: .06em; }
+#debates .ar__question {
+    font: 650 clamp(26px, 3vw, 36px)/1.18 'Manrope', sans-serif;
+    letter-spacing: -.04em;
+}
+#debates .ar-side h3 {
+    font: 700 clamp(27px, 3vw, 38px)/1.1 'Manrope', sans-serif;
+    letter-spacing: -.035em;
+}
+#debates .ar-side blockquote { font: 400 14px/1.75 'Manrope', sans-serif; }
+@media (max-width: 800px) {
+    #debates .arena__header { gap: 28px; padding: 30px; }
+    #debates .arena__title { font-size: clamp(52px, 8vw, 68px); }
+    #debates .arena__intro .arena__intro-lead { font-size: 22px; }
+}
+@media (max-width: 600px) {
+    #debates .arena__header { grid-template-columns: minmax(0,1fr); padding: 26px; margin: 26px 0 24px; gap: 28px; border-radius: 22px; }
+    #debates .arena__title { font-size: clamp(52px, 13vw, 74px); letter-spacing: -.055em; }
+    #debates .arena__intro { border-top: 1px solid var(--duel-line, var(--border)); padding-top: 22px; }
+    #debates .arena__intro .arena__intro-lead { margin-top: 12px; font-size: 24px; }
+    #debates .arena__intro .arena__intro-lead br { display: block; }
+    #debates .arena__intro .arena__instruction { font-size: 13px; max-width: 34ch; }
+    #debates .ar__topic-row { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+    #debates .ar__topics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
+    #debates .ar-topic { padding-inline: 5px; font-size: 12px; }
+    #debates .ar-topic > span { display: none; }
+    #debates .ar__question { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #debates .ar-topic { transition: none; }
+}
+    </style>
 </head>
 
 <body>
@@ -1618,8 +1730,12 @@
             <div class="arena__inner">
                 <div class="arena__masthead"><span class="arena__chapter"><b>03</b> THE ARENA</span><span class="arena__edition">OPEN MINDS. STRONGER IDEAS.</span></div>
                 <div class="arena__header">
-                    <h2 class="arena__title" id="arenaTitle">Change<br><em>my mind.</em><span class="arena__asterisk" aria-hidden="true">✳</span></h2>
-                    <div class="arena__intro"><span class="arena__eyebrow">A LITTLE FRICTION. A BETTER IDEA.</span><p>Two takes worth hearing.<br>Which one moves you?</p><span class="arena__instruction">Back a take. Then test what you believe.</span></div>
+                    <h2 class="arena__title" id="arenaTitle"><span>Change</span><em>my mind.</em></h2>
+                    <div class="arena__intro">
+                        <span class="arena__eyebrow">A DIFFERENT POINT OF VIEW</span>
+                        <p class="arena__intro-lead">Two perspectives.<br>One open mind.</p>
+                        <p class="arena__instruction">Explore both sides. Back a take. See what challenges it.</p>
+                    </div>
                 </div>
                 <div class="ar" id="arena">
                     <div class="ar__topic-row">
