@@ -626,6 +626,289 @@
 @media(prefers-reduced-motion:reduce){#beta .dc-join,#beta .dc-join__arrow{transition:none}#beta .dc-join:hover{transform:none}#beta .dc-join:hover .dc-join__arrow{transform:none}}
 
 </style>
+    <style id="hero-qr-birds">
+        .hero__sky-scene {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .hero__ambient-glow {
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 85vw;
+            height: 110vh;
+            max-width: 1300px;
+            background: radial-gradient(ellipse 70% 60% at 75% 35%,
+                rgba(55, 92, 245, 0.32) 0%,
+                rgba(35, 55, 185, 0.16) 45%,
+                rgba(14, 20, 65, 0.04) 70%,
+                transparent 85%);
+            filter: blur(60px);
+            pointer-events: none;
+        }
+
+        [data-theme="light"] .hero__ambient-glow {
+            background: radial-gradient(ellipse 70% 60% at 75% 35%,
+                rgba(68, 110, 255, 0.18) 0%,
+                rgba(120, 160, 255, 0.08) 45%,
+                transparent 75%);
+        }
+
+        .birds-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            perspective: 800px;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .bird {
+            position: absolute;
+            color: rgba(225, 238, 255, 0.92);
+            filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.5));
+            will-change: transform;
+            pointer-events: none;
+        }
+
+        [data-theme="light"] .bird {
+            color: rgba(18, 30, 60, 0.85);
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.15));
+        }
+
+        .bird svg {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transform-origin: 50% 55%;
+        }
+
+        /* Natural wing flap cycles */
+        .bird--soar svg {
+            animation: bird-wing-soar 1.8s ease-in-out infinite;
+        }
+
+        .bird--fast svg {
+            animation: bird-wing-fast 0.65s ease-in-out infinite alternate;
+        }
+
+        .bird--steady svg {
+            animation: bird-wing-steady 0.9s ease-in-out infinite alternate;
+        }
+
+        /* 8 Birds in Depth and Staggered Formations */
+        .bird--1 {
+            width: 26px;
+            height: 16px;
+            top: 22%;
+            animation: bird-fly-flock 22s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+            animation-delay: 0s;
+            z-index: 5;
+        }
+
+        .bird--2 {
+            width: 22px;
+            height: 14px;
+            top: 28%;
+            animation: bird-fly-flock 24s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+            animation-delay: -3.5s;
+            opacity: 0.85;
+            z-index: 4;
+        }
+
+        .bird--3 {
+            width: 20px;
+            height: 13px;
+            top: 17%;
+            animation: bird-fly-flock 23s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+            animation-delay: -5s;
+            opacity: 0.8;
+            z-index: 4;
+        }
+
+        .bird--4 {
+            width: 16px;
+            height: 10px;
+            top: 34%;
+            animation: bird-fly-flock 27s linear infinite;
+            animation-delay: -9s;
+            opacity: 0.65;
+            filter: blur(0.3px) drop-shadow(0 2px 6px rgba(96, 165, 250, 0.3));
+            z-index: 3;
+        }
+
+        .bird--5 {
+            width: 13px;
+            height: 8px;
+            top: 10%;
+            animation: bird-fly-flock 32s linear infinite;
+            animation-delay: -16s;
+            opacity: 0.5;
+            filter: blur(0.5px);
+            z-index: 2;
+        }
+
+        .bird--6 {
+            width: 18px;
+            height: 11px;
+            top: 31%;
+            animation: bird-fly-flock 25s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+            animation-delay: -7s;
+            opacity: 0.75;
+            z-index: 4;
+        }
+
+        .bird--7 {
+            width: 24px;
+            height: 15px;
+            top: 15%;
+            animation: bird-fly-reverse 26s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+            animation-delay: -11s;
+            opacity: 0.85;
+            z-index: 5;
+        }
+
+        .bird--8 {
+            width: 15px;
+            height: 9px;
+            top: 38%;
+            animation: bird-fly-reverse 34s linear infinite;
+            animation-delay: -4s;
+            opacity: 0.55;
+            filter: blur(0.4px);
+            z-index: 2;
+        }
+
+        /* Flight Trajectories across Hero */
+        @keyframes bird-fly-flock {
+            0% {
+                transform: translate3d(-80px, 35px, 0) rotate(5deg);
+                opacity: 0;
+            }
+            8% {
+                opacity: 0.95;
+            }
+            35% {
+                transform: translate3d(35vw, -15px, 0) rotate(1deg);
+            }
+            70% {
+                transform: translate3d(70vw, -45px, 0) rotate(-2deg);
+            }
+            92% {
+                opacity: 0.95;
+            }
+            100% {
+                transform: translate3d(calc(100vw + 90px), -70px, 0) rotate(-3deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bird-fly-reverse {
+            0% {
+                transform: translate3d(calc(100vw + 80px), -20px, 0) scaleX(-1) rotate(4deg);
+                opacity: 0;
+            }
+            8% {
+                opacity: 0.9;
+            }
+            45% {
+                transform: translate3d(55vw, 15px, 0) scaleX(-1) rotate(-1deg);
+            }
+            80% {
+                transform: translate3d(20vw, 35px, 0) scaleX(-1) rotate(2deg);
+            }
+            92% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate3d(-100px, 45px, 0) scaleX(-1) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
+        /* Wing flap cycles */
+        @keyframes bird-wing-fast {
+            0% {
+                transform: scaleY(-0.35) translateY(2px);
+            }
+            45% {
+                transform: scaleY(0.4);
+            }
+            100% {
+                transform: scaleY(1.15) translateY(-2px);
+            }
+        }
+
+        @keyframes bird-wing-steady {
+            0% {
+                transform: scaleY(-0.25) translateY(1.5px);
+            }
+            40% {
+                transform: scaleY(0.4);
+            }
+            100% {
+                transform: scaleY(1.1) translateY(-1.5px);
+            }
+        }
+
+        @keyframes bird-wing-soar {
+            0% {
+                transform: scaleY(0.75);
+            }
+            18% {
+                transform: scaleY(0.9);
+            }
+            32% {
+                transform: scaleY(-0.3) translateY(1.5px);
+            }
+            52% {
+                transform: scaleY(1.15) translateY(-2px);
+            }
+            70% {
+                transform: scaleY(0.8);
+            }
+            100% {
+                transform: scaleY(0.75);
+            }
+        }
+        /* Full-size QR: readable immediately, including on touchscreens. */
+        #hero .hero__qr-wrap { display: inline-flex; max-width: 100%; }
+        #hero .hero__qr-cta { display: flex; align-items: center; gap: 18px; padding: 10px 20px 10px 10px; max-width: 100%; height: auto; min-height: 134px; color: var(--text-primary); background: rgba(255,255,255,.85); border: 1px solid rgba(7,8,12,.12); border-radius: 16px; text-decoration: none; box-shadow: 0 8px 28px rgba(7,8,12,.04); transition: border-color .2s ease, background-color .2s ease; }
+        #hero .hero__qr-cta:hover { background: #fff; border-color: rgba(7,8,12,.3); }
+        #hero .hero__qr-cta:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+        #hero .hero__qr-frame { display: block; flex: 0 0 112px; width: 112px; height: 112px; padding: 0; background: #fff; border-radius: 8px; }
+        #hero .hero__qr-frame img { display: block; width: 112px; height: 112px; border-radius: 8px; }
+        #hero .hero__qr-copy { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+        #hero .hero__qr-title { font: 700 15px/1.2 var(--font-sans,sans-serif); letter-spacing: -.02em; }
+        #hero .hero__qr-note { max-width: 18ch; font: 500 12px/1.5 var(--font-sans,sans-serif); color: var(--text-secondary); }
+        #hero .hero__qr-url { font: 500 10px/1.4 var(--font-tech,monospace); color: var(--text-secondary); }
+        [data-theme="dark"] #hero .hero__qr-cta { background: #14171e; border-color: rgba(218,230,247,.18); }
+        [data-theme="dark"] #hero .hero__qr-cta:hover { background: #1b202a; border-color: rgba(218,230,247,.45); }
+        #hero .hero__sky-scene { z-index: 0; }
+        #hero .bird { left: 0; color: rgba(18,30,60,.55); filter: none; }
+        [data-theme="dark"] #hero .bird { color: rgba(218,230,247,.65); }
+        #hero .bird--1 { width: 34px; height: 22px; }
+        #hero .bird--7 { width: 30px; height: 20px; }
+        #hero:not(.sky-active) .bird,
+        #hero:not(.sky-active) .bird svg { animation-play-state: paused; }
+        @media (max-width: 600px) {
+            #hero .bird:nth-child(n+5) { display: none; }
+            #hero .hero__qr-cta { padding-right: 14px; gap: 12px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #hero .birds-container { display: none; }
+            #hero .hero__qr-cta { transition: none; }
+        }
+
+    </style>
 </head>
 
 <body>
@@ -876,6 +1159,21 @@
     <main class="main">
         <!-- HERO SECTION -->
         <section class="section section--hero hero--shimmer" id="hero" data-inview>
+            <div class="hero__sky-scene" id="heroSkyScene" aria-hidden="true">
+                <div class="hero__ambient-glow"></div>
+                <div class="birds-container">
+                    <div class="bird bird--1 bird--soar"><svg viewBox="0 0 28 18"><path d="M2 13 C6 6, 11 6, 14 10 C17 6, 22 6, 26 13" /></svg></div>
+                    <div class="bird bird--2 bird--fast"><svg viewBox="0 0 28 18"><path d="M2 13 C6 6, 11 6, 14 10 C17 6, 22 6, 26 13" /></svg></div>
+                    <div class="bird bird--3 bird--steady"><svg viewBox="0 0 28 18"><path d="M2 13 C6 6, 11 6, 14 10 C17 6, 22 6, 26 13" /></svg></div>
+                    <div class="bird bird--4 bird--soar"><svg viewBox="0 0 28 18"><path d="M2 13 C6 6, 11 6, 14 10 C17 6, 22 6, 26 13" /></svg></div>
+                    <div class="bird bird--5 bird--steady"><svg viewBox="0 0 28 18"><path d="M2 13 C6 6, 11 6, 14 10 C17 6, 22 6, 26 13" /></svg></div>
+                    <div class="bird bird--6 bird--fast"><svg viewBox="0 0 28 18"><path d="M2 13 C6 6, 11 6, 14 10 C17 6, 22 6, 26 13" /></svg></div>
+                    <div class="bird bird--7 bird--soar"><svg viewBox="0 0 28 18"><path d="M2 13 C6 6, 11 6, 14 10 C17 6, 22 6, 26 13" /></svg></div>
+                    <div class="bird bird--8 bird--steady"><svg viewBox="0 0 28 18"><path d="M2 13 C6 6, 11 6, 14 10 C17 6, 22 6, 26 13" /></svg></div>
+                </div>
+            </div>
+
+
             <div class="hero__background-layer">
                 <div id="canvas-3d-hero"></div>
                 <!-- Geex-Style Spinning Elements -->
@@ -920,31 +1218,17 @@
                         <a class="hx-join" href="#beta">Join our Discord
                             <svg viewBox="0 0 9 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
                         </a>
-                        <div class="app-downloads">
-                            <button class="app-dl-btn" onclick="showSoon(this)">
-                                <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: currentColor;">
-                                    <path
-                                        d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.65.15 3.1 1 4.13 2.52-3.32 1.84-2.8 6.57.51 7.9-.68 1.64-1.4 3.09-2.28 4.41L18.71 19.5z" />
-                                    <path
-                                        d="M15.14 4.54c-.66.8-1.63 1.34-2.67 1.32-.22-1.12.31-2.25.99-3.01.65-.77 1.69-1.34 2.68-1.34.19 1.14-.34 2.22-.99 3.03z" />
-                                </svg>
-                                <div class="app-dl-text">
-                                    <span class="app-dl-small">Download on the</span>
-                                    <span class="app-dl-large">App Store</span>
+                        <div class="hero__qr-wrap">
+                            <a class="hero__qr-cta" href="https://datariot.xyz/" aria-label="Open Datariot, or scan the QR code on your phone">
+                                <span class="hero__qr-frame">
+                                    <img src="assets/app-qr.svg" alt="QR code to open datariot.xyz" width="112" height="112" />
+                                </span>
+                                <div class="hero__qr-copy">
+                                    <b class="hero__qr-title">Take Datariot with you</b>
+                                    <span class="hero__qr-note">Scan with your camera to open the app.</span>
+                                    <span class="hero__qr-url">datariot.xyz ↗</span>
                                 </div>
-                                <div class="app-dl-soon">SOON</div>
-                            </button>
-                            <button class="app-dl-btn" onclick="showSoon(this)">
-                                <svg viewBox="0 0 24 24" style="width: 28px; height: 28px;">
-                                    <path d="M3.5 3.5v17l13-8.5-13-8.5z" fill="currentColor" />
-                                    <path d="M4.5 4.5v15l11-7.5-11-7.5z" fill="#000" opacity="0.2" />
-                                </svg>
-                                <div class="app-dl-text">
-                                    <span class="app-dl-small">GET IT ON</span>
-                                    <span class="app-dl-large">Google Play</span>
-                                </div>
-                                <div class="app-dl-soon">SOON</div>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1782,6 +2066,25 @@
     <script defer src="clips.js?v=arena-20261025"></script>
     <script defer src="curiosity.js?v=1.0.0"></script>
     <script defer src="script.js?v=5.7.2"></script>
+    <script>
+        // Only animate the flock while it can be seen.
+        document.addEventListener('DOMContentLoaded', () => {
+            const hero = document.getElementById('hero');
+            if (!hero) return;
+            const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+            let visible = true;
+            const update = () => hero.classList.toggle('sky-active', visible && !document.hidden && !motion.matches);
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(([entry]) => {
+                    visible = entry.isIntersecting;
+                    update();
+                }).observe(hero);
+            }
+            document.addEventListener('visibilitychange', update);
+            if (motion.addEventListener) motion.addEventListener('change', update);
+            update();
+        });
+    </script>
 </body>
 
 </html>
