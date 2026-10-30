@@ -1,366 +1,164 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {
-    Modal,
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    Pressable,
-    FlatList,
-    ScrollView,
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    Dimensions,
-} from 'react-native';
-import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Modal, View, Text, StyleSheet, TextInput, Pressable, FlatList, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../Theme/ThemeProvider';
-import { generateDeepDive, chatWithVideo, DeepDiveData, DeepDiveMessage } from '../../lib/ai/client';
-import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeIn, FadeInDown, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, withDelay } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
-
-interface DeepDiveModalProps {
-    visible: boolean;
-    video: any | null;
-    onClose: () => void;
-}
+import { generateDeepDive, chatWithVideo, getAIErrorMessage, DeepDiveData, DeepDiveMessage, VideoContext } from '../../lib/ai/client';
 
 type TabType = 'summary' | 'resources' | 'chat';
-
-// Typing dots for Q&A loading state
-const TypingIndicator = () => {
-    const dot1 = useSharedValue(0.3);
-    const dot2 = useSharedValue(0.3);
-    const dot3 = useSharedValue(0.3);
-
-    useEffect(() => {
-        dot1.value = withRepeat(withSequence(withTiming(1, { duration: 400 }), withTiming(0.3, { duration: 400 })), -1, false);
-        dot2.value = withRepeat(withSequence(withDelay(150, withTiming(1, { duration: 400 })), withTiming(0.3, { duration: 400 })), -1, false);
-        dot3.value = withRepeat(withSequence(withDelay(300, withTiming(1, { duration: 400 })), withTiming(0.3, { duration: 400 })), -1, false);
-    }, []);
-
-    const style1 = useAnimatedStyle(() => ({ opacity: dot1.value, transform: [{ scale: 0.8 + dot1.value * 0.4 }] }));
-    const style2 = useAnimatedStyle(() => ({ opacity: dot2.value, transform: [{ scale: 0.8 + dot2.value * 0.4 }] }));
-    const style3 = useAnimatedStyle(() => ({ opacity: dot3.value, transform: [{ scale: 0.8 + dot3.value * 0.4 }] }));
-
-    return (
-        <View style={styles.typingContainer}>
-            <View style={styles.typingBubble}>
-                <Animated.View style={[styles.typingDot, style1]} />
-                <Animated.View style={[styles.typingDot, style2]} />
-                <Animated.View style={[styles.typingDot, style3]} />
-            </View>
-        </View>
-    );
-};
+interface DeepDiveModalProps {
+    visible: boolean;
+    video: (Partial<VideoContext> & { id?: string }) | null;
+    onClose: () => void;
+}
+const QUESTIONS = ['Explain it simply', 'Give a real-world example', 'What is the strongest counterargument?'];
 
 export function DeepDiveModal({ visible, video, onClose }: DeepDiveModalProps) {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
     const insets = useSafeAreaInsets();
-
     const [activeTab, setActiveTab] = useState<TabType>('summary');
     const [loading, setLoading] = useState(false);
     const [deepDiveData, setDeepDiveData] = useState<DeepDiveData | null>(null);
-
-    // Q&A Chat State
+    const [loadError, setLoadError] = useState('');
+    const [chatError, setChatError] = useState('');
+    const [retry, setRetry] = useState(0);
     const [chatHistory, setChatHistory] = useState<DeepDiveMessage[]>([]);
     const [inputText, setInputText] = useState('');
     const [chatLoading, setChatLoading] = useState(false);
-
     const chatListRef = useRef<FlatList>(null);
-    const chatInputRef = useRef<TextInput>(null);
+    const chatRequest = useRef<AbortController | null>(null);
+    const version = useRef(0);
+    const context = useMemo(() => ({ title: video?.title || '', description: video?.description || '', transcript: video?.transcript || '' }), [video?.title, video?.description, video?.transcript]);
 
-    // Load AI deep dive content on video change
     useEffect(() => {
-        if (visible && video) {
-            setLoading(true);
-            setDeepDiveData(null);
-            setChatHistory([
-                {
-                    role: 'assistant',
-                    content: `Hello! I'm **Orvelis**, your logic partner. I've scanned **"${video.title || 'this video'}"**. Ask me any clarifying questions, or review the tabs above for a full brief.`,
-                }
-            ]);
-            setActiveTab('summary');
-
-            generateDeepDive(video.title || 'Educational Topic', video.description || '')
-                .then((data) => {
-                    setDeepDiveData(data);
-                })
-                .catch((err) => {
-                    console.error('Deep Dive fetch error:', err);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        }
-    }, [visible, video]);
-
-    const handleSendMessage = async () => {
-        if (!inputText.trim() || !video) return;
-
-        const userMsg: DeepDiveMessage = { role: 'user', content: inputText };
-        setChatHistory(prev => [...prev, userMsg]);
-        const textToSend = inputText;
+        version.current += 1;
+        chatRequest.current?.abort();
+        chatRequest.current = null;
+        setChatLoading(false);
+        setChatHistory([]);
         setInputText('');
+        setChatError('');
+        setActiveTab('summary');
+        return () => { version.current += 1; chatRequest.current?.abort(); };
+    }, [visible, video?.id, context]);
+
+    useEffect(() => {
+        if (!visible || !video) return;
+        let active = true;
+        const controller = new AbortController();
+        setLoading(true);
+        setLoadError('');
+        setDeepDiveData(null);
+        generateDeepDive(context, controller.signal).then(data => {
+            if (active) setDeepDiveData(data);
+        }).catch(error => {
+            if (active) setLoadError(getAIErrorMessage(error));
+        }).finally(() => { if (active) setLoading(false); });
+        return () => { active = false; controller.abort(); };
+    }, [visible, video?.id, context, retry]);
+
+    const handleSendMessage = async (suggestion?: string) => {
+        const question = (suggestion || inputText).trim();
+        if (!question || !video || !visible || chatRequest.current) return;
+        const controller = new AbortController();
+        chatRequest.current = controller;
+        const currentVersion = version.current;
+        setActiveTab('chat');
+        setChatError('');
         setChatLoading(true);
-
-        // Scroll to bottom
-        setTimeout(() => chatListRef.current?.scrollToEnd({ animated: true }), 100);
-
+        setInputText('');
+        setChatHistory(previous => [...previous, { role: 'user', content: question }]);
         try {
-            const formattedHistory = chatHistory.map(h => ({
-                role: h.role,
-                content: h.content
-            }));
-            const response = await chatWithVideo(
-                video.title || 'Video Topic',
-                video.description || '',
-                textToSend,
-                formattedHistory
-            );
-            setChatHistory(prev => [...prev, { role: 'assistant', content: response }]);
-        } catch (e) {
-            console.error('Video Chat error:', e);
-            setChatHistory(prev => [...prev, {
-                role: 'assistant',
-                content: "Apologies, my synaptic bridge is experiencing latency. Let's try that question again.",
-            }]);
+            const response = await chatWithVideo(context, question, chatHistory, controller.signal);
+            if (version.current === currentVersion) setChatHistory(previous => [...previous, { role: 'assistant', content: response }]);
+        } catch (error) {
+            if (version.current === currentVersion) {
+                setChatError(getAIErrorMessage(error));
+                setInputText(current => current || question);
+                setChatHistory(previous => previous.slice(0, -1));
+            }
         } finally {
-            setChatLoading(false);
-            setTimeout(() => chatListRef.current?.scrollToEnd({ animated: true }), 150);
+            if (version.current === currentVersion) { setChatLoading(false); chatRequest.current = null; }
         }
     };
-
-    const bg = isDark ? '#000814' : '#FFFFFF';
-    const handleBg = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
     const textColor = theme.colors.text.primary;
-    const subtitleColor = theme.colors.text.secondary;
-
-    const renderChatBubble = ({ item }: { item: DeepDiveMessage }) => {
-        const isUser = item.role === 'user';
-        return (
-            <Animated.View entering={FadeIn.duration(200)} style={isUser ? styles.userBubbleContainer : styles.aiBubbleContainer}>
-                {!isUser && (
-                    <View style={[styles.aiAvatar, { backgroundColor: theme.colors.primary.DEFAULT }]}>
-                        <MaterialCommunityIcons name="robot-excited" size={14} color="#FFF" />
-                    </View>
-                )}
-                <View style={[
-                    styles.chatBubble,
-                    isUser
-                        ? [styles.userBubble, { backgroundColor: theme.colors.primary.DEFAULT }]
-                        : [styles.aiBubble, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0,0,0,0.04)' }]
-                ]}>
-                    <Text style={[styles.chatText, { color: isUser ? '#FFF' : textColor }]}>
-                        {item.content}
-                    </Text>
-                </View>
-            </Animated.View>
-        );
-    };
-
+    const secondary = theme.colors.text.secondary;
+    const accent = theme.colors.primary.DEFAULT;
+    const card = { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' };
+    const sourceNote = context.transcript ? 'Based on supplied transcript; audio and visuals are not reviewed.'
+        : context.description ? 'Based on the title and description; the full video has not been reviewed.'
+        : 'Only the title is available. Add details for a more useful discussion.';
+    const questions = deepDiveData?.followUpQuestions.length ? deepDiveData.followUpQuestions : QUESTIONS;
+    const questionButton = (question: string) => (
+        <Pressable key={question} accessibilityRole="button" disabled={chatLoading} onPress={() => void handleSendMessage(question)} style={[styles.termCard, card, { borderLeftColor: accent, opacity: chatLoading ? 0.5 : 1 }]}>
+            <Text style={{ color: textColor }}>{question} →</Text>
+        </Pressable>
+    );
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
             <View style={styles.modalContainer}>
-                <Pressable style={styles.backdrop} onPress={onClose} />
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={[styles.sheet, { backgroundColor: bg }]}
-                    keyboardVerticalOffset={0}
-                >
-                    {/* Handle bar */}
-                    <View style={[styles.handle, { backgroundColor: handleBg }]} />
-
-                    {/* Header */}
+                <Pressable accessibilityLabel="Close Orvelis" style={styles.backdrop} onPress={onClose} />
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[styles.sheet, { backgroundColor: isDark ? '#000814' : '#FFFFFF' }]}>
+                    <View style={[styles.handle, { backgroundColor: secondary }]} />
                     <View style={styles.sheetHeader}>
                         <View style={styles.headerInfo}>
-                            <View style={[styles.headerIconWrapper, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(14, 165, 233, 0.1)' }]}>
-                                <MaterialCommunityIcons name="brain" size={20} color={theme.colors.primary.DEFAULT} />
-                            </View>
+                            <MaterialCommunityIcons name="brain" size={22} color={accent} />
                             <View style={styles.headerTitles}>
                                 <Text style={[styles.sheetTitle, { color: textColor }]}>ORVELIS DEEP DIVE</Text>
-                                <Text style={[styles.videoTitle, { color: subtitleColor }]} numberOfLines={1}>
-                                    {video?.title || 'Understanding the Topic'}
-                                </Text>
+                                <Text numberOfLines={1} style={[styles.videoTitle, { color: secondary }]}>{video?.title || 'Explore this topic'}</Text>
                             </View>
                         </View>
-                        <Pressable onPress={onClose} hitSlop={12} style={styles.closeButton}>
-                            <Ionicons name="close" size={24} color={textColor} style={{ opacity: 0.6 }} />
-                        </Pressable>
+                        <Pressable accessibilityRole="button" accessibilityLabel="Close Orvelis" hitSlop={12} onPress={onClose}><Ionicons name="close" size={24} color={textColor} /></Pressable>
                     </View>
-
-                    {/* Tab Navigation */}
-                    <View style={[styles.tabsRow, { borderBottomColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}>
-                        {(['summary', 'resources', 'chat'] as TabType[]).map((tab) => {
-                            const isActive = activeTab === tab;
-                            let icon = '';
-                            let label = '';
-                            if (tab === 'summary') { icon = 'book-outline'; label = 'Summary'; }
-                            else if (tab === 'resources') { icon = 'library-outline'; label = 'Resources'; }
-                            else { icon = 'chatbubble-ellipses-outline'; label = 'Ask AI'; }
-
-                            return (
-                                <Pressable
-                                    key={tab}
-                                    onPress={() => setActiveTab(tab)}
-                                    style={[styles.tabButton, isActive && { borderBottomColor: theme.colors.primary.DEFAULT }]}
-                                >
-                                    <Ionicons
-                                        name={icon as any}
-                                        size={18}
-                                        color={isActive ? theme.colors.primary.DEFAULT : isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'}
-                                    />
-                                    <Text style={[
-                                        styles.tabLabel,
-                                        { color: isActive ? theme.colors.primary.DEFAULT : isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }
-                                    ]}>
-                                        {label}
-                                    </Text>
-                                </Pressable>
-                            );
-                        })}
+                    <Text style={{ color: secondary, paddingHorizontal: 24, paddingBottom: 12, fontSize: 12 }}>{sourceNote}</Text>
+                    <View style={styles.tabsRow}>
+                        {(['summary', 'resources', 'chat'] as TabType[]).map(tab => (
+                            <Pressable key={tab} accessibilityRole="tab" accessibilityState={{ selected: activeTab === tab }} onPress={() => setActiveTab(tab)} style={[styles.tabButton, activeTab === tab && { borderBottomColor: accent }]}>
+                                <Text style={[styles.tabLabel, { color: activeTab === tab ? accent : secondary }]}>{tab === 'summary' ? 'Understand' : tab === 'resources' ? 'Explore next' : 'Ask Orvelis'}</Text>
+                            </Pressable>
+                        ))}
                     </View>
-
-                    {/* Content Section */}
-                    {loading ? (
-                        <View style={styles.loaderContainer}>
-                            <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
-                            <Text style={[styles.loaderText, { color: subtitleColor }]}>Synthesizing cognitive models...</Text>
-                        </View>
-                    ) : (
-                        <View style={styles.contentWrapper}>
-                            {activeTab === 'summary' && (
-                                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                                    <Animated.View entering={FadeInDown.duration(300)}>
-                                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }]}>CONCEPT BRIEF</Text>
-                                        <View style={[styles.cardContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0,0,0,0.02)', borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}>
-                                            <Text style={[styles.summaryText, { color: textColor }]}>
-                                                {deepDiveData?.summary || 'Generating summary summary details...'}
-                                            </Text>
-                                        </View>
-
-                                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT, marginTop: 24 }]}>KEY TERMINOLOGY</Text>
-                                        {deepDiveData?.keyTerms.map((term, index) => (
-                                            <View
-                                                key={index}
-                                                style={[
-                                                    styles.termCard,
-                                                    {
-                                                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0,0,0,0.01)',
-                                                        borderLeftColor: theme.colors.primary.DEFAULT
-                                                    }
-                                                ]}
-                                            >
-                                                <Text style={[styles.termName, { color: textColor }]}>{term.term}</Text>
-                                                <Text style={[styles.termDef, { color: subtitleColor }]}>{term.definition}</Text>
-                                            </View>
-                                        ))}
-                                    </Animated.View>
-                                </ScrollView>
-                            )}
-
-                            {activeTab === 'resources' && (
-                                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                                    <Animated.View entering={FadeInDown.duration(300)}>
-                                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }]}>RECOMMENDED STUDY</Text>
-                                        {deepDiveData?.recommendations.map((rec, index) => {
-                                            let icon = 'book';
-                                            let iconColor = '#38BDF8';
-                                            if (rec.type === 'Video') { icon = 'videocam'; iconColor = '#F43F5E'; }
-                                            else if (rec.type === 'Podcast') { icon = 'mic'; iconColor = '#10B981'; }
-
-                                            return (
-                                                <View
-                                                    key={index}
-                                                    style={[
-                                                        styles.resourceCard,
-                                                        {
-                                                            backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                                            borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
-                                                        }
-                                                    ]}
-                                                >
-                                                    <View style={styles.resourceHeader}>
-                                                        <View style={[styles.resourceIcon, { backgroundColor: iconColor + '20' }]}>
-                                                            <Ionicons name={icon as any} size={16} color={iconColor} />
-                                                        </View>
-                                                        <View style={styles.resourceMeta}>
-                                                            <Text style={[styles.resourceTitle, { color: textColor }]}>{rec.title}</Text>
-                                                            <View style={styles.badgeRow}>
-                                                                <Text style={[styles.typeBadge, { color: iconColor }]}>{rec.type.toUpperCase()}</Text>
-                                                                {(rec.readTime || rec.duration) && (
-                                                                    <Text style={styles.timeBadge}>{rec.readTime || rec.duration}</Text>
-                                                                )}
-                                                            </View>
-                                                        </View>
-                                                    </View>
-                                                    <Text style={[styles.resourceReason, { color: subtitleColor }]}>{rec.reason}</Text>
-                                                </View>
-                                            );
-                                        })}
-                                    </Animated.View>
-                                </ScrollView>
-                            )}
-
-                            {activeTab === 'chat' && (
-                                <View style={styles.chatWrapper}>
-                                    <FlatList
-                                        ref={chatListRef}
-                                        data={chatHistory}
-                                        keyExtractor={(_, index) => index.toString()}
-                                        renderItem={renderChatBubble}
-                                        contentContainerStyle={styles.chatListContent}
-                                        showsVerticalScrollIndicator={false}
-                                        ListFooterComponent={() => (
-                                            chatLoading ? <TypingIndicator /> : null
-                                        )}
-                                    />
-
-                                    {/* Input bar */}
-                                    <View style={[styles.inputRow, { borderTopColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', paddingBottom: insets.bottom + 8 }]}>
-                                        <TextInput
-                                            ref={chatInputRef}
-                                            value={inputText}
-                                            onChangeText={setInputText}
-                                            placeholder="Ask Orvelis a question..."
-                                            placeholderTextColor={isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}
-                                            style={[
-                                                styles.input,
-                                                {
-                                                    backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                                                    color: textColor,
-                                                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                                                }
-                                            ]}
-                                            multiline={false}
-                                            onSubmitEditing={handleSendMessage}
-                                            returnKeyType="send"
-                                        />
-                                        <Pressable
-                                            onPress={handleSendMessage}
-                                            disabled={chatLoading || !inputText.trim()}
-                                            style={[
-                                                styles.sendBtn,
-                                                {
-                                                    backgroundColor: inputText.trim() ? theme.colors.primary.DEFAULT : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'
-                                                }
-                                            ]}
-                                        >
-                                            {chatLoading ? (
-                                                <ActivityIndicator size="small" color="#FFF" />
-                                            ) : (
-                                                <Ionicons name="arrow-up" size={18} color={inputText.trim() ? '#FFF' : isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'} />
-                                            )}
-                                        </Pressable>
-                                    </View>
-                                </View>
-                            )}
-                        </View>
-                    )}
+                    <View style={styles.contentWrapper}>
+                        {activeTab !== 'chat' && (loading ? (
+                            <View style={styles.loaderContainer}><ActivityIndicator color={accent} size="large" /><Text style={[styles.loaderText, { color: secondary }]}>Preparing your brief…</Text></View>
+                        ) : loadError ? (
+                            <View style={styles.loaderContainer}>
+                                <Text accessibilityRole="alert" style={[styles.summaryText, { color: textColor }]}>{loadError}</Text>
+                                <Pressable accessibilityRole="button" onPress={() => setRetry(n => n + 1)} style={[styles.termCard, card, { marginTop: 16 }]}><Text style={{ color: accent }}>Try again</Text></Pressable>
+                            </View>
+                        ) : deepDiveData && (
+                            <ScrollView contentContainerStyle={styles.scrollContent}>
+                                {activeTab === 'summary' ? <>
+                                    <Text style={[styles.sectionTitle, { color: accent }]}>THE MAIN IDEA</Text>
+                                    <Text style={[styles.summaryText, { color: textColor }]}>{deepDiveData.summary}</Text>
+                                    {deepDiveData.keyTerms.length > 0 && <Text style={[styles.sectionTitle, { color: accent, marginTop: 24 }]}>USEFUL TERMS</Text>}
+                                    {deepDiveData.keyTerms.map(term => <View key={term.term} style={[styles.termCard, card, { borderLeftColor: accent }]}><Text style={[styles.termName, { color: textColor }]}>{term.term}</Text><Text style={[styles.termDef, { color: secondary }]}>{term.definition}</Text></View>)}
+                                    <Text style={[styles.sectionTitle, { color: accent, marginTop: 24 }]}>WHAT STILL NEEDS CONTEXT</Text>
+                                    <Text style={[styles.summaryText, { color: secondary }]}>{deepDiveData.contextNotes}</Text>
+                                    <Text style={[styles.sectionTitle, { color: accent, marginTop: 24 }]}>TAKE IT FURTHER</Text>
+                                    {QUESTIONS.map(questionButton)}
+                                </> : <>
+                                    <Text style={[styles.sectionTitle, { color: accent }]}>RELATED TOPICS</Text>
+                                    <Text style={[styles.termDef, { color: secondary, marginBottom: 16 }]}>Suggested directions to discuss with Orvelis. These are not verified sources.</Text>
+                                    {deepDiveData.recommendations.map(rec => <Pressable key={rec.id} accessibilityRole="button" disabled={chatLoading} onPress={() => void handleSendMessage(`Explain ${rec.title} and how it connects to this topic.`)} style={[styles.resourceCard, card]}><Text style={[styles.resourceTitle, { color: textColor }]}>{rec.title} →</Text><Text style={[styles.resourceReason, { color: secondary }]}>{rec.reason}</Text></Pressable>)}
+                                    {questions.map(questionButton)}
+                                </>}
+                            </ScrollView>
+                        ))}
+                        {activeTab === 'chat' && <View style={styles.chatWrapper}>
+                            <FlatList ref={chatListRef} data={chatHistory} keyExtractor={(_, i) => String(i)} contentContainerStyle={styles.chatListContent}
+                                onContentSizeChange={() => chatListRef.current?.scrollToEnd({ animated: true })}
+                                ListEmptyComponent={<View><Text style={[styles.summaryText, { color: secondary, marginBottom: 16 }]}>Ask about the idea, compare arguments, or try an example.</Text>{questions.map(questionButton)}</View>}
+                                ListFooterComponent={chatLoading ? <ActivityIndicator color={accent} style={{ padding: 16 }} /> : null}
+                                renderItem={({ item }) => <View style={item.role === 'user' ? styles.userBubbleContainer : styles.aiBubbleContainer}><View style={[styles.chatBubble, card, item.role === 'user' && { backgroundColor: accent }]}><Text selectable style={[styles.chatText, { color: item.role === 'user' ? '#FFF' : textColor }]}>{item.content}</Text></View></View>} />
+                            {!!chatError && <Text accessibilityRole="alert" style={{ color: secondary, paddingHorizontal: 20, paddingBottom: 8 }}>{chatError}</Text>}
+                            <View style={[styles.inputRow, { paddingBottom: insets.bottom + 8 }]}>
+                                <TextInput accessibilityLabel="Question for Orvelis" value={inputText} onChangeText={setInputText} maxLength={6000} placeholder="Ask about this topic…" placeholderTextColor={secondary} style={[styles.input, card, { color: textColor }]} onSubmitEditing={() => void handleSendMessage()} returnKeyType="send" />
+                                <Pressable accessibilityRole="button" accessibilityLabel="Send question" disabled={chatLoading || !inputText.trim()} onPress={() => void handleSendMessage()} style={[styles.sendBtn, { backgroundColor: accent, opacity: chatLoading || !inputText.trim() ? 0.4 : 1 }]}><Ionicons name="arrow-up" size={18} color="#FFF" /></Pressable>
+                            </View>
+                        </View>}
+                    </View>
                 </KeyboardAvoidingView>
             </View>
         </Modal>
