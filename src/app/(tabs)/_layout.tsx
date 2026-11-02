@@ -5,7 +5,7 @@ import { Feather, SimpleLineIcons, Ionicons, MaterialCommunityIcons, Entypo } fr
 import { View, Dimensions, Platform, useWindowDimensions, StyleSheet } from 'react-native';
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -25,6 +25,8 @@ const TabLayout = () => {
     }, []);
 
     const { width } = useWindowDimensions();
+    const insets = useSafeAreaInsets();
+    const bottomInset = Math.max(insets.bottom, 8);
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
@@ -45,7 +47,7 @@ const TabLayout = () => {
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: Platform.OS === 'ios' ? 88 : 64,
+                        height: 56 + bottomInset,
                         backgroundColor: 'transparent',
                         borderWidth: 0,
                         borderTopWidth: 0,
@@ -56,7 +58,8 @@ const TabLayout = () => {
                         shadowColor: 'transparent',
                         shadowOffset: { width: 0, height: 0 },
                         shadowRadius: 0,
-                        paddingBottom: Platform.OS === 'ios' ? 24 : 8,
+                        paddingBottom: bottomInset,
+                        paddingTop: 4,
                     },
                     tabBarBackground: () => null,
                     tabBarLabelStyle: {

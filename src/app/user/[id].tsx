@@ -1,5 +1,8 @@
+import { MobileProfileHeader } from '../../components/Profile/MobileProfileHeader';
+import { useTheme } from '../../components/Theme/ThemeProvider';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Alert, useWindowDimensions } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
@@ -206,9 +209,10 @@ const InternalVideoGridItem = ({ videoUrl }: { videoUrl: string }) => {
 };
 
 const VideoGridItem = ({ item, index, onPress }: { item: any, index: number, onPress: () => void }) => {
+    const { width } = useWindowDimensions();
     return (
         <Pressable
-            style={styles.videoGridItem}
+            style={[styles.videoGridItem, width <= 768 && { flex: 1, maxWidth: '33.333333%', width: undefined, height: undefined, aspectRatio: 1 / 1.3 }]}
             onPress={onPress}
         >
             {item.videoUrl ? (
@@ -220,19 +224,25 @@ const VideoGridItem = ({ item, index, onPress }: { item: any, index: number, onP
             )}
             <View style={styles.viewsOverlay}>
                 <Ionicons name="play-outline" size={12} color="white" />
-                <Text style={styles.viewsText}>{item.likes || 0}</Text>
+                <Text style={styles.viewsText}>{item.views || 0}</Text>
             </View>
         </Pressable>
     );
 };
 
 export default function UserProfileScreen() {
+    const { width: windowWidth } = useWindowDimensions();
+    const mobile = windowWidth <= 768;
+    const { theme: activeTheme, mode } = useTheme();
+    const insets = useSafeAreaInsets();
     const { id } = useLocalSearchParams<{ id: string }>();
     const { user: currentUser } = useAuth(); // Current logged-in user
     const router = useRouter();
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [activeTab, setActiveTab] = useState<'posts' | 'videos'>('videos');
     const [isFollowing, setIsFollowing] = useState(false);
+    const followPendingRef = React.useRef(false);
+    const [followPending, setFollowPending] = useState(false);
 
     const scrollY = useSharedValue(0);
     const scrollHandler = useAnimatedScrollHandler((event) => {
@@ -324,9 +334,15 @@ export default function UserProfileScreen() {
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', id);
 
+            const [followers, following] = await Promise.all([
+                supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', id),
+                supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', id),
+            ]);
             if (profileData) {
                 setProfile({
                     ...profileData,
+                    followers_count: followers.count ?? profileData.followers_count,
+                    following_count: following.count ?? profileData.following_count,
                     videos_count: count || 0
                 });
             }
@@ -370,24 +386,26 @@ export default function UserProfileScreen() {
 
         if (currentUser.id === id) return;
 
-        // Optimistic update
-        setIsFollowing(!isFollowing);
-
+        if (!supabase || followPendingRef.current) return;
+        followPendingRef.current = true;
+        setFollowPending(true);
+        const wasFollowing = isFollowing;
+        setIsFollowing(!wasFollowing);
         try {
-            if (isFollowing) {
-                await supabase
-                    .from('follows')
-                    .delete()
-                    .eq('follower_id', currentUser.id)
-                    .eq('following_id', id);
-            } else {
-                await supabase
-                    .from('follows')
-                    .insert({ follower_id: currentUser.id, following_id: id });
-            }
+            const result = wasFollowing
+                ? await supabase.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', id)
+                : await supabase.from('follows').insert({ follower_id: currentUser.id, following_id: id });
+            if (result.error) throw result.error;
+            setProfile(previous => previous ? {
+                ...previous,
+                followers_count: Math.max(0, (previous.followers_count || 0) + (wasFollowing ? -1 : 1)),
+            } : previous);
         } catch {
-            console.error("Follow error");
-            setIsFollowing(isFollowing); // Revert
+            setIsFollowing(wasFollowing);
+            Alert.alert('Couldn’t update follow', 'Please try again.');
+        } finally {
+            followPendingRef.current = false;
+            setFollowPending(false);
         }
     };
 
@@ -434,7 +452,7 @@ export default function UserProfileScreen() {
             if (!videos || videos.length === 0) {
                 return (
                     <View style={styles.emptyState}>
-                        <Text style={styles.emptyStateText}>No videos yet.</Text>
+                        <Text style={[styles.emptyStateText, { color: activeTheme.colors.text.secondary }]}>No videos yet.</Text>
                     </View>
                 );
             }
@@ -452,7 +470,7 @@ export default function UserProfileScreen() {
             if (posts.length === 0) {
                 return (
                     <View style={styles.emptyState}>
-                        <Text style={styles.emptyStateText}>No posts yet.</Text>
+                        <Text style={[styles.emptyStateText, { color: activeTheme.colors.text.secondary }]}>No posts yet.</Text>
                     </View>
                 );
             }
@@ -462,11 +480,11 @@ export default function UserProfileScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="light-content" />
+        <View style={[styles.container, { backgroundColor: activeTheme.colors.background.primary }]}>
+            <StatusBar barStyle={mode === 'dark' ? 'light-content' : 'dark-content'} />
 
             {/* Sticky Header Overlay */}
-            <StickyHeader scrollY={scrollY} user={profile} />
+            {!mobile && <StickyHeader scrollY={scrollY} user={profile} />}
 
             <Animated.FlatList
                 key={activeTab}
@@ -474,9 +492,11 @@ export default function UserProfileScreen() {
                 renderItem={(props: any) => activeTab === 'videos' ? renderVideoItem(props) : renderPostItem(props)}
                 keyExtractor={(item) => item.id}
                 numColumns={activeTab === 'videos' ? 3 : 1}
-                contentContainerStyle={styles.flatListContent}
-                ListHeaderComponent={() => (
-                    <ProfileHeader
+                contentContainerStyle={[styles.flatListContent, { paddingBottom: 88 + insets.bottom }]}
+                ListHeaderComponent={(
+                    mobile ? <MobileProfileHeader profile={profile} userId={String(id)} activeTab={activeTab} onTab={setActiveTab}
+                        own={currentUser?.id === id} onEdit={() => router.push('/edit-profile')} onBack={() => router.back()}
+                        onFollow={handleFollow} onMessage={handleMessage} isFollowing={isFollowing} followPending={followPending} /> : <ProfileHeader
                         profile={profile}
                         user={currentUser} // Pass undefined or logic to fallback
                         scrollY={scrollY}
@@ -490,7 +510,7 @@ export default function UserProfileScreen() {
                 )}
                 ListFooterComponent={renderContent}
                 showsVerticalScrollIndicator={false}
-                columnWrapperStyle={activeTab === 'videos' ? styles.videoColumnWrapper : undefined}
+                columnWrapperStyle={activeTab === 'videos' ? [styles.videoColumnWrapper, { backgroundColor: activeTheme.colors.background.primary }] : undefined}
                 removeClippedSubviews={Platform.OS === 'android'}
                 maxToRenderPerBatch={10}
                 windowSize={5}

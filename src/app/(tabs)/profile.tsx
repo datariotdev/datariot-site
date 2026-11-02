@@ -1,5 +1,7 @@
+import { MobileProfileHeader } from '../../components/Profile/MobileProfileHeader';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Alert, Image, Modal, ScrollView, Animated as RNAnimated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Dimensions, StatusBar, Platform, ImageBackground, Alert, Image, Modal, ScrollView, Animated as RNAnimated, useWindowDimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
@@ -280,6 +282,7 @@ const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { ite
     const scale = useSharedValue(1);
     const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
+    const { width: currentWidth } = useWindowDimensions();
     const itemWidth = featured
         ? (isWeb ? Math.min(SCREEN_WIDTH, 600) - 2 : SCREEN_WIDTH - 2)
         : VIDEO_ITEM_WIDTH;
@@ -309,7 +312,7 @@ const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { ite
             onPressIn={() => { scale.value = withTiming(0.96, { duration: 100 }); }}
             onPressOut={() => { scale.value = withSpring(1, { damping: 12 }); }}
             onPress={onPress}
-            style={{ width: itemWidth, height: itemHeight, marginBottom: 1 }}
+            style={[{ width: itemWidth, height: itemHeight, marginBottom: 1 }, currentWidth <= 768 && !featured && { flex: 1, maxWidth: '33.333333%', width: undefined, height: undefined, aspectRatio: 1 / 1.3 }]}
         >
             <Animated.View style={[{ flex: 1, overflow: 'hidden', borderRadius: featured ? 0 : 0, backgroundColor: isDark ? '#000000' : '#EEEEEE' }, animStyle]}>
                 {item.videoUrl ? (
@@ -387,6 +390,9 @@ const EssenceGrid = ({ videos, onPress, isDark }: { videos: any[], onPress: (id:
 };
 
 export default function ProfileScreen() {
+    const { width: windowWidth } = useWindowDimensions();
+    const mobile = windowWidth <= 768;
+    const insets = useSafeAreaInsets();
     const { user, signOut } = useAuth();
     const router = useRouter();
     const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -566,9 +572,15 @@ export default function ProfileScreen() {
                 console.error('Error calculating approval rate:', e);
             }
 
+            const [followers, following] = await Promise.all([
+                supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id),
+                supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id),
+            ]);
             if (profileData) {
                 setProfile({
                     ...profileData,
+                    followers_count: followers.count ?? profileData.followers_count,
+                    following_count: following.count ?? profileData.following_count,
                     videos_count: videoCount || 0,
                     theses_count: thesisCount || 0,
                     arguments_count: argumentCount || 0,
@@ -668,7 +680,7 @@ export default function ProfileScreen() {
                 );
             }
             // Render the custom essence grid
-            return <EssenceGrid videos={videos} onPress={navigateToVideoById} isDark={isDark} />;
+            return mobile ? null : <EssenceGrid videos={videos} onPress={navigateToVideoById} isDark={isDark} />;
         }
 
         if (activeTab === 'posts') {
@@ -713,22 +725,25 @@ export default function ProfileScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <AmbientGlow color={isDark ? "rgba(217, 228, 255, 0.08)" : "rgba(217, 228, 255, 0.04)"} size={400} opacity={0.6} duration={25000} delay={0} />
+            {!mobile && <AmbientGlow color={isDark ? "rgba(217, 228, 255, 0.08)" : "rgba(217, 228, 255, 0.04)"} size={400} opacity={0.6} duration={25000} delay={0} />}
             <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
             {/* Sticky Header Overlay */}
-            <StickyHeader scrollY={scrollY} user={user} handleSignOut={handleSignOut} router={router} />
+            {!mobile && <StickyHeader scrollY={scrollY} user={user} handleSignOut={handleSignOut} router={router} />}
 
             <Animated.FlatList
-                key={activeTab}
-                data={(activeTab === 'posts' ? posts : []) as any}
-                renderItem={(props: any) => renderPostItem(props)}
+                key={`${activeTab}-${mobile ? 'mobile' : 'desktop'}`}
+                data={(activeTab === 'posts' ? posts : activeTab === 'videos' && mobile ? videos : []) as any}
+                renderItem={(props: any) => activeTab === 'videos' ? renderVideoItem(props) : renderPostItem(props)}
                 keyExtractor={(item) => item.id}
-                numColumns={1}
-                contentContainerStyle={styles.flatListContent}
-                ListHeaderComponent={() => (
+                numColumns={mobile && activeTab === 'videos' ? 3 : 1}
+                columnWrapperStyle={mobile && activeTab === 'videos' ? styles.videoColumnWrapper : undefined}
+                contentContainerStyle={[styles.flatListContent, { paddingBottom: 88 + insets.bottom }]}
+                ListHeaderComponent={(
                     <>
-                        <ProfileHeader
+                        {mobile ? <MobileProfileHeader profile={profile} userId={user.id} fallbackName={user.email?.split('@')[0]}
+                            own activeTab={activeTab} onTab={setActiveTab} onEdit={() => router.push('/edit-profile')}
+                            onSettings={() => router.push('/settings')} onDNA={() => setShowAchievements(true)} /> : <ProfileHeader
                             profile={profile}
                             user={user}
                             scrollY={scrollY}
@@ -736,7 +751,7 @@ export default function ProfileScreen() {
                             activeTab={activeTab}
                             setActiveTab={setActiveTab}
                             onShowAchievements={() => setShowAchievements(true)}
-                        />
+                        />}
                         {renderContent()}
                     </>
                 )}

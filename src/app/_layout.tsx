@@ -107,6 +107,7 @@ export default function RootLayout() {
                 <SafeAreaProvider>
                     <Stack screenOptions={{ contentStyle: { backgroundColor: '#08090D' } }}>
                         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                        <Stack.Screen name="user/[id]" options={{ headerShown: false }} />
                         <Stack.Screen name="auth" options={{ headerShown: false }} />
                         <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
                     </Stack>
