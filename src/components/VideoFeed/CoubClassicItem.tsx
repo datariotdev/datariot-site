@@ -47,7 +47,7 @@ const VideoPlayerLayer = ({ videoUrl, isActive, isFocused, isPaused, isMuted, on
         <View style={StyleSheet.absoluteFillObject}>
             <Video
                 ref={videoRef}
-                source={{ uri: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4' }}
+                source={{ uri: encodeVideoUrl(videoUrl) || '' }}
                 style={StyleSheet.absoluteFillObject}
                 resizeMode={ResizeMode.COVER}
                 shouldPlay={isActive && isFocused && !isPaused}
@@ -63,7 +63,7 @@ const VideoPlayerLayer = ({ videoUrl, isActive, isFocused, isPaused, isMuted, on
 
             {/* Foreground Sharp Layer (shows full content) */}
             <Video
-                source={{ uri: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4' }}
+                source={{ uri: encodeVideoUrl(videoUrl) || '' }}
                 style={StyleSheet.absoluteFillObject}
                 resizeMode={ResizeMode.CONTAIN}
                 shouldPlay={isActive && isFocused && !isPaused}
