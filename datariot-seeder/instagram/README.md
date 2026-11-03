@@ -3,16 +3,38 @@
 This is an initial discovery queue and a native-video import tool, not a complete
 index of Instagram or a working global Reels search API.
 
-**Current state (2026-11-03):** 62 source links, 58 shortlisted, 2 on hold,
-2 rejected, **62 candidate records staged in Supabase, 0 approved for publication,
-0 imported into the native video feed**. The original
-Reels could not be played during research: Instagram throttled retrieval. Of the
-58 shortlisted items, 45 were screened from third-party transcript pages, three
-from research descriptions, eight from a creator portfolio describing museum
-short-form videos and two from manufacturer descriptions of science demos. Durations from transcript pages are
-estimates; unknown durations are null. These are editorial candidates, not
-fact-checked endorsements. Source links and verification notes are in
-`candidates.json`. The complete, browsable list is [CATALOG.md](CATALOG.md).
+**Current state:** the mobile Trending Feed now displays 58 curated Instagram
+entries alongside native videos. Public metadata is served from `curated_reels`
+with a bundled selection fallback. Tapping a card opens the original Instagram
+embed, with creator attribution, previous/next controls and an original-link
+fallback. Instagram may restrict embedded playback or require its own session.
+No Instagram MP4s were copied to Datariot storage.
+
+The private editorial queue still contains 62 records: 58 shortlisted, two held
+and two rejected. Original playback and independent fact checking remain pending;
+selection was based on transcript pages and source descriptions. Durations are
+estimates where supplied. Source links and verification notes are in
+`candidates.json`; see [CATALOG.md](CATALOG.md).
+
+## Running the updated Feed
+
+After pulling the merged main branch:
+
+```bash
+npm install
+npx expo start -c
+```
+
+For another Supabase project, apply `publish_embeds.sql` and populate only the
+public metadata columns from shortlisted records. The connected Datariot project
+already has the migration and 58 active entries. RLS permits public SELECT of
+active entries only; mobile clients cannot write. Private review and rights
+fields remain inaccessible. A successful empty API response hides the selection;
+only request failures use the bundled fallback.
+
+Validation: four curated Feed tests, eight Python importer tests, and Android/web
+Expo exports pass. `tsc --noEmit` still reports the existing `outlineStyle` error
+in `publish.tsx`. Native playback on a physical device is not verified.
 
 ## First shortlist
 
@@ -52,7 +74,7 @@ Migration `add_external_video_candidates_queue` created the queue; the later
 `public.external_video_candidates`: 58 shortlisted, 2 held and 2 rejected, all
 pending review with unknown rights. The expansion inserted 50 new records.
 This queue is separate from the native feed. The 15 existing native video rows
-were unchanged; no Instagram videos were published.
+were unchanged; the separate `curated_reels` table now supplies Instagram embeds.
 
 The queue has RLS enabled and no access for `anon` or `authenticated`; server
 administration uses `service_role`. The RLS linter's informational
