@@ -1,7 +1,7 @@
 -- Editorial queue only. Source-page links never enter the native videos table.
 create table public.external_video_candidates (
   source_url text primary key
-    check (source_url ~ '^https://www[.]instagram[.]com/reel/[A-Za-z0-9_-]+/$'),
+    check (source_url ~ '^https://www[.]instagram[.]com/(reel|p)/[A-Za-z0-9_-]+/$'),
   payload jsonb not null
     check (jsonb_typeof(payload) = 'object')
     check (payload->>'source_url' is not null and payload->>'source_url' = source_url),
@@ -13,6 +13,10 @@ create table public.external_video_candidates (
     check (rights_status in ('unknown', 'owned', 'licensed')),
   created_at timestamptz not null default now()
 );
+
+-- A video can be linked as either /p/CODE or /reel/CODE.
+create unique index external_video_candidates_shortcode_key
+  on public.external_video_candidates (split_part(source_url, '/', 5));
 
 alter table public.external_video_candidates enable row level security;
 revoke all on table public.external_video_candidates from public, anon, authenticated;

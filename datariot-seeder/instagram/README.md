@@ -3,15 +3,16 @@
 This is an initial discovery queue and a native-video import tool, not a complete
 index of Instagram or a working global Reels search API.
 
-**Current state (2026-11-03):** 12 links screened, 8 shortlisted, 2 on hold,
-2 rejected, **12 candidate records staged in Supabase, 0 approved for publication,
+**Current state (2026-11-03):** 62 source links, 58 shortlisted, 2 on hold,
+2 rejected, **62 candidate records staged in Supabase, 0 approved for publication,
 0 imported into the native video feed**. The original
-Reels could not be played during research: Instagram throttled retrieval. Five
-shortlisted items were screened using third-party automatic transcripts; three
-using descriptions in a research article. Durations from transcript pages are
+Reels could not be played during research: Instagram throttled retrieval. Of the
+58 shortlisted items, 45 were screened from third-party transcript pages, three
+from research descriptions, eight from a creator portfolio describing museum
+short-form videos and two from manufacturer descriptions of science demos. Durations from transcript pages are
 estimates; unknown durations are null. These are editorial candidates, not
 fact-checked endorsements. Source links and verification notes are in
-`candidates.json`.
+`candidates.json`. The complete, browsable list is [CATALOG.md](CATALOG.md).
 
 ## First shortlist
 
@@ -45,9 +46,11 @@ bundled manifest cannot publish anything in its current state.
 
 The connected `datariot` project was verified on 2026-11-03. Its existing
 `videos` bucket is public and the native `videos` schema matches the importer.
-Migration `add_external_video_candidates_queue` was applied from `queue.sql`.
-All 12 source records were inserted into `public.external_video_candidates`:
-8 shortlisted, 2 held and 2 rejected, all pending review with unknown rights.
+Migration `add_external_video_candidates_queue` created the queue; the later
+`support_short_video_post_urls_and_deduplicate_codes` migration was applied from
+`queue_post_urls.sql`. All 62 source records are in
+`public.external_video_candidates`: 58 shortlisted, 2 held and 2 rejected, all
+pending review with unknown rights. The expansion inserted 50 new records.
 This queue is separate from the native feed. The 15 existing native video rows
 were unchanged; no Instagram videos were published.
 
@@ -59,15 +62,19 @@ cannot diverge from review data. Private license evidence should remain outside
 the committed catalogue.
 
 To stage another manifest through the connected SQL tool, apply `queue.sql` once
-per new project, then generate the INSERT statement:
+per new project, then generate the INSERT statement. Existing installations
+using the original schema should first apply `queue_post_urls.sql` instead of
+rerunning `queue.sql`:
 
 ```bash
 python3 datariot-seeder/instagram/reels.py queue-sql --input /private/reviewed.json
 ```
 
 This command only prints SQL; it does not connect to a database or publish videos.
-Execute its result against the intended project. Duplicate source URLs are
-skipped without resetting existing reviews. A second insert of the initial
+Execute its result against the intended project. Duplicate source shortcodes
+are skipped across `/p/` and `/reel/` URLs without resetting existing reviews.
+The `/p/` entries here are creator-described short-form videos; this does not
+imply that arbitrary Instagram posts are videos. A second insert of the initial
 catalogue was verified to add 0 records.
 
 ## Discovery through the official API

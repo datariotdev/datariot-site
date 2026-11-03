@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "researched_at": "2026-11-03",
-  "scope": "Small discovery batch; not a complete index of Instagram. Screened from third-party transcript pages or research descriptions, not watched. No factual endorsement or publishing permission inferred.",
+  "scope": "A bounded discovery queue, not a complete index of Instagram. Initial screening uses third-party transcript pages, creator portfolios, manufacturer descriptions or research descriptions. Original playback and factual verification are pending; no source permissions or rights are inferred.",
   "items": [
     {
       "source_url": "https://www.instagram.com/reel/Dev8BHVBea_/",
@@ -338,6 +338,1506 @@
       },
       "author_id": null,
       "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DecOLvTsuFH/",
+      "title": "Laptop battery ageing explained",
+      "title_ru": "Почему стареет аккумулятор ноутбука",
+      "creator": "speedy_devv",
+      "category": "Engineering",
+      "topic": "Hardware",
+      "language": "en",
+      "duration_seconds": 90,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DecOLvTsuFH",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains lithium-ion operation, heat and charge limits.",
+        "checks_needed": "Battery chemistry is simplified; charging limits vary by device and settings."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Dc00Zc7OwRd/",
+      "title": "Writing clear on-screen video titles",
+      "title_ru": "Как писать заголовки внутри видео",
+      "creator": "Kallaway",
+      "category": "Education",
+      "topic": "Video creation",
+      "language": "en",
+      "duration_seconds": 109,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Dc00Zc7OwRd",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Demonstrates concrete wording and layout choices for on-screen titles.",
+        "checks_needed": "Treat effectiveness claims as creator experience; avoid clickbait without substance."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/De0mgVbtXE-/",
+      "title": "Sentence rhythm in short video scripts",
+      "title_ru": "Ритм предложений в сценарии короткого видео",
+      "creator": "Gin Lee",
+      "category": "Education",
+      "topic": "Communication",
+      "language": "en",
+      "duration_seconds": 29,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/De0mgVbtXE-",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Shows how changing sentence length changes spoken pacing.",
+        "checks_needed": "A writing technique rather than a universal rule."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DecmWlsinXW/",
+      "title": "A developer workflow for app localisation",
+      "title_ru": "Как разработчик переводит приложение на другие языки",
+      "creator": "Chris Raroque",
+      "category": "Engineering",
+      "topic": "App development",
+      "language": "en",
+      "duration_seconds": 65,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DecmWlsinXW",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Describes a practical app-and-store localisation workflow.",
+        "checks_needed": "Reported download uplift is anecdotal; verify translations and current tool support."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DebnVfryx_O/",
+      "title": "Designing App Store listing assets",
+      "title_ru": "Как оформлять страницу приложения в App Store",
+      "creator": "Alex & Max",
+      "category": "Education",
+      "topic": "Product development",
+      "language": "en",
+      "duration_seconds": 51,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DebnVfryx_O",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains where a developer finds listing-asset guidance and examples.",
+        "checks_needed": "Check current Apple documentation; no download guarantee."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DeV22xOBnRC/",
+      "title": "Planning and building explanatory animations",
+      "title_ru": "Как планировать и создавать объясняющие анимации",
+      "creator": "Charles Zheng",
+      "category": "AI",
+      "topic": "Video creation",
+      "language": "en",
+      "duration_seconds": 64,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DeV22xOBnRC",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Breaks down research, scripting, visual planning and animation creation.",
+        "checks_needed": "Check the demonstrated workflow; distinguish editing effort from automation claims."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DeUz9tAJzJ7/",
+      "title": "Pulse signals and deepfake detection",
+      "title_ru": "Как пульс используют для обнаружения дипфейков",
+      "creator": "Hari | AI, Tech & STEM",
+      "category": "AI",
+      "topic": "Computer vision",
+      "language": "en",
+      "duration_seconds": 65,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DeUz9tAJzJ7",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Describes extracting colour changes from face regions for deepfake analysis.",
+        "checks_needed": "Reported accuracy is benchmark-specific; verify limitations and underlying research."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DeSpr-wROZo/",
+      "title": "App Store in-app event cards explained",
+      "title_ru": "Как работают карточки событий приложения в App Store",
+      "creator": "Hudson Ferreira",
+      "category": "Education",
+      "topic": "Product development",
+      "language": "en",
+      "duration_seconds": 47,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DeSpr-wROZo",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Walks through event cards as an app-discovery surface.",
+        "checks_needed": "Check current eligibility and Apple documentation; visibility is not guaranteed."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Ddnr9oxPty0/",
+      "title": "Designing a wearable mouse-ring prototype",
+      "title_ru": "Прототип кольца вместо компьютерной мыши",
+      "creator": "Rose",
+      "category": "Engineering",
+      "topic": "Hardware",
+      "language": "en",
+      "duration_seconds": 34,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Ddnr9oxPty0",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains proposed gestures and design motivation for an input device.",
+        "checks_needed": "Prototype demonstration; ergonomic and distance claims need verification."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Da8gXOzvKzL/",
+      "title": "Five mobile UX mistakes to inspect",
+      "title_ru": "Пять ошибок интерфейса мобильного приложения",
+      "creator": "Kev",
+      "category": "Engineering",
+      "topic": "Design",
+      "language": "en",
+      "duration_seconds": 92,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Da8gXOzvKzL",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Uses interface examples to discuss loading states, responsiveness and user trust.",
+        "checks_needed": "Some preferences are subjective; context matters for loaders and animations."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DeNFh_fyPyl/",
+      "title": "An app launch observability checklist",
+      "title_ru": "Что разработчик проверяет перед запуском приложения",
+      "creator": "Chris Raroque",
+      "category": "Engineering",
+      "topic": "App development",
+      "language": "en",
+      "duration_seconds": 66,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DeNFh_fyPyl",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Connects analytics, crash reports, feedback and launch monitoring.",
+        "checks_needed": "Named products are examples; verify privacy configuration and actual use."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DeIwlvJCgwN/",
+      "title": "Recording a script in small sections",
+      "title_ru": "Как записывать сценарий небольшими частями",
+      "creator": "aronsogi",
+      "category": "Education",
+      "topic": "Communication",
+      "language": "en",
+      "duration_seconds": 39,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DeIwlvJCgwN",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Demonstrates a practical method for remembering lines on camera.",
+        "checks_needed": "Recording-time promises are anecdotal; assess the technique itself."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DeHWUs4K-u_/",
+      "title": "The invisible triangle behind submenu navigation",
+      "title_ru": "Зачем в выпадающих меню невидимый треугольник",
+      "creator": "Oversight Studio",
+      "category": "Engineering",
+      "topic": "Design",
+      "language": "en",
+      "duration_seconds": 40,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DeHWUs4K-u_",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains the pointer-path geometry used to keep a submenu open.",
+        "checks_needed": "Verify the actual UI demonstration and implementation details."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DeCRORPoHbH/",
+      "title": "Localising subscription prices across countries",
+      "title_ru": "Как адаптируют цены подписки для разных стран",
+      "creator": "Marco Pérez",
+      "category": "Education",
+      "topic": "Business",
+      "language": "en",
+      "duration_seconds": 118,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DeCRORPoHbH",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains purchasing-power considerations in regional pricing.",
+        "checks_needed": "Business experience, not financial advice; verify current store pricing rules."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Dd6rG7XNPsz/",
+      "title": "CAC, lifetime value and payback with worked numbers",
+      "title_ru": "Стоимость клиента, LTV и окупаемость на числовом примере",
+      "creator": "saasyass",
+      "category": "Education",
+      "topic": "Business",
+      "language": "en",
+      "duration_seconds": 112,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Dd6rG7XNPsz",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Works through acquisition costs, gross profit and payback in a SaaS example.",
+        "checks_needed": "Illustrative assumptions and heuristic ratios need context; check the arithmetic."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Dd9umybMRB4/",
+      "title": "Why an apparently successful ad can mislead",
+      "title_ru": "Почему хорошие показатели рекламы могут обманывать",
+      "creator": "saasyass",
+      "category": "Education",
+      "topic": "Business",
+      "language": "en",
+      "duration_seconds": 108,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Dd9umybMRB4",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains audience overlap, frequency and misleading conversion signals.",
+        "checks_needed": "Verify current platform controls and measurement assumptions."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DdsKWXOtXkR/",
+      "title": "Submitting an app for editorial featuring",
+      "title_ru": "Как подать приложение на редакционную подборку",
+      "creator": "Gus | Building A Meal Plan App",
+      "category": "Education",
+      "topic": "Product development",
+      "language": "en",
+      "duration_seconds": 63,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DdsKWXOtXkR",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Shows the featuring-nomination route in a developer dashboard.",
+        "checks_needed": "Nomination does not guarantee featuring; confirm the current process."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DcpkVkcS0DF/",
+      "title": "Building clearer app listing screenshots",
+      "title_ru": "Как подготовить понятные скриншоты приложения",
+      "creator": "Arshan Adili",
+      "category": "Education",
+      "topic": "Design",
+      "language": "en",
+      "duration_seconds": 27,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DcpkVkcS0DF",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Outlines a sequence for choosing and building store-listing screenshots.",
+        "checks_needed": "Avoid copying other designs; named tools and outcome claims need review."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Ddxdnl6tnlN/",
+      "title": "Testing variants of app-store screenshots",
+      "title_ru": "Как сравнивать варианты скриншотов приложения",
+      "creator": "Gus | Building A Meal Plan App",
+      "category": "Engineering",
+      "topic": "Product development",
+      "language": "en",
+      "duration_seconds": 53,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Ddxdnl6tnlN",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains a product-page experiment with alternative screenshots.",
+        "checks_needed": "Check sample size, significance and current platform capabilities."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Dc9IjLURvkF/",
+      "title": "Supporting larger text in an app",
+      "title_ru": "Как поддержать увеличенный текст в приложении",
+      "creator": "Gus | Building A Meal Plan App",
+      "category": "Engineering",
+      "topic": "Accessibility",
+      "language": "en",
+      "duration_seconds": 69,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Dc9IjLURvkF",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains the problem with hardcoded text sizes and demonstrates scalable text.",
+        "checks_needed": "Verify implementation and device coverage; prevalence statistics are unverified."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DdwaOPWzzL5/",
+      "title": "Choosing between SQL, document storage and a cache",
+      "title_ru": "Как выбирать между SQL, MongoDB и Redis",
+      "creator": "Shubham | Tech & Code Simplified",
+      "category": "Engineering",
+      "topic": "Databases",
+      "language": "hi",
+      "duration_seconds": 60,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DdwaOPWzzL5",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Compares database choices using application requirements.",
+        "checks_needed": "A simplified decision framework; the technologies have overlapping capabilities."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Ddv_ArSDG5s/",
+      "title": "Refactoring around a real code requirement",
+      "title_ru": "Рефакторинг под реальное изменение требований",
+      "creator": "Asfar Ali",
+      "category": "Engineering",
+      "topic": "Programming",
+      "language": "en",
+      "duration_seconds": 109,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Ddv_ArSDG5s",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Uses discount-calculation code to demonstrate preserving behaviour before extension.",
+        "checks_needed": "Review the code example and tradeoffs rather than treating one design as universal."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Ddnfah6gY-A/",
+      "title": "What an App Clip does",
+      "title_ru": "Как работает небольшой фрагмент приложения App Clip",
+      "creator": "Ayo O | App Developer",
+      "category": "Engineering",
+      "topic": "App development",
+      "language": "en",
+      "duration_seconds": 28,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Ddnfah6gY-A",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains sharing a small usable part of an app before a full install.",
+        "checks_needed": "Verify platform restrictions and the specific examples."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DdFVNWkOOdM/",
+      "title": "Using acting techniques for natural camera delivery",
+      "title_ru": "Актёрские приёмы для естественной речи на камеру",
+      "creator": "Sonya Wills | Actor Tips → Creators",
+      "category": "Education",
+      "topic": "Communication",
+      "language": "en",
+      "duration_seconds": 82,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DdFVNWkOOdM",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Offers a concrete performance exercise for less forced delivery.",
+        "checks_needed": "Subjective coaching; assess the demonstrated exercise without promised outcomes."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DcRc8e3PgtY/",
+      "title": "Two practical tricks for speaking on camera",
+      "title_ru": "Два практических приёма для речи на камеру",
+      "creator": "Aayush Swamy",
+      "category": "Education",
+      "topic": "Communication",
+      "language": "en",
+      "duration_seconds": 37,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DcRc8e3PgtY",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Demonstrates recording and editing small changes to spoken delivery.",
+        "checks_needed": "Creator technique, not a scientific rule."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DcwPu99sDKI/",
+      "title": "A three-part framework for a clear video explanation",
+      "title_ru": "Три части понятного объяснения на видео",
+      "creator": "Aayush Swamy",
+      "category": "Education",
+      "topic": "Communication",
+      "language": "en",
+      "duration_seconds": 69,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DcwPu99sDKI",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Presents a structured approach to an opening, explanation and next step.",
+        "checks_needed": "Review the examples; no guarantee of attention or growth."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Dbvv1NCMLge/",
+      "title": "Text-selection and cursor gestures on a phone",
+      "title_ru": "Жесты для выделения текста и управления курсором",
+      "creator": "Sean On Tech",
+      "category": "Engineering",
+      "topic": "Everyday technology",
+      "language": "en",
+      "duration_seconds": 65,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Dbvv1NCMLge",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Demonstrates concrete text-editing gestures on an iPhone.",
+        "checks_needed": "Verify the iOS version, device support and accessibility alternatives."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DY2BBsIuFcC/",
+      "title": "Comparing narrative structures in short videos",
+      "title_ru": "Сравнение сюжетных структур короткого видео",
+      "creator": "Kallaway",
+      "category": "Education",
+      "topic": "Video creation",
+      "language": "en",
+      "duration_seconds": 74,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DY2BBsIuFcC",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Compares different ways to arrange context, conflict and payoff.",
+        "checks_needed": "Narrative advice is subjective; broad claims about attention need evidence."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Dbhzib7taC6/",
+      "title": "A founder breaks down a product-video strategy",
+      "title_ru": "Основатель разбирает продвижение продукта через видео",
+      "creator": "Robert Gutierrez",
+      "category": "Education",
+      "topic": "Business",
+      "language": "en",
+      "duration_seconds": 129,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Dbhzib7taC6",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Describes product demonstrations, audience relevance and feedback loops.",
+        "checks_needed": "Reported reach is self-reported; inspect promotional tactics before approval."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DZBn2hHtJ0K/",
+      "title": "Giving an AI coding assistant visual UI feedback",
+      "title_ru": "Как давать ИИ-разработчику визуальные замечания",
+      "creator": "Andres Gonzalez",
+      "category": "AI",
+      "topic": "Design",
+      "language": "en",
+      "duration_seconds": 29,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DZBn2hHtJ0K",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Shows selecting an interface element to communicate an exact change.",
+        "checks_needed": "Verify the tool and version; a demonstration is not an independent endorsement."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Dal1mEGPhjs/",
+      "title": "Learning from customer complaints about competing products",
+      "title_ru": "Как находить потребности клиентов в отзывах о конкурентах",
+      "creator": "Darryl McIvor",
+      "category": "Education",
+      "topic": "Business",
+      "language": "en",
+      "duration_seconds": 70,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Dal1mEGPhjs",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Describes using dissatisfaction to identify a specific product need.",
+        "checks_needed": "Treat outreach results as anecdotal; avoid unsolicited bulk messaging."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/Daup5J3iDkP/",
+      "title": "Creating an interface-tracking visual effect",
+      "title_ru": "Как сделать визуальный эффект с отслеживанием интерфейса",
+      "creator": "Declann Drostan Tan | Content Creator",
+      "category": "Education",
+      "topic": "Video creation",
+      "language": "en",
+      "duration_seconds": 55,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Daup5J3iDkP",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Outlines capture, image preparation and video-generation steps for an effect.",
+        "checks_needed": "Review practical reproducibility, paid features and disclosure of generated media."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DW7bnb9jYWE/",
+      "title": "What one developer learned from app review rejection",
+      "title_ru": "Что разработчик исправил после отказа App Store",
+      "creator": "Aaryan Gusain",
+      "category": "Education",
+      "topic": "Product development",
+      "language": "en",
+      "duration_seconds": 41,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DW7bnb9jYWE",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Connects a restore-purchases control and terms links to a review experience.",
+        "checks_needed": "Personal experience; verify current Apple policies and avoid blanket approval promises."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DZctpzPtwU5/",
+      "title": "Mapping an unfamiliar code repository",
+      "title_ru": "Как разобраться в структуре незнакомого репозитория",
+      "creator": "Kir 👾",
+      "category": "AI",
+      "topic": "Programming",
+      "language": "ru",
+      "duration_seconds": 63,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DZctpzPtwU5",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Demonstrates commands for exploring a repository and its code relationships.",
+        "checks_needed": "Verify tool commands and outputs against the real repository; popularity claims are unverified."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DXotCSZkReb/",
+      "title": "Planning safe areas for captions in vertical video",
+      "title_ru": "Как размещать субтитры и графику в вертикальном видео",
+      "creator": "David Mansilla | Video Editing",
+      "category": "Education",
+      "topic": "Video creation",
+      "language": "en",
+      "duration_seconds": 91,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DXotCSZkReb",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains practical layout zones to keep content clear of interface overlays.",
+        "checks_needed": "Safe areas vary by platform and device; no universal layout guarantee."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DWTwRZqlCjR/",
+      "title": "Reviewing a recording to improve spoken delivery",
+      "title_ru": "Как анализировать свою запись для улучшения речи",
+      "creator": "Vinh Quang Giang",
+      "category": "Education",
+      "topic": "Communication",
+      "language": "en",
+      "duration_seconds": 58,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DWTwRZqlCjR",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Separates listening, visual review and transcript review into a practice exercise.",
+        "checks_needed": "Self-assessment advice; immediate-result claims should not be repeated as guarantees."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DXZdPMuiBX2/",
+      "title": "Architectural details of the Salamandra building",
+      "title_ru": "Архитектурные детали дома страхового общества «Саламандра»",
+      "creator": "Сергей Леонидов | Гид по Питеру",
+      "category": "Education",
+      "topic": "Architecture and history",
+      "language": "ru",
+      "duration_seconds": 90,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DXZdPMuiBX2",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Shows architectural details while describing the history of a particular building.",
+        "checks_needed": "Verify historical details and filming/access permissions; no current entry guarantee."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DYPi1znKRzl/",
+      "title": "An architectural courtyard beside the Red Bridge",
+      "title_ru": "Архитектура двора рядом с Красным мостом",
+      "creator": "Сергей Леонидов | Гид по Питеру",
+      "category": "Education",
+      "topic": "Architecture and history",
+      "language": "ru",
+      "duration_seconds": 90,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DYPi1znKRzl",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explores a courtyard, atrium and visible design details in Saint Petersburg.",
+        "checks_needed": "Verify locations and access; this is a local architectural tour rather than a historical fact check."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DbgFP9XIRu6/",
+      "title": "Building a removable bath panel",
+      "title_ru": "Как сделать съёмный экран под ванной",
+      "creator": "Jenri Joinery",
+      "category": "Engineering",
+      "topic": "DIY and construction",
+      "language": "ru",
+      "duration_seconds": 37,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DbgFP9XIRu6",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Demonstrates a small construction project with a frame, doors and magnets.",
+        "checks_needed": "Check material suitability, moisture resistance, ventilation and service access."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DfMPU56trgb/",
+      "title": "A safer software deployment workflow",
+      "title_ru": "Как снижать риск при выпуске новой версии программы",
+      "creator": "Sananet | سانا راد ایرانیان",
+      "category": "Engineering",
+      "topic": "Software delivery",
+      "language": "fa",
+      "duration_seconds": 81,
+      "evidence_type": "third_party_transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DfMPU56trgb",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains staging, automated checks, gradual rollout, monitoring and rollback.",
+        "checks_needed": "Verify the deployment strategy against the actual architecture; subtitles need Persian review."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/p/DKwnejjNgKo/",
+      "title": "A Carthaginian mosaic in the British Museum",
+      "title_ru": "Карфагенская мозаика в Британском музее",
+      "creator": "Natasha Billson / British Museum",
+      "category": "Education",
+      "topic": "History and archaeology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "creator_portfolio_description",
+      "evidence_url": "https://www.natashabillson.com/social-media-campaigns/british-museum",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Creator portfolio identifies this episode of an educational short-form museum series.",
+        "checks_needed": "Watch the original to verify video type, duration, specific claims and context. /p/ is the observed share URL; do not assume all Instagram posts are videos."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/p/DLUgBi0qWvt/",
+      "title": "Exploring samurai armour",
+      "title_ru": "Устройство и история самурайских доспехов",
+      "creator": "Natasha Billson / British Museum",
+      "category": "Education",
+      "topic": "History and archaeology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "creator_portfolio_description",
+      "evidence_url": "https://www.natashabillson.com/social-media-campaigns/british-museum",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Creator portfolio identifies this episode of an educational short-form museum series.",
+        "checks_needed": "Watch the original to verify video type, duration, specific claims and context. /p/ is the observed share URL; do not assume all Instagram posts are videos."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/p/DKMrkYxKvPk/",
+      "title": "The Lycurgus cup",
+      "title_ru": "Кубок Ликурга",
+      "creator": "Natasha Billson / British Museum",
+      "category": "Education",
+      "topic": "History and archaeology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "creator_portfolio_description",
+      "evidence_url": "https://www.natashabillson.com/social-media-campaigns/british-museum",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Creator portfolio identifies this episode of an educational short-form museum series.",
+        "checks_needed": "Watch the original to verify video type, duration, specific claims and context. /p/ is the observed share URL; do not assume all Instagram posts are videos."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/p/DL7BecjNLUP/",
+      "title": "Interpreting an ancient lovers sculpture",
+      "title_ru": "Что рассказывает древняя скульптура влюблённых",
+      "creator": "Natasha Billson / British Museum",
+      "category": "Education",
+      "topic": "History and archaeology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "creator_portfolio_description",
+      "evidence_url": "https://www.natashabillson.com/social-media-campaigns/british-museum",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Creator portfolio identifies this episode of an educational short-form museum series.",
+        "checks_needed": "Watch the original to verify video type, duration, specific claims and context. /p/ is the observed share URL; do not assume all Instagram posts are videos."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/p/DJrNjvGK4LC/",
+      "title": "An Aztec serpent object",
+      "title_ru": "Ацтекская скульптура змеи",
+      "creator": "Natasha Billson / British Museum",
+      "category": "Education",
+      "topic": "History and archaeology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "creator_portfolio_description",
+      "evidence_url": "https://www.natashabillson.com/social-media-campaigns/british-museum",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Creator portfolio identifies this episode of an educational short-form museum series.",
+        "checks_needed": "Watch the original to verify video type, duration, specific claims and context. /p/ is the observed share URL; do not assume all Instagram posts are videos."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/p/DNn7EZeId1R/",
+      "title": "The Lion of Knidos",
+      "title_ru": "История Книдского льва",
+      "creator": "Natasha Billson / British Museum",
+      "category": "Education",
+      "topic": "History and archaeology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "creator_portfolio_description",
+      "evidence_url": "https://www.natashabillson.com/social-media-campaigns/british-museum",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Creator portfolio identifies this episode of an educational short-form museum series.",
+        "checks_needed": "Watch the original to verify video type, duration, specific claims and context. /p/ is the observed share URL; do not assume all Instagram posts are videos."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/p/DMclQjNNl4R/",
+      "title": "Oliphants and historical craft",
+      "title_ru": "Олифанты и историческое ремесло",
+      "creator": "Natasha Billson / British Museum",
+      "category": "Education",
+      "topic": "History and archaeology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "creator_portfolio_description",
+      "evidence_url": "https://www.natashabillson.com/social-media-campaigns/british-museum",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Creator portfolio identifies this episode of an educational short-form museum series.",
+        "checks_needed": "Watch the original to verify video type, duration, specific claims and context. /p/ is the observed share URL; do not assume all Instagram posts are videos."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/p/DNDPRkhNA1B/",
+      "title": "Byzantine jewellery",
+      "title_ru": "Византийские украшения",
+      "creator": "Natasha Billson / British Museum",
+      "category": "Education",
+      "topic": "History and archaeology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "creator_portfolio_description",
+      "evidence_url": "https://www.natashabillson.com/social-media-campaigns/british-museum",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Creator portfolio identifies this episode of an educational short-form museum series.",
+        "checks_needed": "Watch the original to verify video type, duration, specific claims and context. /p/ is the observed share URL; do not assume all Instagram posts are videos."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DWgZ9DYglaE/",
+      "title": "Seeing material textures with a tactile microscope",
+      "title_ru": "Как тактильный микроскоп показывает поверхность материалов",
+      "creator": "Steve Mould",
+      "category": "Engineering",
+      "topic": "Science and metrology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "manufacturer_description",
+      "evidence_url": "https://www.linkedin.com/posts/gelsight_steve-mould-on-instagram-this-microscope-activity-7445462651171901440-3D4W",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Manufacturer describes a science-presenter demonstration of tactile surface imaging.",
+        "checks_needed": "Brand-sourced and potentially sponsored. Watch the original, check duration and independently verify performance claims."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DVYupKhCFnV/",
+      "title": "Reconstructing surface geometry with a gel sensor",
+      "title_ru": "Как гелевый датчик восстанавливает геометрию поверхности",
+      "creator": "Steve Mould",
+      "category": "Engineering",
+      "topic": "Science and metrology",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "manufacturer_description",
+      "evidence_url": "https://www.linkedin.com/posts/gelsight_steve-mould-by-giving-objects-a-coat-of-activity-7434706754602557440-s_Jf",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Manufacturer describes a science-presenter demonstration of tactile surface imaging.",
+        "checks_needed": "Brand-sourced and potentially sponsored. Watch the original, check duration and independently verify performance claims."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null,
+      "researched_at": "2026-11-03"
     }
   ]
 }

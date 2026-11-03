@@ -25,7 +25,7 @@ class CurationTests(unittest.TestCase):
     def test_url_normalisation_and_rejection(self):
         self.assertEqual(reels.canonical_url("https://instagram.com/reels/AbC_123?igsh=test"), self.item["source_url"])
         for bad in ["http://instagram.com/reel/a/", "https://instagram.com.evil/reel/a/",
-                    "https://instagram.com@evil.test/reel/a/", "https://instagram.com/p/a/",
+                    "https://instagram.com@evil.test/reel/a/", "https://instagram.com/stories/a/",
                     "https://instagram.com:443/reel/a/"]:
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 reels.canonical_url(bad)
@@ -42,6 +42,7 @@ class CurationTests(unittest.TestCase):
     def test_dedup_uses_canonical_original(self):
         item = dict(self.item, source_url="https://instagram.com/reels/AbC_123/?tracking=1")
         self.assertEqual(reels.video_id(item), reels.video_id(self.item))
+        self.assertEqual(reels.video_id(dict(item, source_url="https://instagram.com/p/AbC_123/")), reels.video_id(self.item))
         file = self.root / "manifest.json"
         file.write_text(json.dumps({"schema_version": 1, "items": [self.item, item]}))
         with self.assertRaisesRegex(ValueError, "Duplicate"):
@@ -49,8 +50,8 @@ class CurationTests(unittest.TestCase):
 
     def test_default_catalogue_is_not_publishable(self):
         items = reels.load_manifest(reels.ROOT / "candidates.json")
-        self.assertEqual(len(items), 12)
-        self.assertEqual(sum(i["screening"]["decision"] == "shortlist" for i in items), 8)
+        self.assertGreaterEqual(len(items), 12)
+        self.assertEqual(len({reels.video_id(i) for i in items}), len(items))
         self.assertTrue(all(reels.blockers(i, reels.ROOT) for i in items))
         with patch.object(reels, "request") as network, patch("builtins.print"):
             self.assertEqual(reels.main(["publish"]), 0)
@@ -62,7 +63,7 @@ class CurationTests(unittest.TestCase):
         item = copy.deepcopy(self.item)
         item["title"] = "It's a lesson $datariot_candidates$; DROP TABLE videos; --"
         query = reels.queue_sql([item])
-        self.assertIn("on conflict (source_url) do nothing", query)
+        self.assertIn("on conflict do nothing", query)
         self.assertNotIn("do update", query)
         tag = "$datariot_candidates_$"
         payload = query.split(tag)[1]

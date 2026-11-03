@@ -24,14 +24,16 @@ CATEGORIES = {"Engineering", "Education", "AI", "Logic"}
 def canonical_url(value):
     parsed = urllib.parse.urlsplit(value)
     if (parsed.scheme != "https" or parsed.netloc not in {"instagram.com", "www.instagram.com"}
-            or not re.fullmatch(r"/reels?/[A-Za-z0-9_-]+/?", parsed.path)):
-        raise ValueError("Expected a public https://www.instagram.com/reel/<code>/ URL")
-    code = parsed.path.strip("/").split("/")[1]
-    return f"https://www.instagram.com/reel/{code}/"
+            or not re.fullmatch(r"/(?:reels?|p)/[A-Za-z0-9_-]+/?", parsed.path)):
+        raise ValueError("Expected a public Instagram Reel or post URL")
+    kind, code = parsed.path.strip("/").split("/")
+    # Known short-form videos are also shared under /p/. Preserve observed URLs.
+    return f"https://www.instagram.com/{'p' if kind == 'p' else 'reel'}/{code}/"
 
 
 def video_id(item):
-    return str(uuid.uuid5(uuid.NAMESPACE_URL, "datariot:instagram:" + canonical_url(item["source_url"])))
+    identity = canonical_url(item["source_url"]).replace("/p/", "/reel/")
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, "datariot:instagram:" + identity))
 
 
 def request(url, token, *, method="GET", data=None, headers=None):
@@ -56,10 +58,10 @@ def load_manifest(path):
     for item in data["items"]:
         if not isinstance(item, dict) or not isinstance(item.get("source_url"), str):
             raise ValueError("Each candidate needs a source_url string")
-        url = canonical_url(item["source_url"])
-        if url in seen:
+        identity = video_id(item)
+        if identity in seen:
             raise ValueError("Duplicate source URL in manifest")
-        seen.add(url)
+        seen.add(identity)
     return data["items"]
 
 
@@ -73,7 +75,7 @@ def queue_sql(items):
             "  insert into public.external_video_candidates (source_url, payload)\n"
             "  select candidate->>'source_url', candidate\n"
             f"  from jsonb_array_elements({tag}{payload}{tag}::jsonb) as candidate\n"
-            "  on conflict (source_url) do nothing\n"
+            "  on conflict do nothing\n"
             "  returning source_url\n"
             ") select count(*) as inserted_candidates from inserted;")
 
