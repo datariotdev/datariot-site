@@ -58,6 +58,16 @@ class CurationTests(unittest.TestCase):
                 reels.main(["publish", "--apply"])
             network.assert_not_called()
 
+    def test_queue_export_preserves_reviews_and_quotes_untrusted_text(self):
+        item = copy.deepcopy(self.item)
+        item["title"] = "It's a lesson $datariot_candidates$; DROP TABLE videos; --"
+        query = reels.queue_sql([item])
+        self.assertIn("on conflict (source_url) do nothing", query)
+        self.assertNotIn("do update", query)
+        tag = "$datariot_candidates_$"
+        payload = query.split(tag)[1]
+        self.assertEqual(json.loads(payload), [item])
+
     def test_import_skips_existing_and_preserves_source_privacy(self):
         db = Mock()
         db.exists.return_value = True

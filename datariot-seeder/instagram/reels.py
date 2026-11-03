@@ -63,6 +63,21 @@ def load_manifest(path):
     return data["items"]
 
 
+def queue_sql(items):
+    """Export repeatable queue inserts for the connected SQL tool; preserve existing reviews."""
+    payload = json.dumps(items, ensure_ascii=False)
+    tag = "$datariot_candidates$"
+    while tag in payload:
+        tag = tag[:-1] + "_$"
+    return ("with inserted as (\n"
+            "  insert into public.external_video_candidates (source_url, payload)\n"
+            "  select candidate->>'source_url', candidate\n"
+            f"  from jsonb_array_elements({tag}{payload}{tag}::jsonb) as candidate\n"
+            "  on conflict (source_url) do nothing\n"
+            "  returning source_url\n"
+            ") select count(*) as inserted_candidates from inserted;")
+
+
 def blockers(item, directory):
     reasons = []
     if item.get("screening", {}).get("decision") != "shortlist":
@@ -232,7 +247,7 @@ def discover(args):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ["catalog", "publish"]:
+    for name in ["catalog", "publish", "queue-sql"]:
         sub = commands.add_parser(name)
         sub.add_argument("--input", type=Path, default=ROOT / "candidates.json")
         if name == "publish":
@@ -246,6 +261,9 @@ def main(argv=None):
         discover(args)
         return 0
     items = load_manifest(args.input)
+    if args.command == "queue-sql":
+        print(queue_sql(items))
+        return 0
     ready = []
     for item in items:
         reasons = blockers(item, args.input.parent)

@@ -4,7 +4,8 @@ This is an initial discovery queue and a native-video import tool, not a complet
 index of Instagram or a working global Reels search API.
 
 **Current state (2026-11-03):** 12 links screened, 8 shortlisted, 2 on hold,
-2 rejected, **0 approved for publication, 0 imported into Supabase**. The original
+2 rejected, **12 candidate records staged in Supabase, 0 approved for publication,
+0 imported into the native video feed**. The original
 Reels could not be played during research: Instagram throttled retrieval. Five
 shortlisted items were screened using third-party automatic transcripts; three
 using descriptions in a research article. Durations from transcript pages are
@@ -39,6 +40,35 @@ python3 -m unittest discover -s datariot-seeder/instagram -p 'test_*.py' -v
 
 `publish` defaults to preview. `--apply` explicitly writes reviewed files. The
 bundled manifest cannot publish anything in its current state.
+
+## Supabase editorial queue
+
+The connected `datariot` project was verified on 2026-11-03. Its existing
+`videos` bucket is public and the native `videos` schema matches the importer.
+Migration `add_external_video_candidates_queue` was applied from `queue.sql`.
+All 12 source records were inserted into `public.external_video_candidates`:
+8 shortlisted, 2 held and 2 rejected, all pending review with unknown rights.
+This queue is separate from the native feed. The 15 existing native video rows
+were unchanged; no Instagram videos were published.
+
+The queue has RLS enabled and no access for `anon` or `authenticated`; server
+administration uses `service_role`. The RLS linter's informational
+`rls_enabled_no_policy` finding is expected here: there is intentionally no
+mobile-client policy. Generated status columns reflect the JSON payload so they
+cannot diverge from review data. Private license evidence should remain outside
+the committed catalogue.
+
+To stage another manifest through the connected SQL tool, apply `queue.sql` once
+per new project, then generate the INSERT statement:
+
+```bash
+python3 datariot-seeder/instagram/reels.py queue-sql --input /private/reviewed.json
+```
+
+This command only prints SQL; it does not connect to a database or publish videos.
+Execute its result against the intended project. Duplicate source URLs are
+skipped without resetting existing reviews. A second insert of the initial
+catalogue was verified to add 0 records.
 
 ## Discovery through the official API
 
@@ -137,9 +167,11 @@ playback in a staging project before the first production import.
 
 ## Validation performed
 
-Unit tests cover pending-review publication blocking with no network calls,
+Eight unit tests cover pending-review publication blocking with no network calls,
 source deduplication, missing profiles, invalid media, fixed-host pagination,
 repeat imports and original-source attribution without leaking private license
-evidence. A local generated fixture also exercises real ffprobe/FFmpeg; it is
-not source content and is not uploaded. Live Meta/Supabase calls and mobile
-playback remain untested until those services are connected.
+evidence, and safe SQL export preserving existing reviews. A local generated
+fixture also exercises real ffprobe/FFmpeg; it is not source content and is not
+uploaded. Live Supabase schema, public bucket, queue insertion, duplicate
+handling and access restrictions were verified. Live Meta calls, actual video
+uploads and mobile playback remain untested.
