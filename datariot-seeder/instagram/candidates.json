@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "researched_at": "2026-11-03",
+  "scope": "Small discovery batch; not a complete index of Instagram. Screened from third-party transcript pages or research descriptions, not watched. No factual endorsement or publishing permission inferred.",
+  "items": [
+    {
+      "source_url": "https://www.instagram.com/reel/Dev8BHVBea_/",
+      "title": "How a computer works",
+      "title_ru": "Как из транзисторов получается компьютер",
+      "creator": "Charles Zheng",
+      "category": "Engineering",
+      "language": "en",
+      "duration_seconds": 141,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/Dev8BHVBea_",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains a mechanism from switches through logic gates and memory to program execution.",
+        "checks_needed": "Verify transistor-density numbers and memory-circuit simplifications."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DeccP5hhLac/",
+      "title": "How Bluetooth works",
+      "title_ru": "Как Bluetooth передаёт музыку",
+      "creator": "Charles Zheng",
+      "category": "Engineering",
+      "language": "en",
+      "duration_seconds": 153,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DeccP5hhLac",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Connects wireless audio to encoding, channel hopping and key exchange.",
+        "checks_needed": "Check Bluetooth Classic versus LE details and the AirPods generalisation."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DePA-4SDdwY/",
+      "title": "What happens when you message an LLM",
+      "title_ru": "Что происходит после отправки запроса ИИ",
+      "creator": "AI Unpacked",
+      "category": "AI",
+      "language": "en",
+      "duration_seconds": 92,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DePA-4SDdwY",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Follows a request through networking, routing, GPU inference and response streaming.",
+        "checks_needed": "Specific rack power, temperature and cache architecture are not universal; verify them."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DfIfYrlB8Ue/",
+      "title": "Vector search explained",
+      "title_ru": "Как работает поиск по смыслу",
+      "creator": "Saleh Hashemi",
+      "category": "AI",
+      "language": "fa",
+      "duration_seconds": 134,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DfIfYrlB8Ue",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Explains embeddings, nearest-neighbour search and possible retrieval applications.",
+        "checks_needed": "Spoken Persian despite transcript site labelling English; verify subtitles and oversimplification of traditional databases."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/C_bnaTAO2Ll/",
+      "title": "Inside a NASA plant lab",
+      "title_ru": "Как исследуют выращивание растений в космосе",
+      "creator": "Kellie Gerardi",
+      "category": "Education",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "research_description",
+      "evidence_url": "https://jcom.sissa.it/article/pubid/JCOM_2506_2026_A08/",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Research article describes a plant-lab tour explaining experiments for space agriculture.",
+        "checks_needed": "Original playback, duration, exact statements, audio and embedding availability remain unchecked."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/C_GN-faRhBE/",
+      "title": "Research on a parabolic flight",
+      "title_ru": "Зачем проводят исследования в невесомости",
+      "creator": "Shawna Pandya",
+      "category": "Education",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "research_description",
+      "evidence_url": "https://jcom.sissa.it/article/pubid/JCOM_2506_2026_A08/",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Research article describes an overview of neuroscience and ultrasound research before a flight.",
+        "checks_needed": "Original playback and exact statements remain unchecked; review medical claims."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/C-K6sq_McYI/",
+      "title": "Testing a spacesuit",
+      "title_ru": "Как проходят испытания скафандра",
+      "creator": "Norah Patten",
+      "category": "Engineering",
+      "language": "en",
+      "duration_seconds": null,
+      "evidence_type": "research_description",
+      "evidence_url": "https://jcom.sissa.it/article/pubid/JCOM_2506_2026_A08/",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Research article describes spacesuit testing during training.",
+        "checks_needed": "Confirm there is sufficient spoken explanation rather than just a training montage."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/De7w-tRpTyV/",
+      "title": "Finding first users through conversations",
+      "title_ru": "Как искать первых пользователей продукта",
+      "creator": "Matt | Consumer App Growth",
+      "category": "Education",
+      "language": "en",
+      "duration_seconds": 48,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/De7w-tRpTyV",
+      "screening": {
+        "decision": "shortlist",
+        "reason": "Gives a concrete early customer-discovery example around an existing problem.",
+        "checks_needed": "Contains a promotional ending; distinguish personal experience from proven growth advice."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DfFg8QwuwDv/",
+      "title": "App review speedrun",
+      "title_ru": "Советы по прохождению проверки App Store",
+      "creator": "Remon",
+      "category": "Education",
+      "language": "en",
+      "duration_seconds": 66,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DfFg8QwuwDv",
+      "screening": {
+        "decision": "hold",
+        "reason": "Contains practical submission suggestions mixed with categorical claims.",
+        "checks_needed": "Do not publish before checking current Apple guidelines; no guaranteed 48-hour approval."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DfBhycVhejg/",
+      "title": "AI app security skit",
+      "title_ru": "Ролик о безопасности приложения",
+      "creator": "Lonely developer",
+      "category": "Engineering",
+      "language": "en",
+      "duration_seconds": 63,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DfBhycVhejg",
+      "screening": {
+        "decision": "hold",
+        "reason": "Raises an access-control concern using a dramatised conversation.",
+        "checks_needed": "Tool capabilities and numerical claims need primary-source verification; skit is not incident evidence."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DXeGtxJjeLI/",
+      "title": "Attention and open loops",
+      "title_ru": "Открытые вопросы и удержание внимания",
+      "creator": "William Scott",
+      "category": "Education",
+      "language": "en",
+      "duration_seconds": 54,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DXeGtxJjeLI",
+      "screening": {
+        "decision": "reject",
+        "reason": "Focuses on attention hooks with strong psychological generalisations.",
+        "checks_needed": "Reject for unsupported universal claims about the brain and every viral video."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    },
+    {
+      "source_url": "https://www.instagram.com/reel/DepQmFKKogF/",
+      "title": "Posting advice and growth promotion",
+      "title_ru": "Советы по публикациям и реклама роста",
+      "creator": "Brian Ron Mark",
+      "category": "Education",
+      "language": "en",
+      "duration_seconds": 22,
+      "evidence_type": "transcript",
+      "evidence_url": "https://savedthat.app/transcript/instagram/DepQmFKKogF",
+      "screening": {
+        "decision": "reject",
+        "reason": "Short promotional exchange about social-media posting.",
+        "checks_needed": "Reject for unsupported metric thresholds, minimal explanation and lead-generation framing."
+      },
+      "availability": "not_verified",
+      "review": {
+        "status": "pending",
+        "reviewer": null,
+        "checked_sources": []
+      },
+      "rights": {
+        "status": "unknown",
+        "evidence": null
+      },
+      "author_id": null,
+      "media_file": null
+    }
+  ]
+}
