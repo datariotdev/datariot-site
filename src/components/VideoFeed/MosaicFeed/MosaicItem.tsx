@@ -1,21 +1,22 @@
-import React, { memo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Dimensions, Image, Platform } from 'react-native';
+import React, { memo, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Image, Platform } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { theme } from '@design-system/theme';
+import type { Video } from '../../../lib/supabase/hooks/useVideos';
+import { encodeVideoUrl } from '../../../lib/utils/url';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_SPACING = 12;
 // Item width is handled by flex and numColumns in parent
 
 interface MosaicItemProps {
-    video: any;
+    video: Video;
     isActive: boolean;
     isScreenFocused: boolean;
     onPress: () => void;
+    widthPercent: '50%' | '33.3333%';
 }
 
 const formatNumber = (num: number): string => {
@@ -24,36 +25,12 @@ const formatNumber = (num: number): string => {
     return num.toString();
 };
 
-import { encodeVideoUrl } from '../../../lib/utils/url';
-
-interface MosaicVideoProps {
-    videoUrl: string;
-    isActive: boolean;
-    isScreenFocused: boolean;
-}
-
-const MosaicVideo = ({ videoUrl, isActive, isScreenFocused }: MosaicVideoProps) => {
+const MosaicVideo = ({ videoUrl }: { videoUrl: string }) => {
     const player = useVideoPlayer(encodeVideoUrl(videoUrl), (player) => {
         player.loop = true;
         player.muted = true;
+        player.play();
     });
-
-    useEffect(() => {
-        if (isActive && isScreenFocused) {
-            const playVideo = async () => {
-                try {
-                    await player.play();
-                } catch (e: any) {
-                    if (e.name !== 'AbortError') {
-                        console.error("MosaicItem: Playback failed", e);
-                    }
-                }
-            };
-            playVideo();
-        } else {
-            player.pause();
-        }
-    }, [isActive, isScreenFocused, player]);
 
     return (
         <VideoView
@@ -61,33 +38,39 @@ const MosaicVideo = ({ videoUrl, isActive, isScreenFocused }: MosaicVideoProps) 
             style={StyleSheet.absoluteFill}
             contentFit="cover"
             nativeControls={false}
+            surfaceType="textureView"
         />
     );
 };
 
-export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: MosaicItemProps) => {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress, widthPercent }: MosaicItemProps) => {
+    const { theme } = useTheme();
+    const [failedPoster, setFailedPoster] = useState<string>();
+    const poster = video.thumbnailUrl;
 
     return (
-        <Pressable onPress={onPress} style={styles.container}>
+        <Pressable onPress={onPress} style={[styles.container, { width: widthPercent }]} accessibilityRole="button" accessibilityLabel={`Play ${video.title}`}>
             <View style={styles.card}>
-                {/* Video Layer */}
-                {video.videoUrl ? (
-                    <MosaicVideo
-                        videoUrl={video.videoUrl}
-                        isActive={isActive}
-                        isScreenFocused={isScreenFocused}
+                {poster && poster !== failedPoster ? (
+                    <Image
+                        source={{ uri: poster }}
+                        style={StyleSheet.absoluteFill}
+                        resizeMode="cover"
+                        onError={() => setFailedPoster(poster)}
                     />
-                ) : (
-                    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#111' }]} />
-                )}
+                ) : video.videoUrl && isActive && isScreenFocused ? (
+                    <MosaicVideo videoUrl={video.videoUrl} />
+                ) : null}
 
                 {/* Dark Overlay for better text contrast */}
                 <LinearGradient
                     colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.6)']}
                     style={StyleSheet.absoluteFill}
                 />
+
+                <View style={styles.playIcon} pointerEvents="none">
+                    <Ionicons name="play" size={20} color="#FFF" />
+                </View>
 
                 {/* Top Overlay: Trending/AI Badge */}
                 {video.category && (
@@ -132,10 +115,12 @@ MosaicItem.displayName = 'MosaicItem';
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, // Use flex instead of fixed width
-        aspectRatio: 1, // Keep it square
-        marginHorizontal: GRID_SPACING / 2,
-        marginBottom: GRID_SPACING,
+        aspectRatio: 2 / 3,
+        padding: GRID_SPACING / 2,
+    },
+    card: {
+        flex: 1,
+        backgroundColor: '#111',
         borderRadius: 24,
         overflow: 'hidden',
         // High-end shadow
@@ -145,9 +130,10 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 6,
     },
-    card: {
-        flex: 1,
-        backgroundColor: '#111',
+    playIcon: {
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     topBadgeContainer: {
         position: 'absolute',

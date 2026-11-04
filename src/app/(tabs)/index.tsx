@@ -19,8 +19,6 @@ import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideo
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
 import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
-import { CuratedFeed } from '../../components/VideoFeed/CuratedFeed';
-import { useCuratedReels } from '../../lib/curated/useCuratedReels';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -55,18 +53,18 @@ const HomeScreen = () => {
         videos,
         loading,
         loadMore,
+        refresh,
         toggleLike,
         toggleFollow,
     } = useVideos({
         type: activeTab,
-        category: activeCategory || undefined,
+        category: activeTab === 'trending' ? activeCategory || undefined : undefined,
     });
 
     const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
     const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
     const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
     const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
-    const curatedReels = useCuratedReels(activeTab === 'trending', activeCategory);
 
     const handleSelectVideo = (videoId: string) => setSelectedVideoId(videoId);
     const handleComment = (videoId: string) => setCommentsVideoId(videoId);
@@ -77,14 +75,6 @@ const HomeScreen = () => {
         if (vid) setMoreOptionsVideo(vid);
     };
 
-    if (activeTab !== 'trending' && loading && videos.length === 0) {
-        return (
-            <View style={[styles.loadingContainer, { backgroundColor: 'transparent' }]}>
-                <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
-            </View>
-        );
-    }
-
     const isFeedActive =
         isFocused &&
         selectedVideoId === null &&
@@ -92,15 +82,12 @@ const HomeScreen = () => {
         deepDiveVideo === null &&
         moreOptionsVideo === null;
 
-    const feedPaddingTop = isWeb ? 8 : (activeTab === 'trending' ? insets.top + 120 : insets.top + 64);
+    const feedPaddingTop = isWeb ? 8 : 0;
 
-    const feed = activeTab === 'trending' ? (
-        <CuratedFeed videos={videos} reels={curatedReels} grid={viewMode === 'mosaic'}
-            isFocused={isFeedActive} paddingTop={feedPaddingTop} onEndReached={loadMore}
-            onSelectNative={handleSelectVideo} />
-    ) : videos.length > 0 ? (
+    const feed = videos.length > 0 ? (
         viewMode === 'mosaic' ? (
             <MosaicFeed
+                key={`${activeTab}-${activeCategory ?? 'all'}`}
                 videos={videos}
                 isFocused={isFeedActive}
                 onEndReached={loadMore}
@@ -131,7 +118,11 @@ const HomeScreen = () => {
                 paddingTop={feedPaddingTop}
             />
         )
-    ) : !loading ? (
+    ) : loading ? (
+        <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
+        </View>
+    ) : (
         <View style={styles.emptyContainer}>
             <BlurView
                 intensity={isDark ? 30 : 50}
@@ -153,14 +144,14 @@ const HomeScreen = () => {
                 <Text style={[styles.emptySubtitle, { color: theme.colors.text.secondary, fontFamily: MONO }]}>
                     NOTHING IS BROADCASTING ON THIS CHANNEL. CLEAR YOUR FILTERS OR CHECK BACK LATER.
                 </Text>
-                <Pressable style={[styles.retryButton, { borderColor: theme.colors.primary.DEFAULT }]} onPress={loadMore}>
+                <Pressable style={[styles.retryButton, { borderColor: theme.colors.primary.DEFAULT }]} onPress={refresh}>
                     <Text style={[styles.retryText, { color: theme.colors.primary.DEFAULT, fontFamily: MONO }]}>
                         [ RESCAN ]
                     </Text>
                 </Pressable>
             </BlurView>
         </View>
-    ) : null;
+    );
 
     const modals = (
         <>
@@ -170,17 +161,17 @@ const HomeScreen = () => {
                 onClose={() => setCommentsVideoId(null)}
             />
 
-            <FullScreenVideoModal
-                visible={selectedVideoId !== null}
-                videos={videos}
-                initialVideoId={selectedVideoId}
-                onClose={() => setSelectedVideoId(null)}
-                onLike={toggleLike}
-                onComment={handleComment}
-                onSave={handleSave}
-                onMore={handleMore}
-                onFollow={toggleFollow}
-            />
+            {selectedVideoId !== null && (
+                <FullScreenVideoModal
+                    visible
+                    videos={videos}
+                    initialVideoId={selectedVideoId}
+                    onClose={() => setSelectedVideoId(null)}
+                    onLike={toggleLike}
+                    onSave={handleSave}
+                    onFollow={toggleFollow}
+                />
+            )}
 
             <MoreOptionsModal
                 visible={moreOptionsVideo !== null}
@@ -261,7 +252,13 @@ const HomeScreen = () => {
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
-            <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+            <View
+                style={[styles.topNav, {
+                    paddingTop: insets.top + 10,
+                    paddingBottom: activeTab === 'trending' ? 68 : 8,
+                    backgroundColor: theme.colors.background.primary,
+                }]}
+            >
                 <View style={styles.topNavContent} pointerEvents="box-none">
                     <View style={styles.leftActionsContainer}>
                         <Pressable
@@ -381,10 +378,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     topNav: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
         zIndex: 10,
     },
     topNavContent: {
@@ -410,7 +403,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     rightActionsContainer: {
-        width: 148,
+        flexShrink: 0,
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',

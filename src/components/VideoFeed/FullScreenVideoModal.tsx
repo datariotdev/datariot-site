@@ -1,17 +1,14 @@
-import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import {
     Modal,
     View,
     Text,
-    Image,
     StyleSheet,
     TouchableOpacity,
     Pressable,
     FlatList,
-    Dimensions,
     ViewToken,
     StatusBar,
-    useWindowDimensions,
     Platform
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -26,57 +23,17 @@ import { CommentsModal } from './CommentsModal';
 import { DeepDiveModal } from './DeepDiveModal';
 import { MoreOptionsModal } from './MoreOptionsModal';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withRepeat,
-    withTiming,
-    withSequence,
-    FadeIn
-} from 'react-native-reanimated';
-import { useTheme } from '../Theme/ThemeProvider';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import type { Video as FeedVideo } from '../../lib/supabase/hooks/useVideos';
 
 interface FullScreenVideoModalProps {
     visible: boolean;
-    videos: any[];
+    videos: FeedVideo[];
     initialVideoId: string | null;
     onClose: () => void;
     onLike: (id: string) => void;
-    onComment: (id: string) => void;
     onSave: (id: string) => void;
-    onMore: (id: string) => void;
     onFollow: (id: string) => void;
 }
-
-interface InternalFullScreenVideoProps {
-    videoUrl: string;
-    isActive: boolean;
-    isPaused: boolean;
-    onTimeUpdate: (currentTime: number, duration: number) => void;
-}
-
-const InternalFullScreenVideo = ({ videoUrl, isActive, isPaused, onTimeUpdate }: InternalFullScreenVideoProps) => {
-    const videoRef = useRef<Video>(null);
-
-    return (
-        <Video
-            ref={videoRef}
-            source={{ uri: encodeVideoUrl(videoUrl) || '' }}
-            style={StyleSheet.absoluteFill}
-            resizeMode={ResizeMode.CONTAIN}
-            shouldPlay={isActive && !isPaused}
-            isLooping
-            isMuted={true}
-            onPlaybackStatusUpdate={(status: any) => {
-                if (status.isLoaded && status.durationMillis) {
-                    onTimeUpdate(status.positionMillis, status.durationMillis);
-                }
-            }}
-        />
-    );
-};
 
 function FullScreenVideoItem({
     item,
@@ -88,7 +45,7 @@ function FullScreenVideoItem({
     onMore,
     onFollow,
 }: {
-    item: any;
+    item: FeedVideo;
     isActive: boolean;
     height: number;
     onLike: () => void;
@@ -97,7 +54,9 @@ function FullScreenVideoItem({
     onMore: () => void;
     onFollow: () => void;
 }) {
+    const playerRef = useRef<Video>(null);
     const [isPaused, setIsPaused] = useState(false);
+    const [isMuted, setIsMuted] = useState(Platform.OS === 'web');
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
@@ -106,34 +65,39 @@ function FullScreenVideoItem({
     };
 
     const handleSeek = (value: number) => {
-        console.log('Seek not yet implemented with hook isolation');
+        playerRef.current?.setPositionAsync(value).catch((error) => {
+            console.warn('Video seek failed:', error);
+        });
     };
 
     // Double tap to like gesture
     const doubleTap = Gesture.Tap()
         .numberOfTaps(2)
         .maxDuration(250)
+        .runOnJS(true)
         .onEnd(() => { onLike(); });
 
     return (
         <GestureDetector gesture={doubleTap}>
-            <View style={{ width: SCREEN_WIDTH, height, backgroundColor: '#000' }}>
+            <View style={{ width: '100%', height, backgroundColor: '#000' }}>
                 <Pressable style={StyleSheet.absoluteFill} onPress={togglePlayback}>
-                    {(item.videoUrl || item.url) ? (
-                        <InternalFullScreenVideo
-                            videoUrl={item.videoUrl || item.url}
-                            isActive={isActive}
-                            isPaused={isPaused}
-                            onTimeUpdate={(ct, dur) => {
-                                setCurrentTime(ct);
-                                setDuration(dur);
-                            }}
-                        />
-                    ) : (
-                        <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}>
-                            <Ionicons name="videocam-off" size={64} color="rgba(255,255,255,0.15)" />
-                        </View>
-                    )}
+                    <Video
+                        ref={playerRef}
+                        source={{ uri: encodeVideoUrl(item.videoUrl) || '' }}
+                        style={StyleSheet.absoluteFill}
+                        resizeMode={ResizeMode.CONTAIN}
+                        posterSource={item.thumbnailUrl ? { uri: item.thumbnailUrl } : undefined}
+                        usePoster={!!item.thumbnailUrl}
+                        shouldPlay={isActive && !isPaused}
+                        isLooping
+                        isMuted={isMuted}
+                        onPlaybackStatusUpdate={(status) => {
+                            if (status.isLoaded) {
+                                setCurrentTime(status.positionMillis);
+                                setDuration(status.durationMillis ?? 0);
+                            }
+                        }}
+                    />
 
                     {isPaused && (
                         <View style={styles.pauseOverlay}>
@@ -142,10 +106,19 @@ function FullScreenVideoItem({
                     )}
                 </Pressable>
 
+                <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
+                    onPress={() => setIsMuted((muted) => !muted)}
+                    style={styles.muteButton}
+                >
+                    <Ionicons name={isMuted ? 'volume-mute' : 'volume-medium'} size={22} color="#FFF" />
+                </Pressable>
+
                 <VideoControls
                     isPlaying={isActive && !isPaused}
                     title={item.title || ''}
-                    author={item.author || item.authorName || ''}
+                    author={item.author}
                     authorId={item.authorId || ''}
                     avatarUrl={item.avatarUrl}
                     hashtag={item.hashtag}
@@ -158,7 +131,6 @@ function FullScreenVideoItem({
                     isLiked={item.isLiked || false}
                     isSaved={item.isSaved || false}
                     isFollowing={item.isFollowing || false}
-                    isLive={item.isLive}
                     onLike={onLike}
                     onComment={onComment}
                     onSave={onSave}
@@ -176,66 +148,26 @@ export function FullScreenVideoModal({
     initialVideoId,
     onClose,
     onLike,
-    onComment,
     onSave,
-    onMore,
     onFollow,
 }: FullScreenVideoModalProps) {
     const insets = useSafeAreaInsets();
-    const { theme } = useTheme();
     const router = useRouter();
-    const { height: screenHeight } = useWindowDimensions();
-    const [activeIndex, setActiveIndex] = useState(0);
-
-    // AI Pulsing Animation
-    const pulseAnim = useSharedValue(1);
-    useEffect(() => {
-        pulseAnim.value = withRepeat(
-            withSequence(
-                withTiming(0.4, { duration: 1000 }),
-                withTiming(1, { duration: 1000 })
-            ),
-            -1,
-            true
-        );
-    }, []);
-
-    const animatedPulseStyle = useAnimatedStyle(() => ({
-        opacity: pulseAnim.value,
-    }));
-    const flatListRef = useRef<FlatList>(null);
+    const [viewportHeight, setViewportHeight] = useState(0);
+    const initialIndex = Math.max(0, videos.findIndex((video) => video.id === initialVideoId));
+    const [viewableIndex, setViewableIndex] = useState<number | null>(null);
+    const activeIndex = viewableIndex ?? initialIndex;
     const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
     const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
     const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
-
-    const handleOpenComments = useCallback((id: string) => {
-        setCommentsVideoId(id);
-        onComment(id);
-    }, [onComment]);
-
-    const handleCloseComments = useCallback(() => {
-        setCommentsVideoId(null);
-    }, []);
-
-    // Jump to correct video when opened
-    useEffect(() => {
-        if (visible && initialVideoId) {
-            const index = videos.findIndex((v: any) => v.id === initialVideoId);
-            if (index !== -1) {
-                setActiveIndex(index);
-                requestAnimationFrame(() => {
-                    flatListRef.current?.scrollToIndex({ index, animated: false });
-                });
-            }
-        }
-    }, [visible, initialVideoId, videos]);
+    const playerIsVisible = !commentsVideoId && !moreOptionsVideo && !deepDiveVideo;
 
     const viewabilityConfig = useMemo(() => ({ itemVisiblePercentThreshold: 60 }), []);
     const isFocused = useIsFocused();
 
     const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
         if (viewableItems.length > 0 && viewableItems[0].index !== null) {
-            setActiveIndex(viewableItems[0].index!);
+            setViewableIndex(viewableItems[0].index);
         }
     }, []);
 
@@ -250,7 +182,7 @@ export function FullScreenVideoModal({
             onRequestClose={onClose}
         >
             <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
-            <View style={styles.container}>
+            <View style={styles.container} onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}>
                 <LinearGradient
                     colors={['rgba(0,0,0,0.6)', 'transparent']}
                     style={[styles.statusShadow, { height: insets.top + 30 }]}
@@ -293,15 +225,18 @@ export function FullScreenVideoModal({
                     </TouchableOpacity>
                 </View>
 
-                <FlatList
-                    ref={flatListRef}
+                {viewportHeight > 0 && <FlatList
+                    initialScrollIndex={initialIndex}
                     data={videos}
                     keyExtractor={item => item.id}
                     pagingEnabled
+                    initialNumToRender={1}
+                    maxToRenderPerBatch={2}
+                    windowSize={3}
                     showsVerticalScrollIndicator={false}
                     getItemLayout={(_, index) => ({
-                        length: screenHeight,
-                        offset: screenHeight * index,
+                        length: viewportHeight,
+                        offset: viewportHeight * index,
                         index,
                     })}
                     viewabilityConfig={viewabilityConfig}
@@ -309,21 +244,21 @@ export function FullScreenVideoModal({
                     renderItem={({ item, index }) => (
                         <FullScreenVideoItem
                             item={item}
-                            isActive={index === activeIndex && isFocused}
-                            height={screenHeight}
+                            isActive={index === activeIndex && isFocused && playerIsVisible}
+                            height={viewportHeight}
                             onLike={() => onLike(item.id)}
-                            onComment={() => handleOpenComments(item.id)}
+                            onComment={() => setCommentsVideoId(item.id)}
                             onSave={() => onSave(item.id)}
                             onMore={() => setMoreOptionsVideo(item)}
                             onFollow={() => onFollow(item.authorId)}
                         />
                     )}
-                />
+                />}
             </View>
             <CommentsModal
                 visible={!!commentsVideoId}
                 videoId={commentsVideoId}
-                onClose={handleCloseComments}
+                onClose={() => setCommentsVideoId(null)}
             />
             <DeepDiveModal
                 visible={deepDiveVideo !== null}
@@ -361,6 +296,18 @@ const styles = StyleSheet.create({
         height: 44,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    muteButton: {
+        position: 'absolute',
+        top: '24%',
+        right: 16,
+        width: 44,
+        height: 44,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 22,
+        backgroundColor: 'rgba(0,0,0,0.55)',
+        zIndex: 1,
     },
     pauseOverlay: {
         ...StyleSheet.absoluteFillObject,

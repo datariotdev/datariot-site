@@ -48,7 +48,7 @@ const TabLayout = () => {
                         left: 0,
                         right: 0,
                         height: 56 + bottomInset,
-                        backgroundColor: 'transparent',
+                        backgroundColor: theme.colors.background.primary,
                         borderWidth: 0,
                         borderTopWidth: 0,
                         borderTopColor: 'transparent',

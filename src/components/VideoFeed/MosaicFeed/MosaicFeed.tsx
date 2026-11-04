@@ -1,11 +1,9 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react';
-import { View, StyleSheet, FlatList, ViewToken, Dimensions, Platform } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, StyleSheet, FlatList, ViewToken, Platform, useWindowDimensions } from 'react-native';
 import { MosaicItem } from './MosaicItem';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { Video } from '../../../lib/supabase/hooks/useVideos';
-import { SectionHeader } from '../../Discovery/SectionHeader';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_SPACING = 12;
 
 interface MosaicFeedProps {
@@ -26,7 +24,7 @@ export function MosaicFeed({
     paddingBottom = 40,
 }: MosaicFeedProps) {
     const { theme } = useTheme();
-    const { width } = Dimensions.get('window');
+    const { width } = useWindowDimensions();
     const isWeb = Platform.OS === 'web' && width > 768;
     const numColumns = isWeb ? 3 : 2;
     const [viewableItems, setViewableItems] = useState<Set<string>>(new Set());
@@ -57,6 +55,7 @@ export function MosaicFeed({
                 isActive={isActive}
                 isScreenFocused={isFocused}
                 onPress={() => onSelect(item.id)}
+                widthPercent={numColumns === 3 ? '33.3333%' : '50%'}
             />
         );
     };
@@ -66,15 +65,6 @@ export function MosaicFeed({
             <FlatList
                 data={videos}
                 renderItem={renderItem}
-                ListHeaderComponent={
-                    <View style={{ marginTop: 12, marginBottom: 12 }}>
-                        <SectionHeader
-                            title="Datariot Daily Synergy"
-                            subtitle="Curated based on your Creator DNA"
-                            containerStyle={{ paddingTop: 0 }}
-                        />
-                    </View>
-                }
                 keyExtractor={(item) => item.id}
                 key={isWeb ? 'web-mosaic' : 'mobile-mosaic'}
                 numColumns={numColumns}
@@ -87,7 +77,7 @@ export function MosaicFeed({
                 contentContainerStyle={{
                     paddingTop: paddingTop + GRID_SPACING,
                     paddingBottom: paddingBottom + 80,
-                    paddingHorizontal: GRID_SPACING,
+                    paddingHorizontal: GRID_SPACING / 2,
                 }}
                 removeClippedSubviews={true}
                 maxToRenderPerBatch={6}
@@ -103,6 +93,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     columnWrapper: {
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
     },
 });
