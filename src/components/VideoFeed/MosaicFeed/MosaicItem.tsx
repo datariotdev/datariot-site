@@ -115,7 +115,7 @@ MosaicItem.displayName = 'MosaicItem';
 
 const styles = StyleSheet.create({
     container: {
-        aspectRatio: 2 / 3,
+        aspectRatio: 1,
         padding: GRID_SPACING / 2,
     },
     card: {
