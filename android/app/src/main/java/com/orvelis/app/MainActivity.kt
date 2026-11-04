@@ -1,8 +1,10 @@
 package com.orvelis.app
 import expo.modules.splashscreen.SplashScreenManager
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -12,6 +14,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 import expo.modules.ReactActivityDelegateWrapper
 
 class MainActivity : ReactActivity() {
+  @Suppress("DEPRECATION")
   override fun onCreate(savedInstanceState: Bundle?) {
     // Set the theme to AppTheme BEFORE onCreate to support
     // coloring the background, status bar, and navigation bar.
@@ -21,6 +24,17 @@ class MainActivity : ReactActivity() {
     SplashScreenManager.registerOnActivity(this)
     // @generated end expo-splashscreen
     super.onCreate(null)
+
+    // ReactActivity enables the three-button scrim during edge-to-edge setup.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      WindowCompat.setDecorFitsSystemWindows(window, false)
+      window.navigationBarColor = Color.TRANSPARENT
+      window.navigationBarDividerColor = Color.TRANSPARENT
+      window.isNavigationBarContrastEnforced = false
+    } else {
+      window.navigationBarColor = Color.rgb(16, 21, 33)
+      WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightNavigationBars = false
+    }
   }
 
   /**

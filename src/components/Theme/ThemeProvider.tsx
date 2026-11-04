@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Platform } from 'react-native';
+import { requireOptionalNativeModule } from 'expo';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme as baseTheme, Theme } from '../../design-system/theme';
 
@@ -100,6 +103,26 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
         loadTheme();
     }, []);
+
+    useEffect(() => {
+        if (Platform.OS !== 'android' || Platform.Version < 26) return;
+
+        // An existing development build may not have the navigation bar module yet.
+        if (!requireOptionalNativeModule('ExpoNavigationBar')) return;
+
+        // Expo Go and older Android builds use a solid dark navigation bar.
+        const hasDarkBar = Constants.executionEnvironment === ExecutionEnvironment.StoreClient || Platform.Version < 29;
+        let active = true;
+        import('expo-navigation-bar').then(({ setStyle }) => {
+            if (active) setStyle(hasDarkBar ? 'dark' : mode);
+        }).catch((error) => {
+            if (active) console.warn('Android navigation bar style unavailable:', error);
+        });
+
+        return () => {
+            active = false;
+        };
+    }, [mode]);
 
     const setThemeMode = async (newMode: ThemeMode) => {
         setModeState(newMode);

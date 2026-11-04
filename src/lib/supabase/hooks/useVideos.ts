@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../client';
 import { useAuth } from './useAuth';
 import { encodeVideoUrl } from '../../utils/url';
@@ -51,6 +51,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     const [refreshing, setRefreshing] = useState(false);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const requestId = useRef(0);
 
     const formatVideo = useCallback((video: any, profile?: any, isLiked: boolean = false): Video => {
         const authorName = profile?.display_name || profile?.username || profile?.nickname || 'Unknown';
@@ -81,7 +82,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             isLiked: isLiked,
             isSaved: false,
             isFollowing: false,
-            thumbnailUrl: video.thumbnail_url || video.thumbnail || `https://picsum.photos/seed/${video.id}/800/1200`,
+            thumbnailUrl: video.thumbnail_url || video.thumbnail || undefined,
             category: video.category || null,
             dnaRationale: Math.random() > 0.5 ? "Matches your interest in Engineering & Dev" : "Popular in your local DNA community",
             isHighSynergy: (video.id.charCodeAt(0) % 10 < 7) || Math.random() > 0.3, // ~70-80% chance for synergy to ensure sections aren't empty
@@ -90,13 +91,14 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     }, []);
 
     const fetchVideos = useCallback(async (pageNum: number, isRefresh: boolean = false) => {
+        const currentRequest = ++requestId.current;
         if (!supabase) {
             setLoading(false);
             setRefreshing(false);
             return;
         }
         try {
-            if (!isRefresh) setLoading(true);
+            setLoading(true);
 
             // 1. Fetch videos - Increased range to fetch more in case many are filtered out
             let query = supabase
@@ -128,10 +130,11 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             }
 
             const { data: videoData, error: videoError } = await query
+                .order('id', { ascending: false })
                 .range(pageNum * 12, (pageNum + 1) * 12 - 1); // Load 12 at a time (optimized)
 
             if (videoError) throw videoError;
-            if (!videoData) return;
+            if (!videoData || currentRequest !== requestId.current) return;
 
             // 2. Parallelize dependent fetches (Profiles and Likes)
             const userIds = [...new Set(videoData.map((v: any) => v.user_id).filter(Boolean))];
@@ -229,6 +232,8 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 fetchLogicStatsPromise
             ]);
 
+            if (currentRequest !== requestId.current) return;
+
             // 4. Format videos - filter for "real" user-uploaded content
             const placeholderPatterns = [
                 'BigBuckBunny',
@@ -261,6 +266,9 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                     );
                     if (isTestSample) return false;
 
+                    // The retired Clipto bucket returns NoSuchBucket for its legacy videos.
+                    if (v.videoUrl.startsWith('https://clipto-videos.s3.eu-north-1.amazonaws.com/')) return false;
+
                     // 4. Prefer videos from the official Supabase storage bucket
                     const isSupabaseVideo = v.videoUrl.includes('/storage/v1/object/public/videos/');
 
@@ -284,15 +292,20 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
         } catch (error) {
             console.error('Error fetching videos:', error);
         } finally {
-            setLoading(false);
-            setRefreshing(false);
+            if (currentRequest === requestId.current) {
+                setLoading(false);
+                setRefreshing(false);
+            }
         }
     }, [userId, searchQuery, hashtag, category, user, formatVideo, sort]);
 
     useEffect(() => {
-        // console.log('useVideos component mounted or dependencies changed.');
         setPage(0);
+        setVideos([]);
         fetchVideos(0, true);
+        return () => {
+            requestId.current += 1;
+        };
     }, [type, userId, searchQuery, hashtag, category, user, fetchVideos]);
 
     const loadMore = () => {
