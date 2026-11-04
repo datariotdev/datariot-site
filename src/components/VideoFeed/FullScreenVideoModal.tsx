@@ -4,14 +4,14 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity,
+    Image,
     Pressable,
     FlatList,
     ViewToken,
     StatusBar,
     Platform
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,8 +22,14 @@ import { VideoControls } from '../VideoPlayer/VideoControls';
 import { CommentsModal } from './CommentsModal';
 import { DeepDiveModal } from './DeepDiveModal';
 import { MoreOptionsModal } from './MoreOptionsModal';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import type { Video as FeedVideo } from '../../lib/supabase/hooks/useVideos';
+import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
+import type { FeedType, Video as FeedVideo } from '../../lib/supabase/hooks/useVideos';
+
+const FEED_TABS = [
+    { key: 'ai', label: 'ARENA' },
+    { key: 'trending', label: 'FEED' },
+    { key: 'following', label: 'CIRCLE' },
+] as const;
 
 interface FullScreenVideoModalProps {
     visible: boolean;
@@ -32,30 +38,37 @@ interface FullScreenVideoModalProps {
     onClose: () => void;
     onLike: (id: string) => void;
     onSave: (id: string) => void;
-    onFollow: (id: string) => void;
+    activeTab?: FeedType;
+    onSelectTab?: (tab: FeedType) => void;
+    onEndReached?: () => void;
 }
 
 function FullScreenVideoItem({
     item,
     isActive,
     height,
+    topPadding,
+    bottomPadding,
     onLike,
     onComment,
     onSave,
-    onMore,
-    onFollow,
+    onComposeComment,
 }: {
     item: FeedVideo;
     isActive: boolean;
     height: number;
+    topPadding: number;
+    bottomPadding: number;
     onLike: () => void;
     onComment: () => void;
     onSave: () => void;
-    onMore: () => void;
-    onFollow: () => void;
+    onComposeComment: () => void;
 }) {
+    const router = useRouter();
+    const author = item.author.split(' | ')[0];
     const playerRef = useRef<Video>(null);
     const [isPaused, setIsPaused] = useState(false);
+    const [avatarFailed, setAvatarFailed] = useState(false);
     const [isMuted, setIsMuted] = useState(Platform.OS === 'web');
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -78,67 +91,83 @@ function FullScreenVideoItem({
         .onEnd(() => { onLike(); });
 
     return (
-        <GestureDetector gesture={doubleTap}>
-            <View style={{ width: '100%', height, backgroundColor: '#000' }}>
-                <Pressable style={StyleSheet.absoluteFill} onPress={togglePlayback}>
-                    <Video
-                        ref={playerRef}
-                        source={{ uri: encodeVideoUrl(item.videoUrl) || '' }}
-                        style={StyleSheet.absoluteFill}
-                        resizeMode={ResizeMode.CONTAIN}
-                        posterSource={item.thumbnailUrl ? { uri: item.thumbnailUrl } : undefined}
-                        usePoster={!!item.thumbnailUrl}
-                        shouldPlay={isActive && !isPaused}
-                        isLooping
-                        isMuted={isMuted}
-                        onPlaybackStatusUpdate={(status) => {
-                            if (status.isLoaded) {
-                                setCurrentTime(status.positionMillis);
-                                setDuration(status.durationMillis ?? 0);
-                            }
-                        }}
-                    />
+        <View style={[styles.page, { height, paddingTop: topPadding, paddingBottom: bottomPadding }]}>
+            {item.thumbnailUrl && (
+                <Image source={{ uri: item.thumbnailUrl }} blurRadius={32} style={styles.ambientPoster} />
+            )}
+            <LinearGradient
+                colors={['rgba(11,13,20,0.25)', 'rgba(8,10,16,0.72)', '#08090D']}
+                locations={[0, 0.67, 1]}
+                style={StyleSheet.absoluteFill}
+                pointerEvents="none"
+            />
 
-                    {isPaused && (
-                        <View style={styles.pauseOverlay}>
-                            <Ionicons name="pause" size={64} color="white" />
+            <View style={styles.stage}>
+                <GestureDetector gesture={doubleTap}>
+                    <Pressable accessibilityRole="button" accessibilityLabel={isPaused ? 'Play video' : 'Pause video'}
+                        style={StyleSheet.absoluteFill} onPress={togglePlayback}>
+                        <Video
+                            ref={playerRef}
+                            source={{ uri: encodeVideoUrl(item.videoUrl) || '' }}
+                            style={StyleSheet.absoluteFill}
+                            resizeMode={ResizeMode.CONTAIN}
+                            posterSource={item.thumbnailUrl ? { uri: item.thumbnailUrl } : undefined}
+                            posterStyle={{ resizeMode: 'contain' }}
+                            usePoster={!!item.thumbnailUrl}
+                            shouldPlay={isActive && !isPaused}
+                            isLooping
+                            isMuted={isMuted}
+                            onPlaybackStatusUpdate={(status) => {
+                                if (status.isLoaded) {
+                                    setCurrentTime(status.positionMillis);
+                                    setDuration(status.durationMillis ?? 0);
+                                }
+                            }}
+                        />
+                        {isPaused && <View style={styles.pauseOverlay}><Ionicons name="play" size={54} color="#FFF" /></View>}
+                    </Pressable>
+                </GestureDetector>
+
+                <View pointerEvents="box-none" style={styles.stageFooter}>
+                    <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`Open ${author}'s profile`}
+                        disabled={!item.authorId}
+                        onPress={() => router.push({ pathname: '/user/[id]', params: { id: item.authorId } })}
+                        style={styles.attribution}
+                    >
+                        <View style={styles.avatar}>
+                            <Text style={styles.avatarText}>{author[0]?.toUpperCase()}</Text>
+                            {item.avatarUrl && !avatarFailed && (
+                                <Image source={{ uri: item.avatarUrl }} onError={() => setAvatarFailed(true)} style={StyleSheet.absoluteFill} />
+                            )}
                         </View>
-                    )}
-                </Pressable>
-
-                <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
-                    onPress={() => setIsMuted((muted) => !muted)}
-                    style={styles.muteButton}
-                >
-                    <Ionicons name={isMuted ? 'volume-mute' : 'volume-medium'} size={22} color="#FFF" />
-                </Pressable>
-
-                <VideoControls
-                    isPlaying={isActive && !isPaused}
-                    title={item.title || ''}
-                    author={item.author}
-                    authorId={item.authorId || ''}
-                    avatarUrl={item.avatarUrl}
-                    hashtag={item.hashtag}
-                    currentTime={currentTime}
-                    duration={duration}
-                    onSeek={handleSeek}
-                    likes={item.likes || 0}
-                    comments={item.comments || 0}
-                    saved={item.saved || 0}
-                    isLiked={item.isLiked || false}
-                    isSaved={item.isSaved || false}
-                    isFollowing={item.isFollowing || false}
-                    onLike={onLike}
-                    onComment={onComment}
-                    onSave={onSave}
-                    onMore={onMore}
-                    onFollow={onFollow}
-                />
+                        <Text style={styles.author} numberOfLines={1}>@{author}</Text>
+                    </Pressable>
+                    <Pressable accessibilityRole="button" accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
+                        style={styles.iconButton} onPress={() => setIsMuted((muted) => !muted)}>
+                        <Ionicons name={isMuted ? 'volume-mute' : 'volume-medium'} size={19} color="#FFF" />
+                    </Pressable>
+                </View>
             </View>
-        </GestureDetector>
+
+            <VideoControls
+                title={item.title}
+                hashtag={item.hashtag}
+                currentTime={currentTime}
+                duration={duration}
+                onSeek={handleSeek}
+                likes={item.likes}
+                comments={item.comments}
+                saved={item.saved}
+                isLiked={item.isLiked}
+                isSaved={item.isSaved}
+                onLike={onLike}
+                onComment={onComment}
+                onSave={onSave}
+                onComposeComment={onComposeComment}
+            />
+        </View>
     );
 }
 
@@ -149,18 +178,19 @@ export function FullScreenVideoModal({
     onClose,
     onLike,
     onSave,
-    onFollow,
+    activeTab = 'trending',
+    onSelectTab,
+    onEndReached,
 }: FullScreenVideoModalProps) {
     const insets = useSafeAreaInsets();
-    const router = useRouter();
     const [viewportHeight, setViewportHeight] = useState(0);
     const initialIndex = Math.max(0, videos.findIndex((video) => video.id === initialVideoId));
     const [viewableIndex, setViewableIndex] = useState<number | null>(null);
     const activeIndex = viewableIndex ?? initialIndex;
-    const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
+    const [commentSheet, setCommentSheet] = useState<{ videoId: string; compose: boolean } | null>(null);
     const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
     const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
-    const playerIsVisible = !commentsVideoId && !moreOptionsVideo && !deepDiveVideo;
+    const playerIsVisible = !commentSheet && !moreOptionsVideo && !deepDiveVideo;
 
     const viewabilityConfig = useMemo(() => ({ itemVisiblePercentThreshold: 60 }), []);
     const isFocused = useIsFocused();
@@ -179,50 +209,34 @@ export function FullScreenVideoModal({
             transparent={false}
             animationType="slide"
             statusBarTranslucent
+            navigationBarTranslucent
             onRequestClose={onClose}
         >
             <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
-            <View style={styles.container} onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}>
-                <LinearGradient
-                    colors={['rgba(0,0,0,0.6)', 'transparent']}
-                    style={[styles.statusShadow, { height: insets.top + 30 }]}
-                    pointerEvents="none"
-                />
-                <View style={[styles.headerWrapper, { top: Math.max(insets.top, 20) }]}>
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={onClose}
-                    >
-                        <Ionicons name="close" size={28} color="#FFF" />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={() => {
-                            onClose();
-                            router.push('/ai');
-                        }}
-                        style={styles.aiLogoContainer}
-                    >
-                        <View style={[
-                            styles.aiLogoWrapper,
-                            {
-                                width: 38,
-                                height: 38,
-                                borderRadius: 19,
-                                borderWidth: 1,
-                                borderColor: 'rgba(217, 228, 255, 0.15)',
-                                backgroundColor: 'rgba(0, 8, 20, 0.5)',
-                                shadowColor: '#D9E4FF',
-                                shadowOffset: { width: 0, height: 0 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 6,
-                                elevation: 3,
-                            }
-                        ]}>
-                            <MaterialCommunityIcons name="robot-excited" size={18} color="#D9E4FF" />
-                        </View>
-                    </TouchableOpacity>
+            <GestureHandlerRootView style={styles.container} onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}>
+                <View style={[styles.header, { top: Math.max(insets.top, 8) }]}>
+                    <Pressable accessibilityRole="button" accessibilityLabel="Close full-screen feed" style={styles.iconButton} onPress={onClose}>
+                        <Ionicons name="close" size={24} color="#FFF" />
+                    </Pressable>
+                    <View style={styles.tabs}>
+                        {(onSelectTab ? FEED_TABS : FEED_TABS.slice(1, 2)).map((tab) => (
+                            <Pressable
+                                key={tab.key}
+                                accessibilityRole="tab"
+                                accessibilityState={{ selected: activeTab === tab.key }}
+                                style={[styles.tab, activeTab === tab.key && styles.activeTab]}
+                                onPress={onSelectTab ? () => {
+                                    if (tab.key !== activeTab) onSelectTab(tab.key);
+                                } : undefined}
+                            >
+                                <Text style={[styles.tabLabel, activeTab === tab.key && styles.activeTabLabel]}>{tab.label}</Text>
+                            </Pressable>
+                        ))}
+                    </View>
+                    <Pressable accessibilityRole="button" accessibilityLabel="More options" style={styles.iconButton}
+                        onPress={() => setMoreOptionsVideo(videos[activeIndex] ?? null)}>
+                        <Ionicons name="ellipsis-horizontal" size={23} color="#FFF" />
+                    </Pressable>
                 </View>
 
                 {viewportHeight > 0 && <FlatList
@@ -230,6 +244,8 @@ export function FullScreenVideoModal({
                     data={videos}
                     keyExtractor={item => item.id}
                     pagingEnabled
+                    onEndReached={onEndReached}
+                    onEndReachedThreshold={0.5}
                     initialNumToRender={1}
                     maxToRenderPerBatch={2}
                     windowSize={3}
@@ -246,19 +262,21 @@ export function FullScreenVideoModal({
                             item={item}
                             isActive={index === activeIndex && isFocused && playerIsVisible}
                             height={viewportHeight}
+                            topPadding={Math.max(insets.top, 8) + 52}
+                            bottomPadding={Math.max(insets.bottom, 8)}
                             onLike={() => onLike(item.id)}
-                            onComment={() => setCommentsVideoId(item.id)}
+                            onComment={() => setCommentSheet({ videoId: item.id, compose: false })}
+                            onComposeComment={() => setCommentSheet({ videoId: item.id, compose: true })}
                             onSave={() => onSave(item.id)}
-                            onMore={() => setMoreOptionsVideo(item)}
-                            onFollow={() => onFollow(item.authorId)}
                         />
                     )}
                 />}
-            </View>
+            </GestureHandlerRootView>
             <CommentsModal
-                visible={!!commentsVideoId}
-                videoId={commentsVideoId}
-                onClose={() => setCommentsVideoId(null)}
+                visible={!!commentSheet}
+                videoId={commentSheet?.videoId ?? null}
+                focusComposer={commentSheet?.compose}
+                onClose={() => setCommentSheet(null)}
             />
             <DeepDiveModal
                 visible={deepDiveVideo !== null}
@@ -277,65 +295,36 @@ export function FullScreenVideoModal({
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
+    container: { flex: 1, backgroundColor: '#08090D' },
+    page: { width: '100%', backgroundColor: '#08090D', overflow: 'hidden' },
+    ambientPoster: { ...StyleSheet.absoluteFillObject, opacity: 0.54 },
+    header: {
+        position: 'absolute', left: 10, right: 10, zIndex: 200,
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     },
-    headerWrapper: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        zIndex: 200,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        justifyContent: 'space-between',
+    tabs: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    tab: { minHeight: 38, justifyContent: 'center', paddingHorizontal: 2, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+    activeTab: { borderBottomColor: '#FFF' },
+    tabLabel: { color: '#C1C2C7', fontSize: 12, fontWeight: '700', letterSpacing: 1.7 },
+    activeTabLabel: { color: '#FFF' },
+    iconButton: {
+        width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center',
+        backgroundColor: 'rgba(8,9,13,0.45)',
     },
-    closeButton: {
-        width: 44,
-        height: 44,
-        justifyContent: 'center',
-        alignItems: 'center',
+    stage: { flex: 1, minHeight: 0 },
+    stageFooter: {
+        position: 'absolute', left: 14, right: 14, bottom: 9,
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10,
     },
-    muteButton: {
-        position: 'absolute',
-        top: '24%',
-        right: 16,
-        width: 44,
-        height: 44,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 22,
-        backgroundColor: 'rgba(0,0,0,0.55)',
-        zIndex: 1,
+    attribution: { flexDirection: 'row', flexShrink: 1, alignItems: 'center', gap: 8, minHeight: 44 },
+    avatar: {
+        width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: '#FFF', overflow: 'hidden',
+        backgroundColor: '#D9E4FF', alignItems: 'center', justifyContent: 'center',
     },
-    pauseOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.2)',
+    avatarText: { color: '#101521', fontSize: 15, fontWeight: '700' },
+    author: {
+        flexShrink: 1, color: '#FFF', fontSize: 17, fontWeight: '700',
+        textShadowColor: 'rgba(0,0,0,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
     },
-    aiLogoContainer: {
-        width: 44,
-        height: 44,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    aiLogoWrapper: {
-        width: 36,
-        height: 36,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    aiLogo: {
-        width: 32,
-        height: 32,
-    },
-    statusShadow: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 160,
-    },
+    pauseOverlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' },
 });

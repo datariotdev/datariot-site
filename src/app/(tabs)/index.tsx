@@ -39,15 +39,14 @@ const HomeScreen = () => {
     const router = useRouter();
     const isFocused = useIsFocused();
     const insets = useSafeAreaInsets();
+    const { width } = useWindowDimensions();
+    const isWeb = Platform.OS === 'web' && width > 768;
     const [activeTab, setActiveTab] = useState<FeedType>('trending');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [viewMode, setViewMode] = useState<ViewMode>(Platform.OS === 'web' ? 'classic' : 'mosaic');
+    const [viewMode, setViewMode] = useState<ViewMode>(isWeb ? 'classic' : 'mosaic');
     const { theme, mode, toggleTheme } = useTheme();
     const isDark = mode === 'dark';
-
-    const { width } = useWindowDimensions();
-    const isWeb = Platform.OS === 'web' && width > 768; // Web Desktop Mode
 
     const {
         videos,
@@ -169,7 +168,12 @@ const HomeScreen = () => {
                     onClose={() => setSelectedVideoId(null)}
                     onLike={toggleLike}
                     onSave={handleSave}
-                    onFollow={toggleFollow}
+                    onEndReached={loadMore}
+                    activeTab={activeTab}
+                    onSelectTab={(tab) => {
+                        setSelectedVideoId(null);
+                        setActiveTab(tab);
+                    }}
                 />
             )}
 
@@ -313,11 +317,16 @@ const HomeScreen = () => {
                                     marginRight: 8,
                                 },
                             ]}
-                            onPress={() => setViewMode(viewMode === 'mosaic' ? 'classic' : 'mosaic')}
+                            accessibilityRole="button"
+                            accessibilityLabel="Open full-screen feed"
+                            disabled={!videos.length}
+                            onPress={() => {
+                                if (videos[0]) setSelectedVideoId(videos[0].id);
+                            }}
                         >
                             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
                             <Ionicons
-                                name={viewMode === 'mosaic' ? 'grid' : 'apps'}
+                                name="expand-outline"
                                 size={22}
                                 color={viewMode === 'mosaic' ? '#000' : theme.colors.text.primary}
                             />

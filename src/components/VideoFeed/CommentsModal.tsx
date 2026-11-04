@@ -21,6 +21,7 @@ import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { useTheme } from '../Theme/ThemeProvider';
 
 interface CommentsModalProps {
+    focusComposer?: boolean;
     visible: boolean;
     videoId: string | null;
     onClose: () => void;
@@ -121,7 +122,7 @@ function CommentRow({
     );
 }
 
-export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps) {
+export function CommentsModal({ visible, videoId, onClose, focusComposer = false }: CommentsModalProps) {
     const { mode } = useTheme();
     const isDark = mode === 'dark';
     const insets = useSafeAreaInsets();
@@ -162,7 +163,8 @@ export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps)
     const handleBg = isDark ? '#333' : '#ddd';
 
     return (
-        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}
+            onShow={focusComposer && user ? () => inputRef.current?.focus() : undefined}>
             <View style={styles.modalContainer}>
                 <Pressable style={styles.backdrop} onPress={onClose} />
                 <KeyboardAvoidingView

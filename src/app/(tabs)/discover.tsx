@@ -34,7 +34,7 @@ export default function DiscoverScreen() {
 
     const { posts, loading, refresh: refreshPosts } = usePosts();
     const { users, toggleFollowUser } = useRecommendedUsers();
-    const { videos, toggleLike, toggleFollow } = useVideos({ type: 'trending' });
+    const { videos, toggleLike, loadMore } = useVideos({ type: 'trending' });
 
     const query = search.trim();
     const topic = TOPICS.find((entry) => entry.label === query);
@@ -244,7 +244,7 @@ export default function DiscoverScreen() {
                     onClose={() => setSelectedVideoId(null)}
                     onLike={toggleLike}
                     onSave={(id) => console.log('Save:', id)}
-                    onFollow={toggleFollow}
+                    onEndReached={loadMore}
                 />
             )}
         </SafeAreaView>
