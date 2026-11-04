@@ -53,6 +53,7 @@ function FullScreenVideoItem({
     onComment,
     onSave,
     onComposeComment,
+    onMore,
 }: {
     item: FeedVideo;
     isActive: boolean;
@@ -63,9 +64,10 @@ function FullScreenVideoItem({
     onComment: () => void;
     onSave: () => void;
     onComposeComment: () => void;
+    onMore: () => void;
 }) {
     const router = useRouter();
-    const author = item.author.split(' | ')[0];
+    const author = item.author.replace(/^@/, '');
     const playerRef = useRef<Video>(null);
     const [isPaused, setIsPaused] = useState(false);
     const [avatarFailed, setAvatarFailed] = useState(false);
@@ -91,7 +93,7 @@ function FullScreenVideoItem({
         .onEnd(() => { onLike(); });
 
     return (
-        <View style={[styles.page, { height, paddingTop: topPadding, paddingBottom: bottomPadding }]}>
+        <View style={[styles.page, { height, paddingTop: topPadding }]}>
             {item.thumbnailUrl && (
                 <Image source={{ uri: item.thumbnailUrl }} blurRadius={32} style={styles.ambientPoster} />
             )}
@@ -110,6 +112,7 @@ function FullScreenVideoItem({
                             ref={playerRef}
                             source={{ uri: encodeVideoUrl(item.videoUrl) || '' }}
                             style={StyleSheet.absoluteFill}
+                            videoStyle={Platform.OS === 'web' ? styles.webVideo : undefined}
                             resizeMode={ResizeMode.CONTAIN}
                             posterSource={item.thumbnailUrl ? { uri: item.thumbnailUrl } : undefined}
                             posterStyle={{ resizeMode: 'contain' }}
@@ -128,7 +131,14 @@ function FullScreenVideoItem({
                     </Pressable>
                 </GestureDetector>
 
-                <View pointerEvents="box-none" style={styles.stageFooter}>
+                <Pressable accessibilityRole="button" accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
+                    style={[styles.iconButton, styles.muteButton]} onPress={() => setIsMuted((muted) => !muted)}>
+                    <Ionicons name={isMuted ? 'volume-mute' : 'volume-medium'} size={19} color="#FFF" />
+                </Pressable>
+            </View>
+
+            <VideoControls
+                attribution={(
                     <Pressable
                         accessibilityRole="button"
                         accessibilityLabel={`Open ${author}'s profile`}
@@ -144,14 +154,8 @@ function FullScreenVideoItem({
                         </View>
                         <Text style={styles.author} numberOfLines={1}>@{author}</Text>
                     </Pressable>
-                    <Pressable accessibilityRole="button" accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
-                        style={styles.iconButton} onPress={() => setIsMuted((muted) => !muted)}>
-                        <Ionicons name={isMuted ? 'volume-mute' : 'volume-medium'} size={19} color="#FFF" />
-                    </Pressable>
-                </View>
-            </View>
-
-            <VideoControls
+                )}
+                bottomPadding={bottomPadding}
                 title={item.title}
                 hashtag={item.hashtag}
                 currentTime={currentTime}
@@ -166,6 +170,7 @@ function FullScreenVideoItem({
                 onComment={onComment}
                 onSave={onSave}
                 onComposeComment={onComposeComment}
+                onMore={onMore}
             />
         </View>
     );
@@ -188,8 +193,8 @@ export function FullScreenVideoModal({
     const [viewableIndex, setViewableIndex] = useState<number | null>(null);
     const activeIndex = viewableIndex ?? initialIndex;
     const [commentSheet, setCommentSheet] = useState<{ videoId: string; compose: boolean } | null>(null);
-    const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
-    const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
+    const [deepDiveVideo, setDeepDiveVideo] = useState<FeedVideo | null>(null);
+    const [moreOptionsVideo, setMoreOptionsVideo] = useState<FeedVideo | null>(null);
     const playerIsVisible = !commentSheet && !moreOptionsVideo && !deepDiveVideo;
 
     const viewabilityConfig = useMemo(() => ({ itemVisiblePercentThreshold: 60 }), []);
@@ -210,7 +215,9 @@ export function FullScreenVideoModal({
             animationType="slide"
             statusBarTranslucent
             navigationBarTranslucent
-            onRequestClose={onClose}
+            onRequestClose={() => {
+                if (playerIsVisible) onClose();
+            }}
         >
             <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
             <GestureHandlerRootView style={styles.container} onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}>
@@ -233,10 +240,7 @@ export function FullScreenVideoModal({
                             </Pressable>
                         ))}
                     </View>
-                    <Pressable accessibilityRole="button" accessibilityLabel="More options" style={styles.iconButton}
-                        onPress={() => setMoreOptionsVideo(videos[activeIndex] ?? null)}>
-                        <Ionicons name="ellipsis-horizontal" size={23} color="#FFF" />
-                    </Pressable>
+                    <View style={styles.headerSpacer} />
                 </View>
 
                 {viewportHeight > 0 && <FlatList
@@ -268,6 +272,7 @@ export function FullScreenVideoModal({
                             onComment={() => setCommentSheet({ videoId: item.id, compose: false })}
                             onComposeComment={() => setCommentSheet({ videoId: item.id, compose: true })}
                             onSave={() => onSave(item.id)}
+                            onMore={() => setMoreOptionsVideo(item)}
                         />
                     )}
                 />}
@@ -307,16 +312,15 @@ const styles = StyleSheet.create({
     activeTab: { borderBottomColor: '#FFF' },
     tabLabel: { color: '#C1C2C7', fontSize: 12, fontWeight: '700', letterSpacing: 1.7 },
     activeTabLabel: { color: '#FFF' },
+    headerSpacer: { width: 44 },
     iconButton: {
         width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center',
         backgroundColor: 'rgba(8,9,13,0.45)',
     },
     stage: { flex: 1, minHeight: 0 },
-    stageFooter: {
-        position: 'absolute', left: 14, right: 14, bottom: 9,
-        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-    },
-    attribution: { flexDirection: 'row', flexShrink: 1, alignItems: 'center', gap: 8, minHeight: 44 },
+    webVideo: { width: '100%', height: '100%' },
+    muteButton: { position: 'absolute', top: 8, right: 14 },
+    attribution: { flexDirection: 'row', alignSelf: 'flex-start', maxWidth: '100%', alignItems: 'center', gap: 10, minHeight: 44 },
     avatar: {
         width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: '#FFF', overflow: 'hidden',
         backgroundColor: '#D9E4FF', alignItems: 'center', justifyContent: 'center',
