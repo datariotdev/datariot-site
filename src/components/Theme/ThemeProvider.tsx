@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Platform } from 'react-native';
+import { requireOptionalNativeModule } from 'expo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme as baseTheme, Theme } from '../../design-system/theme';
 
@@ -100,6 +102,24 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
         loadTheme();
     }, []);
+
+    useEffect(() => {
+        if (Platform.OS !== 'android' || Platform.Version < 29) return;
+
+        // An existing development build may not have the navigation bar module yet.
+        if (!requireOptionalNativeModule('ExpoNavigationBar')) return;
+
+        let active = true;
+        import('expo-navigation-bar').then(({ setStyle }) => {
+            if (active) setStyle(mode);
+        }).catch((error) => {
+            if (active) console.warn('Android navigation bar style unavailable:', error);
+        });
+
+        return () => {
+            active = false;
+        };
+    }, [mode]);
 
     const setThemeMode = async (newMode: ThemeMode) => {
         setModeState(newMode);

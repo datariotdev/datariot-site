@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { setAudioModeAsync } from 'expo-audio';
-import { Feather, SimpleLineIcons, Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
-import { View, Dimensions, Platform, useWindowDimensions, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Platform, useWindowDimensions, StyleSheet } from 'react-native';
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const ANDROID_DOCK_COLORS = {
+    dark: ['#111D32', '#271C3C', '#142B3A'],
+    light: ['#D7E5FD', '#E9DDF9', '#D6EEF1'],
+} as const;
 
 const TabLayout = () => {
     useEffect(() => {
@@ -29,6 +33,8 @@ const TabLayout = () => {
     const bottomInset = Math.max(insets.bottom, 8);
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
+    const hasAndroidGradient = Platform.OS === 'android';
+    const background = theme.colors.background.primary;
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
 
     return (
@@ -48,7 +54,7 @@ const TabLayout = () => {
                         left: 0,
                         right: 0,
                         height: 56 + bottomInset,
-                        backgroundColor: theme.colors.background.primary,
+                        backgroundColor: hasAndroidGradient ? 'transparent' : background,
                         borderWidth: 0,
                         borderTopWidth: 0,
                         borderTopColor: 'transparent',
@@ -61,7 +67,24 @@ const TabLayout = () => {
                         paddingBottom: bottomInset,
                         paddingTop: 4,
                     },
-                    tabBarBackground: () => null,
+                    tabBarBackground: hasAndroidGradient
+                        ? () => (
+                            <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+                                <LinearGradient
+                                    colors={ANDROID_DOCK_COLORS[mode]}
+                                    start={{ x: 0, y: 0.5 }}
+                                    end={{ x: 1, y: 0.5 }}
+                                    style={StyleSheet.absoluteFill}
+                                />
+                                <LinearGradient
+                                    colors={[background, `${background}00`]}
+                                    start={{ x: 0.5, y: 0 }}
+                                    end={{ x: 0.5, y: 0.85 }}
+                                    style={StyleSheet.absoluteFill}
+                                />
+                            </View>
+                        )
+                        : () => null,
                     tabBarLabelStyle: {
                         display: 'none',
                     },
