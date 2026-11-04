@@ -146,7 +146,7 @@ export default function DiscoverScreen() {
                 {TOPICS.map(({ label, icon }) => {
                     const selected = topic?.label === label;
                     return (
-                        <Pressable key={label} accessibilityRole="button" accessibilityState={{ selected }}
+                        <Pressable key={label} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected }}
                             onPress={() => setSearch(selected ? '' : label)}
                             style={({ pressed }) => [styles.topic, edge, {
                                 backgroundColor: selected ? colors.primary.DEFAULT : colors.background.secondary,
