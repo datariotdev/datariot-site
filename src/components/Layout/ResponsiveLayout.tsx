@@ -12,8 +12,8 @@ interface ResponsiveLayoutProps {
 }
 
 /** Below this the right dock folds away and the deck takes the full width. */
-const DOCK_BREAKPOINT = 1280;
-const DOCK_WIDTH = 340;
+const DOCK_BREAKPOINT = 1440;
+const DOCK_WIDTH = 320;
 
 export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     const { width } = useWindowDimensions();
@@ -21,6 +21,7 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     const pathname = usePathname();
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
+    const isCompactDesktop = width < 1100;
 
     if (!isWeb) {
         return <View style={{ flex: 1 }}>{children}</View>;
@@ -46,7 +47,7 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
             <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
                 <GlobalWebStyles />
                 <HudBackdrop isDark={isDark} />
-                <View style={[styles.content, { maxWidth: '100%', paddingHorizontal: 24 }]}>
+                <View style={[styles.content, { maxWidth: '100%', paddingHorizontal: isCompactDesktop ? 16 : 32 }]}>
                     <View style={styles.fullWidthColumn}>{children}</View>
                 </View>
             </View>
@@ -63,7 +64,7 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
 
             <View style={[styles.content, { paddingLeft: RAIL_WIDTH }]}>
                 {/* Deck — the main working surface */}
-                <View style={styles.deckColumn}>
+                <View style={[styles.deckColumn, { paddingHorizontal: isCompactDesktop ? 12 : 24 }]}>
                     <View style={styles.deckInner}>{children}</View>
                 </View>
 
@@ -107,6 +108,7 @@ const styles = StyleSheet.create({
     deckColumn: {
         flex: 1,
         maxWidth: 1180,
+        minWidth: 0,
         position: 'relative',
         // @ts-ignore — web-only
         overflowY: 'auto',
