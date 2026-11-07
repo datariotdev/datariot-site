@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { usePosts } from '@lib/supabase/hooks/usePosts';
 import { AmbientGlow } from '../../components/UI/AmbientGlow';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // Intelligence Hub Components
 import { SectionHeader } from '@components/Discovery/SectionHeader';
@@ -58,6 +59,12 @@ export default function DiscoverScreen() {
 
     const renderHeader = () => (
         <View style={styles.headerContainer}>
+            {!searchQuery && <LinearGradient colors={isDark ? ['#1C2340', '#111524', '#0B0D17'] : ['#E4E9FF', '#F0EAFE', '#EAF3FF']} start={{x:0,y:0}} end={{x:1,y:1}} style={styles.discoveryHero}>
+                <View style={styles.heroEyebrow}><Ionicons name="sparkles" size={14} color={isDark ? '#A9BCFF' : '#4C6EF5'} /><Text style={[styles.heroEyebrowText,{color:isDark?'#A9BCFF':'#4C6EF5'}]}>EXPLORE YOUR CURIOSITY</Text></View>
+                <Text style={[styles.heroTitle,{color:theme.colors.text.primary}]}>Find something worth thinking about.</Text>
+                <Text style={[styles.heroSubtitle,{color:theme.colors.text.secondary}]}>Ideas, creators and debates beyond your usual feed.</Text>
+                <View style={styles.heroActions}><Pressable onPress={() => setSearchQuery('AI')} style={styles.heroChip}><Ionicons name="hardware-chip-outline" size={15} color="#fff"/><Text style={styles.heroChipText}>Artificial intelligence</Text></Pressable><Pressable onPress={() => setSearchQuery('Science')} style={[styles.heroChip,{backgroundColor:'#7259D8'}]}><Text style={styles.heroChipText}>Science</Text></Pressable></View>
+            </LinearGradient>}
             {/* 1. Trending Topics (Primary Hierarchy) */}
             {!searchQuery && (
                 <View style={styles.sectionPadding}>
@@ -179,6 +186,14 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
     },
+    discoveryHero: { marginHorizontal: 18, marginTop: 12, marginBottom: 16, borderRadius: 28, padding: 24, overflow: 'hidden' },
+    heroEyebrow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
+    heroEyebrowText: { fontSize: 11, fontWeight: '800', letterSpacing: 1.6 },
+    heroTitle: { fontSize: 30, lineHeight: 35, fontWeight: '800', letterSpacing: -1.2, maxWidth: 300 },
+    heroSubtitle: { fontSize: 14, lineHeight: 21, marginTop: 12, maxWidth: 290 },
+    heroActions: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 22 },
+    heroChip: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#4C6EF5', paddingHorizontal: 13, paddingVertical: 11, borderRadius: 18 },
+    heroChipText: { color: '#fff', fontSize: 12, fontWeight: '700' },
     headerContainer: {
         paddingTop: Platform.OS === 'android' ? 10 : 0,
         gap: 8,
