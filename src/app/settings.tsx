@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView, Pressable, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView, Pressable, Alert, Platform, useWindowDimensions } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -9,12 +9,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SettingsScreen() {
     const router = useRouter();
+    const { width } = useWindowDimensions();
+    const desktop = Platform.OS === 'web' && width > 768;
     const { mode, toggleTheme, theme } = useTheme();
     const { signOut } = useAuth();
 
     const isDark = mode === 'dark';
 
     const handleSignOut = () => {
+        if (Platform.OS === 'web') {
+            if (typeof window !== 'undefined' && window.confirm('Log out of Datariot?')) {
+                void signOut().then(() => router.replace('/auth/login'));
+            }
+            return;
+        }
         Alert.alert(
             'Log Out',
             'Are you sure you want to log out?',
@@ -37,17 +45,17 @@ export default function SettingsScreen() {
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
             <Stack.Screen options={{ headerShown: false }} />
-            <SafeAreaView style={styles.safeArea}>
+            <SafeAreaView style={[styles.safeArea, desktop && { width: '100%', maxWidth: 880, alignSelf: 'center', paddingHorizontal: 24 }]}>
                 {/* Header */}
                 <View style={[styles.header, { borderBottomColor: theme.colors.surface.overlay }]}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/profile')} style={styles.backButton}>
                         <Ionicons name="chevron-back" size={24} color={theme.colors.text.primary} />
                     </TouchableOpacity>
                     <Text style={[styles.headerTitle, { color: theme.colors.text.primary }, monoFont]}>Settings</Text>
                     <View style={{ width: 40 }} />
                 </View>
 
-                <ScrollView style={styles.content}>
+                <ScrollView style={styles.content} contentContainerStyle={desktop ? { paddingBottom: 48 } : undefined}>
                     {/* Promote Business — gradient CTA */}
                     <Pressable
                         onPress={() => router.push('/business')}
