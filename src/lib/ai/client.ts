@@ -1,3 +1,11 @@
+import { supabase } from '../supabase/client';
+async function invokeOrvelis(mode: 'chat'|'insight'|'analyze'|'debate', prompt: string, history: any[] = []): Promise<string> {
+ if (!supabase) throw new Error('Supabase unavailable');
+ const { data, error } = await supabase.functions.invoke('orvelis-ai', {body:{mode,prompt,history}});
+ if(error || !data?.content) throw new Error(error?.message || data?.error || 'Orvelis unavailable');
+ return data.content;
+}
+function parseOrvelisJSON<T>(s:string):T {return JSON.parse(s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim()) as T;}
 import OpenAI from 'openai';
 
 // Initialize keys
@@ -51,42 +59,7 @@ Rules:
 - If you don't know something, say "That's beyond my current data horizon" instead of generic disclaimers`;
 
 // Generate Daily Insight
-export async function generateDailyInsight(): Promise<DailyInsight> {
-    const systemPrompt = "You are Orvelis, the AI of Datariot. Generate a personalized daily insight. Be motivational but not cheesy. Output valid JSON only.";
-    const userPrompt = "Generate today's focus insight. Return JSON with keys: score (0-100 number), status (2-3 word status like 'Flow State', 'Deep Work', 'Rising Momentum'), message (motivational 1-2 sentences, insightful not generic), trend (e.g. +10% or +5%).";
-
-    // OpenAI implementation
-    const callGPT = async () => {
-        if (!openAIKey || openAIKey === 'dummy-key') {
-            throw new Error('No OpenAI API key configured');
-        }
-        const completion = await getOpenAI().chat.completions.create({
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt }
-            ],
-            model: "gpt-4o",
-            response_format: { type: "json_object" }
-        });
-        const content = completion.choices[0].message.content;
-        return content ? JSON.parse(content) : null;
-    };
-
-    try {
-        return await callGPT();
-    } catch {
-        console.warn("[Orvelis] Using offline insight data.");
-        // Generate slightly varied mock data based on time
-        const hour = new Date().getHours();
-        const mockInsights = [
-            { score: 92, status: "Deep Focus", message: "Your neural pathways are primed for complex work. Dive into that challenging project — your brain is ready.", trend: "+15%" },
-            { score: 78, status: "Rising Momentum", message: "Solid foundation today. Stack small wins and watch them compound into something meaningful.", trend: "+8%" },
-            { score: 85, status: "Flow State", message: "You're in the zone. Protect this energy — minimize distractions and let the work speak.", trend: "+12%" },
-            { score: 67, status: "Recharge Mode", message: "Your mind is processing yesterday's input. Light creative work or strategic planning will serve you best.", trend: "+5%" },
-        ];
-        return mockInsights[hour % mockInsights.length];
-    }
-}
+export async function generateDailyInsight(): Promise<DailyInsight> {return parseOrvelisJSON<DailyInsight>(await invokeOrvelis('insight',"Generate a general daily insight as JSON with score, status, message, trend. Do not claim access to personal health or focus data."));}
 
 // Generate Recommendations (Mock for now or implement if needed)
 export async function getRecommendations(): Promise<Recommendation[]> {
@@ -100,38 +73,7 @@ export interface VideoAnalysis {
 }
 
 // Generate Video Analysis
-export async function generateVideoAnalysis(): Promise<VideoAnalysis> {
-    const systemPrompt = "You are Orvelis, the truth engine of Datariot. Analyze content to separate signal from noise. Be incisive and honest. Output valid JSON only.";
-    const userPrompt = "Analyze this video's content. Return JSON with keys: essence (core message in 1-2 sentences), manipulation (any bias, emotional manipulation, or logical fallacies detected), realValue (the genuinely useful information extracted).";
-
-    // OpenAI implementation
-    const callGPT = async () => {
-        if (!openAIKey || openAIKey === 'dummy-key') {
-            throw new Error('No OpenAI API key configured');
-        }
-        const completion = await getOpenAI().chat.completions.create({
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt }
-            ],
-            model: "gpt-4o",
-            response_format: { type: "json_object" }
-        });
-        const content = completion.choices[0].message.content;
-        return content ? JSON.parse(content) : null;
-    };
-
-    try {
-        return await callGPT();
-    } catch {
-        console.warn("[Orvelis] Using offline analysis data.");
-        return {
-            essence: "This content explores independent thinking and the importance of verifying sources before forming opinions. The creator advocates for media literacy.",
-            manipulation: "Uses emotional music scoring and rapid-cut editing to create urgency. Framing suggests a single 'correct' perspective exists, which is a simplification of complex issues.",
-            realValue: "The core framework of cross-referencing information from 3+ ideologically different sources is genuinely valuable. Apply this to any news story for clearer understanding."
-        };
-    }
-}
+export async function generateVideoAnalysis(): Promise<VideoAnalysis> {return parseOrvelisJSON<VideoAnalysis>(await invokeOrvelis('analyze',"No actual video content was supplied. Return honest JSON with essence, manipulation, realValue explaining that analysis needs video context."));}
 
 // Mock Response Generator (Offline Mode) — Enhanced
 function generateMockResponse(message: string): string {
@@ -177,30 +119,7 @@ function generateMockResponse(message: string): string {
 }
 
 // Chat Function
-export async function chatWithAI(message: string, history: any[]): Promise<string> {
-    // OpenAI implementation
-    const callGPT = async () => {
-        if (!openAIKey || openAIKey === 'dummy-key') {
-            throw new Error('No OpenAI API key configured');
-        }
-        const completion = await getOpenAI().chat.completions.create({
-            messages: [
-                { role: "system", content: ORVELIS_SYSTEM_PROMPT },
-                ...history,
-                { role: "user", content: message }
-            ],
-            model: "gpt-4o",
-        });
-        return completion.choices[0].message.content || "";
-    };
-
-    try {
-        return await callGPT();
-    } catch {
-        console.warn("[Orvelis] Operating in offline mode.");
-        return generateMockResponse(message);
-    }
-}
+export async function chatWithAI(message: string, history: any[]): Promise<string> {return invokeOrvelis('chat',message,history);}
 
 export interface DebateSeed {
     thesis: string;
@@ -208,39 +127,7 @@ export interface DebateSeed {
 }
 
 // Generate Debate Seed (Thesis + Arguments)
-export async function generateDebateSeed(contentHint: string): Promise<DebateSeed> {
-    const systemPrompt = "You are the Datariot Logic Oracle. Analyze a topic and generate a controversial but logical 'Post Thesis' and 4 balanced arguments (2 FOR, 2 AGAINST). Output JSON.";
-    const userPrompt = `Topic/Video info: "${contentHint}". Return JSON with: thesis (1 sentence, provocative), arguments (array of {side, text, strength}). Strength should be 5-20.`;
-
-    const callGPT = async () => {
-        if (!openAIKey || openAIKey === 'dummy-key') {
-            throw new Error('No OpenAI API key configured');
-        }
-        const completion = await getOpenAI().chat.completions.create({
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt }
-            ],
-            model: "gpt-4o",
-            response_format: { type: "json_object" }
-        });
-        const content = completion.choices[0].message.content;
-        return content ? JSON.parse(content) : null;
-    };
-
-    try {
-        return await callGPT();
-    } catch {
-        console.warn("[Orvelis] Debate seeding failed. Using generic seed.");
-        return {
-            thesis: `Should we prioritize logic over emotion in the discussion of: ${contentHint}?`,
-            arguments: [
-                { side: 'FOR', text: "Logical consistency is the only way to reach a universal truth.", strength: 10 },
-                { side: 'AGAINST', text: "Human experience is fundamentally emotional, ignoring it leads to flawed conclusions.", strength: 12 }
-            ]
-        };
-    }
-}
+export async function generateDebateSeed(contentHint: string): Promise<DebateSeed> {return parseOrvelisJSON<DebateSeed>(await invokeOrvelis('debate',contentHint));}
 
 export interface DeepDiveData {
     summary: string;
