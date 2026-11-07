@@ -32,7 +32,7 @@ export default function SettingsScreen() {
         );
     };
 
-    const monoFont = { fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' };
+    const monoFont = { fontFamily: 'System' as const };
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
@@ -43,7 +43,7 @@ export default function SettingsScreen() {
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                         <Ionicons name="chevron-back" size={24} color={theme.colors.text.primary} />
                     </TouchableOpacity>
-                    <Text style={[styles.headerTitle, { color: theme.colors.text.primary }, monoFont]}>[ SETTINGS ]</Text>
+                    <Text style={[styles.headerTitle, { color: theme.colors.text.primary }, monoFont]}>Settings</Text>
                     <View style={{ width: 40 }} />
                 </View>
 
@@ -54,7 +54,7 @@ export default function SettingsScreen() {
                         style={styles.promoteWrapper}
                     >
                         <LinearGradient
-                            colors={['#D9E4FF', '#D9E4FF', '#EC4899']}
+                            colors={['#355EEB', '#7654E8', '#D94DAB']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
                             style={styles.promoteGradient}
@@ -62,8 +62,8 @@ export default function SettingsScreen() {
                             <View style={styles.promoteLeft}>
                                 <MaterialCommunityIcons name="rocket-launch-outline" size={22} color="#fff" />
                                 <View>
-                                    <Text style={[styles.promoteTitle, monoFont]}>[ PROMOTE BUSINESS ]</Text>
-                                    <Text style={[styles.promoteSubtitle, monoFont]}>[ ADVERTISING.AND.PROMOTION ]</Text>
+                                    <Text style={[styles.promoteTitle, monoFont]}>Grow with Datariot</Text>
+                                    <Text style={[styles.promoteSubtitle, monoFont]}>Tools for creators and businesses</Text>
                                 </View>
                             </View>
                             <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.7)" />
@@ -71,25 +71,25 @@ export default function SettingsScreen() {
                     </Pressable>
 
                     <View style={[styles.section, { borderBottomColor: theme.colors.surface.overlay }]}>
-                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }, monoFont]}>[ ACCOUNT ]</Text>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }, monoFont]}>ACCOUNT</Text>
                         <TouchableOpacity style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]} onPress={() => router.push('/edit-profile')}>
-                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>&gt; EDIT PROFILE</Text>
+                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>EDIT PROFILE</Text>
                             <Ionicons name="chevron-forward" size={20} color={theme.colors.text.muted} />
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]}>
-                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>&gt; PRIVACY & SECURITY</Text>
+                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>PRIVACY & SECURITY</Text>
                             <Ionicons name="chevron-forward" size={20} color={theme.colors.text.muted} />
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]}>
-                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>&gt; NOTIFICATIONS</Text>
+                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>NOTIFICATIONS</Text>
                             <Ionicons name="chevron-forward" size={20} color={theme.colors.text.muted} />
                         </TouchableOpacity>
                     </View>
 
                     <View style={[styles.section, { borderBottomColor: theme.colors.surface.overlay }]}>
-                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }, monoFont]}>[ PREFERENCES ]</Text>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }, monoFont]}>PREFERENCES</Text>
                         <View style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]}>
-                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>&gt; DARK MODE</Text>
+                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>DARK MODE</Text>
                             <Switch
                                 value={isDark}
                                 onValueChange={toggleTheme}
@@ -97,28 +97,28 @@ export default function SettingsScreen() {
                             />
                         </View>
                         <View style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]}>
-                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>&gt; AUTOPLAY VIDEOS</Text>
+                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>AUTOPLAY VIDEOS</Text>
                             <Switch value={true} trackColor={{ false: theme.colors.surface.light, true: theme.colors.primary.DEFAULT }} />
                         </View>
                     </View>
 
                     <View style={[styles.section, { borderBottomColor: theme.colors.surface.overlay }]}>
-                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }, monoFont]}>[ SUPPORT ]</Text>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }, monoFont]}>SUPPORT</Text>
                         <TouchableOpacity style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]}>
-                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>&gt; HELP CENTER</Text>
+                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>HELP CENTER</Text>
                             <Ionicons name="chevron-forward" size={20} color={theme.colors.text.muted} />
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]}>
-                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>&gt; REPORT A PROBLEM</Text>
+                            <Text style={[styles.rowLabel, { color: theme.colors.text.primary }, monoFont]}>REPORT A PROBLEM</Text>
                             <Ionicons name="chevron-forward" size={20} color={theme.colors.text.muted} />
                         </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity style={[styles.row, { borderBottomWidth: 0, marginTop: 20, backgroundColor: 'transparent' }]} onPress={handleSignOut}>
-                        <Text style={[styles.rowLabel, { color: theme.colors.error, fontWeight: '700' }, monoFont]}>[ LOG OUT ]</Text>
+                        <Text style={[styles.rowLabel, { color: theme.colors.error, fontWeight: '700' }, monoFont]}>Log out</Text>
                     </TouchableOpacity>
 
-                    <Text style={[styles.version, { color: theme.colors.text.muted }, monoFont]}>[ VERSION.1.0.0 ]</Text>
+                    <Text style={[styles.version, { color: theme.colors.text.muted }, monoFont]}>Datariot · v1.0.0</Text>
                 </ScrollView>
             </SafeAreaView>
         </View>
@@ -138,15 +138,16 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
-        borderBottomWidth: 1,
+        borderBottomWidth: 0,
     },
     backButton: {
         padding: 8,
         marginLeft: -8,
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: '700',
+        fontSize: 23,
+        fontWeight: '800',
+        letterSpacing: -0.6,
     },
     content: {
         flex: 1,
@@ -154,9 +155,9 @@ const styles = StyleSheet.create({
     /* Promote Business */
     promoteWrapper: {
         marginHorizontal: 20,
-        marginTop: 20,
-        marginBottom: 8,
-        borderRadius: 16,
+        marginTop: 24,
+        marginBottom: 14,
+        borderRadius: 24,
         overflow: 'hidden',
         shadowColor: '#D9E4FF',
         shadowOffset: { width: 0, height: 4 },
@@ -168,8 +169,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 16,
-        paddingHorizontal: 20,
+        paddingVertical: 25,
+        paddingHorizontal: 22,
     },
     promoteLeft: {
         flexDirection: 'row',
@@ -193,22 +194,23 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         fontSize: 12,
-        fontWeight: '700',
-        marginLeft: 20,
-        marginBottom: 8,
-        marginTop: 16,
-        letterSpacing: 1,
+        fontWeight: '800',
+        marginLeft: 24,
+        marginBottom: 12,
+        marginTop: 20,
+        letterSpacing: 1.5,
     },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 16,
-        paddingHorizontal: 20,
+        paddingVertical: 21,
+        paddingHorizontal: 24,
         borderBottomWidth: 1,
     },
     rowLabel: {
         fontSize: 16,
+        fontWeight: '600',
     },
     version: {
         textAlign: 'center',
