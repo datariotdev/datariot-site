@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider } from '../components/Theme/ThemeProvider';
+import { ThemeProvider, useTheme } from '../components/Theme/ThemeProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import {
     useFonts,
@@ -54,7 +54,9 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function AppContent() {
+    const { mode } = useTheme();
+    const systemAreaBackground = mode === 'dark' ? '#08090D' : '#DCE6F8';
     const [fontsLoaded, fontError] = useFonts({
         Oxanium_400Regular,
         Oxanium_500Medium,
@@ -102,8 +104,8 @@ export default function RootLayout() {
     }
 
     return (
-        <ThemeProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
+        <>
+            <GestureHandlerRootView style={{ flex: 1, backgroundColor: systemAreaBackground }}>
                 <SafeAreaProvider>
                     <Stack screenOptions={{ contentStyle: { backgroundColor: '#08090D' } }}>
                         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -119,6 +121,10 @@ export default function RootLayout() {
                     <SpeedInsights />
                 </>
             )}
-        </ThemeProvider>
+        </>
     );
+}
+
+export default function RootLayout() {
+    return <ThemeProvider><AppContent /></ThemeProvider>;
 }
