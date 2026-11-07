@@ -249,6 +249,9 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                     return formatted;
                 })
                 .filter((v: Video) => {
+                    // Profile grids must show the owner's records, even when the video
+                    // is externally hosted or its playback URL is temporarily missing.
+                    if (type === 'user') return true;
                     // 1. Must have a valid URL
                     if (!v.videoUrl || v.videoUrl.length === 0) return false;
 
@@ -287,7 +290,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             setLoading(false);
             setRefreshing(false);
         }
-    }, [userId, searchQuery, hashtag, category, user, formatVideo, sort]);
+    }, [type, userId, searchQuery, hashtag, category, user, formatVideo, sort]);
 
     useEffect(() => {
         // console.log('useVideos component mounted or dependencies changed.');
