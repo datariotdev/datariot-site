@@ -1130,6 +1130,47 @@ html[data-theme="dark"] #features .datariot-depth-field__orb--one,
 html[data-theme="dark"] #faq .datariot-depth-field__orb--one{left:-26%;top:10%}
 @media(max-width:700px){html[data-theme="dark"] #manifesto .datariot-depth-field__ring,html[data-theme="dark"] #debates .datariot-depth-field__ring{left:-70%}}
 </style>
+<style id="datariot-depth-visibility-fix">
+/* Make depth actually visible: previous layers were too faint and behind their own stacking contexts. */
+html[data-theme="dark"] #hero{isolation:isolate}
+html[data-theme="dark"] #hero .hero__ambient-glow{
+ top:-10%;right:-25%;width:130vw;height:125vh;max-width:none;filter:blur(34px);
+ background:radial-gradient(ellipse 57% 53% at 75% 35%,rgba(73,110,196,.24) 0%,rgba(39,69,141,.14) 38%,rgba(17,31,69,.055) 65%,transparent 83%)!important;
+}
+html[data-theme="dark"] #hero .hero__sky-scene{z-index:0}
+html[data-theme="dark"] #hero>.datariot-depth-field{z-index:0}
+html[data-theme="dark"] #hero>.datariot-depth-field~*:not(.hero__sky-scene){position:relative;z-index:1}
+html[data-theme="dark"] .datariot-depth-field{z-index:0!important;opacity:1}
+html[data-theme="dark"] .datariot-depth-field__orb{opacity:1;filter:blur(1px)}
+html[data-theme="dark"] .datariot-depth-field__orb--one{
+ background:radial-gradient(circle at 38% 35%,rgba(102,142,230,.30),rgba(53,87,170,.17) 35%,rgba(23,42,91,.055) 64%,transparent 75%);
+ box-shadow:inset -26px -28px 65px rgba(5,9,22,.48),0 0 95px rgba(57,90,169,.095);
+}
+html[data-theme="dark"] .datariot-depth-field__orb--two{
+ background:radial-gradient(circle at 36% 32%,rgba(112,145,224,.25),rgba(49,82,159,.15) 42%,transparent 76%);
+ box-shadow:inset -30px -34px 75px rgba(5,9,22,.5),0 0 110px rgba(62,92,170,.085);
+}
+html[data-theme="dark"] .datariot-depth-field__ring{
+ border-color:rgba(139,169,227,.20);box-shadow:0 0 65px rgba(71,111,195,.10),inset 0 0 60px rgba(65,105,191,.07)
+}
+html[data-theme="dark"] #manifesto>.mini-feed__inner,
+html[data-theme="dark"] #features>.reply-network__inner,
+html[data-theme="dark"] #debates>.dt-dev__wrap,
+html[data-theme="dark"] #catch>.cq-shell,
+html[data-theme="dark"] #ai-core>.section__container,
+html[data-theme="dark"] #global>.section__container,
+html[data-theme="dark"] #beta>.dc-inner,
+html[data-theme="dark"] #faq>.faq__inner{position:relative;z-index:1}
+html[data-theme="dark"] #hero .datariot-depth-field__orb--one{left:-45%;top:6%}
+html[data-theme="dark"] #hero .datariot-depth-field__orb--two{right:-43%;bottom:5%}
+html[data-theme="dark"] #hero .datariot-depth-field__ring{right:-42%;top:27%}
+@media(max-width:700px){
+ html[data-theme="dark"] #hero .hero__ambient-glow{right:-42%;width:160vw;filter:blur(24px)}
+ html[data-theme="dark"] #hero .datariot-depth-field__orb--one{left:-75%;top:12%}
+ html[data-theme="dark"] #hero .datariot-depth-field__orb--two{right:-80%;bottom:12%}
+ html[data-theme="dark"] #hero .datariot-depth-field__ring{right:-75%;top:28%}
+}
+</style>
 </head>
 
 <body>
@@ -1380,6 +1421,7 @@ html[data-theme="dark"] #faq .datariot-depth-field__orb--one{left:-26%;top:10%}
     <main class="main">
         <!-- HERO SECTION -->
         <section class="section section--hero hero--shimmer" id="hero" data-inview>
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="hero__sky-scene" id="heroSkyScene" aria-hidden="true">
                 <div class="hero__ambient-glow"></div>
                 <div class="birds-container">
