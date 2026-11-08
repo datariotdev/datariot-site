@@ -1082,6 +1082,36 @@ html[data-theme="dark"] #hero .hero__ambient-glow{
  background:radial-gradient(ellipse 70% 60% at 75% 35%,rgba(255,255,255,.045),rgba(255,255,255,.012) 45%,transparent 78%)!important;
 }
 </style>
+<style id="datariot-dimensional-ambient">
+/* Dimensional blue-slate illumination behind content, not a flat blue wash. */
+html[data-theme="dark"] .page-fx__glow{
+ background:
+ radial-gradient(ellipse 32% 24% at 12% 25%,rgba(62,91,156,.16),transparent 76%),
+ radial-gradient(ellipse 38% 28% at 88% 55%,rgba(51,82,155,.15),transparent 78%),
+ radial-gradient(ellipse 34% 22% at 18% 85%,rgba(74,99,151,.12),transparent 76%),
+ linear-gradient(180deg,#090a0e 0%,#08090d 52%,#0a0b10 100%)!important;
+}
+html[data-theme="dark"] .page-fx__ribbon--l{
+ background:radial-gradient(closest-side,rgba(73,109,183,.095),rgba(39,65,125,.03) 52%,transparent 74%)!important;
+}
+html[data-theme="dark"] .page-fx__ribbon--r{
+ background:radial-gradient(closest-side,rgba(75,105,172,.10),rgba(39,65,125,.035) 52%,transparent 74%)!important;
+}
+html[data-theme="dark"] #hero .hero__ambient-glow{
+ background:radial-gradient(ellipse 70% 60% at 75% 35%,rgba(76,99,157,.09),rgba(35,53,103,.035) 45%,transparent 80%)!important;
+}
+.datariot-depth-field{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;isolation:isolate}
+.datariot-depth-field__orb{position:absolute;display:block;border-radius:50%;transform:translate3d(0,0,0);filter:blur(2px);opacity:.7;animation:datariot-depth-float 19s ease-in-out infinite alternate}
+.datariot-depth-field__orb--one{width:clamp(220px,46vw,660px);aspect-ratio:1;left:-24%;top:5%;background:radial-gradient(circle at 38% 35%,rgba(104,137,206,.14),rgba(41,67,124,.09) 38%,rgba(12,20,43,.025) 65%,transparent 73%);box-shadow:inset -20px -25px 60px rgba(6,10,20,.6),0 0 95px rgba(56,85,150,.045)}
+.datariot-depth-field__orb--two{width:clamp(260px,50vw,760px);aspect-ratio:1;right:-32%;bottom:-8%;background:radial-gradient(circle at 38% 35%,rgba(109,140,205,.13),rgba(45,67,121,.075) 40%,transparent 74%);box-shadow:inset -28px -30px 70px rgba(6,10,20,.55),0 0 110px rgba(65,91,153,.045);animation-delay:-8s}
+.datariot-depth-field__ring{position:absolute;width:min(75vw,660px);aspect-ratio:1;right:-34%;top:8%;border:1px solid rgba(112,145,208,.085);border-radius:50%;transform:rotateX(68deg) rotate(-22deg);box-shadow:0 0 55px rgba(56,86,157,.055),inset 0 0 45px rgba(56,86,157,.035)}
+#ai-core,#global,#catch,#beta{isolation:isolate}
+#ai-core>.datariot-depth-field,#global>.datariot-depth-field,#catch>.datariot-depth-field,#beta>.datariot-depth-field{z-index:-1}
+@keyframes datariot-depth-float{from{transform:translate3d(-2%,2%,0) scale(.98)}to{transform:translate3d(4%,-4%,0) scale(1.08)}}
+html[data-theme="light"] .datariot-depth-field{display:none}
+@media(max-width:700px){.datariot-depth-field__orb--one{left:-55%}.datariot-depth-field__orb--two{right:-65%}.datariot-depth-field__ring{right:-70%}}
+@media(prefers-reduced-motion:reduce){.datariot-depth-field__orb{animation:none}}
+</style>
 </head>
 
 <body>
@@ -1580,6 +1610,7 @@ html[data-theme="dark"] #hero .hero__ambient-glow{
 
         <!-- Curiosity field notes: choose a question, take something with you. -->
         <section class="catch curiosity-edit" id="catch" aria-labelledby="catchTitle" data-inview>
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="cq-shell">
                 <div class="cq-mast"><span><i aria-hidden="true">✳</i> ORVELIS / FIELD NOTES</span><span>A LITTLE CURIOSITY GOES A LONG WAY.</span></div>
                 <div class="cq-layout">
@@ -1703,6 +1734,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 
         <!-- ORVELIS AI CORE SECTION -->
         <section class="section section--ai" id="ai-core" data-inview>
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <!-- the dithered wave behind the slide: pixel-field.js draws it,
                  the CSS navy fill stands in when there is no WebGL -->
             <div class="px-field" aria-hidden="true">
@@ -1839,6 +1871,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 
         <!-- GLOBAL NETWORK SECTION -->
         <section class="section section--global gnet" id="global" data-inview>
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="section__container">
 
                 <div class="gnet__eyebrow">
@@ -1947,6 +1980,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 
         <!-- Discord invitation: one reason to join, one clear next step. -->
         <section class="section discord-invitation" id="beta" data-inview aria-labelledby="accessTitle">
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="dc-inner">
                 <div class="dc-mast"><span><b>06</b> THE NEXT CHAPTER</span><span>DATARIOT / DISCORD</span></div>
                 <div class="dc-layout">
