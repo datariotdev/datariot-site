@@ -288,16 +288,12 @@
         }
     </style>
     <script>
-        // Default to dark; respect an explicitly saved light or dark preference.
+        // Always open in dark mode, including returning visitors.
+        // The light theme remains available as a manual switch for this visit.
         (function () {
-            var theme = 'dark';
-            try {
-                var savedTheme = localStorage.getItem('datariot-info-theme');
-                if (savedTheme === 'light' || savedTheme === 'dark') theme = savedTheme;
-            } catch (e) { }
-            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute('data-theme', 'dark');
             var themeColor = document.querySelector('meta[name="theme-color"]');
-            if (themeColor) themeColor.setAttribute('content', theme === 'dark' ? '#08090D' : '#F1F5FC');
+            if (themeColor) themeColor.setAttribute('content', '#08090D');
         })();
         function toggleTheme() {
             var html = document.documentElement;
@@ -305,7 +301,7 @@
             html.setAttribute('data-theme', next);
             var themeColor = document.querySelector('meta[name="theme-color"]');
             if (themeColor) themeColor.setAttribute('content', next === 'dark' ? '#08090D' : '#F1F5FC');
-            try { localStorage.setItem('datariot-info-theme', next); } catch (e) { }
+            // Do not persist the selection: a new visit always starts dark.
         }
     </script>
     <link rel="icon" href="/datariot-info/favicon.ico?v=brand-20261021" />
