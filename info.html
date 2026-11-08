@@ -1769,58 +1769,58 @@ html[data-theme="dark"] .datariot-shared-wave{opacity:.52!important}
 </section>
 
         <!-- Curiosity field notes: choose a question, take something with you. -->
-        <section class="catch dt-explore" id="catch" aria-labelledby="catchTitle" data-inview>
-<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
+        <section class="catch dt-signal" id="catch" aria-labelledby="catchTitle" data-inview>
 <style>
-.dt-explore{position:relative;isolation:isolate;padding:clamp(68px,9vw,120px) 22px!important;background:transparent!important;color:var(--text-primary)}
-.dt-explore *{box-sizing:border-box}
-.dt-explore__inner{max-width:1080px;margin:auto;position:relative;z-index:2}
-.dt-explore__top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:25px}
-.dt-explore__label{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.15em;color:#aebbd0}
-.dt-explore__counter{font:500 11px 'JetBrains Mono',monospace;color:#8d97a8}
-.dt-explore__heading{display:flex;align-items:end;justify-content:space-between;gap:32px;margin-bottom:31px}
-.dt-explore__heading h2{font:700 clamp(32px,5.2vw,61px)/1.08 'Syne',sans-serif;letter-spacing:-.06em;margin:0;max-width:650px}
-.dt-explore__heading p{max-width:260px;font:400 14px/1.7 'Manrope',sans-serif;color:#9ba6b7;margin:0}
-.dt-explore__layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.65fr);gap:15px}
-.dt-explore__preview{position:relative;min-height:360px;border:1px solid rgba(181,196,220,.19);border-radius:15px;overflow:hidden;background:#10141c}
-.dt-explore__preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.68;transition:opacity .4s,transform .8s cubic-bezier(.22,1,.36,1)}
-.dt-explore__preview:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,11,.05) 22%,rgba(4,6,11,.86) 100%);pointer-events:none}
-.dt-explore__preview:hover img{transform:scale(1.035)}
-.dt-explore__preview-top{position:absolute;top:19px;left:20px;right:20px;z-index:1;display:flex;justify-content:space-between;color:#fff;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.09em}
-.dt-explore__preview-bottom{position:absolute;bottom:22px;left:23px;right:23px;z-index:1}
-.dt-explore__preview-bottom span{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#d1dced}
-.dt-explore__preview-bottom h3{font:700 clamp(24px,3vw,37px)/1.13 'Syne',sans-serif;letter-spacing:-.04em;color:#fff;margin:10px 0 16px}
-.dt-explore__preview-bottom a{display:inline-flex;gap:10px;align-items:center;text-decoration:none;color:#fff;font:600 12px 'Manrope',sans-serif;border-bottom:1px solid rgba(255,255,255,.65);padding-bottom:5px}
-.dt-explore__side{display:flex;flex-direction:column;gap:12px}
-.dt-explore__option{display:flex;align-items:center;gap:13px;text-align:left;padding:12px;border:1px solid rgba(166,183,210,.16);background:rgba(131,147,177,.045);border-radius:12px;color:inherit;cursor:pointer;min-width:0;flex:1;transition:background .25s,border-color .25s,transform .25s}
-.dt-explore__option:hover{background:rgba(144,161,191,.12);transform:translateX(3px)}
-.dt-explore__option[aria-pressed="true"]{border-color:rgba(191,207,231,.55);background:rgba(139,158,191,.13)}
-.dt-explore__option img{width:75px;height:78px;object-fit:cover;border-radius:7px;flex:none}
-.dt-explore__option span{display:block;min-width:0}
-.dt-explore__option small{display:block;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#9aa8bd;margin-bottom:7px}
-.dt-explore__option b{display:block;font:600 16px/1.35 'Manrope',sans-serif;letter-spacing:-.025em}
-.dt-explore__insight{display:flex;gap:16px;align-items:start;margin-top:18px;padding:17px 20px;border-top:1px solid rgba(164,181,209,.22)}
-.dt-explore__insight span{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#a6b7d1;white-space:nowrap;padding-top:4px}
-.dt-explore__insight p{font:500 15px/1.65 'Manrope',sans-serif;margin:0;max-width:750px}
-[data-theme="light"] .dt-explore__label,[data-theme="light"] .dt-explore__counter,[data-theme="light"] .dt-explore__heading p,[data-theme="light"] .dt-explore__option small,[data-theme="light"] .dt-explore__insight span{color:#546178}
-[data-theme="light"] .dt-explore__option{background:rgba(29,45,68,.025);border-color:rgba(29,45,68,.14)}
-[data-theme="light"] .dt-explore__option[aria-pressed="true"]{background:#e9edf3;border-color:#71819a}
-@media(max-width:700px){.dt-explore{padding:66px 18px!important}.dt-explore__heading{display:block;margin-bottom:23px}.dt-explore__heading h2{font-size:clamp(32px,9vw,43px)}.dt-explore__heading p{max-width:100%;margin-top:13px;font-size:13px}.dt-explore__layout{display:flex;flex-direction:column}.dt-explore__preview{min-height:300px}.dt-explore__side{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.dt-explore__option{display:block;padding:7px;min-height:0}.dt-explore__option img{width:100%;height:72px;margin-bottom:8px}.dt-explore__option b{font-size:11px;line-height:1.35}.dt-explore__option small{font-size:8px;letter-spacing:0}.dt-explore__insight{padding:15px 2px;display:block}.dt-explore__insight p{margin-top:8px;font-size:13px}}
-@media(prefers-reduced-motion:reduce){.dt-explore__preview img,.dt-explore__option{transition:none}}
+.dt-signal{position:relative;isolation:isolate;overflow:hidden;padding:clamp(68px,8vw,112px) 22px!important;background:transparent!important;color:var(--text-primary)}
+.dt-signal *{box-sizing:border-box}
+.dt-signal__inner{position:relative;max-width:1050px;margin:0 auto;z-index:2}
+.dt-signal__eyebrow{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#a7b2c5;font:600 11px/1.4 'JetBrains Mono',monospace;letter-spacing:.13em;margin-bottom:29px}
+.dt-signal__headline{display:grid;grid-template-columns:minmax(0,1fr) 250px;align-items:end;gap:24px;margin-bottom:30px}
+.dt-signal h2{font:700 clamp(35px,5.3vw,64px)/1.05 'Syne',sans-serif;letter-spacing:-.06em;margin:0;max-width:680px}
+.dt-signal__intro{font:400 14px/1.7 'Manrope',sans-serif;color:#a4aebe;margin:0}
+.dt-signal__board{border:1px solid rgba(170,186,210,.22);border-radius:18px;overflow:hidden;background:linear-gradient(135deg,rgba(151,166,192,.075),rgba(22,27,37,.2) 55%,rgba(111,131,166,.045));box-shadow:0 28px 85px rgba(0,0,0,.13)}
+.dt-signal__toolbar{display:flex;align-items:center;justify-content:space-between;padding:17px 22px;border-bottom:1px solid rgba(166,182,207,.17);font:600 10px 'JetBrains Mono',monospace;letter-spacing:.11em;color:#aebbd0}
+.dt-signal__live{display:inline-flex;align-items:center;gap:8px}
+.dt-signal__live:before{content:"";width:6px;height:6px;border-radius:50%;background:#b9c9e2;box-shadow:0 0 12px rgba(185,201,226,.6)}
+.dt-signal__content{display:grid;grid-template-columns:minmax(0,1fr) 285px;min-height:300px}
+.dt-signal__main{padding:clamp(24px,4vw,43px);display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.dt-signal__stage{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#aebbd0}
+.dt-signal__statement{font:600 clamp(25px,3.8vw,43px)/1.17 'Syne',sans-serif;letter-spacing:-.045em;margin:22px 0;max-width:590px;transition:opacity .22s,transform .22s}
+.dt-signal__context{font:400 14px/1.7 'Manrope',sans-serif;color:#aeb7c6;max-width:530px;margin:0;transition:opacity .22s}
+.dt-signal__nav{display:flex;gap:9px;align-items:center;margin-top:30px}
+.dt-signal__step{width:43px;height:5px;border:0;border-radius:5px;background:rgba(169,185,212,.25);cursor:pointer;transition:width .35s,background .35s}
+.dt-signal__step[aria-pressed="true"]{width:80px;background:#c7d4e8}
+.dt-signal__aside{border-left:1px solid rgba(166,182,207,.17);padding:25px 23px;display:flex;flex-direction:column;justify-content:space-between;gap:25px}
+.dt-signal__aside-title{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.13em;color:#a6b4c9}
+.dt-signal__nodes{display:flex;flex-direction:column;gap:10px;margin:21px 0}
+.dt-signal__node{display:flex;gap:13px;align-items:center;font:500 13px 'Manrope',sans-serif;color:#a6b2c4}
+.dt-signal__node i{display:grid;place-items:center;width:30px;height:30px;border:1px solid rgba(174,190,214,.23);border-radius:8px;font:600 11px 'JetBrains Mono',monospace;font-style:normal}
+.dt-signal__node.is-current{color:#e2e9f5}.dt-signal__node.is-current i{background:#d2deee;color:#10151e}
+.dt-signal__foot{border-top:1px solid rgba(166,182,207,.17);padding-top:18px;font:500 12px/1.6 'Manrope',sans-serif;color:#aeb7c6}
+.dt-signal__bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:17px;font:500 12px 'Manrope',sans-serif;color:#9daabd}
+.dt-signal__bottom a{color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:4px}
+[data-theme="light"] .dt-signal__eyebrow,[data-theme="light"] .dt-signal__intro,[data-theme="light"] .dt-signal__toolbar,[data-theme="light"] .dt-signal__stage,[data-theme="light"] .dt-signal__context,[data-theme="light"] .dt-signal__aside-title,[data-theme="light"] .dt-signal__node,[data-theme="light"] .dt-signal__foot,[data-theme="light"] .dt-signal__bottom{color:#56647b}
+[data-theme="light"] .dt-signal__board{background:linear-gradient(130deg,#f7f9fc,#e8edf4);border-color:#cbd4e0}
+[data-theme="light"] .dt-signal__node.is-current{color:#17243a}
+[data-theme="light"] .dt-signal__step[aria-pressed="true"]{background:#25354d}
+@media(max-width:700px){.dt-signal{padding:65px 18px!important}.dt-signal__headline{display:block}.dt-signal__intro{margin-top:14px;max-width:330px}.dt-signal__content{grid-template-columns:1fr;min-height:0}.dt-signal__main{padding:25px 21px 24px;min-height:270px}.dt-signal__statement{font-size:clamp(27px,7vw,35px)}.dt-signal__aside{border-left:0;border-top:1px solid rgba(166,182,207,.17);padding:17px 20px;gap:8px}.dt-signal__nodes{flex-direction:row;justify-content:space-between;gap:6px;margin:12px 0}.dt-signal__node{font-size:10px;gap:5px}.dt-signal__node i{width:23px;height:23px;font-size:9px}.dt-signal__foot{font-size:11px;padding-top:10px}.dt-signal__toolbar{padding:14px 18px}.dt-signal__bottom{align-items:flex-start;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.dt-signal__statement,.dt-signal__context,.dt-signal__step{transition:none}}
 </style>
-<div class="dt-explore__inner">
-<div class="dt-explore__top"><span class="dt-explore__label">[ 03 — EXPLORE ]</span><span class="dt-explore__counter">01 / 03</span></div>
-<div class="dt-explore__heading"><h2 id="catchTitle">One minute can change<br>how you see something.</h2><p>Interesting ideas deserve more than a swipe. Pick a clip and go deeper.</p></div>
-<div class="dt-explore__layout">
-<div class="dt-explore__preview"><img id="dtExploreImage" src="assets/reel-bear.jpg" alt="Polar bear in a short video" loading="lazy" decoding="async"><div class="dt-explore__preview-top"><span>DATARIOT / DISCOVER</span><span id="dtExploreDuration">0:31</span></div><div class="dt-explore__preview-bottom"><span id="dtExploreCategory">NATURE</span><h3 id="dtExploreTitle">Why do polar bears look white?</h3><a href="#manifesto" aria-label="Explore this topic in the feed">Explore in the feed <span aria-hidden="true">↗</span></a></div></div>
-<div class="dt-explore__side" role="group" aria-label="Choose a video topic">
-<button type="button" class="dt-explore__option" data-dt-explore="0" aria-pressed="true"><img src="assets/reel-bear.jpg" alt="" loading="lazy"><span><small>01 / NATURE</small><b>The colour of a polar bear</b></span></button>
-<button type="button" class="dt-explore__option" data-dt-explore="1" aria-pressed="false"><img src="assets/reel-lidar.jpg" alt="" loading="lazy"><span><small>02 / TECHNOLOGY</small><b>How a car sees</b></span></button>
-<button type="button" class="dt-explore__option" data-dt-explore="2" aria-pressed="false"><img src="assets/reel-tower.jpg" alt="" loading="lazy"><span><small>03 / ENGINEERING</small><b>Why towers move</b></span></button>
-</div></div>
-<div class="dt-explore__insight"><span>ORVELIS / CONTEXT</span><p id="dtExploreInsight" aria-live="polite">A polar bear's fur is translucent. Its structure scatters light, making it appear white.</p></div>
+<div class="dt-signal__inner">
+<div class="dt-signal__eyebrow"><span>[ 03 — THE DIFFERENCE ]</span><span>DATARIOT × ORVELIS</span></div>
+<div class="dt-signal__headline"><h2 id="catchTitle">A video is just<br>the beginning.</h2><p class="dt-signal__intro">The interesting part is what happens after someone presses play.</p></div>
+<div class="dt-signal__board">
+<div class="dt-signal__toolbar"><span>INSIDE A CONVERSATION</span><span class="dt-signal__live">EXPLORE THE FLOW</span></div>
+<div class="dt-signal__content">
+<div class="dt-signal__main">
+<div><span class="dt-signal__stage" id="dtSignalStage">01 / WATCH</span><p class="dt-signal__statement" id="dtSignalStatement">A creator shares an idea worth thinking about.</p><p class="dt-signal__context" id="dtSignalContext">A short video starts the conversation. No endless scrolling required.</p></div>
+<div class="dt-signal__nav" role="group" aria-label="Explore the three stages"><button class="dt-signal__step" type="button" data-signal="0" aria-label="Watch" aria-pressed="true"></button><button class="dt-signal__step" type="button" data-signal="1" aria-label="Question" aria-pressed="false"></button><button class="dt-signal__step" type="button" data-signal="2" aria-label="Reply" aria-pressed="false"></button></div>
 </div>
-<script>(function(){var root=document.getElementById('catch');if(!root)return;var items=[{img:'assets/reel-bear.jpg',alt:'Polar bear in a short video',category:'NATURE',title:'Why do polar bears look white?',duration:'0:31',insight:"A polar bear's fur is translucent. Its structure scatters light, making it appear white."},{img:'assets/reel-lidar.jpg',alt:'Car navigating an urban street',category:'TECHNOLOGY',title:'How does a car see the road?',duration:'0:44',insight:'Lidar uses reflected laser pulses to estimate distances and build a 3D map of the surroundings.'},{img:'assets/reel-tower.jpg',alt:'Tall tower against a city skyline',category:'ENGINEERING',title:'Why are tall buildings designed to sway?',duration:'0:38',insight:'Controlled flexibility helps skyscrapers respond to wind instead of resisting every movement rigidly.'}];var buttons=root.querySelectorAll('[data-dt-explore]');buttons.forEach(function(btn){btn.addEventListener('click',function(){var i=Number(btn.getAttribute('data-dt-explore')),v=items[i];if(!v)return;buttons.forEach(function(b){b.setAttribute('aria-pressed',b===btn?'true':'false')});var img=root.querySelector('#dtExploreImage');img.src=v.img;img.alt=v.alt;root.querySelector('#dtExploreCategory').textContent=v.category;root.querySelector('#dtExploreTitle').textContent=v.title;root.querySelector('#dtExploreDuration').textContent=v.duration;root.querySelector('#dtExploreInsight').textContent=v.insight;root.querySelector('.dt-explore__counter').textContent='0'+(i+1)+' / 03'})})})();</script>
+<div class="dt-signal__aside"><div><span class="dt-signal__aside-title">THE PATH OF AN IDEA</span><div class="dt-signal__nodes"><div class="dt-signal__node is-current"><i>01</i> Watch</div><div class="dt-signal__node"><i>02</i> Question</div><div class="dt-signal__node"><i>03</i> Reply</div></div></div><div class="dt-signal__foot">Not another feed to lose an hour in. A place to leave with something new.</div></div>
+</div></div>
+<div class="dt-signal__bottom"><span>LESS PASSIVE SCROLLING. MORE PARTICIPATION.</span><a href="#ai-core">Meet Orvelis AI ↗</a></div>
+</div>
+<script>(function(){var root=document.getElementById('catch');if(!root)return;var steps=[['01 / WATCH','A creator shares an idea worth thinking about.','A short video starts the conversation. No endless scrolling required.'],['02 / QUESTION','Orvelis helps you look beyond the first impression.','Explore the reasoning, ask what is missing, and discover useful context.'],['03 / REPLY','Your perspective becomes part of the story.','Respond on camera. Add an example, challenge a claim, or take the idea further.']];var buttons=root.querySelectorAll('[data-signal]'),nodes=root.querySelectorAll('.dt-signal__node');buttons.forEach(function(btn){btn.addEventListener('click',function(){var i=Number(btn.getAttribute('data-signal')),v=steps[i];if(!v)return;root.querySelector('#dtSignalStage').textContent=v[0];root.querySelector('#dtSignalStatement').textContent=v[1];root.querySelector('#dtSignalContext').textContent=v[2];buttons.forEach(function(b){b.setAttribute('aria-pressed',b===btn?'true':'false')});nodes.forEach(function(n,j){n.classList.toggle('is-current',j===i)})})})})();</script>
 </section>
 
 
