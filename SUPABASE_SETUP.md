@@ -72,10 +72,10 @@ Create or update the `.env` file in the root directory of your Datariot project.
 EXPO_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 
 # Public anon key (exposed to client builds safely)
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5Y3J0b2JkZXduc2N3YXpzaGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY4ODk5MTUsImV4cCI6MjAzMjQ2NTkxNX0.your_anon_key
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_public_anon_key
 
 # Admin service role key (restricted to backend/scripts)
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5Y3J0b2JkZXduc2N3YXpzaGN1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxNjg4OTkxNSwiZXhwIjoyMDc1MjUxNTY2fQ.your_service_role_key
+SUPABASE_SERVICE_ROLE_KEY=your_private_service_role_key
 ```
 
 > [!TIP]  
