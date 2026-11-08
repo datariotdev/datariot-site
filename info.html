@@ -1112,6 +1112,24 @@ html[data-theme="light"] .datariot-depth-field{display:none}
 @media(max-width:700px){.datariot-depth-field__orb--one{left:-55%}.datariot-depth-field__orb--two{right:-65%}.datariot-depth-field__ring{right:-70%}}
 @media(prefers-reduced-motion:reduce){.datariot-depth-field__orb{animation:none}}
 </style>
+<style id="datariot-depth-expanded">
+/* Extend the blue-slate dimensional lighting throughout the story. */
+#manifesto,#features,#debates,#faq{position:relative;isolation:isolate}
+#manifesto>.datariot-depth-field,#features>.datariot-depth-field,#debates>.datariot-depth-field,#faq>.datariot-depth-field{z-index:-1}
+html[data-theme="dark"] #manifesto .datariot-depth-field__orb--one,
+html[data-theme="dark"] #debates .datariot-depth-field__orb--one{left:-20%;top:2%;opacity:.85}
+html[data-theme="dark"] #features .datariot-depth-field__orb--two,
+html[data-theme="dark"] #faq .datariot-depth-field__orb--two{right:-22%;bottom:0;opacity:.85}
+html[data-theme="dark"] #manifesto .datariot-depth-field__ring,
+html[data-theme="dark"] #debates .datariot-depth-field__ring{right:auto;left:-28%;top:24%;transform:rotateX(65deg) rotate(18deg)}
+html[data-theme="dark"] #features .datariot-depth-field__ring,
+html[data-theme="dark"] #faq .datariot-depth-field__ring{right:-26%;top:30%}
+html[data-theme="dark"] #manifesto .datariot-depth-field__orb--two,
+html[data-theme="dark"] #debates .datariot-depth-field__orb--two{right:-28%;bottom:10%}
+html[data-theme="dark"] #features .datariot-depth-field__orb--one,
+html[data-theme="dark"] #faq .datariot-depth-field__orb--one{left:-26%;top:10%}
+@media(max-width:700px){html[data-theme="dark"] #manifesto .datariot-depth-field__ring,html[data-theme="dark"] #debates .datariot-depth-field__ring{left:-70%}}
+</style>
 </head>
 
 <body>
@@ -1505,6 +1523,7 @@ html[data-theme="light"] .datariot-depth-field{display:none}
              written out below. The frames are real ones from the app.
              ============================================================ -->
         <section class="section mini-feed" id="manifesto" data-inview aria-labelledby="miniFeedTitle">
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
 .mini-feed{padding:clamp(64px,8vw,108px) 20px!important;background:transparent!important;color:var(--text-primary,#10131b)}
 .mini-feed *{box-sizing:border-box}
@@ -1557,6 +1576,7 @@ html[data-theme="light"] .datariot-depth-field{display:none}
              written out beside it.
              ============================================================ -->
         <section class="section reply-network" id="features" data-inview aria-labelledby="replyNetworkTitle">
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
 .reply-network{padding:clamp(70px,8vw,112px) 18px!important;background:transparent!important;color:var(--text-primary,#10131b)}
 .reply-network *{box-sizing:border-box}
@@ -1666,6 +1686,7 @@ html[data-theme="light"] .datariot-depth-field{display:none}
 
         <!-- The Arena: two perspectives, one question worth thinking about. -->
         <section class="section dt-dev" id="debates" data-inview aria-labelledby="dtDevTitle">
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
 .dt-dev{padding:clamp(80px,10vw,150px) 24px!important;color:var(--text-primary,#111);background:transparent!important}
 .dt-dev *{box-sizing:border-box}
@@ -2012,6 +2033,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 
         <!-- 08 — FAQ -->
         <section class="section faq" id="faq" data-inview>
+<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="faq__inner">
                 <div class="faq__head">
                     <span class="faq__tag">[ 08 &mdash; FAQ ]</span>
