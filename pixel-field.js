@@ -17,7 +17,9 @@
    it moves with the page on the compositor.
    ========================================================================= */
 (() => {
-    const section = document.getElementById('ai-core');
+    const sections = ['hero','manifesto','features','ai-core','global','faq'];
+    sections.forEach((sectionId) => {
+    const section = document.getElementById(sectionId);
     const field = section && section.querySelector('.px-field');
     const canvas = field && field.querySelector('canvas');
     if (!canvas) return;
@@ -387,4 +389,5 @@
         }
     }
     field.classList.add('is-live');
+    });
 })();
