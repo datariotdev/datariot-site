@@ -1465,64 +1465,55 @@
              the scene is held on its last step and all three steps are
              written out beside it.
              ============================================================ -->
-        <section class="section debate-lab" id="features" data-inview aria-labelledby="debateLabTitle">
+        <section class="section reply-network" id="features" data-inview aria-labelledby="replyNetworkTitle">
 <style>
-.debate-lab{padding:clamp(75px,9vw,130px) 22px!important;background:transparent!important;color:var(--text-primary,#10131b)}
-.debate-lab *{box-sizing:border-box}
-.debate-lab__shell{max-width:1130px;margin:auto}
-.debate-lab__eyebrow{font:700 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#3473e8;margin-bottom:23px}
-.debate-lab__title{font:700 clamp(43px,6.5vw,83px)/1.02 'Syne',sans-serif;letter-spacing:-.065em;margin:0 0 18px}
-.debate-lab__title em{font-style:normal;color:#3473e8}
-.debate-lab__intro{font:400 clamp(15px,1.7vw,18px)/1.7 'Manrope',sans-serif;max-width:630px;opacity:.7;margin:0 0 36px}
-.debate-lab__layout{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:18px}
-.debate-lab__card{border:1px solid rgba(72,103,164,.18);border-radius:25px;background:rgba(255,255,255,.67);padding:clamp(22px,3vw,35px);min-width:0}
-.debate-lab__label{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#3672df;margin:0 0 20px}
-.debate-lab__question{font:700 clamp(26px,3.2vw,40px)/1.2 'Syne',sans-serif;letter-spacing:-.045em;margin:0 0 23px}
-.debate-lab__choices{display:grid;gap:10px}
-.debate-lab__choice{border:1px solid rgba(72,103,164,.2);background:transparent;border-radius:14px;padding:17px 16px;color:inherit;text-align:left;font:600 14px/1.5 'Manrope',sans-serif;cursor:pointer;transition:background .2s,border-color .2s}
-.debate-lab__choice[aria-pressed="true"]{background:#e8f0ff;border-color:#6c9bea}
-.debate-lab__choice span{font:700 11px 'JetBrains Mono',monospace;color:#3776e9;margin-right:10px}
-.debate-lab__result{background:#0e1626;color:#eaf0ff;border-radius:25px;padding:clamp(23px,3vw,36px);display:flex;flex-direction:column;min-height:365px}
-.debate-lab__resulthead{display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.09em;color:#99b8f3}
-.debate-lab__quote{font:600 clamp(21px,2.8vw,32px)/1.38 'Manrope',sans-serif;letter-spacing:-.035em;margin:35px 0 22px}
-.debate-lab__resultfoot{margin-top:auto;border-top:1px solid rgba(207,225,255,.16);padding-top:20px}
-.debate-lab__resultfoot strong{font:700 12px 'JetBrains Mono',monospace;color:#9cbfff}
-.debate-lab__resultfoot p{font:400 14px/1.7 'Manrope',sans-serif;color:#d0daec;margin:10px 0 0}
-.debate-lab__bottom{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:19px}
-.debate-lab__bottom a{font:700 13px 'Manrope',sans-serif;color:#286ce4!important;text-decoration:none!important}
-[data-theme="dark"] .debate-lab__card{background:rgba(14,19,30,.85);border-color:rgba(163,184,229,.15)}
-[data-theme="dark"] .debate-lab__choice{border-color:rgba(163,184,229,.2)}
-[data-theme="dark"] .debate-lab__choice[aria-pressed="true"]{background:#1b3052;border-color:#5684d0}
-@media(max-width:760px){.debate-lab{padding:72px 17px!important}.debate-lab__layout{grid-template-columns:1fr;gap:14px}.debate-lab__card,.debate-lab__result{border-radius:21px;padding:22px}.debate-lab__result{min-height:285px}.debate-lab__quote{margin:24px 0}}
-@media(prefers-reduced-motion:reduce){.debate-lab__choice{transition:none}}
+.reply-network{padding:clamp(70px,8vw,112px) 18px!important;background:transparent!important;color:var(--text-primary,#10131b)}
+.reply-network *{box-sizing:border-box}
+.reply-network__shell{max-width:1120px;margin:auto}
+.reply-network__eyebrow{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#3475e9;margin-bottom:16px}
+.reply-network__head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:28px}
+.reply-network__title{font:700 clamp(37px,5.6vw,70px)/1.05 'Syne',sans-serif;letter-spacing:-.065em;margin:0}
+.reply-network__title em{font-style:normal;color:#3676e9}
+.reply-network__intro{font:400 15px/1.7 'Manrope',sans-serif;opacity:.65;max-width:320px;margin:0}
+.reply-network__panel{border:1px solid rgba(83,113,170,.18);border-radius:24px;padding:clamp(18px,3vw,34px);background:rgba(255,255,255,.55)}
+.reply-network__flow{display:grid;grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr) 26px minmax(0,1fr);align-items:center;gap:8px}
+.reply-network__node{border:1px solid rgba(80,111,169,.2);border-radius:17px;overflow:hidden;background:rgba(255,255,255,.78);color:inherit;min-width:0;cursor:pointer;text-align:left;padding:0;transition:border-color .2s,transform .2s}
+.reply-network__node[aria-pressed="true"]{border-color:#3b7df0;box-shadow:0 0 0 2px rgba(59,125,240,.13)}
+.reply-network__node:hover{transform:translateY(-2px)}
+.reply-network__visual{position:relative;display:block;height:clamp(135px,17vw,210px);background:#10192a;overflow:hidden}
+.reply-network__visual img{width:100%;height:100%;object-fit:cover}
+.reply-network__play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:37px;height:37px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.9);color:#10131b;font-size:15px}
+.reply-network__visual--reply{background:linear-gradient(135deg,#182a49,#4369a0);display:flex;align-items:center;justify-content:center}
+.reply-network__visual--reply span{font:700 clamp(19px,3vw,34px)/1.2 'Syne',sans-serif;color:#fff;text-align:center;padding:14px}
+.reply-network__visual--ai{background:radial-gradient(circle at 50% 45%,#3869bb,#14213b 65%);display:flex;align-items:center;justify-content:center}
+.reply-network__visual--ai span{font:700 clamp(34px,5vw,64px) 'Syne',sans-serif;color:#dceaff;letter-spacing:-.08em}
+.reply-network__info{display:block;padding:13px 14px 16px}
+.reply-network__tag{font:700 10px 'JetBrains Mono',monospace;color:#3475e9;letter-spacing:.06em}
+.reply-network__name{display:block;font:700 clamp(13px,1.5vw,17px)/1.4 'Manrope',sans-serif;margin-top:7px;min-height:2.8em}
+.reply-network__arrow{text-align:center;color:#5685d4;font-size:25px;font-weight:300}
+.reply-network__detail{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid rgba(83,113,170,.16);padding-top:20px;margin-top:22px}
+.reply-network__detail p{font:500 14px/1.6 'Manrope',sans-serif;margin:0;max-width:770px}
+.reply-network__detail a{font:700 12px 'Manrope',sans-serif;color:#2f72e9!important;text-decoration:none!important;white-space:nowrap}
+[data-theme="dark"] .reply-network__panel,[data-theme="dark"] .reply-network__node{background:rgba(17,24,37,.82);border-color:rgba(170,191,232,.17)}
+[data-theme="dark"] .reply-network__node[aria-pressed="true"]{border-color:#75a2ff}
+@media(max-width:760px){.reply-network{padding:64px 16px!important}.reply-network__head{display:block;margin-bottom:23px}.reply-network__intro{margin-top:14px;max-width:500px}.reply-network__panel{padding:14px;border-radius:19px}.reply-network__flow{grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr) 12px minmax(0,1fr);gap:3px}.reply-network__visual{height:clamp(100px,29vw,175px)}.reply-network__info{padding:10px 7px}.reply-network__tag{font-size:8px}.reply-network__name{font-size:11px;line-height:1.4;min-height:4.2em}.reply-network__arrow{font-size:15px}.reply-network__play{width:28px;height:28px;font-size:12px}.reply-network__visual--reply span{font-size:clamp(13px,3.3vw,19px);padding:6px}.reply-network__visual--ai span{font-size:clamp(26px,7vw,40px)}.reply-network__detail{display:block;padding:17px 4px 2px;margin-top:14px}.reply-network__detail a{display:inline-block;margin-top:12px}}
+@media(prefers-reduced-motion:reduce){.reply-network__node{transition:none}}
 </style>
-<div class="debate-lab__shell">
-<div class="debate-lab__eyebrow">[ 02 — THE CONVERSATION ]</div>
-<h2 class="debate-lab__title" id="debateLabTitle">A better way<br><em>to disagree.</em></h2>
-<p class="debate-lab__intro">A video makes a point. Another challenges it. Explore what a stronger conversation could look like.</p>
-<div class="debate-lab__layout">
-<div class="debate-lab__card">
-<p class="debate-lab__label">01 / THE ORIGINAL TAKE</p>
-<h3 class="debate-lab__question">Should phones be banned in classrooms?</h3>
-<div class="debate-lab__choices" role="group" aria-label="Explore different responses">
-<button class="debate-lab__choice" data-debate="0" aria-pressed="true" type="button"><span>A /</span> Yes. They distract students.</button>
-<button class="debate-lab__choice" data-debate="1" aria-pressed="false" type="button"><span>B /</span> No. They can help students learn.</button>
-<button class="debate-lab__choice" data-debate="2" aria-pressed="false" type="button"><span>AI /</span> Examine both arguments.</button>
-</div></div>
-<div class="debate-lab__result" aria-live="polite">
-<div class="debate-lab__resulthead"><span id="debateLabMode">VIDEO REPLY / FOR</span><span>↗ 02</span></div>
-<div class="debate-lab__quote" id="debateLabQuote">“Notifications compete for attention. A phone-free classroom could make it easier to focus.”</div>
-<div class="debate-lab__resultfoot"><strong id="debateLabSubhead">THE COUNTERPOINT</strong><p id="debateLabReason">But a blanket ban may also remove useful accessibility and learning tools. The details matter.</p></div>
-</div></div>
-<div class="debate-lab__bottom"><a href="#ai-core">Explore Orvelis AI ↗</a><a href="#debates">See the open-source project ↗</a></div>
+<div class="reply-network__shell">
+<div class="reply-network__eyebrow">[ 02 — VIDEO REPLIES ]</div>
+<div class="reply-network__head"><h2 class="reply-network__title" id="replyNetworkTitle">Ideas don't<br><em>end at upload.</em></h2><p class="reply-network__intro">One person makes a point. Someone answers on camera. Orvelis helps you dig deeper.</p></div>
+<div class="reply-network__panel">
+<div class="reply-network__flow" role="group" aria-label="Explore the video reply flow">
+<button class="reply-network__node" type="button" data-reply="0" aria-pressed="true"><span class="reply-network__visual"><img src="assets/hero-clip.jpg" alt="Original video preview" loading="lazy"><span class="reply-network__play" aria-hidden="true">▶</span></span><span class="reply-network__info"><span class="reply-network__tag">01 / ORIGINAL</span><span class="reply-network__name">A point worth discussing</span></span></button>
+<span class="reply-network__arrow" aria-hidden="true">→</span>
+<button class="reply-network__node" type="button" data-reply="1" aria-pressed="false"><span class="reply-network__visual reply-network__visual--reply"><span>Another<br>perspective.</span></span><span class="reply-network__info"><span class="reply-network__tag">02 / REPLY</span><span class="reply-network__name">Answer with a video</span></span></button>
+<span class="reply-network__arrow" aria-hidden="true">→</span>
+<button class="reply-network__node" type="button" data-reply="2" aria-pressed="false"><span class="reply-network__visual reply-network__visual--ai"><span>O.</span></span><span class="reply-network__info"><span class="reply-network__tag">03 / ORVELIS</span><span class="reply-network__name">Explore the reasoning</span></span></button>
 </div>
+<div class="reply-network__detail" aria-live="polite"><p id="replyNetworkDetail">It starts with a short video that makes one clear point — not a wall of comments.</p><a href="#ai-core">Discover Orvelis AI ↗</a></div>
+</div></div>
 <script>
-(function(){const root=document.getElementById('features');if(!root)return;const options=[
-{mode:'VIDEO REPLY / FOR',quote:'“Notifications compete for attention. A phone-free classroom could make it easier to focus.”',sub:'THE COUNTERPOINT',reason:'But a blanket ban may also remove useful accessibility and learning tools. The details matter.'},
-{mode:'VIDEO REPLY / AGAINST',quote:'“A phone can be a calculator, a research tool, or an accessibility aid. The problem is how it is used.”',sub:'THE COUNTERPOINT',reason:'Without clear rules, notifications and unrelated apps can still interrupt learning.'},
-{mode:'ORVELIS AI / EXAMPLE',quote:'“Both sides make plausible claims. Neither proves that a universal policy works for every classroom.”',sub:'WHAT TO CHECK',reason:'Compare outcomes from controlled phone policies, consider student age, accessibility needs, and enforcement. This is an illustrative analysis, not a live AI response.'}
-];root.querySelectorAll('[data-debate]').forEach((button,i)=>button.addEventListener('click',()=>{root.querySelectorAll('[data-debate]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));const item=options[i];root.querySelector('#debateLabMode').textContent=item.mode;root.querySelector('#debateLabQuote').textContent=item.quote;root.querySelector('#debateLabSubhead').textContent=item.sub;root.querySelector('#debateLabReason').textContent=item.reason}));
-})();
+(function(){const root=document.getElementById('features');if(!root)return;const descriptions=['It starts with a short video that makes one clear point — not a wall of comments.','Another creator responds with their own video, keeping the discussion human and visible.','Orvelis AI is designed to help examine claims and reasoning so viewers can explore beyond the clip.'];root.querySelectorAll('[data-reply]').forEach((button,i)=>button.addEventListener('click',()=>{root.querySelectorAll('[data-reply]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));root.querySelector('#replyNetworkDetail').textContent=descriptions[i]}))})();
 </script>
 </section>
 
