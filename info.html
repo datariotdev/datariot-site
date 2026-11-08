@@ -1572,103 +1572,72 @@
              the scene is held on its last step and all three steps are
              written out beside it.
              ============================================================ -->
-        <section class="section section--features section--3d-features" id="features" data-inview>
-            <!-- the logo's black, dissolving into the page at both edges -->
-            <div class="px-screen" aria-hidden="true"></div>
-            <div class="section__container">
-                <div class="section__header section__header--stack">
-                    <span class="section__label">[ 02 — HOW IT WORKS ]</span>
-                    <h2 class="section__title">MAKE A POINT.<br>GET ANSWERED. <br class="hw-br"><span class="st-title-accent">THE BEST ONE WINS.</span></h2>
-                </div>
-
-                <div class="hw" id="how" data-step="3">
-                    <ol class="hw__steps" aria-label="How it works, in three steps">
-                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:6.5s">
-                            <span class="hw__n">01</span>
-                            <span class="hw__h">Make a point</span>
-                            <span class="hw__p">Film one clear thing: a fact, a how-to, a take you can back up. One short clip, your face on camera.</span>
-                            <i class="hw__bar" data-bar></i>
-                        </button></li>
-                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:6s">
-                            <span class="hw__n">02</span>
-                            <span class="hw__h">Get answered</span>
-                            <span class="hw__p">Anyone can answer with a clip of their own. Replies stack under yours, so it stays a conversation, not a comment war.</span>
-                            <i class="hw__bar" data-bar></i>
-                        </button></li>
-                        <li><button class="hw__step" type="button" aria-pressed="false" style="--dur:8s">
-                            <span class="hw__n">03</span>
-                            <span class="hw__h">The best one wins</span>
-                            <span class="hw__p">Viewers vote on substance and Orvelis checks the logic. The clearest answer rises, not the loudest.</span>
-                            <i class="hw__bar" data-bar></i>
-                        </button></li>
-                    </ol>
-
-                    <!-- the scene: the app's Debate Thread, on the same phone as slide 01.
-                         Step 1 your clip goes up as a thesis; step 2 the arguments come
-                         in, on camera, for or against; step 3 the votes sort them by
-                         strength and the clearest one takes the top. clips.js types the
-                         claim, runs the clock and counts; the rest is CSS on data-step. -->
-                    <div class="hw__stage" aria-hidden="true">
-                        <div class="fd__phone hw__phone">
-                            <span class="fd__notch"></span>
-                            <div class="fd__screen hw__app">
-                                <div class="hw__top">
-                                    <div class="fd__status"><b>9:41</b><i></i></div>
-                                    <div class="hw__head"><svg class="hw__back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><b>Debate Thread</b><span class="hw__likes"><svg viewBox="0 0 24 24"><path d="M12 1.8c.8 5.6 3.6 8.4 9.2 9.2-5.6.8-8.4 3.6-9.2 9.2-.8-5.6-3.6-8.4-9.2-9.2 5.6-.8 8.4-3.6 9.2-9.2z"/></svg>1,204</span></div>
-                                </div>
-
-                                <div class="hw__body">
-                                    <article class="hw__thesis">
-                                        <div class="hw__by"><span class="hw__av">P</span><b>pro_logic_22</b><time>now</time></div>
-                                        <div class="hw__main">
-                                            <span class="hw__vid hw__vid--rec"><i class="hw__dot"></i><i class="hw__play"></i><b data-clock>0:24</b></span>
-                                            <div class="hw__claim">
-                                                <span class="hw__badge">THESIS</span>
-                                                <p><span data-typed>Phones should be banned in class.</span><i class="hw__caret"></i></p>
-                                            </div>
-                                        </div>
-                                        <div class="hw__foot">
-                                            <span class="hw__stats"><svg viewBox="0 0 24 24"><path d="M9.2 17.6h5.6M10 20.6h4M12 3.2a6.1 6.1 0 0 0-3.7 11c.7.6 1 1.3 1 2.1v.3h5.4v-.3c0-.8.3-1.5 1-2.1A6.1 6.1 0 0 0 12 3.2z"/></svg><b>1.2K</b> Reputation<span class="hw__dotsep"></span><svg viewBox="0 0 24 24"><path d="M12 4c4.7 0 8.4 3.1 8.4 7.1s-3.7 7.1-8.4 7.1c-.9 0-1.8-.1-2.6-.4l-4.3 2 1.1-3.6C4.6 14.9 3.6 13.1 3.6 11.1 3.6 7.1 7.3 4 12 4z"/></svg><b data-replies>2</b> Arguments</span>
-                                            <span class="hw__post">Post</span>
-                                        </div>
-                                    </article>
-
-                                    <div class="hw__thread">
-                                        <p class="hw__empty">No arguments yet. Be the first to logic test this.</p>
-
-                                        <div class="hw__bal">
-                                            <span class="hw__bal-t">Logic Balance</span>
-                                            <div class="hw__bal-row"><b data-to="276">276</b><span class="hw__track"><i></i></span><b data-to="38">38</b></div>
-                                            <div class="hw__bal-lab"><span>FOR (1)</span><span>AGAINST (1)</span></div>
-                                        </div>
-
-                                        <div class="hw__args-h"><b>Arguments</b><span data-replies>2</span><em>BY STRENGTH</em></div>
-
-                                        <ol class="hw__args">
-                                            <li class="hw__arg hw__arg--against hw__arg--a">
-                                                <div class="hw__by"><span class="hw__av">D</span><b>d_marek</b><span class="hw__side">AGAINST</span><time>2m</time></div>
-                                                <p class="hw__say">LOL no. It’s 2026.</p>
-                                                <div class="hw__foot"><span class="hw__vid hw__vid--sm"><i class="hw__play"></i><b>0:09</b></span><span class="hw__vote"><svg viewBox="0 0 24 24"><path d="M9.2 17.6h5.6M10 20.6h4M12 3.2a6.1 6.1 0 0 0-3.7 11c.7.6 1 1.3 1 2.1v.3h5.4v-.3c0-.8.3-1.5 1-2.1A6.1 6.1 0 0 0 12 3.2z"/></svg><b data-to="38">38</b></span><span class="hw__reply"><svg viewBox="0 0 24 24"><path d="M12 4c4.7 0 8.4 3.1 8.4 7.1s-3.7 7.1-8.4 7.1c-.9 0-1.8-.1-2.6-.4l-4.3 2 1.1-3.6C4.6 14.9 3.6 13.1 3.6 11.1 3.6 7.1 7.3 4 12 4z"/></svg>Reply</span></div>
-                                            </li>
-                                            <li class="hw__arg hw__arg--for hw__arg--b">
-                                                <div class="hw__by"><span class="hw__av">N</span><b>nova_k</b><span class="hw__side">FOR</span><time>1m</time></div>
-                                                <p class="hw__say">Ban them in lessons, keep them at lunch. The problem is attention, not phones.</p>
-                                                <div class="hw__foot"><span class="hw__vid hw__vid--sm"><i class="hw__play"></i><b>0:41</b></span><span class="hw__vote"><svg viewBox="0 0 24 24"><path d="M9.2 17.6h5.6M10 20.6h4M12 3.2a6.1 6.1 0 0 0-3.7 11c.7.6 1 1.3 1 2.1v.3h5.4v-.3c0-.8.3-1.5 1-2.1A6.1 6.1 0 0 0 12 3.2z"/></svg><b data-to="276">276</b></span><span class="hw__reply"><svg viewBox="0 0 24 24"><path d="M12 4c4.7 0 8.4 3.1 8.4 7.1s-3.7 7.1-8.4 7.1c-.9 0-1.8-.1-2.6-.4l-4.3 2 1.1-3.6C4.6 14.9 3.6 13.1 3.6 11.1 3.6 7.1 7.3 4 12 4z"/></svg>Reply</span></div>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
-
-                                <div class="hw__stance">
-                                    <span class="hw__vbtn hw__vbtn--for"><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg>Video FOR</span>
-                                    <span class="hw__vbtn"><svg viewBox="0 0 24 24"><rect x="2.8" y="6.4" width="12.4" height="11.2" rx="3"/><path d="M15.2 10.6 21 7.4v9.2l-5.8-3.2z"/></svg>Video AGAINST</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section class="section dt-dev" id="features" data-inview aria-labelledby="dtDevTitle">
+<style>
+.dt-dev{padding:clamp(80px,10vw,150px) 24px!important;color:var(--text-primary,#111);background:transparent!important}
+.dt-dev *{box-sizing:border-box}
+.dt-dev__wrap{max-width:1120px;margin:auto}
+.dt-dev__eyebrow{font:600 11px/1.5 'JetBrains Mono',monospace;letter-spacing:.13em;color:#356bdc;margin-bottom:24px}
+.dt-dev__heading{font:700 clamp(40px,6.5vw,82px)/1.04 'Syne',sans-serif;letter-spacing:-.065em;margin:0 0 22px}
+.dt-dev__heading span{color:#3976e7}
+.dt-dev__lede{font:400 clamp(15px,1.7vw,19px)/1.7 'Manrope',sans-serif;max-width:650px;opacity:.68;margin:0 0 45px}
+.dt-dev__panel{border:1px solid rgba(82,111,161,.18);border-radius:28px;background:rgba(255,255,255,.68);box-shadow:0 28px 90px rgba(34,74,135,.07);overflow:hidden}
+.dt-dev__top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px 26px;border-bottom:1px solid rgba(82,111,161,.13)}
+.dt-dev__top strong{font:700 14px 'Manrope',sans-serif}
+.dt-dev__status{font:500 11px 'JetBrains Mono',monospace;color:#5680c4}
+.dt-dev__tabs{display:flex;flex-wrap:wrap;gap:9px;padding:23px 26px 8px}
+.dt-dev__tab{font:600 12px 'Manrope',sans-serif;border:1px solid rgba(82,111,161,.17);border-radius:999px;background:transparent;color:inherit;padding:11px 17px;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.dt-dev__tab[aria-selected="true"]{background:#2868e7;border-color:#2868e7;color:#fff}
+.dt-dev__body{padding:20px 26px 28px}
+.dt-dev__description{font:400 14px/1.7 'Manrope',sans-serif;opacity:.7;margin:0 0 19px;min-height:25px}
+.dt-dev__terminal{background:#101622;border:1px solid #26334a;border-radius:17px;overflow:hidden;color:#e5edff}
+.dt-dev__terminalbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #26334a;font:500 11px 'JetBrains Mono',monospace;color:#9caecb}
+.dt-dev__dots{display:flex;gap:6px}.dt-dev__dots i{width:8px;height:8px;border-radius:50%;background:#465774}.dt-dev__dots i:first-child{background:#5b8eec}
+.dt-dev__code{display:block;white-space:pre-wrap;overflow-wrap:anywhere;padding:25px 20px;font:500 clamp(12px,1.4vw,15px)/1.85 'JetBrains Mono',monospace;min-height:110px}
+.dt-dev__prompt{color:#70a6ff}
+.dt-dev__actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:20px}
+.dt-dev__link{color:#2868e7!important;font:700 13px 'Manrope',sans-serif;text-decoration:none!important}
+.dt-dev__copy{border:1px solid #344967;background:#1c2a40;color:#e5edff;border-radius:9px;padding:8px 13px;font:600 11px 'JetBrains Mono',monospace;cursor:pointer}
+.dt-dev__copy:hover{background:#2b4163}
+.dt-dev__note{font:400 12px/1.7 'Manrope',sans-serif;opacity:.55;margin:17px 0 0}
+[data-theme="dark"] .dt-dev__panel{background:rgba(15,18,27,.85);border-color:rgba(173,193,233,.15);box-shadow:none}
+[data-theme="dark"] .dt-dev__top{border-color:rgba(173,193,233,.12)}
+[data-theme="dark"] .dt-dev__tab{border-color:rgba(173,193,233,.22)}
+[data-theme="dark"] .dt-dev__link{color:#91b7ff!important}
+@media(max-width:600px){.dt-dev{padding:76px 18px!important}.dt-dev__panel{border-radius:21px}.dt-dev__top{padding:19px}.dt-dev__tabs{padding:20px 17px 6px;gap:7px}.dt-dev__tab{padding:10px 13px;font-size:11px}.dt-dev__body{padding:16px 17px 22px}.dt-dev__code{padding:18px 14px;min-height:104px}.dt-dev__terminalbar{padding:12px 14px}}
+@media(prefers-reduced-motion:reduce){.dt-dev__tab{transition:none}}
+</style>
+<div class="dt-dev__wrap">
+<div class="dt-dev__eyebrow">[ 02 — OPEN SOURCE ]</div>
+<h2 class="dt-dev__heading" id="dtDevTitle">Built in <span>the open.</span></h2>
+<p class="dt-dev__lede">Explore the code behind Datariot. One platform, multiple modules — open to developers who want to build something better.</p>
+<div class="dt-dev__panel">
+<div class="dt-dev__top"><strong>Developer quickstart</strong><span class="dt-dev__status">● PUBLIC REPOSITORIES</span></div>
+<div class="dt-dev__tabs" role="tablist" aria-label="Choose Datariot repository">
+<button class="dt-dev__tab" role="tab" aria-selected="true" data-repo="datariot-app">App</button>
+<button class="dt-dev__tab" role="tab" aria-selected="false" data-repo="datariot-backend">Backend</button>
+<button class="dt-dev__tab" role="tab" aria-selected="false" data-repo="orvelis-ai">Orvelis AI</button>
+<button class="dt-dev__tab" role="tab" aria-selected="false" data-repo="datariot-docs">Docs</button>
+<button class="dt-dev__tab" role="tab" aria-selected="false" data-repo="datariot-website">Website</button>
+</div>
+<div class="dt-dev__body">
+<p class="dt-dev__description" id="dtDevDesc" aria-live="polite">Explore the Datariot application source.</p>
+<div class="dt-dev__terminal"><div class="dt-dev__terminalbar"><span class="dt-dev__dots" aria-hidden="true"><i></i><i></i><i></i></span><span>terminal · bash</span><button class="dt-dev__copy" type="button" id="dtDevCopy">Copy</button></div>
+<code class="dt-dev__code"><span class="dt-dev__prompt">$ </span><span id="dtDevCommand">git clone https://github.com/datariotdev/datariot-app.git</span></code></div>
+<div class="dt-dev__actions"><a class="dt-dev__link" id="dtDevSource" href="https://github.com/datariotdev/datariot-app" target="_blank" rel="noopener noreferrer">View source ↗</a><a class="dt-dev__link" href="https://github.com/datariotdev" target="_blank" rel="noopener noreferrer">All repositories ↗</a></div>
+<p class="dt-dev__note">Clone a repository to inspect its source. Setup steps vary by module; see each repository's README.</p>
+</div></div></div>
+<script>
+(function(){
+const root=document.getElementById('features');if(!root)return;
+const descriptions={'datariot-app':'Explore the Datariot application source.','datariot-backend':'Explore the backend module and its documentation.','orvelis-ai':'Explore the Orvelis AI project and its development roadmap.','datariot-docs':'Read and contribute to Datariot documentation.','datariot-website':'Explore the public website project.'};
+const tabs=Array.from(root.querySelectorAll('[data-repo]'));const command=root.querySelector('#dtDevCommand');const desc=root.querySelector('#dtDevDesc');const source=root.querySelector('#dtDevSource');const copy=root.querySelector('#dtDevCopy');
+function choose(tab){const repo=tab.dataset.repo;if(!Object.prototype.hasOwnProperty.call(descriptions,repo))return;tabs.forEach(t=>t.setAttribute('aria-selected',String(t===tab)));command.textContent='git clone https://github.com/datariotdev/'+repo+'.git';desc.textContent=descriptions[repo];source.href='https://github.com/datariotdev/'+repo;copy.textContent='Copy'}
+tabs.forEach((tab,i)=>{tab.addEventListener('click',()=>choose(tab));tab.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const next=tabs[(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length];choose(next);next.focus()}})});
+copy.addEventListener('click',async()=>{const value=command.textContent;try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value)}else{const area=document.createElement('textarea');area.value=value;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();if(!document.execCommand('copy'))throw Error('Copy unavailable');area.remove()}copy.textContent='Copied ✓'}catch(e){copy.textContent='Select command';const range=document.createRange();range.selectNodeContents(command);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range)}});
+})();
+</script>
+</section>
 
         <!-- Curiosity field notes: choose a question, take something with you. -->
         <section class="catch curiosity-edit" id="catch" aria-labelledby="catchTitle" data-inview>
