@@ -1769,59 +1769,59 @@ html[data-theme="dark"] .datariot-shared-wave{opacity:.52!important}
 </section>
 
         <!-- Curiosity field notes: choose a question, take something with you. -->
-        <section class="catch curiosity-edit" id="catch" aria-labelledby="catchTitle" data-inview>
+        <section class="catch dt-explore" id="catch" aria-labelledby="catchTitle" data-inview>
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
-            <div class="cq-shell">
-                <div class="cq-mast"><span><i aria-hidden="true">✳</i> ORVELIS / FIELD NOTES</span><span>A LITTLE CURIOSITY GOES A LONG WAY.</span></div>
-                <div class="cq-layout">
-                    <div class="cq-copy">
-                        <span class="cq-kicker">FOLLOW THE QUESTION <span aria-hidden="true">↘</span></span>
-                        <h2 id="catchTitle" class="cq-title">Small clips.<br>Big <em>aha.</em><span aria-hidden="true">✳</span></h2>
-                        <p class="cq-lede">Start with a question.<br>Leave with a different way to see it.</p>
-                        <div class="catch__questions cq-questions" role="group" aria-label="Choose a question to explore" hidden>
-                            <div class="cq-pick"><span>PICK YOUR FIRST “WHY”</span><span aria-hidden="true">↓</span></div>
-                            <div class="cq-topics">
-                                <button class="cq-topic is-selected" type="button" data-curiosity="0" aria-pressed="true" aria-label="Why polar bears look white">
-                                    <span class="cq-topic__image"><img src="assets/reel-bear.jpg" alt="" width="150" height="110" loading="lazy" decoding="async"><i aria-hidden="true">01</i><span class="cq-topic__selected" aria-hidden="true">↗</span></span>
-                                    <small>NATURE</small><b>Why white?</b><span class="cq-topic__line" aria-hidden="true"></span>
-                                </button>
-                                <button class="cq-topic" type="button" data-curiosity="1" aria-pressed="false" aria-label="How a car sees the street">
-                                    <span class="cq-topic__image"><img src="assets/reel-lidar.jpg" alt="" width="150" height="110" loading="lazy" decoding="async"><i aria-hidden="true">02</i><span class="cq-topic__selected" aria-hidden="true">↗</span></span>
-                                    <small>TECHNOLOGY</small><b>A car’s eyes.</b><span class="cq-topic__line" aria-hidden="true"></span>
-                                </button>
-                                <button class="cq-topic" type="button" data-curiosity="2" aria-pressed="false" aria-label="Why skyscrapers sway">
-                                    <span class="cq-topic__image"><img src="assets/reel-tower.jpg" alt="" width="150" height="110" loading="lazy" decoding="async"><i aria-hidden="true">03</i><span class="cq-topic__selected" aria-hidden="true">↗</span></span>
-                                    <small>ARCHITECTURE</small><b>Built to sway.</b><span class="cq-topic__line" aria-hidden="true"></span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="cq-process" aria-hidden="true"><span>A QUESTION</span><i>→</i><span>A CLIP</span><i>→</i><b>AN AHA.</b></div>
-                    </div>
-                    <div class="catch__visual cq-sheet">
-                        <div class="cq-sheet__top"><span>THE CURIOSITY FILE</span><span>↘ OPEN A NEW PERSPECTIVE</span></div>
-                        <a class="catch__feature cq-feature" href="#manifesto" data-featured-clip="0" aria-label="Explore the polar bear clip in the feed">
-                            <div class="cq-feature__media">
-                                <img class="catch__poster" src="assets/reel-bear.jpg" alt="A polar bear in the featured Datariot clip" width="600" height="360" loading="lazy" decoding="async">
-                                <span class="cq-feature__duration" data-curiosity-duration>0:31</span>
-                                <span class="cq-feature__arrow" aria-hidden="true">↗</span>
-                            </div>
-                            <div class="cq-feature__copy">
-                                <span class="cq-feature__topic" data-curiosity-topic>01 / NATURE</span>
-                                <h3 data-curiosity-title>Why aren’t polar bears actually white?</h3>
-                                <span class="cq-feature__action">Explore this clip <span aria-hidden="true">↗</span></span>
-                            </div>
-                        </a>
-                        <aside class="catch__idea cq-idea" aria-label="A takeaway from the featured clip">
-                            <div class="cq-idea__label"><span aria-hidden="true">✳</span> THE AHA, BY ORVELIS <span class="cq-idea__annotation" aria-hidden="true">↳</span></div>
-                            <p><span data-curiosity-lead>Their fur is clear.</span><br><em data-curiosity-point>It only looks white.</em></p>
-                            <span class="catch__idea-foot" data-curiosity-foot>A little context changes the picture.</span>
-                        </aside>
-                        <div class="cq-sheet__foot"><span>ONE CLIP. SOMETHING TO KEEP.</span><span class="cq-code" aria-hidden="true"></span></div>
-                    </div>
-                </div>
-            </div>
-            <span class="feed-sr" data-curiosity-status role="status" aria-live="polite" aria-atomic="true"></span>
-        </section>
+<style>
+.dt-explore{position:relative;isolation:isolate;padding:clamp(68px,9vw,120px) 22px!important;background:transparent!important;color:var(--text-primary)}
+.dt-explore *{box-sizing:border-box}
+.dt-explore__inner{max-width:1080px;margin:auto;position:relative;z-index:2}
+.dt-explore__top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:25px}
+.dt-explore__label{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.15em;color:#aebbd0}
+.dt-explore__counter{font:500 11px 'JetBrains Mono',monospace;color:#8d97a8}
+.dt-explore__heading{display:flex;align-items:end;justify-content:space-between;gap:32px;margin-bottom:31px}
+.dt-explore__heading h2{font:700 clamp(32px,5.2vw,61px)/1.08 'Syne',sans-serif;letter-spacing:-.06em;margin:0;max-width:650px}
+.dt-explore__heading p{max-width:260px;font:400 14px/1.7 'Manrope',sans-serif;color:#9ba6b7;margin:0}
+.dt-explore__layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.65fr);gap:15px}
+.dt-explore__preview{position:relative;min-height:360px;border:1px solid rgba(181,196,220,.19);border-radius:15px;overflow:hidden;background:#10141c}
+.dt-explore__preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.68;transition:opacity .4s,transform .8s cubic-bezier(.22,1,.36,1)}
+.dt-explore__preview:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,11,.05) 22%,rgba(4,6,11,.86) 100%);pointer-events:none}
+.dt-explore__preview:hover img{transform:scale(1.035)}
+.dt-explore__preview-top{position:absolute;top:19px;left:20px;right:20px;z-index:1;display:flex;justify-content:space-between;color:#fff;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.09em}
+.dt-explore__preview-bottom{position:absolute;bottom:22px;left:23px;right:23px;z-index:1}
+.dt-explore__preview-bottom span{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#d1dced}
+.dt-explore__preview-bottom h3{font:700 clamp(24px,3vw,37px)/1.13 'Syne',sans-serif;letter-spacing:-.04em;color:#fff;margin:10px 0 16px}
+.dt-explore__preview-bottom a{display:inline-flex;gap:10px;align-items:center;text-decoration:none;color:#fff;font:600 12px 'Manrope',sans-serif;border-bottom:1px solid rgba(255,255,255,.65);padding-bottom:5px}
+.dt-explore__side{display:flex;flex-direction:column;gap:12px}
+.dt-explore__option{display:flex;align-items:center;gap:13px;text-align:left;padding:12px;border:1px solid rgba(166,183,210,.16);background:rgba(131,147,177,.045);border-radius:12px;color:inherit;cursor:pointer;min-width:0;flex:1;transition:background .25s,border-color .25s,transform .25s}
+.dt-explore__option:hover{background:rgba(144,161,191,.12);transform:translateX(3px)}
+.dt-explore__option[aria-pressed="true"]{border-color:rgba(191,207,231,.55);background:rgba(139,158,191,.13)}
+.dt-explore__option img{width:75px;height:78px;object-fit:cover;border-radius:7px;flex:none}
+.dt-explore__option span{display:block;min-width:0}
+.dt-explore__option small{display:block;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#9aa8bd;margin-bottom:7px}
+.dt-explore__option b{display:block;font:600 16px/1.35 'Manrope',sans-serif;letter-spacing:-.025em}
+.dt-explore__insight{display:flex;gap:16px;align-items:start;margin-top:18px;padding:17px 20px;border-top:1px solid rgba(164,181,209,.22)}
+.dt-explore__insight span{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#a6b7d1;white-space:nowrap;padding-top:4px}
+.dt-explore__insight p{font:500 15px/1.65 'Manrope',sans-serif;margin:0;max-width:750px}
+[data-theme="light"] .dt-explore__label,[data-theme="light"] .dt-explore__counter,[data-theme="light"] .dt-explore__heading p,[data-theme="light"] .dt-explore__option small,[data-theme="light"] .dt-explore__insight span{color:#546178}
+[data-theme="light"] .dt-explore__option{background:rgba(29,45,68,.025);border-color:rgba(29,45,68,.14)}
+[data-theme="light"] .dt-explore__option[aria-pressed="true"]{background:#e9edf3;border-color:#71819a}
+@media(max-width:700px){.dt-explore{padding:66px 18px!important}.dt-explore__heading{display:block;margin-bottom:23px}.dt-explore__heading h2{font-size:clamp(32px,9vw,43px)}.dt-explore__heading p{max-width:100%;margin-top:13px;font-size:13px}.dt-explore__layout{display:flex;flex-direction:column}.dt-explore__preview{min-height:300px}.dt-explore__side{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.dt-explore__option{display:block;padding:7px;min-height:0}.dt-explore__option img{width:100%;height:72px;margin-bottom:8px}.dt-explore__option b{font-size:11px;line-height:1.35}.dt-explore__option small{font-size:8px;letter-spacing:0}.dt-explore__insight{padding:15px 2px;display:block}.dt-explore__insight p{margin-top:8px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){.dt-explore__preview img,.dt-explore__option{transition:none}}
+</style>
+<div class="dt-explore__inner">
+<div class="dt-explore__top"><span class="dt-explore__label">[ 03 — EXPLORE ]</span><span class="dt-explore__counter">01 / 03</span></div>
+<div class="dt-explore__heading"><h2 id="catchTitle">One minute can change<br>how you see something.</h2><p>Interesting ideas deserve more than a swipe. Pick a clip and go deeper.</p></div>
+<div class="dt-explore__layout">
+<div class="dt-explore__preview"><img id="dtExploreImage" src="assets/reel-bear.jpg" alt="Polar bear in a short video" loading="lazy" decoding="async"><div class="dt-explore__preview-top"><span>DATARIOT / DISCOVER</span><span id="dtExploreDuration">0:31</span></div><div class="dt-explore__preview-bottom"><span id="dtExploreCategory">NATURE</span><h3 id="dtExploreTitle">Why do polar bears look white?</h3><a href="#manifesto" aria-label="Explore this topic in the feed">Explore in the feed <span aria-hidden="true">↗</span></a></div></div>
+<div class="dt-explore__side" role="group" aria-label="Choose a video topic">
+<button type="button" class="dt-explore__option" data-dt-explore="0" aria-pressed="true"><img src="assets/reel-bear.jpg" alt="" loading="lazy"><span><small>01 / NATURE</small><b>The colour of a polar bear</b></span></button>
+<button type="button" class="dt-explore__option" data-dt-explore="1" aria-pressed="false"><img src="assets/reel-lidar.jpg" alt="" loading="lazy"><span><small>02 / TECHNOLOGY</small><b>How a car sees</b></span></button>
+<button type="button" class="dt-explore__option" data-dt-explore="2" aria-pressed="false"><img src="assets/reel-tower.jpg" alt="" loading="lazy"><span><small>03 / ENGINEERING</small><b>Why towers move</b></span></button>
+</div></div>
+<div class="dt-explore__insight"><span>ORVELIS / CONTEXT</span><p id="dtExploreInsight" aria-live="polite">A polar bear's fur is translucent. Its structure scatters light, making it appear white.</p></div>
+</div>
+<script>(function(){var root=document.getElementById('catch');if(!root)return;var items=[{img:'assets/reel-bear.jpg',alt:'Polar bear in a short video',category:'NATURE',title:'Why do polar bears look white?',duration:'0:31',insight:"A polar bear's fur is translucent. Its structure scatters light, making it appear white."},{img:'assets/reel-lidar.jpg',alt:'Car navigating an urban street',category:'TECHNOLOGY',title:'How does a car see the road?',duration:'0:44',insight:'Lidar uses reflected laser pulses to estimate distances and build a 3D map of the surroundings.'},{img:'assets/reel-tower.jpg',alt:'Tall tower against a city skyline',category:'ENGINEERING',title:'Why are tall buildings designed to sway?',duration:'0:38',insight:'Controlled flexibility helps skyscrapers respond to wind instead of resisting every movement rigidly.'}];var buttons=root.querySelectorAll('[data-dt-explore]');buttons.forEach(function(btn){btn.addEventListener('click',function(){var i=Number(btn.getAttribute('data-dt-explore')),v=items[i];if(!v)return;buttons.forEach(function(b){b.setAttribute('aria-pressed',b===btn?'true':'false')});var img=root.querySelector('#dtExploreImage');img.src=v.img;img.alt=v.alt;root.querySelector('#dtExploreCategory').textContent=v.category;root.querySelector('#dtExploreTitle').textContent=v.title;root.querySelector('#dtExploreDuration').textContent=v.duration;root.querySelector('#dtExploreInsight').textContent=v.insight;root.querySelector('.dt-explore__counter').textContent='0'+(i+1)+' / 03'})})})();</script>
+</section>
 
 
         <!-- The Arena: two perspectives, one question worth thinking about. -->
