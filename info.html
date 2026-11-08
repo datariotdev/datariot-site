@@ -1413,70 +1413,46 @@
              script the first clip sits on the phone and every point is
              written out below. The frames are real ones from the app.
              ============================================================ -->
-        <section class="section signal-showcase" id="manifesto" data-inview aria-labelledby="signalTitle">
+        <section class="section mini-feed" id="manifesto" data-inview aria-labelledby="miniFeedTitle">
 <style>
-.signal-showcase{padding:clamp(75px,9vw,125px) 22px!important;background:transparent!important;color:var(--text-primary,#10131b)}
-.signal-showcase *{box-sizing:border-box}
-.signal-shell{max-width:1160px;margin:auto}
-.signal-eyebrow{font:700 11px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#316ce4;margin-bottom:24px}
-.signal-heading{font:700 clamp(44px,7vw,94px)/.99 'Syne',sans-serif;letter-spacing:-.075em;margin:0 0 22px}
-.signal-heading em{font-style:normal;color:#3475ed}
-.signal-intro{font:400 clamp(15px,1.8vw,19px)/1.7 'Manrope',sans-serif;max-width:640px;opacity:.7;margin:0 0 38px}
-.signal-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:20px;align-items:stretch}
-.signal-stage{position:relative;min-height:500px;border-radius:28px;overflow:hidden;background:#0c1220;color:white;isolation:isolate}
-.signal-stage:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,9,17,.05) 20%,rgba(5,9,17,.96) 100%);z-index:1;pointer-events:none}
-.signal-stage img{position:absolute;width:100%;height:100%;object-fit:cover;inset:0;transition:opacity .22s}
-.signal-stage__top{position:absolute;top:24px;left:24px;right:24px;z-index:2;display:flex;justify-content:space-between;gap:12px;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.07em}
-.signal-stage__top span{border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.3);padding:9px 11px;border-radius:30px}
-.signal-stage__bottom{position:absolute;z-index:2;bottom:0;left:0;right:0;padding:clamp(24px,4vw,40px)}
-.signal-stage__label{font:600 11px 'JetBrains Mono',monospace;color:#a9c8ff;letter-spacing:.13em}
-.signal-stage__title{font:700 clamp(27px,3.3vw,44px)/1.12 'Syne',sans-serif;letter-spacing:-.045em;margin:15px 0}
-.signal-stage__desc{font:400 14px/1.65 'Manrope',sans-serif;color:#d6dff0;margin:0}
-.signal-side{border:1px solid rgba(80,108,161,.18);background:rgba(255,255,255,.62);border-radius:28px;padding:clamp(22px,3vw,36px);display:flex;flex-direction:column}
-.signal-side__eyebrow{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.1em;opacity:.55;margin-bottom:20px}
-.signal-choice{width:100%;border:1px solid rgba(80,108,161,.16);border-radius:15px;padding:17px;text-align:left;display:flex;align-items:center;gap:16px;background:transparent;color:inherit;cursor:pointer;margin-bottom:10px;font:600 14px/1.45 'Manrope',sans-serif;transition:background .2s,border-color .2s,transform .2s}
-.signal-choice b{font:600 12px 'JetBrains Mono',monospace;color:#3673e6}
-.signal-choice[aria-pressed="true"]{background:#e7efff;border-color:#8baef6;transform:translateX(3px)}
-.signal-side__detail{margin-top:auto;padding-top:28px}
-.signal-side__detail h3{font:700 clamp(22px,2.7vw,32px)/1.2 'Syne',sans-serif;letter-spacing:-.04em;margin:0 0 12px}
-.signal-side__detail p{font:400 14px/1.75 'Manrope',sans-serif;opacity:.72;margin:0 0 22px}
-.signal-cta{display:inline-flex;gap:9px;align-items:center;font:700 13px 'Manrope',sans-serif;color:#286ce4!important;text-decoration:none!important}
-[data-theme="dark"] .signal-side{background:rgba(14,19,30,.85);border-color:rgba(163,184,229,.15)}
-[data-theme="dark"] .signal-choice{border-color:rgba(163,184,229,.19)}
-[data-theme="dark"] .signal-choice[aria-pressed="true"]{background:#182c50;border-color:#4979c7}
-@media(max-width:760px){.signal-showcase{padding:70px 17px!important}.signal-layout{grid-template-columns:1fr;gap:14px}.signal-stage{min-height:390px;border-radius:22px}.signal-side{border-radius:22px;padding:20px}.signal-side__detail{padding-top:14px}.signal-choice{padding:14px}.signal-stage__bottom{padding:24px}.signal-stage__top{top:18px;left:18px;right:18px}}
-@media(prefers-reduced-motion:reduce){.signal-choice,.signal-stage img{transition:none}}
+.mini-feed{padding:clamp(64px,8vw,108px) 20px!important;background:transparent!important;color:var(--text-primary,#10131b)}
+.mini-feed *{box-sizing:border-box}
+.mini-feed__shell{max-width:1100px;margin:auto}
+.mini-feed__top{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:29px}
+.mini-feed__eyebrow{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.15em;color:#3373e6;margin-bottom:18px}
+.mini-feed__title{font:700 clamp(37px,5vw,66px)/1.05 'Syne',sans-serif;letter-spacing:-.065em;margin:0}
+.mini-feed__title em{font-style:normal;color:#3274e9}
+.mini-feed__intro{font:400 15px/1.7 'Manrope',sans-serif;max-width:320px;opacity:.66;margin:0 0 4px}
+.mini-feed__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.mini-feed__item{border:1px solid rgba(85,113,166,.18);background:rgba(255,255,255,.65);border-radius:18px;overflow:hidden;min-width:0;cursor:pointer;color:inherit;text-align:left;padding:0;transition:transform .2s,border-color .2s,box-shadow .2s}
+.mini-feed__item[aria-pressed="true"]{border-color:#5687eb;box-shadow:0 0 0 2px rgba(57,111,224,.12)}
+.mini-feed__item:hover{transform:translateY(-3px)}
+.mini-feed__image{display:block;width:100%;height:clamp(145px,19vw,225px);object-fit:cover;background:#131b2b}
+.mini-feed__meta{padding:16px 15px 17px}
+.mini-feed__category{font:700 9px 'JetBrains Mono',monospace;color:#3373e6;letter-spacing:.1em}
+.mini-feed__name{display:block;font:700 clamp(14px,1.6vw,19px)/1.3 'Manrope',sans-serif;letter-spacing:-.03em;margin-top:9px;min-height:2.6em}
+.mini-feed__detail{display:flex;align-items:center;gap:20px;justify-content:space-between;margin-top:16px;padding:21px 23px;border:1px solid rgba(85,113,166,.18);background:rgba(255,255,255,.56);border-radius:18px}
+.mini-feed__detailcopy{min-width:0}
+.mini-feed__detailtag{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#3475e9}
+.mini-feed__detailtext{font:500 14px/1.6 'Manrope',sans-serif;margin:8px 0 0;max-width:750px}
+.mini-feed__link{flex-shrink:0;font:700 12px 'Manrope',sans-serif;text-decoration:none!important;color:#2e70e4!important}
+[data-theme="dark"] .mini-feed__item,[data-theme="dark"] .mini-feed__detail{background:rgba(15,20,31,.83);border-color:rgba(163,184,229,.16)}
+[data-theme="dark"] .mini-feed__item[aria-pressed="true"]{border-color:#76a0fa}
+@media(max-width:760px){.mini-feed{padding:62px 16px!important}.mini-feed__top{display:block;margin-bottom:23px}.mini-feed__intro{margin-top:14px;max-width:480px}.mini-feed__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mini-feed__image{height:clamp(120px,37vw,195px)}.mini-feed__meta{padding:12px}.mini-feed__name{font-size:14px;min-height:2.6em}.mini-feed__detail{align-items:flex-start;flex-direction:column;gap:12px;padding:18px}.mini-feed__title{font-size:clamp(36px,9vw,52px)}}
+@media(prefers-reduced-motion:reduce){.mini-feed__item{transition:none}}
 </style>
-<div class="signal-shell">
-<div class="signal-eyebrow">[ 01 — EXPLORE THE FEED ]</div>
-<h2 class="signal-heading" id="signalTitle">One clip.<br><em>More to explore.</em></h2>
-<p class="signal-intro">A short video is just the beginning. Find the idea, follow the reasoning, and decide what you think.</p>
-<div class="signal-layout">
-<div class="signal-stage" aria-live="polite">
-<img id="signalImage" src="assets/reel-lidar.jpg" alt="Street scene used to illustrate a lidar explainer" loading="lazy">
-<div class="signal-stage__top"><span>DATARIOT / EXPLORE</span><span id="signalIndex">01 / 04</span></div>
-<div class="signal-stage__bottom"><div class="signal-stage__label" id="signalCategory">TECHNOLOGY / 00:44</div><h3 class="signal-stage__title" id="signalClipTitle">How does a car see the street?</h3><p class="signal-stage__desc" id="signalSummary">Laser pulses measure distance and build a 3D view of the world.</p></div>
+<div class="mini-feed__shell">
+<div class="mini-feed__top"><div><div class="mini-feed__eyebrow">[ 01 — THE FEED ]</div><h2 class="mini-feed__title" id="miniFeedTitle">Less noise.<br><em>More signal.</em></h2></div><p class="mini-feed__intro">Short videos worth your attention. Choose a topic to uncover the idea behind it.</p></div>
+<div class="mini-feed__grid" role="group" aria-label="Explore video topics">
+<button class="mini-feed__item" data-mini="0" type="button" aria-pressed="true"><img class="mini-feed__image" src="assets/reel-lidar.jpg" alt="Street scene for lidar explainer" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">TECH · 00:44</span><span class="mini-feed__name">How cars see the world</span></div></button>
+<button class="mini-feed__item" data-mini="1" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/reel-bear.jpg" alt="Polar bear" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">NATURE · 00:31</span><span class="mini-feed__name">Why polar bears look white</span></div></button>
+<button class="mini-feed__item" data-mini="2" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/reel-tower.jpg" alt="Tall building" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">DESIGN · 00:38</span><span class="mini-feed__name">Why skyscrapers sway</span></div></button>
+<button class="mini-feed__item" data-mini="3" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/hero-clip.jpg" alt="Discussion video preview" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">IDEAS · 00:14</span><span class="mini-feed__name">Logic versus emotion</span></div></button>
 </div>
-<div class="signal-side">
-<div class="signal-side__eyebrow">CHOOSE WHAT TO EXPLORE</div>
-<div role="group" aria-label="Choose an explainer">
-<button class="signal-choice" type="button" aria-pressed="true" data-signal="0"><b>01</b> How cars see the world</button>
-<button class="signal-choice" type="button" aria-pressed="false" data-signal="1"><b>02</b> Why polar bears look white</button>
-<button class="signal-choice" type="button" aria-pressed="false" data-signal="2"><b>03</b> Why skyscrapers sway</button>
-<button class="signal-choice" type="button" aria-pressed="false" data-signal="3"><b>04</b> Logic versus emotion</button>
+<div class="mini-feed__detail" aria-live="polite"><div class="mini-feed__detailcopy"><div class="mini-feed__detailtag">THE IDEA BEHIND THE CLIP</div><p class="mini-feed__detailtext" id="miniFeedDetail">Lidar measures how long laser light takes to return and uses that information to build a 3D map.</p></div><a class="mini-feed__link" href="#ai-core">Explore deeper ↗</a></div>
 </div>
-<div class="signal-side__detail"><h3 id="signalPointTitle">The interesting part</h3><p id="signalPoint">Lidar doesn't need to recognize a street first. It measures the time light takes to return, then reconstructs its surroundings.</p><a class="signal-cta" href="#ai-core">Go deeper with Orvelis AI ↗</a></div>
-</div></div></div>
 <script>
-(function(){const root=document.getElementById('manifesto');if(!root)return;
-const data=[
-{image:'assets/reel-lidar.jpg',alt:'Street scene illustrating lidar',category:'TECHNOLOGY / 00:44',title:'How does a car see the street?',summary:'Laser pulses measure distance and build a 3D view of the world.',point:'Lidar measures the time light takes to return, then reconstructs its surroundings.'},
-{image:'assets/reel-bear.jpg',alt:'Polar bear',category:'NATURE / 00:31',title:'Why do polar bears look white?',summary:'Their fur is transparent and hollow. Their skin underneath is black.',point:'The structure of their fur scatters visible light, making it appear white.'},
-{image:'assets/reel-tower.jpg',alt:'Tall building',category:'ENGINEERING / 00:38',title:'Why do skyscrapers sway?',summary:'A little controlled movement helps tall structures respond to wind.',point:'Engineers design towers to flex within safe limits instead of resisting every movement rigidly.'},
-{image:'assets/hero-clip.jpg',alt:'Video discussion preview',category:'IDEAS / 00:14',title:'Logic or emotion?',summary:'Emotion helps identify what matters. Reason helps evaluate what to do.',point:'Good decisions often need both: values to set priorities and evidence to test the choices.'}
-];const buttons=[...root.querySelectorAll('[data-signal]')];
-buttons.forEach((button,i)=>button.addEventListener('click',()=>{const item=data[i];buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));const img=root.querySelector('#signalImage');img.src=item.image;img.alt=item.alt;root.querySelector('#signalIndex').textContent=String(i+1).padStart(2,'0')+' / 04';root.querySelector('#signalCategory').textContent=item.category;root.querySelector('#signalClipTitle').textContent=item.title;root.querySelector('#signalSummary').textContent=item.summary;root.querySelector('#signalPoint').textContent=item.point}));
-})();
+(function(){const root=document.getElementById('manifesto');if(!root)return;const notes=['Lidar measures how long laser light takes to return and uses that information to build a 3D map.','Polar bear fur is transparent and hollow, scattering light so it appears white.','Tall buildings are engineered to flex within safe limits under wind loads.','Emotion can help identify priorities while logic helps test choices against evidence.'];root.querySelectorAll('[data-mini]').forEach((button,i)=>button.addEventListener('click',()=>{root.querySelectorAll('[data-mini]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));root.querySelector('#miniFeedDetail').textContent=notes[i]}))})();
 </script>
 </section>
 
