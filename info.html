@@ -1228,6 +1228,29 @@ html[data-theme="dark"] .datariot-depth-field__ring{border-color:rgba(135,172,23
 }
 html[data-theme="light"] .datariot-depth-field{display:none!important}
 </style>
+<style id="datariot-real-wave-fields">
+/* Use the SAME moving, pixel-dithered 3D wave as the Orvelis section. */
+html[data-theme="dark"] .datariot-shared-wave{position:absolute!important;inset:0!important;z-index:1!important;pointer-events:none;overflow:hidden;opacity:.82;background:transparent!important}
+html[data-theme="dark"] .datariot-shared-wave .px-field__canvas{position:sticky;top:0;display:block;width:100%;height:100vh;visibility:hidden;image-rendering:pixelated}
+html[data-theme="dark"] .datariot-shared-wave.is-live .px-field__canvas{visibility:visible}
+html[data-theme="light"] .datariot-shared-wave{display:none!important}
+html[data-theme="dark"] #hero>.datariot-shared-wave,
+html[data-theme="dark"] #manifesto>.datariot-shared-wave,
+html[data-theme="dark"] #features>.datariot-shared-wave,
+html[data-theme="dark"] #global>.datariot-shared-wave,
+html[data-theme="dark"] #faq>.datariot-shared-wave{z-index:1!important}
+html[data-theme="dark"] #hero>.datariot-shared-wave~*:not(.datariot-depth-field):not(.hero__sky-scene),
+html[data-theme="dark"] #manifesto>.mini-feed__shell,
+html[data-theme="dark"] #features>.reply-network__shell,
+html[data-theme="dark"] #global>.section__container,
+html[data-theme="dark"] #faq>.faq__inner{position:relative;z-index:2}
+html[data-theme="dark"] #manifesto>.datariot-depth-field,
+html[data-theme="dark"] #features>.datariot-depth-field,
+html[data-theme="dark"] #global>.datariot-depth-field,
+html[data-theme="dark"] #faq>.datariot-depth-field{opacity:.35!important}
+@media(max-width:700px){html[data-theme="dark"] .datariot-shared-wave{opacity:.72}}
+@media(prefers-reduced-motion:reduce){html[data-theme="dark"] .datariot-shared-wave{opacity:.55}}
+</style>
 </head>
 
 <body>
@@ -1478,6 +1501,7 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
     <main class="main">
         <!-- HERO SECTION -->
         <section class="section section--hero hero--shimmer" id="hero" data-inview>
+<div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="hero__sky-scene" id="heroSkyScene" aria-hidden="true">
                 <div class="hero__ambient-glow"></div>
@@ -1622,6 +1646,7 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
              written out below. The frames are real ones from the app.
              ============================================================ -->
         <section class="section mini-feed" id="manifesto" data-inview aria-labelledby="miniFeedTitle">
+<div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
 .mini-feed{padding:clamp(64px,8vw,108px) 20px!important;background:transparent!important;color:var(--text-primary,#10131b)}
@@ -1675,6 +1700,7 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
              written out beside it.
              ============================================================ -->
         <section class="section reply-network" id="features" data-inview aria-labelledby="replyNetworkTitle">
+<div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
 .reply-network{padding:clamp(70px,8vw,112px) 18px!important;background:transparent!important;color:var(--text-primary,#10131b)}
@@ -1991,6 +2017,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 
         <!-- GLOBAL NETWORK SECTION -->
         <section class="section section--global gnet" id="global" data-inview>
+<div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="section__container">
 
@@ -2132,6 +2159,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 
         <!-- 08 — FAQ -->
         <section class="section faq" id="faq" data-inview>
+<div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="faq__inner">
                 <div class="faq__head">
@@ -2253,7 +2281,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
     <!-- no three.js: the one 3D scene left, the globe in 05, is a pixel
          canvas in clips.js now, and the 600 KB library blocked the page -->
     <!-- slide 04's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=5.7.5"></script>
+    <script defer src="pixel-field.js?v=shared-wave-20261108"></script>
 
     <!-- the feed: the hero phone, the tap-a-question demo in 01, the arena vote and the globe -->
     <script defer src="clips.js?v=arena-20261025"></script>
