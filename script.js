@@ -9,29 +9,14 @@ console.log('Datariot Script: Initiating...');
 // whole file from running.
 let supabaseClient = null;
 
-// Start light, independently of the OS or the legacy shared theme setting.
-(function () {
-    var theme = 'light';
-    try {
-        if (localStorage.getItem('datariot-info-theme') === 'dark') theme = 'dark';
-    } catch (e) { }
-    document.documentElement.setAttribute('data-theme', theme);
-    var themeColor = document.querySelector('meta[name="theme-color"]');
-    if (themeColor) themeColor.setAttribute('content', theme === 'dark' ? '#08090D' : '#F1F5FC');
-})();
-
-// Global Toggle Function (Bulletproof)
+// The HTML initializes dark before first paint. Do not override it here.
+// Keep the theme switch manual and non-persistent so every new visit opens dark.
 window.toggleTheme = function () {
     const html = document.documentElement;
-    const current = html.getAttribute('data-theme') || 'light';
-    const next = current === 'dark' ? 'light' : 'dark';
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
-    var themeColor = document.querySelector('meta[name="theme-color"]');
+    const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) themeColor.setAttribute('content', next === 'dark' ? '#08090D' : '#F1F5FC');
-    try {
-        localStorage.setItem('datariot-info-theme', next);
-    } catch (e) { }
-    console.log('Theme manual toggle to:', next);
 };
 
 /* =======================================
