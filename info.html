@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light"> <!-- DEPLOY_VERSION_6000 -->
+<html lang="en" data-theme="dark"> <!-- DEPLOY_VERSION_6000 -->
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#F1F5FC">
+    <meta name="theme-color" content="#08090D">
     <title>Datariot — short videos with a point</title>
     <meta name="description"
         content="Discover useful ideas in short videos. Explore the reasoning with Orvelis AI and join the conversation with a video reply." />
@@ -288,11 +288,12 @@
         }
     </style>
     <script>
-        // Start light; only honor a theme explicitly saved for this page.
+        // Default to dark; respect an explicitly saved light or dark preference.
         (function () {
-            var theme = 'light';
+            var theme = 'dark';
             try {
-                if (localStorage.getItem('datariot-info-theme') === 'dark') theme = 'dark';
+                var savedTheme = localStorage.getItem('datariot-info-theme');
+                if (savedTheme === 'light' || savedTheme === 'dark') theme = savedTheme;
             } catch (e) { }
             document.documentElement.setAttribute('data-theme', theme);
             var themeColor = document.querySelector('meta[name="theme-color"]');
@@ -1021,6 +1022,53 @@
     #debates .ar-topic { transition: none; }
 }
     </style>
+<style id="datariot-premium-motion">
+/* Quiet editorial motion: only transform and opacity, never forced scroll or parallax. */
+@media (prefers-reduced-motion: no-preference) {
+  .mini-feed__top,.reply-network__head,.dt-dev__wrap>.dt-dev__eyebrow,.dt-dev__heading,.dt-dev__lede {transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1)}
+  .mini-feed__item,.reply-network__node,.dt-dev__panel {transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1),border-color .25s,box-shadow .25s}
+  .mini-feed__detail,.reply-network__detail {transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+  .premium-motion-ready .premium-reveal:not(.premium-visible){opacity:0;transform:translate3d(0,26px,0)}
+  .premium-motion-ready .premium-reveal.premium-visible{opacity:1;transform:translate3d(0,0,0)}
+  .mini-feed__item:hover,.reply-network__node:hover{transform:translateY(-4px)}
+  .mini-feed__item:active,.reply-network__node:active{transform:scale(.985)}
+  .mini-feed__detailtext,.reply-network__detail p,.dt-dev__description{transition:opacity .2s ease,transform .25s ease}
+  .premium-changing{animation:premium-text-swap .38s cubic-bezier(.22,1,.36,1) both}
+  @keyframes premium-text-swap{from{opacity:.35;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+  html,body{transition:background-color .4s ease,color .4s ease}
+}
+[data-theme="dark"] .mini-feed__category,[data-theme="dark"] .mini-feed__eyebrow,[data-theme="dark"] .reply-network__eyebrow,[data-theme="dark"] .reply-network__tag,[data-theme="dark"] .dt-dev__eyebrow{color:#b9c6d8}
+[data-theme="dark"] .mini-feed__title em,[data-theme="dark"] .reply-network__title em,[data-theme="dark"] .dt-dev__heading span{color:#c1ccdc}
+[data-theme="dark"] .mini-feed__link,[data-theme="dark"] .reply-network__detail a{color:#c1ccdc!important}
+[data-theme="dark"] .mini-feed__item[aria-pressed="true"],[data-theme="dark"] .reply-network__node[aria-pressed="true"]{border-color:#b9c6d8}
+[data-theme="dark"] .dt-dev__tab[aria-selected="true"]{background:#d3dce9;border-color:#d3dce9;color:#101827}
+</style>
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+  if(reduce.matches || !('IntersectionObserver' in window))return;
+  document.addEventListener('DOMContentLoaded',function(){
+    var groups=[
+      ['.mini-feed__top','.mini-feed__item','.mini-feed__detail'],
+      ['.reply-network__head','.reply-network__node','.reply-network__detail'],
+      ['.dt-dev__eyebrow','.dt-dev__heading','.dt-dev__lede','.dt-dev__panel']
+    ];
+    var nodes=[];
+    groups.forEach(function(group){group.forEach(function(selector){document.querySelectorAll('#manifesto '+selector+',#features '+selector+',#debates '+selector).forEach(function(el){if(nodes.indexOf(el)<0)nodes.push(el)})})});
+    var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('premium-visible');observer.unobserve(entry.target)}})},{threshold:.08,rootMargin:'0px 0px 30px 0px'});
+    nodes.forEach(function(el,i){el.classList.add('premium-reveal');el.style.transitionDelay=Math.min(i%5*65,260)+'ms';observer.observe(el)});
+    document.documentElement.classList.add('premium-motion-ready');
+    requestAnimationFrame(function(){nodes.forEach(function(el){if(el.getBoundingClientRect().top<innerHeight*.95)el.classList.add('premium-visible')})});
+    document.querySelectorAll('#manifesto [data-mini],#features [data-reply],#debates [data-repo]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var root=btn.closest('section');if(!root)return;
+        var targets=root.querySelectorAll('#miniFeedDetail,#replyNetworkDetail,#dtDevDesc,#dtDevCommand');
+        targets.forEach(function(el){el.classList.remove('premium-changing');void el.offsetWidth;el.classList.add('premium-changing')});
+      });
+    });
+  });
+})();
+</script>
 </head>
 
 <body>
