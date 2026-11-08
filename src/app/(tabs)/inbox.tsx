@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Switch, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -140,44 +140,39 @@ export default function InboxScreen() {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
+    const openComposer = () => {
+        setIsSearching(true);
+        setSearchQuery('');
+    };
+
     const renderHeader = () => (
-        <View>
-            {/* Focus Mode & Calls Header */}
-            <View style={styles.topControls}>
-                <TouchableOpacity
-                    style={[styles.focusButton, { backgroundColor: isDark ? '#FFFFFF' : theme.colors.text.primary }, isFocusMode && [styles.focusButtonActive, { backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.1)' }]]}
-                    onPress={() => setIsFocusMode(!isFocusMode)}
-                >
-                    <Ionicons
-                        name={isFocusMode ? "moon" : "sunny"}
-                        size={16}
-                        color={isFocusMode ? theme.colors.background.primary : theme.colors.background.primary}
-                    />
-                    <Text style={[styles.focusText, { color: isDark ? '#000' : theme.colors.background.primary }, isFocusMode && [styles.focusTextActive, { color: theme.colors.text.primary }]]}>
-                        {isFocusMode ? "Focus On" : "Focus Off"}
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.callsButton} disabled>
-                    <Ionicons name="call" size={20} color={theme.colors.primary.DEFAULT} />
-                </TouchableOpacity>
+        <View style={styles.header}>
+            <View style={styles.eyebrowRow}>
+                <View style={[styles.onlineDot, { backgroundColor: isDark ? '#CBD5E5' : '#34445C' }]} />
+                <Text style={[styles.eyebrow, { color: theme.colors.text.secondary }]}>YOUR SPACE / 04</Text>
             </View>
-
-            {/* Title & Search Button */}
             <View style={styles.titleRow}>
-                <Text style={[styles.pageTitle, { color: theme.colors.text.primary }]}>Messages</Text>
-                <TouchableOpacity style={[styles.searchButton, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} onPress={() => setIsSearching(!isSearching)}>
-                    <Ionicons name={isSearching ? "close" : "search"} size={22} color={theme.colors.text.primary} />
+                <View>
+                    <Text style={[styles.pageTitle, { color: theme.colors.text.primary }]}>Messages</Text>
+                    <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}>
+                        {chats.length} {chats.length === 1 ? 'conversation' : 'conversations'}
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    style={[styles.composeButton, { backgroundColor: isDark ? '#D9E4F5' : '#101722' }]}
+                    onPress={isSearching ? () => setIsSearching(false) : openComposer}
+                    accessibilityRole="button"
+                    accessibilityLabel={isSearching ? 'Close new message search' : 'Start a new conversation'}
+                >
+                    <Feather name={isSearching ? 'x' : 'edit-3'} size={21} color={isDark ? '#101722' : '#FFFFFF'} />
                 </TouchableOpacity>
             </View>
-
-            {/* Search Bar */}
-            {isSearching && (
-                <View style={[styles.searchContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }]}>
-                    <Ionicons name="search" size={20} color={theme.colors.text.muted} style={styles.searchIcon} />
+            {isSearching ? (
+                <View style={[styles.searchContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(18,30,48,0.06)', borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(18,30,48,0.10)' }]}>
+                    <Feather name="search" size={19} color={theme.colors.text.muted} />
                     <TextInput
                         style={[styles.searchInput, { color: theme.colors.text.primary }]}
-                        placeholder="Search users to chat..."
+                        placeholder="Find someone to message"
                         placeholderTextColor={theme.colors.text.muted}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
@@ -185,18 +180,42 @@ export default function InboxScreen() {
                         autoFocus
                     />
                 </View>
-            )}
+            ) : chats.length > 0 ? (
+                <Text style={[styles.listLabel, { color: theme.colors.text.secondary }]}>RECENT CONVERSATIONS</Text>
+            ) : null}
+        </View>
+    );
 
-            {!isSearching && (
-                <>
-                    {/* AI Section */}
-                    <Text style={[styles.sectionTitle, { color: theme.colors.text.secondary }]}>ASSISTANT</Text>
-                    <ChatItem
-                        {...AI_BOT}
-                        onPress={() => handleChatPress(AI_BOT.id)}
-                    />
-                </>
-            )}
+    const renderEmpty = () => (
+        <View style={styles.emptyWrap}>
+            <View style={[styles.emptyCard, {
+                backgroundColor: isDark ? '#111822' : '#F8FAFE',
+                borderColor: isDark ? 'rgba(200,214,236,0.16)' : 'rgba(31,48,75,0.10)'
+            }]}>
+                <View style={styles.emptyArt}>
+                    <View style={[styles.orbit, { borderColor: isDark ? 'rgba(202,216,238,0.15)' : 'rgba(36,56,87,0.13)' }]} />
+                    <View style={[styles.orbitSmall, { borderColor: isDark ? 'rgba(202,216,238,0.15)' : 'rgba(36,56,87,0.13)' }]} />
+                    <View style={[styles.messageBubble, { backgroundColor: isDark ? '#D9E4F5' : '#172337' }]}>
+                        <Feather name="message-circle" size={30} color={isDark ? '#172337' : '#FFFFFF'} />
+                    </View>
+                    <View style={[styles.messageMini, { backgroundColor: isDark ? '#303D50' : '#E2E9F3' }]}>
+                        <Feather name="arrow-up-right" size={16} color={isDark ? '#E2EAF7' : '#172337'} />
+                    </View>
+                </View>
+                <Text style={[styles.emptyEyebrow, { color: theme.colors.text.secondary }]}>THE NEXT CONVERSATION STARTS HERE</Text>
+                <Text style={[styles.emptyTitle, { color: theme.colors.text.primary }]}>Good ideas deserve a conversation.</Text>
+                <Text style={[styles.emptyDescription, { color: theme.colors.text.secondary }]}>
+                    Found a creator worth talking to? Send the first message.
+                </Text>
+                <TouchableOpacity style={[styles.emptyCTA, { backgroundColor: isDark ? '#D9E4F5' : '#172337' }]} onPress={openComposer} accessibilityRole="button" accessibilityLabel="Write your first message">
+                    <Text style={[styles.emptyCTAText, { color: isDark ? '#111722' : '#FFFFFF' }]}>New message</Text>
+                    <Feather name="arrow-up-right" size={19} color={isDark ? '#111722' : '#FFFFFF'} />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.emptyFooter}>
+                <Feather name="lock" size={13} color={theme.colors.text.muted} />
+                <Text style={[styles.footerText, { color: theme.colors.text.muted }]}>Your conversations live here, not in your feed.</Text>
+            </View>
         </View>
     );
 
@@ -245,13 +264,7 @@ export default function InboxScreen() {
                 data={chats}
                 keyExtractor={(item) => item.chat_id || item.id}
                 ListHeaderComponent={renderHeader}
-                ListEmptyComponent={
-                    <View style={{ padding: 20, alignItems: 'center' }}>
-                        <Text style={{ color: theme.colors.text.muted }}>
-                            {loading ? 'Loading chats...' : 'No conversations yet.'}
-                        </Text>
-                    </View>
-                }
+                ListEmptyComponent={loading ? <View style={styles.loadingWrap}><ActivityIndicator color={theme.colors.primary.DEFAULT} /></View> : renderEmpty()}
                 renderItem={({ item }) => (
                     <ChatItem
                         {...item}
@@ -266,150 +279,40 @@ export default function InboxScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    listContent: {
-        paddingBottom: 100,
-    },
-    topControls: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 10,
-        marginBottom: 10,
-    },
-    focusButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    focusButtonActive: {
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)',
-    },
-    focusText: {
-        marginLeft: 6,
-        fontWeight: '600',
-        fontSize: 12,
-        color: '#000',
-    },
-    focusTextActive: {
-        color: '#FFF',
-    },
-    callsButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(217, 228, 255, 0.1)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    titleRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        marginBottom: 20,
-        marginTop: 10,
-    },
-    pageTitle: {
-        fontSize: 34,
-        fontWeight: '800',
-        letterSpacing: -0.5,
-    },
-    searchButton: {
-        padding: 10,
-        borderRadius: 20,
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 20,
-        marginBottom: 20,
-        paddingHorizontal: 16,
-        height: 48,
-        borderRadius: 24,
-    },
-    searchIcon: {
-        marginRight: 8,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 16,
-    },
-    sectionTitle: {
-        fontSize: 12,
-        fontWeight: '800',
-        paddingHorizontal: 24,
-        marginTop: 10,
-        marginBottom: 12,
-        letterSpacing: 1.5,
-        opacity: 0.6,
-    },
-    // Removed thoughts styles
-    fab: {
-        position: 'absolute',
-        bottom: 90,
-        right: 24,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: '#D9E4FF',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 5,
-    },
-    // Search List Styles
-    listContainer: {
-        paddingHorizontal: 20,
-    },
-    emptyText: {
-        color: 'rgba(255,255,255,0.5)',
-        textAlign: 'center',
-        marginTop: 20,
-    },
-    userItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.05)',
-    },
-    avatar: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: '#D9E4FF',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 12,
-    },
-    avatarText: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    userInfo: {
-        flex: 1,
-    },
-    displayName: {
-        color: '#FFF',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    username: {
-        color: 'rgba(255,255,255,0.6)',
-        fontSize: 14,
-        marginTop: 2,
-    },
+    container: { flex: 1 },
+    header: { paddingHorizontal: 23, paddingTop: 25, paddingBottom: 18 },
+    eyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 9, marginBottom: 20 },
+    onlineDot: { width: 7, height: 7, borderRadius: 4 },
+    eyebrow: { fontSize: 10, letterSpacing: 2.1, fontWeight: '700' },
+    titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+    pageTitle: { fontSize: 38, letterSpacing: -1.8, fontWeight: '800' },
+    subtitle: { fontSize: 14, marginTop: 6, fontWeight: '500' },
+    composeButton: { width: 51, height: 51, borderRadius: 17, justifyContent: 'center', alignItems: 'center' },
+    searchContainer: { flexDirection: 'row', alignItems: 'center', gap: 12, height: 53, paddingHorizontal: 16, borderRadius: 15, borderWidth: 1, marginTop: 22 },
+    searchInput: { flex: 1, fontSize: 15 },
+    listLabel: { fontSize: 10, letterSpacing: 1.6, fontWeight: '700', marginTop: 24 },
+    listContent: { flexGrow: 1, paddingBottom: 115 },
+    loadingWrap: { paddingTop: 120, alignItems: 'center' },
+    emptyWrap: { flex: 1, paddingHorizontal: 21, paddingTop: 66 },
+    emptyCard: { borderWidth: 1, borderRadius: 27, paddingHorizontal: 25, paddingTop: 27, paddingBottom: 29, alignItems: 'flex-start', overflow: 'hidden' },
+    emptyArt: { width: '100%', height: 155, alignItems: 'center', justifyContent: 'center', marginBottom: 17 },
+    orbit: { width: 176, height: 126, borderRadius: 75, borderWidth: 1, transform: [{ rotate: '-24deg' }], position: 'absolute' },
+    orbitSmall: { width: 136, height: 136, borderRadius: 70, borderWidth: 1, position: 'absolute', transform: [{ rotate: '28deg' }] },
+    messageBubble: { width: 83, height: 83, borderRadius: 25, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-8deg' }] },
+    messageMini: { position: 'absolute', left: '61%', top: 92, width: 35, height: 35, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+    emptyEyebrow: { fontSize: 9, letterSpacing: 1.5, fontWeight: '700', marginBottom: 13 },
+    emptyTitle: { fontSize: 27, lineHeight: 33, letterSpacing: -0.9, fontWeight: '800', maxWidth: 300 },
+    emptyDescription: { fontSize: 14, lineHeight: 22, marginTop: 12, marginBottom: 25, maxWidth: 310 },
+    emptyCTA: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', height: 54, borderRadius: 14, paddingHorizontal: 19 },
+    emptyCTAText: { fontSize: 15, fontWeight: '700' },
+    emptyFooter: { flexDirection: 'row', gap: 8, justifyContent: 'center', alignItems: 'center', marginTop: 20 },
+    footerText: { fontSize: 11, fontWeight: '500' },
+    listContainer: { paddingHorizontal: 20 },
+    emptyText: { textAlign: 'center', marginTop: 30, fontSize: 14 },
+    userItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, borderBottomWidth: 1 },
+    avatar: { width: 48, height: 48, borderRadius: 17, justifyContent: 'center', alignItems: 'center', marginRight: 13 },
+    avatarText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+    userInfo: { flex: 1 },
+    displayName: { fontSize: 16, fontWeight: '600' },
+    username: { fontSize: 14, marginTop: 2 },
 });
