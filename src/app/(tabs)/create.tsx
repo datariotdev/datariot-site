@@ -27,8 +27,8 @@ function ActionCard({
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
-    const bg = isDark ? '#111318' : '#FFFFFF';
-    const borderCol = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    const bg = '#151922';
+    const borderCol = 'rgba(211,224,243,0.15)';
 
     return (
         <TouchableOpacity
@@ -37,7 +37,7 @@ function ActionCard({
             style={[
                 styles.card,
                 isPrimary
-                    ? { backgroundColor: '#D9E4FF', shadowColor: '#D9E4FF', shadowOpacity: 0.15 }
+                    ? { backgroundColor: '#252E3E', borderColor: 'rgba(213,226,247,0.26)', borderWidth: 1, shadowColor: '#AABAD1', shadowOpacity: 0.12 }
                     : { backgroundColor: bg, borderColor: borderCol, borderWidth: 1 }
             ]}
         >
@@ -45,25 +45,25 @@ function ActionCard({
                 <View style={[
                     styles.iconCircle,
                     isPrimary
-                        ? { backgroundColor: '#FFFFFF' }
-                        : { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }
+                        ? { backgroundColor: '#DCE6F5' }
+                        : { backgroundColor: 'rgba(214,227,247,0.09)' }
                 ]}>
                     <Ionicons
                         name={icon}
                         size={28}
-                        color={isPrimary ? '#000000' : theme.colors.text.primary}
+                        color={isPrimary ? '#101722' : '#E5ECF8'}
                     />
                 </View>
                 <View style={[
                     styles.arrowCircle,
                     isPrimary
-                        ? { backgroundColor: 'rgba(0,0,0,0.05)' }
-                        : { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }
+                        ? { backgroundColor: 'rgba(221,231,247,0.13)' }
+                        : { backgroundColor: 'rgba(221,231,247,0.08)' }
                 ]}>
                     <Feather
                         name="arrow-up-right"
                         size={18}
-                        color={isPrimary ? '#000000' : theme.colors.text.primary}
+                        color={isPrimary ? '#E5ECF8' : '#E5ECF8'}
                     />
                 </View>
             </View>
@@ -72,14 +72,14 @@ function ActionCard({
                 <Text style={[
                     styles.cardTitle,
                     { fontFamily: theme.typography.fontFamilies.bold },
-                    isPrimary ? { color: '#000000' } : { color: theme.colors.text.primary }
+                    { color: '#F1F4FA' }
                 ]}>
                     {title}
                 </Text>
                 <Text style={[
                     styles.cardSubtitle,
                     { fontFamily: theme.typography.fontFamilies.regular },
-                    isPrimary ? { color: 'rgba(0,0,0,0.6)' } : { color: theme.colors.text.secondary }
+                    { color: '#AAB7CC' }
                 ]}>
                     {subtitle}
                 </Text>
@@ -93,8 +93,8 @@ export default function CreateScreen() {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
-    const bg = theme.colors.background.primary;
-    const fg = theme.colors.text.primary;
+    const bg = '#090B10';
+    const fg = '#F2F5FB';
 
     const pickVideo = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -124,14 +124,14 @@ export default function CreateScreen() {
 
     if (!user) {
         return (
-            <SafeAreaView style={styles.root}>
-                <StatusBar style={isDark ? 'light' : 'dark'} />
+            <SafeAreaView style={[styles.root, { backgroundColor: bg }]}>
+                <StatusBar style="light" />
                 <View style={[styles.root, styles.center]}>
                     <Ionicons name="lock-closed" size={48} color={fg} style={{ marginBottom: 20 }} />
                     <Text style={[styles.lockTitle, { color: fg, fontFamily: theme.typography.fontFamilies.brand }]}>
                         Sign in
                     </Text>
-                    <Text style={[styles.lockSub, { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.regular }]}>
+                    <Text style={[styles.lockSub, { color: '#AAB7CC', fontFamily: theme.typography.fontFamilies.regular }]}>
                         Required to create content
                     </Text>
                 </View>
@@ -179,7 +179,7 @@ export default function CreateScreen() {
 
                 {/* FOOTER TEXT */}
                 <View style={styles.footerWrap}>
-                    <Text style={[styles.footerText, { color: theme.colors.text.muted, fontFamily: theme.typography.fontFamilies.mono }]}>
+                    <Text style={[styles.footerText, { color: '#9EACC2', fontFamily: theme.typography.fontFamilies.mono }]}>
                         {`DESIGN SYSTEM\nB/W/BLU`}
                     </Text>
                 </View>
