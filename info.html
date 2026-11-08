@@ -1070,6 +1070,18 @@
   });
 })();
 </script>
+<style id="datariot-neutral-dark-backdrop">
+/* Restore the neutral graphite dark theme: no saturated blue wash. */
+html[data-theme="dark"],html[data-theme="dark"] body{background:#08090D!important}
+html[data-theme="dark"] .page-fx__glow{
+ background:radial-gradient(ellipse 70% 42% at 72% 10%,rgba(255,255,255,.035),transparent 70%),linear-gradient(180deg,#0b0c10 0%,#08090d 48%,#0b0c10 100%)!important;
+}
+html[data-theme="dark"] .page-fx__ribbon--l,
+html[data-theme="dark"] .page-fx__ribbon--r{background:radial-gradient(closest-side,rgba(255,255,255,.018),transparent 72%)!important}
+html[data-theme="dark"] #hero .hero__ambient-glow{
+ background:radial-gradient(ellipse 70% 60% at 75% 35%,rgba(255,255,255,.045),rgba(255,255,255,.012) 45%,transparent 78%)!important;
+}
+</style>
 </head>
 
 <body>
