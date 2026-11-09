@@ -3,7 +3,7 @@ import { useTheme } from '../../components/Theme/ThemeProvider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator, StatusBar, Platform, ImageBackground, Alert, useWindowDimensions } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { useVideos, type Video } from '@lib/supabase/hooks/useVideos';
 import { usePosts, Post } from '@lib/supabase/hooks/usePosts';
@@ -17,6 +17,7 @@ interface ProfileData {
     username: string;
     display_name: string;
     avatar_url: string | null;
+    banner_url: string | null;
     bio: string | null;
     followers_count: number;
     following_count: number;
@@ -130,7 +131,7 @@ export default function UserProfileScreen() {
         </View>
     );
 
-    const fetchProfile = React.useCallback(async () => {
+    const fetchProfile = React.useCallback(async (isActive: () => boolean) => {
         if (!supabase || !id) {
             return;
         }
@@ -155,7 +156,7 @@ export default function UserProfileScreen() {
                 supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', id),
                 supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', id),
             ]);
-            if (profileData) {
+            if (profileData && isActive()) {
                 setProfile({
                     ...profileData,
                     followers_count: followers.count ?? profileData.followers_count,
@@ -187,12 +188,15 @@ export default function UserProfileScreen() {
         }
     }, [currentUser, id]);
 
+    useFocusEffect(React.useCallback(() => {
+        let active = true;
+        void fetchProfile(() => active);
+        return () => { active = false; };
+    }, [fetchProfile]));
+
     useEffect(() => {
-        if (id) {
-            fetchProfile();
-            checkIfFollowing();
-        }
-    }, [id, fetchProfile, checkIfFollowing]);
+        void checkIfFollowing();
+    }, [checkIfFollowing]);
 
     const handleFollow = async () => {
         if (!currentUser) {

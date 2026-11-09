@@ -470,13 +470,13 @@ export default function ProfileScreen() {
 
     useFocusEffect(
         React.useCallback(() => {
-            if (user) {
-                fetchProfile();
-            }
+            let active = true;
+            void fetchProfile(() => active);
+            return () => { active = false; };
         }, [user])
     );
 
-    const fetchProfile = async () => {
+    const fetchProfile = async (isActive: () => boolean) => {
         if (!supabase || !user) {
             setLoadingProfile(false);
             return;
@@ -576,7 +576,7 @@ export default function ProfileScreen() {
                 supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id),
                 supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id),
             ]);
-            if (profileData) {
+            if (profileData && isActive()) {
                 setProfile({
                     ...profileData,
                     followers_count: followers.count ?? profileData.followers_count,
@@ -593,7 +593,7 @@ export default function ProfileScreen() {
         } catch (error) {
             console.error('Error fetching profile:', error);
         } finally {
-            setLoadingProfile(false);
+            if (isActive()) setLoadingProfile(false);
         }
     };
 

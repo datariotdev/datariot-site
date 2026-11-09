@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Share, Platform, Alert, Modal, FlatList, ActivityIndicator } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -7,7 +8,7 @@ import { useTheme } from '../Theme/ThemeProvider';
 import { supabase } from '../../lib/supabase/client';
 
 type Profile = {
-    username?: string; display_name?: string; avatar_url?: string | null; bio?: string | null;
+    username?: string; display_name?: string; avatar_url?: string | null; banner_url?: string | null; bio?: string | null;
     followers_count?: number; following_count?: number; videos_count?: number;
     arguments_count?: number; top_category?: string;
 };
@@ -56,17 +57,27 @@ export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator',
             <View style={s.toolbar}>
                 {onBack ? <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} style={s.iconButton}>
                     <Ionicons name="arrow-back" size={23} color={ink} />
-                </Pressable> : <Text style={[s.wordmark, { color: ink }]}>datariot<Text style={{ color: muted }}> / you</Text></Text>}
+                </Pressable> : null}
+                <Text numberOfLines={1} style={[s.wordmark, { color: ink }]}>datariot{own && <Text style={{ color: muted }}> / you</Text>}</Text>
                 <View style={s.toolbarActions}>
-                    <Pressable accessibilityRole="button" accessibilityLabel="Share profile" onPress={handleShare} style={s.iconButton}>
+                    {!own && <Pressable accessibilityRole="button" accessibilityLabel="Share profile" onPress={handleShare} style={s.iconButton}>
                         <Ionicons name="share-outline" size={22} color={ink} />
-                    </Pressable>
+                    </Pressable>}
                     {onSettings && <Pressable accessibilityRole="button" accessibilityLabel="Profile settings" onPress={onSettings} style={s.iconButton}>
                         <Ionicons name="options-outline" size={23} color={ink} />
                     </Pressable>}
                 </View>
             </View>
             <View style={s.content}>
+                <View style={s.cover}>
+                    <LinearGradient
+                        colors={[theme.colors.background.secondary, theme.colors.primary.glowStrong]}
+                        start={{ x: 0, y: 1 }} end={{ x: 1, y: 0 }}
+                        style={StyleSheet.absoluteFill}
+                    />
+                    {profile?.banner_url ? <Image source={{ uri: profile.banner_url }} style={StyleSheet.absoluteFill} />
+                        : own && <Text style={[s.coverLabel, { color: muted }]}>A LITTLE MORE YOU.</Text>}
+                </View>
                 <View style={s.identity}>
                     <View style={[s.avatar, { backgroundColor: theme.colors.surface.elevated }]}>
                         {profile?.avatar_url ? <Image source={{ uri: profile.avatar_url }} style={StyleSheet.absoluteFill} />
@@ -93,13 +104,13 @@ export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator',
                 <View style={s.actions}>
                     <Pressable accessibilityRole="button" disabled={!own && followPending} accessibilityState={{ disabled: !own && followPending, busy: !own && followPending }} onPress={own ? onEdit : onFollow}
                         style={[s.primaryAction, { backgroundColor: accent }]}>
-                        <Ionicons name={own ? 'create-outline' : isFollowing ? 'checkmark' : 'add'} size={18} color={mode === 'dark' ? '#08090D' : '#FFFFFF'} />
-                        <Text style={[s.actionText, { color: mode === 'dark' ? '#08090D' : '#FFFFFF' }]}>{own ? 'Edit profile' : isFollowing ? 'Following' : 'Follow creator'}</Text>
+                        <Ionicons name={own ? 'create-outline' : isFollowing ? 'checkmark' : 'add'} size={18} color={theme.colors.primary.onPrimary} />
+                        <Text style={[s.actionText, s.actionLabel, { color: theme.colors.primary.onPrimary }]}>{own ? 'Edit profile' : isFollowing ? 'Following' : 'Follow creator'}</Text>
                     </Pressable>
                     <Pressable accessibilityRole="button" onPress={own ? handleShare : onMessage}
-                        style={[s.secondaryAction, { borderColor: theme.colors.surface.borderHover }]}>
-                        <Ionicons name={own ? 'link-outline' : 'chatbubble-outline'} size={18} color={ink} />
-                        <Text style={[s.actionText, { color: ink }]}>{own ? (shareStatus || 'Share') : 'Message'}</Text>
+                        style={[s.secondaryAction, { borderColor: theme.colors.surface.borderHover, backgroundColor: theme.colors.surface.elevated }]}>
+                        <Ionicons name={own ? 'share-outline' : 'chatbubble-outline'} size={18} color={ink} />
+                        <Text style={[s.actionText, s.actionLabel, { color: ink }]}>{own ? (shareStatus || 'Share') : 'Message'}</Text>
                     </Pressable>
                 </View>
                 {own && onDNA && <Pressable accessibilityRole="button" accessibilityLabel="Open Creator DNA" onPress={onDNA}
@@ -174,10 +185,13 @@ function Connections({ visible, userId, onClose }: { visible: 'followers' | 'fol
     </Modal>;
 }
 const s = StyleSheet.create({
-    toolbar: { height: 56, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-    wordmark: { fontFamily: 'Outfit_700Bold', fontSize: 20, letterSpacing: -0.7 },
+    toolbar: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 },
+    wordmark: { flex: 1, fontFamily: 'Outfit_700Bold', fontSize: 20, letterSpacing: -0.7 },
     toolbarActions: { flexDirection: 'row', gap: 4 }, iconButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-    content: { paddingHorizontal: 20, paddingTop: 12 }, identity: { flexDirection: 'row', alignItems: 'center', gap: 17 },
+    content: { paddingHorizontal: 20, paddingTop: 8 },
+    cover: { aspectRatio: 3.5, borderRadius: 24, overflow: 'hidden' },
+    coverLabel: { margin: 18, fontFamily: 'Outfit_500Medium', fontSize: 10, letterSpacing: 2 },
+    identity: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: -12, paddingHorizontal: 8 },
     avatar: { width: 82, height: 88, borderRadius: 25, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
     initial: { fontFamily: 'Outfit_600SemiBold', fontSize: 35 }, identityText: { flex: 1, minWidth: 0 },
     name: { fontFamily: 'Outfit_600SemiBold', fontSize: 25, letterSpacing: -0.7, lineHeight: 29 },
@@ -189,8 +203,9 @@ const s = StyleSheet.create({
     stat: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 44 },
     statValue: { fontFamily: 'Outfit_600SemiBold', fontSize: 23, lineHeight: 27, letterSpacing: -0.6 },
     statLabel: { fontFamily: 'Outfit_400Regular', fontSize: 12, marginTop: 3 }, actions: { flexDirection: 'row', gap: 10, marginTop: 18 },
-    primaryAction: { flex: 1.5, minHeight: 46, borderRadius: 14, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7, paddingHorizontal: 10 },
+    primaryAction: { flex: 1, minHeight: 46, borderRadius: 14, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7, paddingHorizontal: 10 },
     secondaryAction: { flex: 1, minHeight: 46, borderWidth: 1, borderRadius: 14, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7, paddingHorizontal: 10 },
+    actionLabel: { flexShrink: 1, textAlign: 'center' },
     actionText: { fontFamily: 'Outfit_600SemiBold', fontSize: 14 },
     dna: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 18, marginTop: 18, marginBottom: 4 },
     dnaIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
