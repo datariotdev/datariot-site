@@ -12,7 +12,7 @@ type Profile = {
     arguments_count?: number; top_category?: string;
 };
 type Props = {
-    profile: Profile | null; userId: string; fallbackName?: string; own?: boolean;
+    profile: Profile | null; userId: string; fallbackName?: string; own?: boolean; showSaved?: boolean;
     activeTab: string; onTab: (tab: any) => void; onEdit?: () => void; onSettings?: () => void;
     onDNA?: () => void; onBack?: () => void; onFollow?: () => void; onMessage?: () => void;
     isFollowing?: boolean; followPending?: boolean;
@@ -35,7 +35,7 @@ async function shareProfile(id: string) {
     }
 }
 
-export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator', own = false,
+export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator', own = false, showSaved = own,
     activeTab, onTab, onEdit, onSettings, onDNA, onBack, onFollow, onMessage, isFollowing, followPending = false }: Props) {
     const { theme, mode } = useTheme();
     const insets = useSafeAreaInsets();
@@ -50,7 +50,7 @@ export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator',
     const accent = theme.colors.primary.DEFAULT;
     const line = theme.colors.surface.border;
     const name = profile?.display_name || fallbackName;
-    const tabs = own ? ['videos', 'posts', 'saved'] : ['videos', 'posts'];
+    const tabs = showSaved ? ['videos', 'posts', 'saved'] : ['videos', 'posts'];
     return (
         <View style={{ backgroundColor: theme.colors.background.primary, paddingTop: insets.top }}>
             <View style={s.toolbar}>
