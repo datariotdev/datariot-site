@@ -1289,28 +1289,18 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 }
 </style>
 
-<style id="seamless-section-transitions-20261109-v2">
-/* Single page-wide atmospheric canvas, not one separate canvas per section. */
-html[data-theme="dark"],html[data-theme="dark"] body,html[data-theme="dark"] main {
- background:#08090d !important;
-}
-html[data-theme="dark"] body::before {
- content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
- background:radial-gradient(ellipse 95% 65% at 0% 26%,rgba(57,78,130,.15),transparent 78%),radial-gradient(ellipse 90% 75% at 100% 75%,rgba(56,79,141,.14),transparent 80%),#08090d;
-}
+
+
+<style id="seamless-effects-preserved-20261109">
+/* Preserve animated birds, scene, blue 3D orbs and waves. Fade their rectangular edges instead. */
 html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq){
- background:transparent !important;background-image:none !important;
- border:0 !important;box-shadow:none !important;isolation:auto !important;
+ background-color:transparent!important;background-image:none!important;
+ border-top:0!important;border-bottom:0!important;
 }
-/* Section-local artwork had rectangular edges, causing the visible dark bars. */
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq) > .datariot-depth-field,
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq) > .px-field,
-html[data-theme="dark"] #hero > .hero__sky-scene {display:none !important;}
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq)::before,
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq)::after{
- background:none !important;border:0 !important;box-shadow:none !important;
+html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq) > :is(.datariot-depth-field,.px-field,.hero__sky-scene){
+ -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 16%,black 84%,transparent 100%)!important;
+ mask-image:linear-gradient(to bottom,transparent 0%,black 16%,black 84%,transparent 100%)!important;
 }
-html[data-theme="dark"] main,html[data-theme="dark"] .main {position:relative;z-index:1;}
 </style>
 </head>
 
