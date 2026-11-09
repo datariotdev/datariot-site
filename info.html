@@ -1266,6 +1266,28 @@ html[data-theme="dark"] .datariot-depth-field__ring{border-color:rgba(165,179,20
 html[data-theme="dark"] .datariot-shared-wave{opacity:.52!important}
 @media(max-width:700px){html[data-theme="dark"] .datariot-shared-wave{opacity:.48!important}}
 </style>
+
+<style id="seamless-section-transitions-20261109">
+/* Keep the ambient artwork, but remove hard horizontal section boundaries. */
+html[data-theme="dark"] body { background-color:#08090d !important; }
+html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq) {
+  background-color:transparent !important;
+  background-image:none !important;
+  border-top:0 !important;
+  border-bottom:0 !important;
+  box-shadow:none !important;
+}
+/* The dark strips came from separately painted section backgrounds and overlays. */
+html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq)::before,
+html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq)::after {
+  border-top:0 !important;
+  border-bottom:0 !important;
+}
+html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq) > .datariot-depth-field {
+  -webkit-mask-image:linear-gradient(to bottom,transparent,black 14%,black 86%,transparent) !important;
+  mask-image:linear-gradient(to bottom,transparent,black 14%,black 86%,transparent) !important;
+}
+</style>
 </head>
 
 <body>
