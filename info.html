@@ -1811,15 +1811,16 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 #features .reply-network__node:focus-visible,#catch .dt-signal__step:focus-visible,
 .flow-link:focus-visible { outline:2px solid var(--flow-accent); outline-offset:3px; }
 .flow-index { font:600 11px 'JetBrains Mono',monospace; color:var(--flow-accent); }
-.reply-network__indicator { font-size:17px; color:var(--flow-accent); opacity:.45; }
+.reply-network__indicator { width:15px; height:15px; color:var(--flow-accent); opacity:.45; }
 .reply-network__node[aria-pressed="true"] .reply-network__indicator { opacity:1; }
 .reply-network__detail { padding:14px 12px 0; margin-top:10px; border-top:1px solid var(--flow-line); }
 .reply-network__detail p { min-height:3.2em; }
 .flow-link {
-  display:inline-flex; align-items:center; min-height:44px; margin-top:4px;
+  display:inline-flex; align-items:center; gap:6px; min-height:44px; margin-top:4px;
   color:var(--flow-accent)!important; font:700 13px 'Manrope',sans-serif;
   text-underline-offset:4px;
 }
+.flow-link svg { width:13px; height:13px; }
 #catch.dt-signal { position:relative; isolation:isolate; scroll-margin-top:72px; }
 .dt-signal__board {
   display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); overflow:hidden;
@@ -1876,13 +1877,13 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
     </figure>
     <div>
       <div class="reply-network__flow" role="group" aria-label="Explore the video reply flow">
-        <button class="reply-network__node" type="button" data-reply="0" aria-pressed="true"><span class="flow-index">01</span>Original clip<span class="reply-network__indicator" aria-hidden="true">↘</span></button>
-        <button class="reply-network__node" type="button" data-reply="1" aria-pressed="false"><span class="flow-index">02</span>Video reply<span class="reply-network__indicator" aria-hidden="true">↘</span></button>
-        <button class="reply-network__node" type="button" data-reply="2" aria-pressed="false"><span class="flow-index">03</span>Orvelis AI<span class="reply-network__indicator" aria-hidden="true">↘</span></button>
+        <button class="reply-network__node" type="button" data-reply="0" aria-pressed="true"><span class="flow-index">01</span>Original clip<svg class="reply-network__indicator" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m4 4 8 8m0-6v6H6"/></svg></button>
+        <button class="reply-network__node" type="button" data-reply="1" aria-pressed="false"><span class="flow-index">02</span>Video reply<svg class="reply-network__indicator" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m4 4 8 8m0-6v6H6"/></svg></button>
+        <button class="reply-network__node" type="button" data-reply="2" aria-pressed="false"><span class="flow-index">03</span>Orvelis AI<svg class="reply-network__indicator" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m4 4 8 8m0-6v6H6"/></svg></button>
       </div>
       <div class="reply-network__detail">
         <p class="flow-description" id="replyNetworkDetail" aria-live="polite">Start with the clip. What role should logic and emotion each play in a decision?</p>
-        <a class="flow-link" href="#ai-core">Meet Orvelis AI ↗</a>
+        <a class="flow-link" href="#ai-core">Meet Orvelis AI <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m4 12 8-8M6 4h6v6"/></svg></a>
       </div>
     </div>
   </div>
