@@ -27,7 +27,7 @@ const TabLayout = () => {
     const bottomInset = Math.max(insets.bottom, 8);
     const { mode } = useTheme();
     const isDark = mode === 'dark';
-    const activeTabColor = isDark ? '#E1E8F5' : '#111318';
+    const activeTabColor = '#D9E4FF';
     const inactiveTabColor = isDark ? '#A0ACBE' : '#242830';
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
 
@@ -108,7 +108,7 @@ const TabLayout = () => {
                                 borderRadius: 20,
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: isDark ? '#E1E8F5' : '#111318',
+                                backgroundColor: '#D9E4FF',
                                 shadowColor: '#111318',
                                 shadowOffset: { width: 0, height: 4 },
                                 shadowOpacity: 0.3,
@@ -118,7 +118,7 @@ const TabLayout = () => {
                                 <Feather
                                     name="plus"
                                     size={21}
-                                    color={isDark ? '#293548' : '#F7F9FC'}
+                                    color="#111318"
                                 />
                             </View>
                         ),
