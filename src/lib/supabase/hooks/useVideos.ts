@@ -88,7 +88,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             isLiked: isLiked,
             isSaved: false,
             isFollowing: false,
-            thumbnailUrl: video.thumbnail_url || video.thumbnail || `https://picsum.photos/seed/${video.id}/800/1200`,
+            thumbnailUrl: video.thumbnail_url || video.thumbnail || undefined,
             category: video.category || null,
             dnaRationale: Math.random() > 0.5 ? "Matches your interest in Engineering & Dev" : "Popular in your local DNA community",
             isHighSynergy: (video.id.charCodeAt(0) % 10 < 7) || Math.random() > 0.3, // ~70-80% chance for synergy to ensure sections aren't empty
