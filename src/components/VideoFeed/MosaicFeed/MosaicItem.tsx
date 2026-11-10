@@ -1,11 +1,9 @@
 import React, { memo, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Dimensions, Image, Platform } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../Theme/ThemeProvider';
-import { theme } from '@design-system/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_SPACING = 12;
@@ -66,14 +64,13 @@ const MosaicVideo = ({ videoUrl, isActive, isScreenFocused }: MosaicVideoProps) 
 };
 
 export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: MosaicItemProps) => {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
 
     return (
         <Pressable onPress={onPress} style={styles.container}>
             <View style={styles.card}>
                 {/* Video Layer */}
-                {video.videoUrl ? (
+                {video.thumbnailUrl ? <Image source={{ uri: video.thumbnailUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+                {video.videoUrl && !video.thumbnailUrl ? (
                     <MosaicVideo
                         videoUrl={video.videoUrl}
                         isActive={isActive}
@@ -94,7 +91,7 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                     <View style={styles.topBadgeContainer}>
                         <View style={styles.categoryBadge}>
                             <Text style={styles.categoryText}>
-                                {`[ ${video.category.toUpperCase()} ]`}
+                                {video.category.toUpperCase()}
                             </Text>
                         </View>
                     </View>
@@ -103,27 +100,23 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                 {/* Bottom Overlay: Title & Stats */}
                 <View style={styles.bottomOverlay}>
                     <Text style={styles.title} numberOfLines={2}>
-                        {video.title ? video.title.toUpperCase() : ''}
+                        {video.title || ''}
                     </Text>
 
                     <View style={styles.footerRow}>
                         <View style={styles.authorSection}>
                             <Text style={styles.authorName} numberOfLines={1}>
-                                {video.author ? `> @${video.author.toUpperCase()}` : ''}
+                                {video.author || 'Datariot'}
                             </Text>
                         </View>
 
                         <View style={styles.statsContainer}>
-                            <Ionicons name="heart-outline" size={10} color="#38BDF8" />
-                            <Text style={styles.statsText}>{formatNumber(video.likes)}</Text>
+                            <Ionicons name="heart-outline" size={15} color="#D9E4FF" />
+                            <Text style={styles.statsText}>{formatNumber(video.likes ?? 0)}</Text>
                         </View>
                     </View>
                 </View>
 
-                {/* Active Indicator Border */}
-                {isActive && (
-                    <View style={[styles.activeBorder, { borderColor: theme.colors.primary.DEFAULT }]} />
-                )}
             </View>
         </Pressable>
     );
@@ -134,16 +127,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1, // Use flex instead of fixed width
         aspectRatio: 1, // Keep it square
-        marginHorizontal: GRID_SPACING / 2,
+        marginHorizontal: 0,
         marginBottom: GRID_SPACING,
-        borderRadius: 24,
+        borderRadius: 18,
         overflow: 'hidden',
         // High-end shadow
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.08,
         shadowRadius: 8,
-        elevation: 6,
+        elevation: 1,
     },
     card: {
         flex: 1,
@@ -157,35 +150,33 @@ const styles = StyleSheet.create({
     categoryBadge: {
         backgroundColor: 'rgba(8, 9, 13, 0.65)',
         borderWidth: 1,
-        borderColor: '#38BDF8',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 4,
+        borderColor: 'rgba(255,255,255,0.35)',
+        paddingHorizontal: 9,
+        paddingVertical: 5,
+        borderRadius: 16,
         zIndex: 20,
     },
     categoryText: {
-        color: '#38BDF8',
-        fontSize: 9,
+        color: '#FFFFFF',
+        fontSize: 10,
         fontWeight: '900',
         letterSpacing: 0.5,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     bottomOverlay: {
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
-        padding: 12,
+        padding: 10,
     },
     title: {
         color: '#FFF',
-        fontSize: 12,
+        fontSize: 15,
         fontWeight: '800',
-        marginBottom: 6,
+        marginBottom: 8,
         textShadowColor: 'rgba(0,0,0,0.6)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 3,
-        textTransform: 'uppercase',
         fontFamily: theme.typography.fontFamilies.bold,
         letterSpacing: 0.2,
     },
@@ -209,7 +200,7 @@ const styles = StyleSheet.create({
     },
     authorName: {
         color: '#38BDF8',
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: '700',
         flex: 1,
         fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
@@ -223,7 +214,7 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 10,
         fontWeight: '700',
-        marginLeft: 2,
+        marginLeft: 4,
         fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     activeBorder: {
