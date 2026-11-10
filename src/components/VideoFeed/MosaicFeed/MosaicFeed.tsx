@@ -3,7 +3,6 @@ import { View, StyleSheet, FlatList, ViewToken, Dimensions, Platform } from 'rea
 import { MosaicItem } from './MosaicItem';
 import { useTheme } from '../../Theme/ThemeProvider';
 import { Video } from '../../../lib/supabase/hooks/useVideos';
-import { SectionHeader } from '../../Discovery/SectionHeader';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_SPACING = 12;
@@ -66,15 +65,6 @@ export function MosaicFeed({
             <FlatList
                 data={videos}
                 renderItem={renderItem}
-                ListHeaderComponent={
-                    <View style={{ marginTop: 12, marginBottom: 12 }}>
-                        <SectionHeader
-                            title="Datariot Daily Synergy"
-                            subtitle="Curated based on your Creator DNA"
-                            containerStyle={{ paddingTop: 0 }}
-                        />
-                    </View>
-                }
                 keyExtractor={(item) => item.id}
                 key={isWeb ? 'web-mosaic' : 'mobile-mosaic'}
                 numColumns={numColumns}
@@ -85,7 +75,7 @@ export function MosaicFeed({
                 onEndReachedThreshold={0.5}
                 columnWrapperStyle={styles.columnWrapper}
                 contentContainerStyle={{
-                    paddingTop: paddingTop + GRID_SPACING,
+                    paddingTop: paddingTop + 4,
                     paddingBottom: paddingBottom + 80,
                     paddingHorizontal: GRID_SPACING,
                 }}
