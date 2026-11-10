@@ -91,12 +91,12 @@ export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator',
                 </View>
                 {profile?.bio ? <Text style={[s.bio, { color: ink }]}>{profile.bio}</Text>
                     : own && <Pressable accessibilityRole="button" onPress={onEdit}><Text style={[s.bio, { color: muted }]}>Add a little about yourself ↗</Text></Pressable>}
-                <View style={[s.stats, { borderColor: line }]}>
+                <View style={s.stats}>
                     {(['followers', 'following', 'videos'] as const).map((stat, i) => <Pressable key={stat}
                         accessibilityRole={stat === 'videos' ? 'tab' : 'button'}
                         accessibilityLabel={`${profile?.[`${stat}_count`] || 0} ${stat}`}
                         onPress={() => stat === 'videos' ? onTab('videos') : setConnections(stat)}
-                        style={[s.stat, i > 0 && { borderLeftWidth: 1, borderColor: line }]}>
+                        style={s.stat}>
                         <Text style={[s.statValue, { color: ink }]}>{number(profile?.[`${stat}_count`])}</Text>
                         <Text style={[s.statLabel, { color: muted }]}>{stat[0].toUpperCase() + stat.slice(1)}</Text>
                     </Pressable>)}
@@ -199,7 +199,7 @@ const s = StyleSheet.create({
     creatorLabel: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 10 }, creatorDot: { width: 4, height: 4, borderRadius: 2 },
     eyebrow: { fontFamily: 'Outfit_500Medium', fontSize: 9, letterSpacing: 1.1 },
     bio: { fontFamily: 'Outfit_400Regular', fontSize: 15, lineHeight: 22, marginTop: 18, marginBottom: 4 },
-    stats: { flexDirection: 'row', paddingVertical: 16, marginTop: 16, borderTopWidth: 1, borderBottomWidth: 1 },
+    stats: { flexDirection: 'row', paddingVertical: 16, marginTop: 16 },
     stat: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 44 },
     statValue: { fontFamily: 'Outfit_600SemiBold', fontSize: 23, lineHeight: 27, letterSpacing: -0.6 },
     statLabel: { fontFamily: 'Outfit_400Regular', fontSize: 12, marginTop: 3 }, actions: { flexDirection: 'row', gap: 10, marginTop: 18 },
