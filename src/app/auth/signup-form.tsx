@@ -61,7 +61,7 @@ export default function SignupFormScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Username"
-                            placeholderTextColor={theme.colors.text.muted}
+                            placeholderTextColor="#8A95A5"
                             value={username}
                             onChangeText={setUsername}
                             autoCapitalize="none"
@@ -69,7 +69,7 @@ export default function SignupFormScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Email"
-                            placeholderTextColor={theme.colors.text.muted}
+                            placeholderTextColor="#8A95A5"
                             value={email}
                             onChangeText={setEmail}
                             autoCapitalize="none"
@@ -78,7 +78,7 @@ export default function SignupFormScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Password"
-                            placeholderTextColor={theme.colors.text.muted}
+                            placeholderTextColor="#8A95A5"
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
@@ -113,7 +113,7 @@ export default function SignupFormScreen() {
                             ]}
                             onPress={() => {/* TODO: Google Auth */ }}
                         >
-                            <AntDesign name="google" size={20} color="#D9E4FF" style={styles.googleIcon} />
+                            <AntDesign name="google" size={20} color="#4285F4" style={styles.googleIcon} />
                             <Text style={styles.googleButtonText}>Continue with Google</Text>
                         </Pressable>
                     </View>
@@ -126,7 +126,7 @@ export default function SignupFormScreen() {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: theme.colors.background.primary,
+        backgroundColor: '#FFFFFF',
     },
     container: {
         flex: 1,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
         padding: theme.spacing.lg,
     },
     backButtonText: {
-        color: '#D9E4FF',
+        color: '#182131',
         fontSize: theme.typography.sizes.lg,
     },
     content: {
@@ -149,25 +149,25 @@ const styles = StyleSheet.create({
     title: {
         fontSize: theme.typography.sizes['4xl'],
         fontWeight: 'bold',
-        color: theme.colors.white,
+        color: '#182131',
         marginBottom: theme.spacing.sm,
     },
     subtitle: {
         fontSize: theme.typography.sizes.lg,
-        color: theme.colors.text.secondary,
+        color: '#818C9D',
     },
     form: {
         gap: theme.spacing.lg,
     },
     input: {
-        backgroundColor: theme.colors.surface.DEFAULT,
+        backgroundColor: '#FFFFFF',
         borderRadius: theme.borderRadius.lg,
         paddingVertical: theme.spacing.md,
         paddingHorizontal: theme.spacing.lg,
         fontSize: theme.typography.sizes.lg,
-        color: theme.colors.text.primary,
+        color: '#182131',
         borderWidth: 1,
-        borderColor: 'rgba(217, 228, 255, 0.2)',
+        borderColor: '#DCE3F0',
     },
     errorText: {
         color: theme.colors.error,
@@ -205,6 +205,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%',
         flexDirection: 'row',
+        borderWidth: 1,
+        borderColor: '#E1E7F1',
     },
     googleButtonText: {
         fontSize: theme.typography.sizes.xl,
