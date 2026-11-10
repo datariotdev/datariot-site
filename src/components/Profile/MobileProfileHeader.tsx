@@ -71,12 +71,12 @@ export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator',
             <View style={s.content}>
                 <View style={s.cover}>
                     <LinearGradient
-                        colors={[theme.colors.background.secondary, theme.colors.primary.glowStrong]}
+                        colors={mode === 'dark' ? ['#141C2B', '#293B57'] : ['#F1F5FB', '#DCE8FA', '#BFD2F1']}
                         start={{ x: 0, y: 1 }} end={{ x: 1, y: 0 }}
                         style={StyleSheet.absoluteFill}
                     />
                     {profile?.banner_url ? <Image source={{ uri: profile.banner_url }} style={StyleSheet.absoluteFill} />
-                        : own && <Text style={[s.coverLabel, { color: muted }]}>A LITTLE MORE YOU.</Text>}
+                        : own && <View style={s.coverSignature}><Text style={[s.coverLabel, { color: mode === 'dark' ? '#D9E4FF' : '#526C98' }]}>YOUR SPACE ON DATARIOT</Text><View style={s.coverLine} /></View>}
                 </View>
                 <View style={s.identity}>
                     <View style={[s.avatar, { backgroundColor: theme.colors.surface.elevated }]}>
@@ -189,12 +189,14 @@ const s = StyleSheet.create({
     wordmark: { flex: 1, fontFamily: 'Outfit_700Bold', fontSize: 20, letterSpacing: -0.7 },
     toolbarActions: { flexDirection: 'row', gap: 4 }, iconButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
     content: { paddingHorizontal: 20, paddingTop: 8 },
-    cover: { aspectRatio: 3.5, borderRadius: 24, overflow: 'hidden' },
-    coverLabel: { margin: 18, fontFamily: 'Outfit_500Medium', fontSize: 10, letterSpacing: 2 },
-    identity: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: -12, paddingHorizontal: 8 },
-    avatar: { width: 82, height: 88, borderRadius: 25, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+    cover: { height: 132, borderRadius: 22, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(120,151,195,0.13)' },
+    coverSignature: { flex: 1, justifyContent: 'space-between', padding: 18 },
+    coverLine: { height: 2, width: 46, borderRadius: 2, backgroundColor: '#8FAEDB', opacity: 0.85 },
+    coverLabel: { margin: 0, fontFamily: 'Outfit_500Medium', fontSize: 10, letterSpacing: 2 },
+    identity: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: -26, paddingHorizontal: 8 },
+    avatar: { width: 80, height: 80, borderRadius: 22, borderWidth: 3, borderColor: '#FFFFFF', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
     initial: { fontFamily: 'Outfit_600SemiBold', fontSize: 35 }, identityText: { flex: 1, minWidth: 0 },
-    name: { fontFamily: 'Outfit_600SemiBold', fontSize: 25, letterSpacing: -0.7, lineHeight: 29 },
+    name: { fontFamily: 'Outfit_600SemiBold', fontSize: 23, letterSpacing: -0.7, lineHeight: 29 },
     handle: { fontFamily: 'Outfit_400Regular', fontSize: 14, marginTop: 4 },
     creatorLabel: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 10 }, creatorDot: { width: 4, height: 4, borderRadius: 2 },
     eyebrow: { fontFamily: 'Outfit_500Medium', fontSize: 9, letterSpacing: 1.1 },
