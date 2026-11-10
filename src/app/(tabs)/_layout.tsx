@@ -27,8 +27,8 @@ const TabLayout = () => {
     const bottomInset = Math.max(insets.bottom, 8);
     const { mode } = useTheme();
     const isDark = mode === 'dark';
-    const activeTabColor = isDark ? '#E1E8F5' : '#293548';
-    const inactiveTabColor = isDark ? '#A0ACBE' : '#586579';
+    const activeTabColor = isDark ? '#E1E8F5' : '#111318';
+    const inactiveTabColor = isDark ? '#A0ACBE' : '#242830';
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
 
     return (
@@ -48,7 +48,7 @@ const TabLayout = () => {
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: 56 + bottomInset,
+                        height: 52 + bottomInset,
                         backgroundColor: 'transparent',
                         borderWidth: 0,
                         borderTopWidth: 0,
@@ -60,7 +60,7 @@ const TabLayout = () => {
                         shadowOffset: { width: 0, height: 0 },
                         shadowRadius: 0,
                         paddingBottom: bottomInset,
-                        paddingTop: 12,
+                        paddingTop: 16,
                     },
                     tabBarBackground: () => null,
                     tabBarItemStyle: {
@@ -78,7 +78,7 @@ const TabLayout = () => {
                         tabBarIcon: ({ focused, color }) => (
                             <MaterialCommunityIcons
                                 name={focused ? "home-variant" : "home-variant-outline"}
-                                size={24}
+                                size={22}
                                 color={color}
                             />
                         ),
@@ -103,13 +103,13 @@ const TabLayout = () => {
                         title: 'Create',
                         tabBarIcon: () => (
                             <View style={{
-                                width: 44,
-                                height: 44,
-                                borderRadius: 22,
+                                width: 40,
+                                height: 40,
+                                borderRadius: 20,
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: activeTabColor,
-                                shadowColor: activeTabColor,
+                                backgroundColor: isDark ? '#E1E8F5' : '#111318',
+                                shadowColor: '#111318',
                                 shadowOffset: { width: 0, height: 4 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 8,
@@ -117,7 +117,7 @@ const TabLayout = () => {
                             }}>
                                 <Feather
                                     name="plus"
-                                    size={22}
+                                    size={21}
                                     color={isDark ? '#293548' : '#F7F9FC'}
                                 />
                             </View>
