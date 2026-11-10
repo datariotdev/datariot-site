@@ -19,8 +19,7 @@ import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideo
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
 import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
-import { CuratedFeed } from '../../components/VideoFeed/CuratedFeed';
-import { useCuratedReels } from '../../lib/curated/useCuratedReels';
+import { SquareHeroFeed } from '../../components/VideoFeed/SquareHeroFeed';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -66,7 +65,6 @@ const HomeScreen = () => {
     const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
     const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
     const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
-    const curatedReels = useCuratedReels(activeTab === 'trending', activeCategory);
 
     const handleSelectVideo = (videoId: string) => setSelectedVideoId(videoId);
     const handleComment = (videoId: string) => setCommentsVideoId(videoId);
@@ -95,9 +93,7 @@ const HomeScreen = () => {
     const feedPaddingTop = isWeb ? 8 : (activeTab === 'trending' ? insets.top + 120 : insets.top + 64);
 
     const feed = activeTab === 'trending' ? (
-        <CuratedFeed videos={videos} reels={curatedReels} grid={viewMode === 'mosaic'}
-            isFocused={isFeedActive} paddingTop={feedPaddingTop} onEndReached={loadMore}
-            onSelectNative={handleSelectVideo} />
+        <SquareHeroFeed videos={videos} paddingTop={feedPaddingTop} onEndReached={loadMore} onSelect={handleSelectVideo} />
     ) : videos.length > 0 ? (
         viewMode === 'mosaic' ? (
             <MosaicFeed
