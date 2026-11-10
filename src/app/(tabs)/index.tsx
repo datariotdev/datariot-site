@@ -92,7 +92,7 @@ const HomeScreen = () => {
         deepDiveVideo === null &&
         moreOptionsVideo === null;
 
-    const feedPaddingTop = isWeb ? 8 : (activeTab === 'trending' ? insets.top + 120 : insets.top + 64);
+    const feedPaddingTop = isWeb ? 8 : (activeTab === 'trending' ? insets.top + 142 : insets.top + 64);
 
     const feed = activeTab === 'trending' ? (
         <CuratedFeed videos={videos} reels={curatedReels} grid={viewMode === 'mosaic'}
@@ -258,17 +258,17 @@ const HomeScreen = () => {
 
     /* ---------------- Mobile: original floating chrome ---------------- */
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: '#F8F9FC' }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
-            <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+            <View style={[styles.topNav, { paddingTop: insets.top + 8 }]} pointerEvents="box-none">
                 <View style={styles.topNavContent} pointerEvents="box-none">
                     <View style={styles.leftActionsContainer}>
                         <Pressable
                             style={[
                                 styles.roundButton,
                                 {
-                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : '#FFFFFF',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                                 },
                             ]}
@@ -286,7 +286,7 @@ const HomeScreen = () => {
                             style={[
                                 styles.pillBlur,
                                 {
-                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : 'rgba(255, 255, 255, 0.8)',
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : '#E5EDF9',
                                     borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
                                 },
                             ]}
@@ -309,9 +309,7 @@ const HomeScreen = () => {
                             style={[
                                 styles.roundButton,
                                 {
-                                    backgroundColor: viewMode === 'mosaic'
-                                        ? theme.colors.primary.DEFAULT
-                                        : (isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)'),
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : '#FFFFFF',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                                     marginRight: 8,
                                 },
@@ -320,9 +318,9 @@ const HomeScreen = () => {
                         >
                             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
                             <Ionicons
-                                name={viewMode === 'mosaic' ? 'grid' : 'apps'}
+                                name={viewMode === 'mosaic' ? 'grid-outline' : 'grid'}
                                 size={22}
-                                color={viewMode === 'mosaic' ? '#000' : theme.colors.text.primary}
+                                color={theme.colors.text.primary}
                             />
                         </Pressable>
 
@@ -388,7 +386,7 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     topNavContent: {
-        height: 44,
+        height: 48,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -396,8 +394,8 @@ const styles = StyleSheet.create({
     },
     roundButton: {
         width: 44,
-        height: 44,
-        borderRadius: 22,
+        height: 48,
+        borderRadius: 24,
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
@@ -410,7 +408,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     rightActionsContainer: {
-        width: 148,
+        width: 100,
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
@@ -421,8 +419,8 @@ const styles = StyleSheet.create({
     },
     categoryFiltersContainer: {
         position: 'absolute',
-        top: 54,
-        height: 58,
+        top: 62,
+        height: 64,
     },
     pillBlur: {
         flexDirection: 'row',
@@ -435,7 +433,7 @@ const styles = StyleSheet.create({
     },
     tabButton: {
         flex: 1,
-        height: 36,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 4,
@@ -451,9 +449,9 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     tabText: {
-        fontSize: 10,
+        fontSize: 13,
         fontWeight: '700',
-        letterSpacing: 0.5,
+        letterSpacing: 0,
     },
     loadingContainer: {
         flex: 1,
@@ -526,7 +524,7 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
             {isActive && (
                 <View style={[StyleSheet.absoluteFill, { padding: 2 }]}>
                     <LinearGradient
-                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
+                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#08090D', '#08090D']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={styles.tabIndicatorBackground}
