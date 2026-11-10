@@ -312,7 +312,7 @@ const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { ite
             onPressIn={() => { scale.value = withTiming(0.96, { duration: 100 }); }}
             onPressOut={() => { scale.value = withSpring(1, { damping: 12 }); }}
             onPress={onPress}
-            style={[{ width: itemWidth, height: itemHeight, marginBottom: 1 }, currentWidth <= 768 && !featured && { flex: 1, maxWidth: '33.333333%', width: undefined, height: undefined, aspectRatio: 1 / 1.3 }]}
+            style={[{ width: itemWidth, height: itemHeight, marginBottom: 1 }, currentWidth <= 768 && !featured && { width: (currentWidth - 2) / 3, height: ((currentWidth - 2) / 3) * 1.3, flex: undefined, maxWidth: undefined }]}
         >
             <Animated.View style={[{ flex: 1, overflow: 'hidden', borderRadius: featured ? 0 : 0, backgroundColor: isDark ? '#000000' : '#EEEEEE' }, animStyle]}>
                 {item.videoUrl ? (
@@ -756,7 +756,7 @@ export default function ProfileScreen() {
                     </>
                 )}
                 showsVerticalScrollIndicator={false}
-                removeClippedSubviews={Platform.OS === 'android'}
+                removeClippedSubviews={false}
                 maxToRenderPerBatch={10}
                 windowSize={5}
                 initialNumToRender={12}
@@ -1278,6 +1278,7 @@ const styles = StyleSheet.create({
     videoColumnWrapper: {
         flexDirection: 'row',
         gap: 1,
+        width: '100%',
     },
     videoGridItem: {
         width: VIDEO_ITEM_WIDTH,
