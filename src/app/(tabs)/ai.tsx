@@ -230,20 +230,14 @@ const AIIntroCard = ({ theme, isDark }: { theme: any, isDark: boolean }) => {
 
 export default function AIScreen() {
     // Chat State
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 'init',
-            role: 'assistant',
-            content: "Welcome to the synapse. Select an analysis module below or introduce a query to initiate dialogue.",
-            type: 'text'
-        }
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
     const [selectedTool, setSelectedTool] = useState<ToolType>('chat');
 
     // Onboarding State
     const [showSuggestions, setShowSuggestions] = useState(true);
+    const [showHistory, setShowHistory] = useState(false);
 
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
@@ -471,37 +465,38 @@ export default function AIScreen() {
         }
     };
 
+    const starterActions = [
+        { icon: 'play-circle' as const, title: 'Analyze a video', subtitle: 'Go beyond the clip', prompt: 'Help me analyze a video. What should I look for?' },
+        { icon: 'shield' as const, title: 'Check a claim', subtitle: 'Evidence over opinion', prompt: 'Help me fact-check a claim and evaluate the evidence.' },
+        { icon: 'zap' as const, title: 'Explore an idea', subtitle: 'Understand it deeply', prompt: 'Help me explore an interesting idea in depth.' },
+        { icon: 'message-circle' as const, title: 'Challenge my thinking', subtitle: 'Another perspective', prompt: 'Challenge my assumptions and offer a different perspective.' },
+    ];
+    const startPrompt = (prompt: string) => {
+        setInputText(prompt);
+        setSelectedTool('chat');
+    };
+    const startNewChat = () => {
+        setMessages([]);
+        setInputText('');
+        setShowSuggestions(true);
+        setShowHistory(false);
+        setSelectedTool('chat');
+    };
+
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <SafeAreaView style={styles.safeArea}>
-                {/* Premium Header */}
-                <View style={[styles.header, { backgroundColor: theme.colors.background.primary }]}>
-                    <PulseGlow />
-                    <View style={styles.headerContent}>
-                        <View style={[styles.headerIconContainer, {
-                            backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(14, 165, 233, 0.08)',
-                            borderColor: isDark ? 'rgba(56, 189, 248, 0.25)' : 'rgba(14, 165, 233, 0.2)'
-                        }]}>
-                            <MaterialCommunityIcons name="robot-excited" size={22} color={theme.colors.primary.DEFAULT} />
-                        </View>
+        <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+            <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+                <View style={fresh.header}>
+                    <View style={fresh.brand}>
+                        <View style={fresh.brandIcon}><MaterialCommunityIcons name="brain" size={24} color="#4C76C7" /></View>
                         <View>
-                            <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>Orvelis</Text>
-                            <Text style={[styles.headerSubtitle, { color: theme.colors.text.muted }]}>AI Core • Online</Text>
+                            <Text style={fresh.brandName}>orvelis</Text>
+                            <Text style={fresh.brandCaption}>by Datariot</Text>
                         </View>
                     </View>
-                    <View style={styles.headerStatusWrapper}>
-                        <View style={[styles.headerStatusDot, { backgroundColor: '#10B981' }]} />
-                        {Platform.OS === 'web' ? (
-                            // @ts-ignore
-                            <div className="status-pulse-anim" style={{
-                                position: 'absolute',
-                                width: 14,
-                                height: 14,
-                                borderRadius: 7,
-                                backgroundColor: isDark ? 'rgba(16, 185, 129, 0.4)' : 'rgba(16, 185, 129, 0.25)',
-                                zIndex: 1,
-                            }} />
-                        ) : null}
+                    <View style={fresh.headerActions}>
+                        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Conversation history" onPress={() => setShowHistory(true)} style={fresh.iconButton}><Feather name="clock" size={22} color="#161B26" /></TouchableOpacity>
+                        <TouchableOpacity accessibilityRole="button" accessibilityLabel="New conversation" onPress={startNewChat} style={fresh.iconButton}><Feather name="edit" size={22} color="#161B26" /></TouchableOpacity>
                     </View>
                 </View>
 
@@ -509,107 +504,61 @@ export default function AIScreen() {
                     ref={flatListRef}
                     data={messages}
                     keyExtractor={item => item.id}
-                    contentContainerStyle={styles.chatList}
-                    ListHeaderComponent={<AIIntroCard theme={theme} isDark={isDark} />}
                     renderItem={renderMessage}
+                    contentContainerStyle={fresh.listContent}
                     showsVerticalScrollIndicator={false}
-                />
-
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-                    style={[styles.keyboardArea, { backgroundColor: theme.colors.background.primary }]}
-                >
-                    {/* Example Prompt Suggestions */}
-                    {showSuggestions && messages.length <= 1 && (
-                        <Animated.View entering={FadeInDown.delay(300).springify()} style={styles.suggestionsContainer}>
-                            <Text style={[styles.suggestionsTitle, { color: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)' }]}>Quick Start</Text>
-                            <View style={styles.suggestionsGrid}>
-                                {EXAMPLE_PROMPTS.map((prompt, index) => (
-                                    <SuggestionChip
-                                        key={index}
-                                        prompt={prompt}
-                                        isDark={isDark}
-                                        theme={theme}
-                                        onPress={() => handleExamplePrompt(prompt)}
-                                    />
+                    ListHeaderComponent={messages.length === 0 ? (
+                        <View style={fresh.welcome}>
+                            <View style={fresh.orb}><MaterialCommunityIcons name="brain" size={48} color="#83A6EA" /></View>
+                            <Text style={fresh.welcomeTitle}>What are we exploring?</Text>
+                            <Text style={fresh.welcomeSubtitle}>Ask a question. Challenge an idea. Go deeper.</Text>
+                            <Text style={fresh.sectionLabel}>START WITH AN IDEA</Text>
+                            <View style={fresh.starterGrid}>
+                                {starterActions.map(action => (
+                                    <TouchableOpacity key={action.title} onPress={() => startPrompt(action.prompt)} style={fresh.starterCard} accessibilityRole="button">
+                                        <Feather name={action.icon} size={23} color="#7399DD" />
+                                        <Text style={fresh.starterTitle}>{action.title}</Text>
+                                        <Text style={fresh.starterSubtitle}>{action.subtitle}</Text>
+                                    </TouchableOpacity>
                                 ))}
                             </View>
-                        </Animated.View>
-                    )}
-
-                    {loading && <TypingIndicator />}
-
-                    {/* Tool Selector */}
-                    <View style={styles.toolSelector}>
-                        {([
-                            { key: 'chat' as ToolType, icon: 'chatbubble-ellipses-outline', label: 'Chat' },
-                            { key: 'insight' as ToolType, icon: 'bulb-outline', label: 'Insight' },
-                            { key: 'analyze' as ToolType, icon: 'scan-outline', label: 'Analyze' },
-                        ] as const).map(tool => (
-                            <TouchableOpacity
-                                key={tool.key}
-                                style={[
-                                    styles.toolButton,
-                                    selectedTool === tool.key && [styles.toolButtonActive, {
-                                        backgroundColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.1)',
-                                        borderColor: isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(14, 165, 233, 0.2)'
-                                    }]
-                                ]}
-                                onPress={() => handleToolSelect(tool.key)}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons
-                                    name={tool.icon as any}
-                                    size={18}
-                                    color={selectedTool === tool.key ? theme.colors.primary.DEFAULT : theme.colors.text.muted}
-                                />
-                                <Text style={[
-                                    styles.toolText,
-                                    selectedTool === tool.key && { color: theme.colors.primary.DEFAULT }
-                                ]}>{tool.label}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-
-                    {/* Input Area — always editable */}
-                    <View style={[styles.inputContainer, { borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
-                        <View style={[styles.inputWrapper, {
-                            backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
-                            borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
-                        }]}>
-                            <TextInput
-                                style={[styles.input, { color: theme.colors.text.primary }]}
-                                placeholder={getPlaceholder()}
-                                placeholderTextColor={theme.colors.text.muted}
-                                value={inputText}
-                                onChangeText={setInputText}
-                                onSubmitEditing={handleSendMessage}
-                                returnKeyType="send"
-                                multiline={false}
-                            />
                         </View>
-                        <TouchableOpacity
-                            onPress={handleSendMessage}
-                            style={[
-                                styles.sendButton,
-                                {
-                                    backgroundColor: inputText.trim()
-                                        ? theme.colors.primary.DEFAULT
-                                        : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
-                                }
-                            ]}
-                            disabled={!inputText.trim()}
-                            activeOpacity={0.7}
-                        >
-                            <Ionicons
-                                name="arrow-up"
-                                size={20}
-                                color={inputText.trim() ? '#FFFFFF' : theme.colors.text.muted}
-                            />
-                        </TouchableOpacity>
+                    ) : null}
+                    ListFooterComponent={loading ? <TypingIndicator /> : null}
+                />
+
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={fresh.composerArea}>
+                    <View style={fresh.composer}>
+                        <TextInput
+                            style={fresh.textInput}
+                            placeholder="Ask Orvelis anything..."
+                            placeholderTextColor="#8B93A3"
+                            value={inputText}
+                            onChangeText={setInputText}
+                            multiline
+                            maxLength={4000}
+                            accessibilityLabel="Message Orvelis"
+                        />
+                        <View style={fresh.composerActions}>
+                            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Choose analysis mode" onPress={() => setSelectedTool(selectedTool === 'chat' ? 'analyze' : 'chat')} style={fresh.modeButton}>
+                                <Feather name="sliders" size={16} color="#2A3447" />
+                                <Text style={fresh.modeText}>{selectedTool === 'chat' ? 'Deep Think' : 'Analyze'}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleSendMessage} disabled={!inputText.trim() || loading} accessibilityRole="button" accessibilityLabel="Send message" style={[fresh.sendButton, (!inputText.trim() || loading) && { opacity: 0.5 }]}>
+                                <Feather name="arrow-up" size={22} color="#18243A" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </KeyboardAvoidingView>
+                <Modal visible={showHistory} transparent animationType="fade" onRequestClose={() => setShowHistory(false)}>
+                    <Pressable style={fresh.modalBackdrop} onPress={() => setShowHistory(false)}>
+                        <View style={fresh.historySheet}>
+                            <Text style={fresh.historyTitle}>Conversation</Text>
+                            <Text style={fresh.historyText}>Your current conversation is available here. Saved chat history is not yet supported.</Text>
+                            <TouchableOpacity onPress={startNewChat} style={fresh.newChatButton}><Text style={fresh.newChatText}>Start new chat</Text></TouchableOpacity>
+                        </View>
+                    </Pressable>
+                </Modal>
             </SafeAreaView>
         </View>
     );
@@ -996,4 +945,37 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         marginTop: 1,
     },
+});
+
+const fresh = StyleSheet.create({
+    header: { height: 76, paddingHorizontal: 22, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    brand: { flexDirection: 'row', alignItems: 'center', gap: 11 },
+    brandIcon: { width: 46, height: 46, borderRadius: 16, backgroundColor: '#F1F5FF', alignItems: 'center', justifyContent: 'center' },
+    brandName: { fontSize: 27, fontWeight: '700', letterSpacing: -1.1, color: '#111827' },
+    brandCaption: { fontSize: 11, color: '#8B93A3', marginTop: -2 },
+    headerActions: { flexDirection: 'row', gap: 9 },
+    iconButton: { width: 42, height: 42, borderRadius: 21, borderWidth: 1, borderColor: '#EDF0F5', alignItems: 'center', justifyContent: 'center' },
+    listContent: { paddingHorizontal: 22, paddingBottom: 30, flexGrow: 1 },
+    welcome: { flex: 1, justifyContent: 'center', paddingTop: 36, paddingBottom: 16 },
+    orb: { alignSelf: 'center', width: 116, height: 116, borderRadius: 58, backgroundColor: '#F1F5FF', borderWidth: 1, borderColor: '#D9E4FF', alignItems: 'center', justifyContent: 'center', marginBottom: 30 },
+    welcomeTitle: { textAlign: 'center', fontSize: 27, fontWeight: '800', letterSpacing: -0.9, color: '#121827' },
+    welcomeSubtitle: { textAlign: 'center', fontSize: 14, color: '#727B8B', marginTop: 10, marginBottom: 38 },
+    sectionLabel: { color: '#8790A0', fontSize: 11, fontWeight: '700', letterSpacing: 2, marginBottom: 14 },
+    starterGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 12 },
+    starterCard: { width: '48%', minHeight: 120, borderWidth: 1, borderColor: '#E6EBF5', backgroundColor: '#FAFBFF', borderRadius: 19, padding: 15, justifyContent: 'space-between' },
+    starterTitle: { fontSize: 14, fontWeight: '700', color: '#192033', marginTop: 11 },
+    starterSubtitle: { fontSize: 11, color: '#858E9E', marginTop: 3 },
+    composerArea: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 10, backgroundColor: '#FFFFFF' },
+    composer: { borderRadius: 25, borderWidth: 1, borderColor: '#DDE5F5', backgroundColor: '#FFFFFF', padding: 13, shadowColor: '#182C5B', shadowOpacity: 0.06, shadowRadius: 14, elevation: 2 },
+    textInput: { color: '#161B26', fontSize: 16, minHeight: 45, maxHeight: 120, textAlignVertical: 'top', padding: 7 },
+    composerActions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    modeButton: { flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: '#F3F6FC', borderRadius: 22, paddingHorizontal: 13, paddingVertical: 10 },
+    modeText: { color: '#2A3447', fontSize: 12, fontWeight: '600' },
+    sendButton: { backgroundColor: '#D9E4FF', width: 43, height: 43, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+    modalBackdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)' },
+    historySheet: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 28, paddingBottom: 50 },
+    historyTitle: { fontSize: 22, fontWeight: '800', color: '#111827' },
+    historyText: { fontSize: 14, color: '#6B7280', lineHeight: 21, marginTop: 12, marginBottom: 24 },
+    newChatButton: { backgroundColor: '#D9E4FF', padding: 16, borderRadius: 15, alignItems: 'center' },
+    newChatText: { color: '#17243C', fontWeight: '700' },
 });
