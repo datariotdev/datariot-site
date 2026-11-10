@@ -315,13 +315,17 @@ const HomeScreen = () => {
                                 },
                             ]}
                             onPress={() => {
-                                setActiveTab('trending');
-                                setViewMode('mosaic');
+                                if (activeTab !== 'trending') {
+                                    setActiveTab('trending');
+                                    setViewMode('mosaic');
+                                } else {
+                                    setViewMode(current => current === 'mosaic' ? 'classic' : 'mosaic');
+                                }
                             }}
                             accessibilityRole="button"
-                            accessibilityLabel="Open Feed video grid"
+                            accessibilityLabel="Toggle Feed video layout"
                         >
-                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <BlurView pointerEvents="none" intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
                             <Ionicons
                                 name="grid"
                                 size={22}
