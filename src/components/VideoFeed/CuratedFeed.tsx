@@ -12,6 +12,8 @@ import InstagramEmbed from './InstagramEmbed';
 
 interface Props {
     videos: Video[];
+    fetchError?: string | null;
+    loading?: boolean;
     reels: CuratedReel[];
     grid: boolean;
     isFocused: boolean;
@@ -58,7 +60,7 @@ function FeedCard({ entry, onPress, grid }: { entry: CuratedFeedEntry; onPress: 
     );
 }
 
-export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndReached, onSelectNative }: Props) {
+export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndReached, onSelectNative, fetchError, loading }: Props) {
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
     const insets = useSafeAreaInsets();
@@ -103,7 +105,7 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                         </Text>
                     </View>
                 }
-                ListEmptyComponent={<Text style={[styles.heading, { color: theme.colors.text.secondary }]}>No videos in this category.</Text>}
+                ListEmptyComponent={<Text style={[styles.heading, { color: theme.colors.text.secondary }]}>{loading ? 'Loading videos…' : fetchError ? `Could not load videos: ${fetchError}` : 'No playable videos available.'}</Text>}
                 renderItem={({ item }) => (
                     <View style={{ width: `${100 / columns}%`, padding: 7 }}>
                         <FeedCard entry={item} grid={columns > 1} onPress={() => {
