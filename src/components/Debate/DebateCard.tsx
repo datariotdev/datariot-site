@@ -76,12 +76,12 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                         onPress={handleDeletePress}
                         style={({ pressed }) => ([
                             styles.deleteButton,
-                            { backgroundColor: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.1)' },
+                            { backgroundColor: isDark ? 'rgba(217,228,255,0.3)' : 'rgba(239,68,68,0.1)' },
                             pressed && { opacity: 0.7 }
                         ])}
                     >
                         <Animated.View style={animatedDeleteStyle}>
-                            <Ionicons name="trash-bin-outline" size={18} color="#EF4444" />
+                            <Ionicons name="trash-bin-outline" size={18} color="#64748B" />
                         </Animated.View>
                     </Pressable>
                 )}
@@ -90,7 +90,7 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
             <View style={styles.body}>
                 <View style={styles.bodyContentRow}>
                     <View style={styles.textContent}>
-                        <View style={[styles.thesisBadge, { backgroundColor: isDark ? 'rgba(0, 102, 255, 0.15)' : 'rgba(0, 102, 255, 0.1)' }]}>
+                        <View style={[styles.thesisBadge, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.2)' : 'rgba(217, 228, 255, 0.45)' }]}>
                             <Text style={[styles.thesisBadgeText, { color: theme.colors.primary.DEFAULT }]}>THESIS</Text>
                         </View>
                         <Text style={[styles.content, { color: theme.colors.text.primary }]} numberOfLines={3}>
@@ -126,7 +126,7 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                                     styles.balanceFill,
                                     {
                                         width: `${item.logicStats.forPercentage}%`,
-                                        backgroundColor: '#00C853'
+                                        backgroundColor: '#A7C5D9'
                                     }
                                 ]}
                             />
@@ -135,7 +135,7 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
                                     styles.balanceFill,
                                     {
                                         width: `${100 - item.logicStats.forPercentage}%`,
-                                        backgroundColor: '#D50000'
+                                        backgroundColor: '#28394B'
                                     }
                                 ]}
                             />
@@ -174,16 +174,16 @@ export function DebateCard({ item, onPress, onDelete, isOwnPost }: DebateCardPro
 const styles = StyleSheet.create({
     card: {
         marginBottom: 16,
-        borderRadius: 24,
+        borderRadius: 20,
         marginHorizontal: 16,
         padding: 4,
         borderWidth: 1,
         // Shadow for depth
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
+        shadowOpacity: 0.05,
         shadowRadius: 8,
-        elevation: 5,
+        elevation: 1,
     },
     header: {
         flexDirection: 'row',

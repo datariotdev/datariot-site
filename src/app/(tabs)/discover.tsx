@@ -59,11 +59,11 @@ export default function DiscoverScreen() {
 
     const renderHeader = () => (
         <View style={styles.headerContainer}>
-            {!searchQuery && <LinearGradient colors={isDark ? ['#1C2340', '#111524', '#0B0D17'] : ['#E4E9FF', '#F0EAFE', '#EAF3FF']} start={{x:0,y:0}} end={{x:1,y:1}} style={styles.discoveryHero}>
-                <View style={styles.heroEyebrow}><Ionicons name="sparkles" size={14} color={isDark ? '#A9BCFF' : '#4C6EF5'} /><Text style={[styles.heroEyebrowText,{color:isDark?'#A9BCFF':'#4C6EF5'}]}>EXPLORE YOUR CURIOSITY</Text></View>
+            {!searchQuery && <LinearGradient colors={isDark ? ['#1C2340', '#111524', '#0B0D17'] : ['#FFFFFF', '#F7F9FC', '#EDF3F8']} start={{x:0,y:0}} end={{x:1,y:1}} style={styles.discoveryHero}>
+                <View style={styles.heroEyebrow}><Ionicons name="sparkles" size={14} color={isDark ? '#A9BCFF' : '#617C94'} /><Text style={[styles.heroEyebrowText,{color:isDark?'#A9BCFF':'#4C6EF5'}]}>EXPLORE YOUR CURIOSITY</Text></View>
                 <Text style={[styles.heroTitle,{color:theme.colors.text.primary}]}>Find something worth thinking about.</Text>
                 <Text style={[styles.heroSubtitle,{color:theme.colors.text.secondary}]}>Ideas, creators and debates beyond your usual feed.</Text>
-                <View style={styles.heroActions}><Pressable onPress={() => setSearchQuery('AI')} style={styles.heroChip}><Ionicons name="hardware-chip-outline" size={15} color="#fff"/><Text style={styles.heroChipText}>Artificial intelligence</Text></Pressable><Pressable onPress={() => setSearchQuery('Science')} style={[styles.heroChip,{backgroundColor:'#7259D8'}]}><Text style={styles.heroChipText}>Science</Text></Pressable></View>
+                <View style={styles.heroActions}><Pressable onPress={() => setSearchQuery('AI')} style={styles.heroChip}><Ionicons name="hardware-chip-outline" size={15} color="#fff"/><Text style={styles.heroChipText}>Artificial intelligence</Text></Pressable><Pressable onPress={() => setSearchQuery('Science')} style={[styles.heroChip,{backgroundColor:'#263648'}]}><Text style={styles.heroChipText}>Science</Text></Pressable></View>
             </LinearGradient>}
             {/* 1. Trending Topics (Primary Hierarchy) */}
             {!searchQuery && (
@@ -127,7 +127,6 @@ export default function DiscoverScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <AmbientGlow color={isDark ? "rgba(217, 228, 255, 0.08)" : "rgba(217, 228, 255, 0.04)"} size={380} opacity={0.6} duration={25000} delay={0} />
             <SafeAreaView style={styles.safeArea}>
 
                 {/* Search Bar */}
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
     heroTitle: { fontSize: 30, lineHeight: 35, fontWeight: '800', letterSpacing: -1.2, maxWidth: 300 },
     heroSubtitle: { fontSize: 14, lineHeight: 21, marginTop: 12, maxWidth: 290 },
     heroActions: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 22 },
-    heroChip: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#4C6EF5', paddingHorizontal: 13, paddingVertical: 11, borderRadius: 18 },
+    heroChip: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#263648', paddingHorizontal: 13, paddingVertical: 11, borderRadius: 18 },
     heroChipText: { color: '#fff', fontSize: 12, fontWeight: '700' },
     headerContainer: {
         paddingTop: Platform.OS === 'android' ? 10 : 0,
