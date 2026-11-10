@@ -24,7 +24,7 @@ export const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
     const isCompactDesktop = width < 1100;
 
     if (!isWeb) {
-        return <View style={{ flex: 1 }}>{children}</View>;
+        return <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>{children}</View>;
     }
 
     // Routes that keep the nav rail

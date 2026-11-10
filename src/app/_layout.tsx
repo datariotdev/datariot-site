@@ -56,7 +56,7 @@ SplashScreen.preventAutoHideAsync();
 
 function AppContent() {
     const { mode } = useTheme();
-    const systemAreaBackground = mode === 'dark' ? '#08090D' : '#DCE6F8';
+    const systemAreaBackground = mode === 'dark' ? '#08090D' : '#FAFBFE';
     const [fontsLoaded, fontError] = useFonts({
         Oxanium_400Regular,
         Oxanium_500Medium,
