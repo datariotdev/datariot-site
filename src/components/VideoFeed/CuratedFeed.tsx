@@ -24,7 +24,7 @@ function readableDuration(seconds: number | null) {
     return seconds ? `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}` : null;
 }
 
-function FeedCard({ entry, onPress, grid }: { entry: CuratedFeedEntry; onPress: () => void; grid: boolean }) {
+function FeedCard({ entry, onPress, grid, square = false }: { entry: CuratedFeedEntry; onPress: () => void; grid: boolean; square?: boolean }) {
     const { theme } = useTheme();
     const external = entry.kind === 'instagram';
     const title = external ? entry.reel.title : entry.video.title;
@@ -40,10 +40,10 @@ function FeedCard({ entry, onPress, grid }: { entry: CuratedFeedEntry; onPress: 
             accessibilityRole="button"
             accessibilityLabel={`Watch ${title} by ${creator}`}
             style={[styles.card, { backgroundColor: theme.colors.surface.card,
-                borderColor: theme.colors.surface.border, minHeight: grid ? 250 : 210 }]}
+                borderColor: theme.colors.surface.border, minHeight: square ? undefined : grid ? 250 : 210, aspectRatio: square ? 1 : undefined, justifyContent: square ? 'flex-end' : undefined }]}
         >
-            {realThumbnail && <Image source={{ uri: thumbnail }} style={styles.thumbnail} accessibilityIgnoresInvertColors />}
-            <View style={styles.cardTop}>
+            {realThumbnail && <Image source={{ uri: thumbnail }} style={square ? styles.squareThumbnail : styles.thumbnail} accessibilityIgnoresInvertColors />}
+            <View style={[styles.cardTop, square && { marginBottom: 'auto' }]}>
                 <Text style={[styles.source, { color: theme.colors.text.secondary }]}>{external ? 'INSTAGRAM' : 'DATARIOT'}</Text>
                 {duration && <Text style={[styles.duration, { color: theme.colors.text.secondary }]}>{duration}</Text>}
             </View>
@@ -68,6 +68,7 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
     const [openingError, setOpeningError] = useState(false);
     const data = useMemo(() => mergeFeedEntries(videos, reels), [videos, reels]);
     const columns = grid ? (width > 1100 ? 3 : 2) : 1;
+    const squareCarousel = !grid && width <= 768;
     const selectedIndex = reels.findIndex(reel => reel.source_url === selectedUrl);
     const selected = reels[selectedIndex];
 
@@ -89,25 +90,29 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                 data={data}
                 keyExtractor={entry => entry.key}
                 numColumns={columns}
-                contentContainerStyle={{ paddingTop, paddingBottom: 120, paddingHorizontal: 8 }}
+                horizontal={squareCarousel}
+                pagingEnabled={squareCarousel}
+                snapToInterval={squareCarousel ? width : undefined}
+                decelerationRate={squareCarousel ? 'fast' : 'normal'}
+                contentContainerStyle={{ paddingTop, paddingBottom: 120, paddingHorizontal: squareCarousel ? 0 : 8 }}
                 showsVerticalScrollIndicator={false}
                 onEndReached={onEndReached}
                 onEndReachedThreshold={0.3}
                 initialNumToRender={8}
                 maxToRenderPerBatch={8}
                 windowSize={5}
-                ListHeaderComponent={
+                ListHeaderComponent={!squareCarousel ? (
                     <View style={styles.heading}>
                         <Text style={[styles.headingTitle, { color: theme.colors.text.primary }]}>Worth your time</Text>
                         <Text style={{ color: theme.colors.text.secondary }}>
                             {reels.length} selected reels · ideas, science & how things work
                         </Text>
                     </View>
-                }
+                ) : null}
                 ListEmptyComponent={<Text style={[styles.heading, { color: theme.colors.text.secondary }]}>No videos in this category.</Text>}
                 renderItem={({ item }) => (
-                    <View style={{ width: `${100 / columns}%`, padding: 6 }}>
-                        <FeedCard entry={item} grid={columns > 1} onPress={() => {
+                    <View style={{ width: squareCarousel ? width : `${100 / columns}%`, padding: squareCarousel ? 0 : 6 }}>
+                        <FeedCard entry={item} grid={columns > 1} square={squareCarousel} onPress={() => {
                             if (item.kind === 'instagram') setSelectedUrl(item.reel.source_url);
                             else onSelectNative(item.video.id);
                         }} />
@@ -175,6 +180,7 @@ const styles = StyleSheet.create({
     headingTitle: { fontSize: 24, fontWeight: '800' },
     card: { borderWidth: 1, borderRadius: 18, padding: 16, overflow: 'hidden' },
     thumbnail: { height: 130, width: '100%', borderRadius: 10, marginBottom: 12 },
+    squareThumbnail: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
     cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4 },
     source: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
     duration: { fontSize: 11 },
