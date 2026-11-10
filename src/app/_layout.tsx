@@ -107,7 +107,7 @@ function AppContent() {
         <>
             <GestureHandlerRootView style={{ flex: 1, backgroundColor: systemAreaBackground }}>
                 <SafeAreaProvider>
-                    <Stack screenOptions={{ contentStyle: { backgroundColor: '#08090D' } }}>
+                    <Stack screenOptions={{ contentStyle: { backgroundColor: systemAreaBackground } }}>
                         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                         <Stack.Screen name="user/[id]" options={{ headerShown: false }} />
                         <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
