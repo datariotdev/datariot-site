@@ -73,15 +73,14 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
         <Pressable onPress={onPress} style={styles.container}>
             <View style={styles.card}>
                 {/* Video Layer */}
-                {video.videoUrl ? (
+                {video.thumbnailUrl ? <Image source={{ uri: video.thumbnailUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+                {video.videoUrl && !video.thumbnailUrl ? (
                     <MosaicVideo
                         videoUrl={video.videoUrl}
                         isActive={isActive}
                         isScreenFocused={isScreenFocused}
                     />
-                ) : (
-                    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#111' }]} />
-                )}
+                ) : null}
 
                 {/* Dark Overlay for better text contrast */}
                 <LinearGradient
@@ -94,7 +93,7 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                     <View style={styles.topBadgeContainer}>
                         <View style={styles.categoryBadge}>
                             <Text style={styles.categoryText}>
-                                {`[ ${video.category.toUpperCase()} ]`}
+                                {video.category.toUpperCase()}
                             </Text>
                         </View>
                     </View>
@@ -103,27 +102,25 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                 {/* Bottom Overlay: Title & Stats */}
                 <View style={styles.bottomOverlay}>
                     <Text style={styles.title} numberOfLines={2}>
-                        {video.title ? video.title.toUpperCase() : ''}
+                        {video.title || ''}
                     </Text>
 
                     <View style={styles.footerRow}>
                         <View style={styles.authorSection}>
                             <Text style={styles.authorName} numberOfLines={1}>
-                                {video.author ? `> @${video.author.toUpperCase()}` : ''}
+                                {video.author || 'Datariot'}
                             </Text>
                         </View>
 
                         <View style={styles.statsContainer}>
-                            <Ionicons name="heart-outline" size={10} color="#38BDF8" />
+                            <Ionicons name="heart-outline" size={10} color="#D9E4FF" />
                             <Text style={styles.statsText}>{formatNumber(video.likes)}</Text>
                         </View>
                     </View>
                 </View>
 
                 {/* Active Indicator Border */}
-                {isActive && (
-                    <View style={[styles.activeBorder, { borderColor: theme.colors.primary.DEFAULT }]} />
-                )}
+
             </View>
         </Pressable>
     );
@@ -134,16 +131,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1, // Use flex instead of fixed width
         aspectRatio: 1, // Keep it square
-        marginHorizontal: GRID_SPACING / 2,
+        marginHorizontal: 0,
         marginBottom: GRID_SPACING,
-        borderRadius: 24,
+        borderRadius: 18,
         overflow: 'hidden',
         // High-end shadow
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.08,
         shadowRadius: 8,
-        elevation: 6,
+        elevation: 1,
     },
     card: {
         flex: 1,
@@ -157,18 +154,18 @@ const styles = StyleSheet.create({
     categoryBadge: {
         backgroundColor: 'rgba(8, 9, 13, 0.65)',
         borderWidth: 1,
-        borderColor: '#38BDF8',
+        borderColor: 'rgba(255,255,255,0.3)',
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 4,
+        borderRadius: 16,
         zIndex: 20,
     },
     categoryText: {
-        color: '#38BDF8',
-        fontSize: 9,
+        color: '#FFFFFF',
+        fontSize: 10,
         fontWeight: '900',
         letterSpacing: 0.5,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+
     },
     bottomOverlay: {
         position: 'absolute',
@@ -179,13 +176,13 @@ const styles = StyleSheet.create({
     },
     title: {
         color: '#FFF',
-        fontSize: 12,
+        fontSize: 15,
         fontWeight: '800',
         marginBottom: 6,
         textShadowColor: 'rgba(0,0,0,0.6)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 3,
-        textTransform: 'uppercase',
+
         fontFamily: theme.typography.fontFamilies.bold,
         letterSpacing: 0.2,
     },
@@ -208,8 +205,8 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255,255,255,0.3)',
     },
     authorName: {
-        color: '#38BDF8',
-        fontSize: 10,
+        color: '#FFFFFF',
+        fontSize: 12,
         fontWeight: '700',
         flex: 1,
         fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
