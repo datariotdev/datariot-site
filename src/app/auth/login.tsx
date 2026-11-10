@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, Animated, Image as RNImage } from 'r
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
 import { LinearGradient } from 'expo-linear-gradient';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 
 export default function WelcomeScreen() {
@@ -43,16 +43,14 @@ export default function WelcomeScreen() {
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentContainer}>
                     {/* App Name */}
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                         <View style={{ marginRight: 12, position: 'relative', width: 34, height: 34, alignItems: 'center', justifyContent: 'center' }}>
-                            {/* Blue 'Ice' Tone Overlay */}
-                            <View style={{ position: 'absolute', width: 38, height: 38, backgroundColor: 'rgba(56, 189, 248, 0.15)', borderRadius: 19 }} />
                             <RNImage
                                 source={require('../../../assets/logo.jpg')}
                                 style={{ width: 32, height: 32, borderRadius: 16 }}
                             />
                         </View>
-                        <Text style={[styles.appName, { color: theme.colors.primary.DEFAULT, fontFamily: theme.typography.fontFamilies.brand, letterSpacing: 2, fontSize: 28 }]}>Datariot</Text>
+                        <Text style={[styles.appName, { color: '#D9E9FA', fontFamily: theme.typography.fontFamilies.brand, letterSpacing: 1.5, fontSize: 28 }]}>Datariot</Text>
                     </View>
 
                     {/* Tagline */}
@@ -96,13 +94,16 @@ export default function WelcomeScreen() {
                         <Pressable
                             style={({ pressed }) => [
                                 styles.googleButton,
-                                { backgroundColor: isDark ? '#FFFFFF' : '#F1F5F9' },
+                                { backgroundColor: isDark ? '#FFFFFF' : '#FFFFFF', borderColor: '#B6D6FF' },
                                 pressed && styles.buttonPressed
                             ]}
                             onPress={() => {/* TODO: Google Auth */ }}
                         >
-                            <AntDesign name="google" size={20} color="#D9E4FF" style={styles.googleIcon} />
-                            <Text style={styles.googleButtonText}>Continue with Google</Text>
+                            <View style={styles.googleButtonContent}>
+                                <Text style={styles.googleIcon}>G</Text>
+                                <View style={styles.googleDivider} />
+                                <Text style={styles.googleButtonText}>Continue with Google</Text>
+                            </View>
                         </Pressable>
                     </View>
                 </View>
@@ -145,11 +146,7 @@ const styles = StyleSheet.create({
     loginButtonWrapper: {
         width: '100%',
         borderRadius: 16,
-        shadowColor: '#D9E4FF',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.45,
-        shadowRadius: 18,
-        elevation: 12,
+
     },
     loginPressable: {
         width: '100%',
@@ -163,10 +160,7 @@ const styles = StyleSheet.create({
         paddingVertical: 18,
         paddingHorizontal: 24,
         borderRadius: 16,
-        shadowColor: '#D9E4FF',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 20,
+
     },
     loginButtonText: {
         fontSize: 18,
@@ -194,8 +188,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     googleButton: {
-        borderRadius: 14,
-        paddingVertical: 16,
+        borderRadius: 24,
+        borderWidth: 1.5,
+        minHeight: 54,
+        paddingVertical: 12,
+        paddingHorizontal: 18,
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
@@ -207,8 +204,23 @@ const styles = StyleSheet.create({
         color: '#000000',
         textAlign: 'center',
     },
+    googleButtonContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 14,
+    },
     googleIcon: {
-        marginRight: 10,
+        fontSize: 22,
+        fontWeight: '800',
+        color: '#4285F4',
+        textAlign: 'center',
+        width: 26,
+    },
+    googleDivider: {
+        height: 24,
+        width: 1,
+        backgroundColor: '#B6D6FF',
     },
     buttonPressed: {
         opacity: 0.8,
