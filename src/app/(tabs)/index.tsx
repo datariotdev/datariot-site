@@ -53,6 +53,7 @@ const HomeScreen = () => {
     const {
         videos,
         loading,
+        fetchError,
         loadMore,
         toggleLike,
         toggleFollow,
@@ -93,7 +94,7 @@ const HomeScreen = () => {
     const feedPaddingTop = isWeb ? 8 : (activeTab === 'trending' ? insets.top + 120 : insets.top + 64);
 
     const feed = activeTab === 'trending' ? (
-        <CuratedFeed videos={videos} reels={[]} grid={viewMode === 'mosaic'}
+        <CuratedFeed videos={videos} reels={[]} fetchError={fetchError} loading={loading} grid={viewMode === 'mosaic'}
             isFocused={isFeedActive} paddingTop={feedPaddingTop} onEndReached={loadMore}
             onSelectNative={handleSelectVideo} />
     ) : videos.length > 0 ? (
