@@ -41,7 +41,7 @@ interface ProfileData {
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
 // Web layout constrains content to 600px width
-const VIDEO_ITEM_WIDTH = isWeb ? (Math.min(SCREEN_WIDTH, 600) - 2) / 3 : (SCREEN_WIDTH - 2) / 3;
+const VIDEO_ITEM_WIDTH = isWeb ? (Math.min(SCREEN_WIDTH, 600) - 2) / 3 : (SCREEN_WIDTH - 4) / 3;
 const HEADER_HEIGHT = 220;
 
 const StickyHeader = ({ scrollY, user, handleSignOut, router }: { scrollY: SharedValue<number>, user: any, handleSignOut: () => void, router: any }) => {
@@ -279,71 +279,24 @@ const InternalProfileVideoGridItem = ({ videoUrl }: { videoUrl: string }) => {
 };
 
 const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { item: any, onPress: () => void, isDark: boolean, featured?: boolean }) => {
-    const scale = useSharedValue(1);
-    const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-
-    const { width: currentWidth } = useWindowDimensions();
-    const itemWidth = featured
-        ? (isWeb ? Math.min(SCREEN_WIDTH, 600) - 2 : SCREEN_WIDTH - 2)
-        : VIDEO_ITEM_WIDTH;
-    const itemHeight = featured ? itemWidth * 0.56 : itemWidth * 1.3;
-
-    // Stable random views count per item id
-    const viewsCount = React.useMemo(() => {
-        let hash = 0;
-        for (let i = 0; i < (item.id || '').length; i++) hash = (hash * 31 + (item.id || '').charCodeAt(i)) & 0xffffffff;
-        return Math.abs(hash % 9800) + 200;
-    }, [item.id]);
-
-    const formatViews = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : `${n}`;
-
-    // Duration label: use item.duration if available, else a stable pseudo-random
-    const durationLabel = React.useMemo(() => {
-        if (item.duration) return item.duration;
-        let hash = 0;
-        const s = item.id || 'x';
-        for (let i = 0; i < s.length; i++) hash = (hash * 17 + s.charCodeAt(i)) & 0xffffffff;
-        const secs = 15 + Math.abs(hash) % 46;
-        return `0:${secs < 10 ? '0' : ''}${secs}`;
-    }, [item.id, item.duration]);
-
+    const { width } = useWindowDimensions();
+    const tileWidth = featured ? width : (width - 4) / 3;
+    const thumbnail = item.thumbnailUrl || item.thumbnail_url || item.thumbnail;
     return (
-        <Pressable
-            onPressIn={() => { scale.value = withTiming(0.96, { duration: 100 }); }}
-            onPressOut={() => { scale.value = withSpring(1, { damping: 12 }); }}
-            onPress={onPress}
-            style={[{ width: itemWidth, height: itemHeight, marginBottom: 1 }, currentWidth <= 768 && !featured && { width: (currentWidth - 2) / 3, height: ((currentWidth - 2) / 3) * 1.3, flex: undefined, maxWidth: undefined }]}
-        >
-            <Animated.View style={[{ flex: 1, overflow: 'hidden', borderRadius: featured ? 0 : 0, backgroundColor: isDark ? '#000000' : '#EEEEEE' }, animStyle]}>
-                {item.videoUrl ? (
-                    <InternalProfileVideoGridItem videoUrl={item.videoUrl} />
-                ) : (
-                    <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}>
-                        <Ionicons name="videocam-off" size={featured ? 32 : 24} color="rgba(255,255,255,0.1)" />
-                    </View>
-                )}
-                {/* Bottom gradient overlay */}
-                <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.72)']}
-                    style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', padding: featured ? 14 : 6 }]}
-                >
-                    {featured && (
-                        <View style={styles.featuredBadge}>
-                            <Ionicons name="flame" size={11} color="#FFFFFF" />
-                            <Text style={styles.featuredBadgeText}>FEATURED</Text>
-                        </View>
-                    )}
-                    <View style={styles.videoItemBottom}>
-                        <View style={styles.viewsOverlay}>
-                            <Ionicons name="play" size={featured ? 13 : 10} color="white" />
-                            <Text style={[styles.viewsText, featured && { fontSize: 13 }]}>{formatViews(viewsCount)}</Text>
-                        </View>
-                        <View style={styles.durationBadge}>
-                            <Text style={styles.durationText}>{durationLabel}</Text>
-                        </View>
+        <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`Play ${item.title || 'video'}`}
+            style={{ width: tileWidth, height: featured ? tileWidth * 0.56 : tileWidth, marginRight: featured ? 0 : 1, marginBottom: 1 }}>
+            <View style={{ flex: 1, overflow: 'hidden', backgroundColor: isDark ? '#171C26' : '#E9EDF5' }}>
+                {thumbnail ? <Image source={{ uri: thumbnail }} resizeMode="cover" style={StyleSheet.absoluteFill} />
+                    : <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
+                        <Ionicons name="play-circle-outline" size={26} color={isDark ? '#AFC3E8' : '#7085AA'} />
+                    </View>}
+                <LinearGradient colors={['transparent', 'rgba(0,0,0,0.58)']} style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', padding: 8 }]}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                        <Ionicons name="play" size={12} color="#FFFFFF" />
+                        <Text numberOfLines={1} style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '600', flexShrink: 1 }}>{item.title || 'Video'}</Text>
                     </View>
                 </LinearGradient>
-            </Animated.View>
+            </View>
         </Pressable>
     );
 };
@@ -1277,7 +1230,7 @@ const styles = StyleSheet.create({
     // Grid
     videoColumnWrapper: {
         flexDirection: 'row',
-        gap: 1,
+        gap: 0,
         width: '100%',
     },
     videoGridItem: {
