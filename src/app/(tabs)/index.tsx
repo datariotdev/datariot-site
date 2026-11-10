@@ -44,7 +44,7 @@ const HomeScreen = () => {
     const [activeTab, setActiveTab] = useState<FeedType>('trending');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [viewMode, setViewMode] = useState<ViewMode>(Platform.OS === 'web' ? 'classic' : 'mosaic');
+    const [viewMode, setViewMode] = useState<ViewMode>('mosaic');
     const { theme, mode, toggleTheme } = useTheme();
     const isDark = mode === 'dark';
 
@@ -66,7 +66,7 @@ const HomeScreen = () => {
     const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
     const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
     const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
-    const curatedReels = useCuratedReels(activeTab === 'trending', activeCategory);
+    const curatedReels = useCuratedReels(false, activeCategory);
 
     const handleSelectVideo = (videoId: string) => setSelectedVideoId(videoId);
     const handleComment = (videoId: string) => setCommentsVideoId(videoId);
@@ -95,9 +95,8 @@ const HomeScreen = () => {
     const feedPaddingTop = isWeb ? 8 : (activeTab === 'trending' ? insets.top + 120 : insets.top + 64);
 
     const feed = activeTab === 'trending' ? (
-        <CuratedFeed videos={videos} reels={curatedReels} grid={viewMode === 'mosaic'}
-            isFocused={isFeedActive} paddingTop={feedPaddingTop} onEndReached={loadMore}
-            onSelectNative={handleSelectVideo} />
+        <MosaicFeed videos={videos} isFocused={isFeedActive} paddingTop={feedPaddingTop}
+            onEndReached={loadMore} onSelect={handleSelectVideo} />
     ) : videos.length > 0 ? (
         viewMode === 'mosaic' ? (
             <MosaicFeed
@@ -309,9 +308,7 @@ const HomeScreen = () => {
                             style={[
                                 styles.roundButton,
                                 {
-                                    backgroundColor: viewMode === 'mosaic'
-                                        ? theme.colors.primary.DEFAULT
-                                        : (isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)'),
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : '#FFFFFF',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                                     marginRight: 8,
                                 },
@@ -388,11 +385,11 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     topNavContent: {
-        height: 44,
+        height: 48,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
+        paddingHorizontal: 12,
     },
     roundButton: {
         width: 44,
@@ -410,14 +407,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     rightActionsContainer: {
-        width: 148,
+        width: 104,
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
     },
     pillContainer: {
         flex: 1,
-        marginHorizontal: 8,
+        marginHorizontal: 6,
+        minWidth: 0,
     },
     categoryFiltersContainer: {
         position: 'absolute',
@@ -451,9 +449,9 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     tabText: {
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: '700',
-        letterSpacing: 0.5,
+        letterSpacing: 0,
     },
     loadingContainer: {
         flex: 1,
@@ -524,14 +522,7 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
             ]}
         >
             {isActive && (
-                <View style={[StyleSheet.absoluteFill, { padding: 2 }]}>
-                    <LinearGradient
-                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.tabIndicatorBackground}
-                    />
-                </View>
+                <View style={[styles.tabIndicatorBackground, { backgroundColor: '#08090D' }]} />
             )}
             <Text
                 numberOfLines={1}
@@ -540,7 +531,7 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
                     styles.tabText,
                     { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium },
                     isActive && {
-                        color: isDark ? '#000000' : '#FFFFFF',
+                        color: '#FFFFFF',
                         fontFamily: theme.typography.fontFamilies.bold,
                         fontWeight: '800',
                     },
