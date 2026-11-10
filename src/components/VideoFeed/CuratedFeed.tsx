@@ -12,6 +12,8 @@ import InstagramEmbed from './InstagramEmbed';
 
 interface Props {
     videos: Video[];
+    fetchError?: string | null;
+    loading?: boolean;
     reels: CuratedReel[];
     grid: boolean;
     isFocused: boolean;
@@ -25,41 +27,40 @@ function readableDuration(seconds: number | null) {
 }
 
 function FeedCard({ entry, onPress, grid }: { entry: CuratedFeedEntry; onPress: () => void; grid: boolean }) {
-    const { theme } = useTheme();
     const external = entry.kind === 'instagram';
     const title = external ? entry.reel.title : entry.video.title;
     const creator = external ? entry.reel.creator : entry.video.author;
     const topic = external ? entry.reel.topic || entry.reel.category : entry.video.category;
-    const duration = external ? readableDuration(entry.reel.duration_seconds) : null;
     const thumbnail = entry.kind === 'native' ? entry.video.thumbnailUrl : null;
-    const realThumbnail = thumbnail && !/picsum\.photos|pravatar\.cc/.test(thumbnail);
+    const [imageFailed, setImageFailed] = useState(false);
+    const showImage = !!thumbnail && !imageFailed && !/picsum\\.photos|pravatar\\.cc/.test(thumbnail);
 
     return (
-        <Pressable
-            onPress={onPress}
-            accessibilityRole="button"
+        <Pressable onPress={onPress} accessibilityRole="button"
             accessibilityLabel={`Watch ${title} by ${creator}`}
-            style={[styles.card, { backgroundColor: theme.colors.surface.card,
-                borderColor: theme.colors.surface.border, minHeight: grid ? 250 : 210 }]}
-        >
-            {realThumbnail && <Image source={{ uri: thumbnail }} style={styles.thumbnail} accessibilityIgnoresInvertColors />}
-            <View style={styles.cardTop}>
-                <Text style={[styles.source, { color: theme.colors.text.secondary }]}>{external ? 'INSTAGRAM' : 'DATARIOT'}</Text>
-                {duration && <Text style={[styles.duration, { color: theme.colors.text.secondary }]}>{duration}</Text>}
+            style={[styles.card, grid ? styles.squareCard : styles.wideCard]}>
+            {showImage && <Image source={{ uri: thumbnail }} style={styles.cover} resizeMode="cover"
+                onError={() => setImageFailed(true)} />}
+            {!showImage && <View style={styles.missingCover}><Ionicons name="videocam-outline" size={28} color="#D9E4FF" /></View>}
+            <View style={styles.cardShade} pointerEvents="none" />
+            <View style={styles.categoryBadge}>
+                <Text style={styles.categoryText} numberOfLines={1}>{String(topic || 'VIDEO').toUpperCase()}</Text>
             </View>
-            <View style={[styles.play, { backgroundColor: theme.colors.primary.glow }]}>
-                <Ionicons name="play" size={24} color={theme.colors.primary.DEFAULT} />
+            <View style={styles.cardBottom}>
+                <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
+                <View style={styles.cardMeta}>
+                    <View style={styles.creatorRow}>
+                        <View style={styles.creatorAvatar}><Ionicons name="play" size={11} color="#8BB8F3" /></View>
+                        <Text style={styles.creatorName} numberOfLines={1}>{creator || 'Datariot'}</Text>
+                    </View>
+                    <View style={styles.likes}><Ionicons name="heart" size={15} color="#D5E2FF" /><Text style={styles.likesText}>{external ? 0 : entry.video.likes}</Text></View>
+                </View>
             </View>
-            <Text style={[styles.topic, { color: theme.colors.primary.DEFAULT }]} numberOfLines={1}>{topic}</Text>
-            <Text style={[styles.title, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}
-                numberOfLines={grid ? 4 : 3}>{title}</Text>
-            <Text style={[styles.creator, { color: theme.colors.text.secondary }]} numberOfLines={2}>{creator}</Text>
-            {external && <Text style={[styles.watch, { color: theme.colors.primary.DEFAULT }]}>Watch reel ↗</Text>}
         </Pressable>
     );
 }
 
-export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndReached, onSelectNative }: Props) {
+export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndReached, onSelectNative, fetchError, loading }: Props) {
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
     const insets = useSafeAreaInsets();
@@ -104,9 +105,9 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                         </Text>
                     </View>
                 }
-                ListEmptyComponent={<Text style={[styles.heading, { color: theme.colors.text.secondary }]}>No videos in this category.</Text>}
+                ListEmptyComponent={<Text style={[styles.heading, { color: theme.colors.text.secondary }]}>{loading ? 'Loading videos…' : fetchError ? `Could not load videos: ${fetchError}` : 'No playable videos available.'}</Text>}
                 renderItem={({ item }) => (
-                    <View style={{ width: `${100 / columns}%`, padding: 6 }}>
+                    <View style={{ width: `${100 / columns}%`, padding: 7 }}>
                         <FeedCard entry={item} grid={columns > 1} onPress={() => {
                             if (item.kind === 'instagram') setSelectedUrl(item.reel.source_url);
                             else onSelectNative(item.video.id);
@@ -171,9 +172,24 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
 }
 
 const styles = StyleSheet.create({
+    squareCard: { aspectRatio: 1 },
+    wideCard: { height: 260 },
+    cover: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
+    missingCover: { ...StyleSheet.absoluteFillObject, backgroundColor: '#202A39', alignItems: 'center', justifyContent: 'center' },
+    cardShade: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.12)' },
+    categoryBadge: { position: 'absolute', top: 12, left: 12, maxWidth: '82%', paddingHorizontal: 9, paddingVertical: 6, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.55)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)' },
+    categoryText: { color: '#FFFFFF', fontSize: 10, fontWeight: '800' },
+    cardBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 12, paddingBottom: 12, paddingTop: 32, backgroundColor: 'rgba(0,0,0,0.62)' },
+    cardTitle: { color: '#FFFFFF', fontSize: 14, fontWeight: '800', lineHeight: 18, marginBottom: 10 },
+    cardMeta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    creatorRow: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 7 },
+    creatorAvatar: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#F7FAFF', alignItems: 'center', justifyContent: 'center' },
+    creatorName: { color: '#FFFFFF', fontSize: 12, fontWeight: '700', flexShrink: 1 },
+    likes: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    likesText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
     heading: { paddingHorizontal: 12, paddingVertical: 20, gap: 6 },
     headingTitle: { fontSize: 24, fontWeight: '800' },
-    card: { borderWidth: 1, borderRadius: 18, padding: 16, overflow: 'hidden' },
+    card: { borderRadius: 18, overflow: 'hidden', backgroundColor: '#202A39' },
     thumbnail: { height: 130, width: '100%', borderRadius: 10, marginBottom: 12 },
     cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4 },
     source: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
