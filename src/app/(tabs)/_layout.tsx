@@ -27,8 +27,8 @@ const TabLayout = () => {
     const bottomInset = Math.max(insets.bottom, 8);
     const { mode } = useTheme();
     const isDark = mode === 'dark';
-    const activeTabColor = isDark ? '#E1E8F5' : '#293548';
-    const inactiveTabColor = isDark ? '#A0ACBE' : '#586579';
+    const activeTabColor = isDark ? '#AFC3E8' : '#526DA5';
+    const inactiveTabColor = isDark ? '#8493AC' : '#7C879B';
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
 
     return (
@@ -59,8 +59,8 @@ const TabLayout = () => {
                         shadowColor: 'transparent',
                         shadowOffset: { width: 0, height: 0 },
                         shadowRadius: 0,
-                        paddingBottom: bottomInset,
-                        paddingTop: 12,
+                        paddingBottom: Math.max(bottomInset - 5, 4),
+                        paddingTop: 17,
                     },
                     tabBarBackground: () => null,
                     tabBarItemStyle: {
@@ -108,8 +108,8 @@ const TabLayout = () => {
                                 borderRadius: 22,
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: activeTabColor,
-                                shadowColor: activeTabColor,
+                                backgroundColor: isDark ? '#657EB5' : '#5874B5',
+                                shadowColor: '#5874B5',
                                 shadowOffset: { width: 0, height: 4 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 8,
@@ -118,7 +118,7 @@ const TabLayout = () => {
                                 <Feather
                                     name="plus"
                                     size={22}
-                                    color={isDark ? '#293548' : '#F7F9FC'}
+                                    color="#FFFFFF"
                                 />
                             </View>
                         ),
