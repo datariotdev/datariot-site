@@ -55,6 +55,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     const { user } = useAuth();
     const [videos, setVideos] = useState<Video[]>([]);
     const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState<string | null>(null);
     const [refreshing, setRefreshing] = useState(false);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
@@ -88,7 +89,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             isLiked: isLiked,
             isSaved: false,
             isFollowing: false,
-            thumbnailUrl: video.thumbnail_url || video.thumbnail || `https://picsum.photos/seed/${video.id}/800/1200`,
+            thumbnailUrl: video.thumbnail_url || video.thumbnail || undefined,
             category: video.category || null,
             dnaRationale: Math.random() > 0.5 ? "Matches your interest in Engineering & Dev" : "Popular in your local DNA community",
             isHighSynergy: (video.id.charCodeAt(0) % 10 < 7) || Math.random() > 0.3, // ~70-80% chance for synergy to ensure sections aren't empty
@@ -98,12 +99,14 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
 
     const fetchVideos = useCallback(async (pageNum: number, isRefresh: boolean = false) => {
         if (!supabase) {
+            setFetchError('Video service is not configured');
             setLoading(false);
             setRefreshing(false);
             return;
         }
         try {
             if (!isRefresh) setLoading(true);
+            setFetchError(null);
 
             // 1. Fetch videos - Increased range to fetch more in case many are filtered out
             let query = supabase
@@ -138,7 +141,10 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 .range(pageNum * 12, (pageNum + 1) * 12 - 1); // Load 12 at a time (optimized)
 
             if (videoError) throw videoError;
-            if (!videoData) return;
+            if (!videoData) {
+                if (isRefresh) setVideos([]);
+                return;
+            }
 
             // 2. Parallelize dependent fetches (Profiles and Likes)
             const userIds = [...new Set(videoData.map((v: any) => v.user_id).filter(Boolean))];
@@ -293,6 +299,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             setHasMore(videoData.length === 12);
         } catch (error) {
             console.error('Error fetching videos:', error);
+            setFetchError(error instanceof Error ? error.message : 'Could not load videos');
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -389,6 +396,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
     return {
         videos,
         loading,
+        fetchError,
         refreshing,
         hasMore,
         loadMore,
