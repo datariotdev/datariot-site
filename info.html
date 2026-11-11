@@ -1926,6 +1926,32 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 }
 .dt-signal__diagram svg { display:block; width:100%; max-height:240px; color:var(--flow-accent); }
 .dt-signal__diagram .signal-trace { opacity:.14; transition:opacity .3s; }
+/* Lidar depth scene — a restrained 3D technical illustration, not a decorative model. */
+#catch .dt-signal__board{transition:box-shadow .55s ease,border-color .55s ease;box-shadow:0 14px 46px rgba(3,13,28,.12)}
+#catch .dt-signal__board:hover{box-shadow:0 26px 70px rgba(63,112,173,.16);border-color:rgba(150,192,236,.4)}
+#catch .dt-signal__diagram{perspective:900px;overflow:hidden;position:relative;min-width:0}
+#catch .dt-lidar-scene{position:relative;width:100%;max-width:540px;aspect-ratio:400/235;margin:0 auto;transform-style:preserve-3d;transform:rotateX(9deg) rotateY(-8deg);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+#catch .dt-lidar-scene svg{position:relative;z-index:3;transform:translateZ(32px);filter:drop-shadow(0 7px 9px rgba(104,158,220,.16));max-height:none}
+#catch .dt-lidar-scene__grid{position:absolute;z-index:0;inset:16% 0 3%;background-image:linear-gradient(rgba(150,193,241,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(150,193,241,.16) 1px,transparent 1px);background-size:34px 34px;transform:rotateX(66deg) translateZ(-24px);mask-image:linear-gradient(to bottom,transparent,black 40%,transparent)}
+#catch .dt-lidar-scene__sweep{position:absolute;z-index:2;left:26%;top:23%;width:57%;height:57%;border-radius:50%;background:conic-gradient(from 45deg,transparent 0deg,rgba(137,199,255,.02) 245deg,rgba(152,207,255,.26) 340deg,transparent 360deg);transform:translateZ(20px);filter:blur(1px)}
+#catch .dt-lidar-scene__glow{position:absolute;z-index:1;inset:16% 8%;background:radial-gradient(ellipse at 55% 50%,rgba(125,181,242,.14),transparent 65%);transform:translateZ(0)}
+#catch .dt-signal__board[data-stage="1"] .dt-lidar-scene{transform:rotateX(14deg) rotateY(8deg)}
+#catch .dt-signal__board[data-stage="2"] .dt-lidar-scene{transform:rotateX(5deg) rotateY(-14deg)}
+@media(prefers-reduced-motion:no-preference){
+ #catch .dt-lidar-scene{animation:dt-lidar-float 6s ease-in-out infinite}
+ #catch .dt-lidar-scene__sweep{animation:dt-lidar-sweep 4s linear infinite}
+ #catch .dt-signal__diagram .signal-trace--out{stroke-dasharray:240;stroke-dashoffset:240;animation:dt-lidar-pulse 3.3s ease-in-out infinite}
+ #catch .dt-signal__diagram .signal-trace--back{stroke-dasharray:12 9;animation:dt-lidar-return 2.8s linear infinite}
+ #catch .dt-signal__diagram .signal-trace--map{animation:dt-lidar-points 2.4s ease-in-out infinite}
+ @keyframes dt-lidar-float{0%,100%{translate:0 0}50%{translate:0 -7px}}
+ @keyframes dt-lidar-sweep{to{rotate:360deg}}
+ @keyframes dt-lidar-pulse{0%{stroke-dashoffset:240;opacity:.1}40%,72%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:-240;opacity:.1}}
+ @keyframes dt-lidar-return{to{stroke-dashoffset:-42}}
+ @keyframes dt-lidar-points{0%,100%{opacity:.2}50%{opacity:1}}
+}
+@media(max-width:680px){#catch .dt-signal__diagram{padding:14px 14px 20px}#catch .dt-lidar-scene{max-width:440px;aspect-ratio:400/205;transform:rotateX(7deg) rotateY(-6deg)}#catch .dt-lidar-scene svg{max-height:none}#catch .dt-signal__diagram .flow-meta{margin-top:4px}}
+@media(prefers-reduced-motion:reduce){#catch .dt-lidar-scene,#catch .dt-lidar-scene__sweep,#catch .dt-signal__diagram .signal-trace{animation:none!important;transition:none!important}}
+
 .dt-signal__board[data-stage="0"] .signal-trace--out,
 .dt-signal__board[data-stage="1"] .signal-trace--back,
 .dt-signal__board[data-stage="2"] .signal-trace--map { opacity:1; }
@@ -1997,6 +2023,10 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
       </div>
     </div>
     <div class="dt-signal__diagram" aria-hidden="true">
+      <div class="dt-lidar-scene">
+        <div class="dt-lidar-scene__grid"></div>
+        <div class="dt-lidar-scene__sweep"></div>
+        <div class="dt-lidar-scene__glow"></div>
       <svg viewBox="0 0 400 205" fill="none">
         <g stroke="currentColor" opacity=".23">
           <path d="M20 162h360M33 177h334M53 191h294M89 162l-20 29m91-29-7 29m87-29 7 29m64-29 20 29"/>
@@ -2022,7 +2052,8 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
           <circle cx="296" cy="151" r="3"/><circle cx="363" cy="151" r="3"/>
         </g>
       </svg>
-      <span class="flow-meta">LIDAR / ILLUSTRATION</span>
+      </div>
+      <span class="flow-meta">LIDAR / LIVE SCAN</span>
     </div>
   </div>
 </div>
