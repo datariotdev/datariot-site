@@ -1768,11 +1768,29 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
   100%{opacity:1;transform:translate3d(0,0,0) rotateY(0deg) rotateX(0deg) scale(1)}
  }
 }
+/* Logo-to-cards burst: all four cards originate at the central Datariot mark. */
+#manifesto .mini-feed__grid{position:relative;isolation:isolate}
+#manifesto .dt-feed-launch{position:absolute;z-index:6;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;visibility:hidden}
+#manifesto .dt-feed-launch img{position:relative;z-index:2;width:clamp(66px,10vw,90px);height:auto;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 0 22px rgba(171,212,255,.36))}
+#manifesto .dt-feed-launch__halo{position:absolute;width:125px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(170,211,255,.4),rgba(95,151,219,.12) 55%,transparent 72%);transform:scale(.5)}
+@media(prefers-reduced-motion:no-preference){
+ #manifesto .mini-feed__grid.dt-feed-burst .dt-feed-launch{visibility:visible;animation:dt-mark-disappear 1.5s ease both}
+ #manifesto .mini-feed__grid.dt-feed-burst .dt-feed-launch img{animation:dt-mark-pulse 1.5s cubic-bezier(.2,.8,.2,1) both}
+ #manifesto .mini-feed__grid.dt-feed-burst .dt-feed-launch__halo{animation:dt-mark-halo 1.25s ease-out both}
+ #manifesto .mini-feed__grid.dt-feed-burst .mini-feed__item,#manifesto .mini-feed__grid.dt-feed-burst .mini-feed__item.is-revealing{animation:dt-card-burst 1.05s cubic-bezier(.16,.8,.16,1) both!important;animation-delay:calc(420ms + var(--deal-delay,0ms))!important;transform-origin:50% 50%;backface-visibility:hidden}
+ @keyframes dt-mark-disappear{0%,55%{opacity:1}85%{opacity:.6}100%{opacity:0;visibility:hidden}}
+ @keyframes dt-mark-pulse{0%{transform:scale(.65) rotate(-12deg);opacity:0}24%{transform:scale(1.08) rotate(0);opacity:1}48%{transform:scale(.94)}67%{transform:scale(1.18)}100%{transform:scale(.5);opacity:0}}
+ @keyframes dt-mark-halo{0%{opacity:0;transform:scale(.3)}40%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(3)}}
+ @keyframes dt-card-burst{0%{opacity:0;transform:translate3d(var(--burst-x,0px),var(--burst-y,0px),-280px) rotateY(var(--burst-r,0deg)) rotateX(22deg) scale(.22);filter:blur(7px)}58%{opacity:1;filter:blur(0)}82%{transform:translate3d(0,-9px,26px) rotateY(0) rotateX(-3deg) scale(1.025)}100%{opacity:1;transform:translate3d(0,0,0) rotateY(0) rotateX(0) scale(1);filter:none}}
+}
+@media(max-width:760px){#manifesto .dt-feed-launch img{width:72px}#manifesto .mini-feed__grid.dt-feed-burst .mini-feed__item{overflow:hidden!important}}
+@media(prefers-reduced-motion:reduce){#manifesto .dt-feed-launch{display:none!important}}
 @media(prefers-reduced-motion:reduce){#manifesto .mini-feed__item,#manifesto .mini-feed__item.is-revealing{animation:none!important;transition:none!important;transform:none!important;filter:none!important;opacity:1!important}}
 </style>
 <div class="mini-feed__shell">
 <div class="mini-feed__top"><div><div class="mini-feed__eyebrow">[ 01 — THE FEED ]</div><h2 class="mini-feed__title" id="miniFeedTitle">Less noise.<br><em>More signal.</em></h2></div><p class="mini-feed__intro">Short videos worth your attention. Choose a topic to uncover the idea behind it.</p></div>
 <div class="mini-feed__grid" role="group" aria-label="Explore video topics">
+<div class="dt-feed-launch" aria-hidden="true"><span class="dt-feed-launch__halo"></span><img src="assets/logo.png?v=brand-20261021" alt="" width="84" height="84" decoding="async"></div>
 <button class="mini-feed__item" data-mini="0" type="button" aria-pressed="true"><img class="mini-feed__image" src="assets/reel-lidar.jpg" alt="Street scene for lidar explainer" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">TECH · 00:44</span><span class="mini-feed__name">How cars see the world</span></div></button>
 <button class="mini-feed__item" data-mini="1" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/reel-bear.jpg" alt="Polar bear" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">NATURE · 00:31</span><span class="mini-feed__name">Why polar bears look white</span></div></button>
 <button class="mini-feed__item" data-mini="2" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/reel-tower.jpg" alt="Tall building" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">DESIGN · 00:38</span><span class="mini-feed__name">Why skyscrapers sway</span></div></button>
@@ -1798,7 +1816,7 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
   card.addEventListener('pointerleave',()=>{card.style.setProperty('--tilt-x','0deg');card.style.setProperty('--tilt-y','0deg')});
  });
  if(!('IntersectionObserver' in window))return;
- const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(!entry.isIntersecting)return;cards.forEach(card=>{card.classList.remove('is-revealing');void card.offsetWidth;card.classList.add('is-revealing')});observer.disconnect()})},{threshold:.2});
+ const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(!entry.isIntersecting)return;const grid=root.querySelector('.mini-feed__grid');const bounds=grid.getBoundingClientRect();cards.forEach((card,i)=>{const r=card.getBoundingClientRect();card.style.setProperty('--burst-x',(bounds.left+bounds.width/2-r.left-r.width/2)+'px');card.style.setProperty('--burst-y',(bounds.top+bounds.height/2-r.top-r.height/2)+'px');card.style.setProperty('--burst-r',((i%2?1:-1)*(12+i*3))+'deg');card.style.setProperty('--deal-delay',(i*85)+'ms')});grid.classList.add('dt-feed-burst');observer.disconnect()})},{threshold:.2});
  observer.observe(root.querySelector('.mini-feed__grid'));
 })();
 </script>
