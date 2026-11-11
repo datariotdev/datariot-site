@@ -2027,6 +2027,40 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
  #features .reply-network__detail{padding:14px 2px 0;margin-top:12px}
 }
 @media(prefers-reduced-motion:reduce){#features .reply-network__stage,#features .reply-network__floating{animation:none!important;transition:none!important}}
+/* Video Replies — miniature cinematic 3D environment, no recycled creator imagery. */
+#features .reply-network__layout{grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:clamp(18px,3vw,44px);align-items:center}
+#features .dt-world{height:clamp(390px,42vw,570px);min-height:0;position:relative;display:block;overflow:hidden;border-radius:25px;border:1px solid rgba(177,206,233,.25);background:#111d2a;perspective:900px;isolation:isolate;box-shadow:0 32px 85px rgba(0,0,0,.32),inset 0 0 45px rgba(151,200,244,.08)}
+#features .dt-world__sky{position:absolute;inset:0;background:linear-gradient(180deg,#253a52 0%,#688096 42%,#9fa99c 68%,#53675a 100%)}
+#features .dt-world__sun{position:absolute;width:190px;height:190px;border-radius:50%;top:5%;left:51%;background:radial-gradient(circle,#e8dfc3 0%,rgba(224,218,190,.3) 25%,transparent 70%);filter:blur(6px)}
+#features .dt-world__mountains{position:absolute;inset:25% -8% 20%;background:linear-gradient(165deg,#50687a,#263d50);clip-path:polygon(0 63%,14% 42%,26% 55%,42% 22%,55% 51%,69% 28%,83% 47%,100% 25%,100% 100%,0 100%);opacity:.75}
+#features .dt-world__ground{position:absolute;inset:53% -30% -50%;border-radius:48% 48% 0 0;background:radial-gradient(ellipse at 45% 25%,#698374 0%,#334f46 47%,#142a2b 100%);transform:rotateX(53deg) translateZ(15px);box-shadow:0 -25px 55px rgba(18,38,37,.3)}
+#features .dt-world__path{position:absolute;z-index:1;left:37%;top:57%;width:34%;height:68%;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#c2b7a0,#7e806d 55%,#454c45);transform:perspective(440px) rotateX(57deg) rotateZ(-10deg);filter:blur(1px);opacity:.8}
+#features .dt-world__tree{position:absolute;z-index:3;width:17%;height:49%;transform-style:preserve-3d;filter:drop-shadow(10px 15px 13px rgba(4,20,18,.35))}
+#features .dt-world__tree i{position:absolute;bottom:0;left:46%;height:58%;width:9%;border-radius:8px;background:linear-gradient(90deg,#352d26,#806a4f,#392e29);transform:rotate(-5deg)}
+#features .dt-world__tree b{position:absolute;top:0;left:0;width:100%;height:69%;border-radius:55% 46% 49% 53%;background:radial-gradient(circle at 38% 30%,#829f73,#4a705b 42%,#274b42 78%);box-shadow:18px 13px 0 -8px #355949,-15px 15px 0 -8px #426b54}
+#features .dt-world__tree--left{left:4%;top:26%;transform:scale(1.4)}
+#features .dt-world__tree--right{right:2%;top:32%;transform:scale(1.15)}
+#features .dt-world__tree--far{left:55%;top:32%;transform:scale(.52);opacity:.8}
+#features .dt-world__portal{position:absolute;z-index:5;width:25%;height:42%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1px solid rgba(196,223,247,.56);border-radius:17px;background:linear-gradient(145deg,rgba(37,57,75,.78),rgba(15,32,47,.85));color:#d7e9fa;box-shadow:0 12px 35px rgba(4,19,31,.35),inset 0 0 32px rgba(143,190,232,.09);backdrop-filter:blur(8px);transform-style:preserve-3d}
+#features .dt-world__portal span{font:600 clamp(8px,.9vw,11px)/1.3 monospace;letter-spacing:.06em;text-align:center}
+#features .dt-world__portal svg{width:56%;height:45%;filter:drop-shadow(0 0 12px rgba(190,221,255,.3))}
+#features .dt-world__portal--first{left:13%;top:25%;transform:rotateY(19deg) rotateZ(-5deg) translateZ(65px)}
+#features .dt-world__portal--second{left:39%;top:17%;transform:rotateY(-8deg) translateZ(20px)}
+#features .dt-world__portal--third{right:8%;top:28%;transform:rotateY(-20deg) rotateZ(5deg) translateZ(80px);border-color:rgba(192,225,255,.8)}
+#features .dt-world__mist{position:absolute;z-index:6;inset:70% 0 0;background:linear-gradient(0deg,rgba(10,23,30,.8),transparent);pointer-events:none}
+#features .dt-world__caption{position:absolute;z-index:7;bottom:18px;left:0;right:0;text-align:center;color:#d6e7f6;font:600 10px monospace;letter-spacing:.24em;text-shadow:0 2px 9px #0d1c2a}
+@media(prefers-reduced-motion:no-preference){
+ #features .dt-world__portal--first{animation:dt-world-float-a 5s ease-in-out infinite}
+ #features .dt-world__portal--second{animation:dt-world-float-b 6s ease-in-out infinite}
+ #features .dt-world__portal--third{animation:dt-world-float-c 5.6s ease-in-out infinite}
+ #features .dt-world__sky{animation:dt-world-light 12s ease-in-out infinite alternate}
+ @keyframes dt-world-float-a{0%,100%{translate:0 0}50%{translate:0 -13px}}
+ @keyframes dt-world-float-b{0%,100%{translate:0 0}50%{translate:0 12px}}
+ @keyframes dt-world-float-c{0%,100%{translate:0 0}50%{translate:0 -10px}}
+ @keyframes dt-world-light{from{filter:brightness(.85)}to{filter:brightness(1.1)}}
+}
+@media(max-width:760px){#features .reply-network__layout{grid-template-columns:minmax(0,1fr)}#features .dt-world{height:360px;border-radius:17px}#features .dt-world__portal{width:28%;height:34%;gap:5px;border-radius:12px}#features .dt-world__portal span{font-size:8px}#features .dt-world__portal--first{left:6%;top:32%}#features .dt-world__portal--second{left:36%;top:23%}#features .dt-world__portal--third{right:5%;top:34%}#features .dt-world__tree--left{left:0}#features .dt-world__tree--right{right:0}#features .dt-world__caption{font-size:8px;bottom:14px}}
+@media(prefers-reduced-motion:reduce){#features .dt-world__portal,#features .dt-world__sky{animation:none!important}}
 </style>
 <div class="reply-network__shell">
   <div class="reply-network__head">
@@ -2037,17 +2071,20 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
     <p class="flow-intro">Answer a creator on camera. Then use Orvelis to dig into what both sides are saying.</p>
   </div>
   <div class="reply-network__layout">
-    <div class="reply-network__stage" aria-label="Interactive video conversation demonstration"><div class="reply-network__depth" aria-hidden="true"><span></span><span></span><span></span></div>
-    <figure class="reply-network__clip">
-      <video controls playsinline preload="none" poster="assets/hero-clip.jpg" aria-label="Logic versus emotion">
-        <source src="assets/hero-clip.mp4" type="video/mp4">
-        <source src="assets/hero-clip.webm" type="video/webm">
-      </video>
-      <figcaption><span>ORIGINAL CLIP</span><span>LOGIC VERSUS EMOTION</span></figcaption>
-    </figure>
-    <div class="reply-network__floating reply-network__floating--reply" aria-hidden="true"><span>02 / HUMAN REPLY</span><strong>A different perspective.</strong><small>Ideas grow through conversation</small></div>
-    <div class="reply-network__floating reply-network__floating--ai" aria-hidden="true"><span>03 / ORVELIS AI</span><strong>Go one layer deeper.</strong><small>Explore assumptions and evidence</small></div>
-    <div class="reply-network__connector" aria-hidden="true"></div>
+    <div class="reply-network__stage dt-world" role="img" aria-label="A cinematic miniature world with trees, a winding path and three glowing idea portals representing video, conversation and AI">
+      <div class="dt-world__sky"></div>
+      <div class="dt-world__sun"></div>
+      <div class="dt-world__mountains"></div>
+      <div class="dt-world__ground"></div>
+      <div class="dt-world__path"></div>
+      <div class="dt-world__tree dt-world__tree--left"><i></i><b></b></div>
+      <div class="dt-world__tree dt-world__tree--right"><i></i><b></b></div>
+      <div class="dt-world__tree dt-world__tree--far"><i></i><b></b></div>
+      <div class="dt-world__portal dt-world__portal--first"><span>01 / THE CLIP</span><svg viewBox="0 0 90 90" fill="none" aria-hidden="true"><rect x="9" y="14" width="72" height="62" rx="13" stroke="currentColor" stroke-width="2"/><path d="m38 31 23 15-23 15V31Z" fill="currentColor"/></svg></div>
+      <div class="dt-world__portal dt-world__portal--second"><span>02 / THE REPLY</span><svg viewBox="0 0 90 90" fill="none" aria-hidden="true"><path d="M17 22h56v37H44L28 73V59H17V22Z" stroke="currentColor" stroke-width="2.5"/><path d="M28 36h34M28 46h23" stroke="currentColor" stroke-width="2.5"/></svg></div>
+      <div class="dt-world__portal dt-world__portal--third"><span>03 / ORVELIS</span><svg viewBox="0 0 90 90" fill="none" aria-hidden="true"><circle cx="45" cy="45" r="25" stroke="currentColor" stroke-width="2"/><path d="M45 11v16m0 36v16M11 45h16m36 0h16M27 27l11 11m14 14 11 11M63 27 52 38M38 52 27 63" stroke="currentColor" stroke-width="2"/><circle cx="45" cy="45" r="8" fill="currentColor"/></svg></div>
+      <div class="dt-world__mist"></div>
+      <div class="dt-world__caption">ONE IDEA. MANY DIRECTIONS.</div>
     </div>
     <div class="reply-network__controls">
       <div class="reply-network__flow" role="group" aria-label="Explore the video reply flow">
