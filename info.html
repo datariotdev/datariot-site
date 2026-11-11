@@ -2095,6 +2095,38 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 })();
 </script>
 
+<style>
+/* ORVELIS AI: dimensional scanning console, using the existing product palette. */
+#ai-core .ai-showcase__visual{perspective:1100px;perspective-origin:50% 42%}
+#ai-core .aic-card{position:relative;isolation:isolate;transform-style:preserve-3d;transform:rotateX(3deg) rotateY(-3deg);transition:transform .7s cubic-bezier(.2,.8,.2,1),box-shadow .7s;box-shadow:0 22px 65px rgba(5,13,29,.28),0 0 0 1px rgba(157,199,244,.08);overflow:hidden}
+#ai-core .aic-depth-halo{position:absolute;z-index:0;inset:-25%;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(137,187,240,.12),transparent 55%);transform:translateZ(-8px)}
+#ai-core .aic-scanline{position:absolute;z-index:5;left:0;right:0;top:-12%;height:18%;pointer-events:none;opacity:.5;background:linear-gradient(180deg,transparent,rgba(162,205,251,.035) 55%,rgba(173,216,255,.19) 97%,transparent);filter:blur(.5px)}
+#ai-core .aic-head,#ai-core .aic-now,#ai-core .aic-block,#ai-core .aic-foot{position:relative;z-index:2;transform:translateZ(12px)}
+#ai-core .aic-now{transform:translateZ(25px);box-shadow:0 12px 27px rgba(0,0,0,.12)}
+#ai-core .aic-score-num{text-shadow:0 0 24px rgba(173,211,255,.16)}
+#ai-core .aic-meter i{transform-origin:center bottom}
+#ai-core .aic-online i{box-shadow:0 0 10px currentColor}
+@media(hover:hover) and (pointer:fine){#ai-core .aic-card:hover{transform:rotateX(0deg) rotateY(0deg) translateY(-7px);box-shadow:0 30px 85px rgba(8,22,43,.34),0 0 30px rgba(137,187,240,.08)}}
+@media(prefers-reduced-motion:no-preference){
+ #ai-core .aic-card{animation:aic-console-float 7s ease-in-out infinite}
+ #ai-core .aic-scanline{animation:aic-scan 5.2s linear infinite}
+ #ai-core .aic-meter i{animation:aic-meter-rise 1s cubic-bezier(.15,.8,.2,1) both;animation-delay:calc(var(--meter-i,0) * 35ms)}
+ #ai-core .aic-now-wave i{animation:aic-wave 1.1s ease-in-out infinite alternate;animation-delay:calc(var(--wave-i,0) * 100ms)}
+ @keyframes aic-console-float{0%,100%{translate:0 0}50%{translate:0 -8px}}
+ @keyframes aic-scan{0%{transform:translateY(-120%);opacity:0}12%{opacity:.6}80%{opacity:.6}100%{transform:translateY(720%);opacity:0}}
+ @keyframes aic-meter-rise{from{opacity:.15;transform:scaleY(.18)}to{opacity:1;transform:scaleY(1)}}
+ @keyframes aic-wave{from{transform:scaleY(.48)}to{transform:scaleY(1.25)}}
+}
+@media(max-width:760px){#ai-core .ai-showcase__visual{perspective:850px}#ai-core .aic-card{transform:rotateX(2deg) rotateY(-1deg);box-shadow:0 15px 42px rgba(5,13,29,.25)}#ai-core .aic-head,#ai-core .aic-now,#ai-core .aic-block,#ai-core .aic-foot{transform:none}#ai-core .aic-now{transform:translateZ(8px)}}
+@media(prefers-reduced-motion:reduce){#ai-core .aic-card,#ai-core .aic-scanline,#ai-core .aic-meter i,#ai-core .aic-now-wave i{animation:none!important;transition:none!important}}
+</style>
+<script>
+(function(){
+ const root=document.getElementById('ai-core');if(!root)return;
+ root.querySelectorAll('.aic-meter i').forEach((bar,i)=>bar.style.setProperty('--meter-i',i));
+ root.querySelectorAll('.aic-now-wave i').forEach((bar,i)=>bar.style.setProperty('--wave-i',i));
+})();
+</script>
         <!-- The Arena: two perspectives, one question worth thinking about. -->
         <section class="section dt-dev" id="debates" data-inview aria-labelledby="dtDevTitle">
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
@@ -2177,6 +2209,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
                 <div class="ai-core-layout">
                     <div class="ai-showcase__visual">
                         <div class="aic-card">
+                            <div class="aic-depth-halo" aria-hidden="true"></div><div class="aic-scanline" aria-hidden="true"></div>
                             <div class="aic-strip">
                                 <span class="aic-strip-ticks" aria-hidden="true"></span>
                                 <span class="aic-strip-id">ORV / 3.0.1 / ARENA-LINK</span>
