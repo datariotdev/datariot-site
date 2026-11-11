@@ -1926,18 +1926,6 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 }
 .dt-signal__diagram svg { display:block; width:100%; max-height:240px; color:var(--flow-accent); }
 .dt-signal__diagram .signal-trace { opacity:.14; transition:opacity .3s; }
-/* Real-road photographic LiDAR scene replaces the artificial car line art. */
-#catch .dt-lidar-scene{aspect-ratio:600/340;max-width:100%;transform:none!important;animation:none!important}
-#catch .dt-lidar-scene__grid,#catch .dt-lidar-scene__sweep,#catch .dt-lidar-scene__glow{display:none!important}
-#catch .dt-lidar-road{position:relative;width:100%;aspect-ratio:600/340;border-radius:15px;overflow:hidden;isolation:isolate;background:#263b4d}
-#catch .dt-lidar-road__photo{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1200&q=82');background-size:cover;background-position:center;transform:scale(1.04)}
-#catch .dt-lidar-road__shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,21,35,.03) 25%,rgba(8,18,34,.35) 100%)}
-#catch .dt-lidar-road__overlay{position:absolute;inset:0;width:100%;height:100%;z-index:2;filter:drop-shadow(0 0 5px rgba(168,216,255,.5));transform:none!important}
-#catch .dt-lidar-road__tag{position:absolute;left:14px;bottom:14px;z-index:3;display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid rgba(207,231,255,.4);border-radius:5px;background:rgba(8,18,33,.55);backdrop-filter:blur(9px);color:#e6f2ff;font:600 10px/1.2 monospace;letter-spacing:.08em}
-#catch .dt-lidar-road__tag i{display:block;width:6px;height:6px;border-radius:50%;background:#a8d5ff;box-shadow:0 0 8px #a8d5ff}
-@media(prefers-reduced-motion:no-preference){#catch .dt-lidar-road__photo{animation:dt-road-zoom 13s ease-in-out infinite alternate}#catch .dt-road-rays{stroke-dasharray:500;stroke-dashoffset:500;animation:dt-road-scan 3.8s ease-in-out infinite}#catch .dt-road-points{animation:dt-road-blink 2.4s ease-in-out infinite}#catch .dt-road-detection{animation:dt-road-blink 3s ease-in-out infinite}@keyframes dt-road-zoom{to{transform:scale(1.1)}}@keyframes dt-road-scan{0%{stroke-dashoffset:500;opacity:.15}55%,75%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:-500;opacity:.1}}@keyframes dt-road-blink{0%,100%{opacity:.3}50%{opacity:1}}}
-@media(max-width:680px){#catch .dt-lidar-scene{aspect-ratio:600/340}#catch .dt-lidar-road{border-radius:11px}#catch .dt-lidar-road__tag{font-size:8px;bottom:9px;left:9px}}
-@media(prefers-reduced-motion:reduce){#catch .dt-lidar-road__photo,#catch .dt-road-rays,#catch .dt-road-points,#catch .dt-road-detection{animation:none!important}}
 /* Lidar depth scene — a restrained 3D technical illustration, not a decorative model. */
 #catch .dt-signal__board{transition:box-shadow .55s ease,border-color .55s ease;box-shadow:0 14px 46px rgba(3,13,28,.12)}
 #catch .dt-signal__board:hover{box-shadow:0 26px 70px rgba(63,112,173,.16);border-color:rgba(150,192,236,.4)}
@@ -2027,40 +2015,6 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
  #features .reply-network__detail{padding:14px 2px 0;margin-top:12px}
 }
 @media(prefers-reduced-motion:reduce){#features .reply-network__stage,#features .reply-network__floating{animation:none!important;transition:none!important}}
-/* Video Replies — miniature cinematic 3D environment, no recycled creator imagery. */
-#features .reply-network__layout{grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:clamp(18px,3vw,44px);align-items:center}
-#features .dt-world{height:clamp(390px,42vw,570px);min-height:0;position:relative;display:block;overflow:hidden;border-radius:25px;border:1px solid rgba(177,206,233,.25);background:#111d2a;perspective:900px;isolation:isolate;box-shadow:0 32px 85px rgba(0,0,0,.32),inset 0 0 45px rgba(151,200,244,.08)}
-#features .dt-world__sky{position:absolute;inset:0;background:linear-gradient(180deg,#253a52 0%,#688096 42%,#9fa99c 68%,#53675a 100%)}
-#features .dt-world__sun{position:absolute;width:190px;height:190px;border-radius:50%;top:5%;left:51%;background:radial-gradient(circle,#e8dfc3 0%,rgba(224,218,190,.3) 25%,transparent 70%);filter:blur(6px)}
-#features .dt-world__mountains{position:absolute;inset:25% -8% 20%;background:linear-gradient(165deg,#50687a,#263d50);clip-path:polygon(0 63%,14% 42%,26% 55%,42% 22%,55% 51%,69% 28%,83% 47%,100% 25%,100% 100%,0 100%);opacity:.75}
-#features .dt-world__ground{position:absolute;inset:53% -30% -50%;border-radius:48% 48% 0 0;background:radial-gradient(ellipse at 45% 25%,#698374 0%,#334f46 47%,#142a2b 100%);transform:rotateX(53deg) translateZ(15px);box-shadow:0 -25px 55px rgba(18,38,37,.3)}
-#features .dt-world__path{position:absolute;z-index:1;left:37%;top:57%;width:34%;height:68%;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#c2b7a0,#7e806d 55%,#454c45);transform:perspective(440px) rotateX(57deg) rotateZ(-10deg);filter:blur(1px);opacity:.8}
-#features .dt-world__tree{position:absolute;z-index:3;width:17%;height:49%;transform-style:preserve-3d;filter:drop-shadow(10px 15px 13px rgba(4,20,18,.35))}
-#features .dt-world__tree i{position:absolute;bottom:0;left:46%;height:58%;width:9%;border-radius:8px;background:linear-gradient(90deg,#352d26,#806a4f,#392e29);transform:rotate(-5deg)}
-#features .dt-world__tree b{position:absolute;top:0;left:0;width:100%;height:69%;border-radius:55% 46% 49% 53%;background:radial-gradient(circle at 38% 30%,#829f73,#4a705b 42%,#274b42 78%);box-shadow:18px 13px 0 -8px #355949,-15px 15px 0 -8px #426b54}
-#features .dt-world__tree--left{left:4%;top:26%;transform:scale(1.4)}
-#features .dt-world__tree--right{right:2%;top:32%;transform:scale(1.15)}
-#features .dt-world__tree--far{left:55%;top:32%;transform:scale(.52);opacity:.8}
-#features .dt-world__portal{position:absolute;z-index:5;width:25%;height:42%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1px solid rgba(196,223,247,.56);border-radius:17px;background:linear-gradient(145deg,rgba(37,57,75,.78),rgba(15,32,47,.85));color:#d7e9fa;box-shadow:0 12px 35px rgba(4,19,31,.35),inset 0 0 32px rgba(143,190,232,.09);backdrop-filter:blur(8px);transform-style:preserve-3d}
-#features .dt-world__portal span{font:600 clamp(8px,.9vw,11px)/1.3 monospace;letter-spacing:.06em;text-align:center}
-#features .dt-world__portal svg{width:56%;height:45%;filter:drop-shadow(0 0 12px rgba(190,221,255,.3))}
-#features .dt-world__portal--first{left:13%;top:25%;transform:rotateY(19deg) rotateZ(-5deg) translateZ(65px)}
-#features .dt-world__portal--second{left:39%;top:17%;transform:rotateY(-8deg) translateZ(20px)}
-#features .dt-world__portal--third{right:8%;top:28%;transform:rotateY(-20deg) rotateZ(5deg) translateZ(80px);border-color:rgba(192,225,255,.8)}
-#features .dt-world__mist{position:absolute;z-index:6;inset:70% 0 0;background:linear-gradient(0deg,rgba(10,23,30,.8),transparent);pointer-events:none}
-#features .dt-world__caption{position:absolute;z-index:7;bottom:18px;left:0;right:0;text-align:center;color:#d6e7f6;font:600 10px monospace;letter-spacing:.24em;text-shadow:0 2px 9px #0d1c2a}
-@media(prefers-reduced-motion:no-preference){
- #features .dt-world__portal--first{animation:dt-world-float-a 5s ease-in-out infinite}
- #features .dt-world__portal--second{animation:dt-world-float-b 6s ease-in-out infinite}
- #features .dt-world__portal--third{animation:dt-world-float-c 5.6s ease-in-out infinite}
- #features .dt-world__sky{animation:dt-world-light 12s ease-in-out infinite alternate}
- @keyframes dt-world-float-a{0%,100%{translate:0 0}50%{translate:0 -13px}}
- @keyframes dt-world-float-b{0%,100%{translate:0 0}50%{translate:0 12px}}
- @keyframes dt-world-float-c{0%,100%{translate:0 0}50%{translate:0 -10px}}
- @keyframes dt-world-light{from{filter:brightness(.85)}to{filter:brightness(1.1)}}
-}
-@media(max-width:760px){#features .reply-network__layout{grid-template-columns:minmax(0,1fr)}#features .dt-world{height:360px;border-radius:17px}#features .dt-world__portal{width:28%;height:34%;gap:5px;border-radius:12px}#features .dt-world__portal span{font-size:8px}#features .dt-world__portal--first{left:6%;top:32%}#features .dt-world__portal--second{left:36%;top:23%}#features .dt-world__portal--third{right:5%;top:34%}#features .dt-world__tree--left{left:0}#features .dt-world__tree--right{right:0}#features .dt-world__caption{font-size:8px;bottom:14px}}
-@media(prefers-reduced-motion:reduce){#features .dt-world__portal,#features .dt-world__sky{animation:none!important}}
 </style>
 <div class="reply-network__shell">
   <div class="reply-network__head">
@@ -2071,20 +2025,17 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
     <p class="flow-intro">Answer a creator on camera. Then use Orvelis to dig into what both sides are saying.</p>
   </div>
   <div class="reply-network__layout">
-    <div class="reply-network__stage dt-world" role="img" aria-label="A cinematic miniature world with trees, a winding path and three glowing idea portals representing video, conversation and AI">
-      <div class="dt-world__sky"></div>
-      <div class="dt-world__sun"></div>
-      <div class="dt-world__mountains"></div>
-      <div class="dt-world__ground"></div>
-      <div class="dt-world__path"></div>
-      <div class="dt-world__tree dt-world__tree--left"><i></i><b></b></div>
-      <div class="dt-world__tree dt-world__tree--right"><i></i><b></b></div>
-      <div class="dt-world__tree dt-world__tree--far"><i></i><b></b></div>
-      <div class="dt-world__portal dt-world__portal--first"><span>01 / THE CLIP</span><svg viewBox="0 0 90 90" fill="none" aria-hidden="true"><rect x="9" y="14" width="72" height="62" rx="13" stroke="currentColor" stroke-width="2"/><path d="m38 31 23 15-23 15V31Z" fill="currentColor"/></svg></div>
-      <div class="dt-world__portal dt-world__portal--second"><span>02 / THE REPLY</span><svg viewBox="0 0 90 90" fill="none" aria-hidden="true"><path d="M17 22h56v37H44L28 73V59H17V22Z" stroke="currentColor" stroke-width="2.5"/><path d="M28 36h34M28 46h23" stroke="currentColor" stroke-width="2.5"/></svg></div>
-      <div class="dt-world__portal dt-world__portal--third"><span>03 / ORVELIS</span><svg viewBox="0 0 90 90" fill="none" aria-hidden="true"><circle cx="45" cy="45" r="25" stroke="currentColor" stroke-width="2"/><path d="M45 11v16m0 36v16M11 45h16m36 0h16M27 27l11 11m14 14 11 11M63 27 52 38M38 52 27 63" stroke="currentColor" stroke-width="2"/><circle cx="45" cy="45" r="8" fill="currentColor"/></svg></div>
-      <div class="dt-world__mist"></div>
-      <div class="dt-world__caption">ONE IDEA. MANY DIRECTIONS.</div>
+    <div class="reply-network__stage" aria-label="Interactive video conversation demonstration"><div class="reply-network__depth" aria-hidden="true"><span></span><span></span><span></span></div>
+    <figure class="reply-network__clip">
+      <video controls playsinline preload="none" poster="assets/hero-clip.jpg" aria-label="Logic versus emotion">
+        <source src="assets/hero-clip.mp4" type="video/mp4">
+        <source src="assets/hero-clip.webm" type="video/webm">
+      </video>
+      <figcaption><span>ORIGINAL CLIP</span><span>LOGIC VERSUS EMOTION</span></figcaption>
+    </figure>
+    <div class="reply-network__floating reply-network__floating--reply" aria-hidden="true"><span>02 / HUMAN REPLY</span><strong>A different perspective.</strong><small>Ideas grow through conversation</small></div>
+    <div class="reply-network__floating reply-network__floating--ai" aria-hidden="true"><span>03 / ORVELIS AI</span><strong>Go one layer deeper.</strong><small>Explore assumptions and evidence</small></div>
+    <div class="reply-network__connector" aria-hidden="true"></div>
     </div>
     <div class="reply-network__controls">
       <div class="reply-network__flow" role="group" aria-label="Explore the video reply flow">
@@ -2128,22 +2079,32 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
         <div class="dt-lidar-scene__grid"></div>
         <div class="dt-lidar-scene__sweep"></div>
         <div class="dt-lidar-scene__glow"></div>
-      <div class="dt-lidar-road" role="img" aria-label="A car driving along a real highway, with LiDAR sensor rays detecting the road ahead">
-        <div class="dt-lidar-road__photo"></div>
-        <div class="dt-lidar-road__shade"></div>
-        <svg class="dt-lidar-road__overlay" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true">
-          <defs><linearGradient id="dt-road-ray" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#c8e8ff" stop-opacity=".9"/><stop offset="1" stop-color="#a9d2ff" stop-opacity=".05"/></linearGradient></defs>
-          <g stroke="url(#dt-road-ray)" stroke-width="1.7" class="dt-road-rays">
-            <path d="M238 236 526 134M238 236 556 184M238 236 575 246M238 236 480 307"/>
-          </g>
-          <g class="dt-road-points" fill="#d6edff">
-            <circle cx="526" cy="134" r="3"/><circle cx="556" cy="184" r="3"/><circle cx="575" cy="246" r="3"/><circle cx="480" cy="307" r="3"/>
-            <circle cx="488" cy="146" r="2"/><circle cx="502" cy="174" r="2"/><circle cx="518" cy="202" r="2"/><circle cx="539" cy="239" r="2"/>
-          </g>
-          <path class="dt-road-detection" d="M435 118 570 118 583 292 422 292Z" stroke="#b4d9ff" stroke-width="1.5" stroke-dasharray="7 8" fill="#b4d9ff" fill-opacity=".035"/>
-        </svg>
-        <span class="dt-lidar-road__tag">LIVE ENVIRONMENT SCAN <i></i></span>
-      </div>     </div>
+      <svg viewBox="0 0 400 205" fill="none">
+        <g stroke="currentColor" opacity=".23">
+          <path d="M20 162h360M33 177h334M53 191h294M89 162l-20 29m91-29-7 29m87-29 7 29m64-29 20 29"/>
+          <path d="M69 148a62 62 0 0 1 124 0m-145 0a83 83 0 0 1 166 0" stroke-dasharray="3 7"/>
+        </g>
+        <g stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+          <path d="M51 154v-13l17-8 13-21h58l21 21 15 6v15H51Zm18-21h92m-55-21v-9h19v9"/>
+          <circle cx="78" cy="154" r="8" fill="#202c40"/><circle cx="149" cy="154" r="8" fill="#202c40"/>
+          <path d="M296 154v-48l37-18 30 15v51m-67-48 29 15 38-18m-38 18v33" opacity=".55"/>
+        </g>
+        <g class="signal-trace signal-trace--out" stroke="currentColor" stroke-width="2">
+          <path d="m116 101 176-45m-176 45 179 14m-179-14 160 42"/>
+          <path d="m285 53 7 3-5 6m1 48 7 5-8 4m-17 18 6 6-9 2"/>
+        </g>
+        <g class="signal-trace signal-trace--back" stroke="currentColor" stroke-width="2">
+          <path d="m296 106-169-10m38-4-9 6 8 6" stroke-dasharray="5 5"/>
+          <circle cx="296" cy="106" r="8"/><circle cx="127" cy="96" r="6"/>
+        </g>
+        <g class="signal-trace signal-trace--map" fill="currentColor">
+          <circle cx="296" cy="106" r="3"/><circle cx="309" cy="100" r="3"/><circle cx="322" cy="93" r="3"/>
+          <circle cx="333" cy="88" r="3"/><circle cx="346" cy="94" r="3"/><circle cx="363" cy="103" r="3"/>
+          <circle cx="325" cy="121" r="3"/><circle cx="325" cy="136" r="3"/><circle cx="325" cy="152" r="3"/>
+          <circle cx="296" cy="151" r="3"/><circle cx="363" cy="151" r="3"/>
+        </g>
+      </svg>
+      </div>
       <span class="flow-meta">LIDAR / LIVE SCAN</span>
     </div>
   </div>
