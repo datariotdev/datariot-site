@@ -8,9 +8,10 @@ interface CategoryPillsProps {
     categories: string[];
     activeCategory: string | null;
     onCategoryPress: (category: string) => void;
+    showFilterLabel?: boolean;
 }
 
-export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: CategoryPillsProps) => {
+export const CategoryPills = ({ categories, activeCategory, onCategoryPress, showFilterLabel = true }: CategoryPillsProps) => {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
@@ -21,7 +22,9 @@ export const CategoryPills = ({ categories, activeCategory, onCategoryPress }: C
             style={styles.scrollStyle}
             contentContainerStyle={styles.container}
         >
-            <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>
+            {showFilterLabel && (
+                <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>
+            )}
             {categories.map((category) => (
                 <Chip
                     key={category}

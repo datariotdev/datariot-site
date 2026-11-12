@@ -339,15 +339,13 @@ const HomeScreen = () => {
                         </Pressable>
                     </View>
 
-                    {/* The row bleeds 16px past the nav padding on both sides.
-                        Sizing it from the window width overflowed the column
-                        and put a horizontal scrollbar on the page (#9). */}
                     {activeTab === 'trending' && (
-                        <View style={[styles.categoryFiltersContainer, { left: -16, right: -16 }]}>
+                        <View style={styles.categoryFiltersContainer}>
                             <CategoryPills
                                 categories={['All', ...VIDEO_CATEGORIES]}
                                 activeCategory={activeCategory || 'All'}
                                 onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
+                                showFilterLabel={false}
                             />
                         </View>
                     )}
@@ -420,6 +418,8 @@ const styles = StyleSheet.create({
     categoryFiltersContainer: {
         position: 'absolute',
         top: 54,
+        left: 0,
+        right: 0,
         height: 58,
     },
     pillBlur: {
