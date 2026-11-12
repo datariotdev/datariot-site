@@ -101,11 +101,11 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                     <View style={styles.heading}>
                         <View style={styles.eyebrowRow}>
                             <Ionicons name="sparkles-outline" size={14} color={theme.colors.text.secondary} />
-                            <Text style={[styles.eyebrow, { color: theme.colors.text.secondary }]}>DISCOVER SOMETHING NEW</Text>
+                            <Text style={[styles.eyebrow, { color: theme.colors.text.secondary }]}>CURATED FOR CURIOSITY</Text>
                         </View>
                         <Text style={[styles.headingTitle, { color: theme.colors.text.primary }]}>Worth your time.</Text>
                         <Text style={[styles.headingSubtitle, { color: theme.colors.text.secondary }]}>
-                            Short videos. Big ideas. Pick something worth exploring.
+                            Short videos. Bigger ideas.
                         </Text>
                         <View style={styles.infoRow}>
                             <View style={[styles.infoChip, { borderColor: theme.colors.surface.border }]}>
@@ -121,10 +121,10 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                             <Ionicons name="bulb-outline" size={18} color={theme.colors.text.primary} />
                             <View style={{ flex: 1 }}>
                                 <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>Go beyond the clip</Text>
-                                <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Watch, question, and explore with Orvelis AI.</Text>
+                                <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Ask Orvelis AI what happens beyond the video.</Text>
                             </View>
                         </View>
-                        <Text style={[styles.sectionLabel, { color: theme.colors.text.secondary }]}>EXPLORE THE FEED</Text>
+                        <Text style={[styles.sectionLabel, { color: theme.colors.text.secondary }]}>LATEST VIDEOS</Text>
                     </View>
                 }
                 ListEmptyComponent={<Text style={[styles.heading, { color: theme.colors.text.secondary }]}>No videos in this category.</Text>}
@@ -194,18 +194,18 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
 }
 
 const styles = StyleSheet.create({
-    heading: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 12, gap: 8 },
+    heading: { paddingHorizontal: 12, paddingTop: 4, paddingBottom: 10, gap: 7 },
     eyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    eyebrow: { fontSize: 10, fontWeight: '800', letterSpacing: 1.1 },
-    headingSubtitle: { fontSize: 13, lineHeight: 19 },
+    eyebrow: { fontSize: 10, fontWeight: '700', letterSpacing: 0.7 },
+    headingSubtitle: { fontSize: 13, lineHeight: 18 },
     infoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 3 },
     infoChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 11, paddingVertical: 7, borderWidth: 1, borderRadius: 20 },
     infoChipText: { fontSize: 11, fontWeight: '700' },
-    editorialNote: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderRadius: 14, padding: 13, marginTop: 5 },
-    noteTitle: { fontSize: 13, fontWeight: '800' },
-    noteSubtitle: { fontSize: 11, lineHeight: 16, marginTop: 3 },
-    sectionLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.2, marginTop: 7 },
-    headingTitle: { fontSize: 24, fontWeight: '800' },
+    editorialNote: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderRadius: 13, paddingHorizontal: 12, paddingVertical: 10, marginTop: 3 },
+    noteTitle: { fontSize: 13, lineHeight: 17, fontWeight: '700' },
+    noteSubtitle: { fontSize: 11, lineHeight: 15, marginTop: 2 },
+    sectionLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 0.8, marginTop: 5 },
+    headingTitle: { fontSize: 25, lineHeight: 30, fontWeight: '800', letterSpacing: -0.7 },
     card: { borderWidth: 1, borderRadius: 18, padding: 16, overflow: 'hidden' },
     thumbnail: { height: 130, width: '100%', borderRadius: 10, marginBottom: 12 },
     cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4 },
