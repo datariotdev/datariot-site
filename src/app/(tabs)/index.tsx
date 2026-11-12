@@ -346,6 +346,7 @@ const HomeScreen = () => {
                                 activeCategory={activeCategory || 'All'}
                                 onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
                                 showFilterLabel={false}
+                                rounded
                             />
                         </View>
                     )}
