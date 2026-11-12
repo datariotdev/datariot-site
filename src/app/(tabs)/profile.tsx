@@ -696,7 +696,7 @@ export default function ProfileScreen() {
                     <>
                         {mobile ? <MobileProfileHeader profile={profile} userId={user.id} fallbackName={user.email?.split('@')[0]}
                             own activeTab={activeTab} onTab={setActiveTab} onEdit={() => router.push('/edit-profile')}
-                            onSettings={() => router.push('/settings')} onDNA={() => setShowAchievements(true)} /> : <ProfileHeader
+                            onSettings={() => router.push('/settings')} onActivity={() => setShowAchievements(true)} /> : <ProfileHeader
                             profile={profile}
                             user={user}
                             scrollY={scrollY}
@@ -741,7 +741,7 @@ export default function ProfileScreen() {
 
                         <View style={styles.modalHeader}>
                             <View>
-                                <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>Creator DNA</Text>
+                                <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>{mobile ? 'Activity' : 'Creator DNA'}</Text>
                                 <Text style={[styles.modalSubtitle, { color: theme.colors.text.secondary }]}>Identity · Stats · History</Text>
                             </View>
                             <Pressable onPress={() => setShowAchievements(false)} style={styles.modalCloseBtn}>

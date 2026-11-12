@@ -4,6 +4,7 @@ import {
     Text, useWindowDimensions, View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../Theme/ThemeProvider';
 import type { Video } from '../../lib/supabase/hooks/useVideos';
@@ -22,27 +23,28 @@ interface Props {
     onSelectNative: (id: string) => void;
 }
 
-function readableDuration(seconds: number | null) {
-    return seconds ? `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}` : null;
-}
-
 function FeedCard({ entry, onPress, grid }: { entry: CuratedFeedEntry; onPress: () => void; grid: boolean }) {
     const external = entry.kind === 'instagram';
     const title = external ? entry.reel.title : entry.video.title;
     const creator = external ? entry.reel.creator : entry.video.author;
     const topic = external ? entry.reel.topic || entry.reel.category : entry.video.category;
     const thumbnail = entry.kind === 'native' ? entry.video.thumbnailUrl : null;
-    const [imageFailed, setImageFailed] = useState(false);
-    const showImage = !!thumbnail && !imageFailed && !/picsum\\.photos|pravatar\\.cc/.test(thumbnail);
+    const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
+    const showImage = !!thumbnail && thumbnail !== failedThumbnail && !/picsum\.photos|pravatar\.cc/.test(thumbnail);
 
     return (
         <Pressable onPress={onPress} accessibilityRole="button"
             accessibilityLabel={`Watch ${title} by ${creator}`}
             style={[styles.card, grid ? styles.squareCard : styles.wideCard]}>
             {showImage && <Image source={{ uri: thumbnail }} style={styles.cover} resizeMode="cover"
-                onError={() => setImageFailed(true)} />}
+                onError={() => setFailedThumbnail(thumbnail)} />}
             {!showImage && <View style={styles.missingCover}><Ionicons name="videocam-outline" size={28} color="#D9E4FF" /></View>}
-            <View style={styles.cardShade} pointerEvents="none" />
+            <LinearGradient
+                colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.04)', 'rgba(0,0,0,0.46)', 'rgba(0,0,0,0.84)']}
+                locations={[0, 0.3, 0.67, 1]}
+                style={StyleSheet.absoluteFill}
+                pointerEvents="none"
+            />
             <View style={styles.categoryBadge}>
                 <Text style={styles.categoryText} numberOfLines={1}>{String(topic || 'VIDEO').toUpperCase()}</Text>
             </View>
@@ -97,14 +99,14 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                 initialNumToRender={8}
                 maxToRenderPerBatch={8}
                 windowSize={5}
-                ListHeaderComponent={
+                ListHeaderComponent={reels.length > 0 ? (
                     <View style={styles.heading}>
                         <Text style={[styles.headingTitle, { color: theme.colors.text.primary }]}>Worth your time</Text>
                         <Text style={{ color: theme.colors.text.secondary }}>
                             {reels.length} selected reels · ideas, science & how things work
                         </Text>
                     </View>
-                }
+                ) : null}
                 ListEmptyComponent={<Text style={[styles.heading, { color: theme.colors.text.secondary }]}>{loading ? 'Loading videos…' : fetchError ? `Could not load videos: ${fetchError}` : 'No playable videos available.'}</Text>}
                 renderItem={({ item }) => (
                     <View style={{ width: `${100 / columns}%`, padding: 7 }}>
@@ -176,10 +178,9 @@ const styles = StyleSheet.create({
     wideCard: { height: 260 },
     cover: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
     missingCover: { ...StyleSheet.absoluteFillObject, backgroundColor: '#202A39', alignItems: 'center', justifyContent: 'center' },
-    cardShade: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.12)' },
     categoryBadge: { position: 'absolute', top: 12, left: 12, maxWidth: '82%', paddingHorizontal: 9, paddingVertical: 6, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.55)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)' },
     categoryText: { color: '#FFFFFF', fontSize: 10, fontWeight: '800' },
-    cardBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 12, paddingBottom: 12, paddingTop: 32, backgroundColor: 'rgba(0,0,0,0.62)' },
+    cardBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 12, paddingBottom: 12 },
     cardTitle: { color: '#FFFFFF', fontSize: 14, fontWeight: '800', lineHeight: 18, marginBottom: 10 },
     cardMeta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     creatorRow: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 7 },
@@ -190,15 +191,7 @@ const styles = StyleSheet.create({
     heading: { paddingHorizontal: 12, paddingVertical: 20, gap: 6 },
     headingTitle: { fontSize: 24, fontWeight: '800' },
     card: { borderRadius: 18, overflow: 'hidden', backgroundColor: '#202A39' },
-    thumbnail: { height: 130, width: '100%', borderRadius: 10, marginBottom: 12 },
-    cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4 },
     source: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
-    duration: { fontSize: 11 },
-    play: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', marginVertical: 16 },
-    topic: { fontSize: 10, fontWeight: '700', marginBottom: 6 },
-    title: { fontSize: 16, lineHeight: 21, fontWeight: '700', marginBottom: 8 },
-    creator: { fontSize: 11, lineHeight: 16 },
-    watch: { marginTop: 14, fontSize: 11, fontWeight: '700' },
     modal: { flex: 1 },
     toolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12 },
     iconButton: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },

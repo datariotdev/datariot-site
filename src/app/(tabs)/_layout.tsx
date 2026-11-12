@@ -149,7 +149,8 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="profile"
                     options={{
-                        href: null, // This is the correct way in Expo Router to completely remove the tab
+                        tabBarButton: () => null,
+                        tabBarItemStyle: { display: 'none' },
                     }}
                 />
             </Tabs>

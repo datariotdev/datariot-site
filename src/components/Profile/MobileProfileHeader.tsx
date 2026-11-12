@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Share, Platform, Alert, Modal, FlatList, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -10,12 +9,11 @@ import { supabase } from '../../lib/supabase/client';
 type Profile = {
     username?: string; display_name?: string; avatar_url?: string | null; banner_url?: string | null; bio?: string | null;
     followers_count?: number; following_count?: number; videos_count?: number;
-    arguments_count?: number; top_category?: string;
 };
 type Props = {
     profile: Profile | null; userId: string; fallbackName?: string; own?: boolean; showSaved?: boolean;
     activeTab: string; onTab: (tab: any) => void; onEdit?: () => void; onSettings?: () => void;
-    onDNA?: () => void; onBack?: () => void; onFollow?: () => void; onMessage?: () => void;
+    onActivity?: () => void; onBack?: () => void; onFollow?: () => void; onMessage?: () => void;
     isFollowing?: boolean; followPending?: boolean;
 };
 const number = (value = 0) => value >= 1000000 ? `${(value / 1000000).toFixed(1).replace('.0', '')}M`
@@ -25,19 +23,19 @@ async function shareProfile(id: string) {
     const url = `https://datariot.xyz/user/${encodeURIComponent(id)}`;
     try {
         if (Platform.OS === 'web') {
-            if (navigator.share) await navigator.share({ title: 'Meet me on Datariot', url });
+            if (navigator.share) await navigator.share({ title: 'Datariot profile', url });
             else if (navigator.clipboard) {
                 await navigator.clipboard.writeText(url);
                 return 'Link copied';
             } else Alert.alert('Profile link', url);
-        } else await Share.share({ message: `Meet me on Datariot\n${url}` });
+        } else await Share.share({ message: url });
     } catch (error: any) {
         if (error?.name !== 'AbortError') Alert.alert('Couldn’t share', 'Please try again.');
     }
 }
 
 export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator', own = false, showSaved = own,
-    activeTab, onTab, onEdit, onSettings, onDNA, onBack, onFollow, onMessage, isFollowing, followPending = false }: Props) {
+    activeTab, onTab, onEdit, onSettings, onActivity, onBack, onFollow, onMessage, isFollowing, followPending = false }: Props) {
     const { theme, mode } = useTheme();
     const insets = useSafeAreaInsets();
     const [shareStatus, setShareStatus] = useState('');
@@ -50,7 +48,10 @@ export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator',
     const muted = theme.colors.text.secondary;
     const accent = theme.colors.primary.DEFAULT;
     const line = theme.colors.surface.border;
-    const name = profile?.display_name || fallbackName;
+    const actionBorder = theme.colors.surface.borderHover;
+    const actionFill = mode === 'dark' ? accent : theme.colors.primary.ultra;
+    const actionInk = mode === 'dark' ? theme.colors.primary.onPrimary : ink;
+    const name = profile?.display_name || profile?.username || fallbackName;
     const tabs = showSaved ? ['videos', 'posts', 'saved'] : ['videos', 'posts'];
     return (
         <View style={{ backgroundColor: theme.colors.background.primary, paddingTop: insets.top }}>
@@ -58,26 +59,13 @@ export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator',
                 {onBack ? <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} style={s.iconButton}>
                     <Ionicons name="arrow-back" size={23} color={ink} />
                 </Pressable> : null}
-                <Text numberOfLines={1} style={[s.wordmark, { color: ink }]}>datariot{own && <Text style={{ color: muted }}> / you</Text>}</Text>
-                <View style={s.toolbarActions}>
-                    {!own && <Pressable accessibilityRole="button" accessibilityLabel="Share profile" onPress={handleShare} style={s.iconButton}>
-                        <Ionicons name="share-outline" size={22} color={ink} />
-                    </Pressable>}
-                    {onSettings && <Pressable accessibilityRole="button" accessibilityLabel="Profile settings" onPress={onSettings} style={s.iconButton}>
-                        <Ionicons name="options-outline" size={23} color={ink} />
-                    </Pressable>}
-                </View>
+                <Text accessibilityRole="header" style={[s.toolbarTitle, { color: ink }]}>Profile</Text>
+                {onSettings && <Pressable accessibilityRole="button" accessibilityLabel="Profile settings" onPress={onSettings} style={s.iconButton}>
+                    <Ionicons name="options-outline" size={21} color={ink} />
+                </Pressable>}
             </View>
             <View style={s.content}>
-                <View style={s.cover}>
-                    <LinearGradient
-                        colors={mode === 'dark' ? ['#141C2B', '#293B57'] : ['#F1F5FB', '#DCE8FA', '#BFD2F1']}
-                        start={{ x: 0, y: 1 }} end={{ x: 1, y: 0 }}
-                        style={StyleSheet.absoluteFill}
-                    />
-                    {profile?.banner_url ? <Image source={{ uri: profile.banner_url }} style={StyleSheet.absoluteFill} />
-                        : own && <View style={s.coverSignature}><Text style={[s.coverLabel, { color: mode === 'dark' ? '#D9E4FF' : '#526C98' }]}>YOUR SPACE ON DATARIOT</Text><View style={s.coverLine} /></View>}
-                </View>
+                {profile?.banner_url && <Image source={{ uri: profile.banner_url }} resizeMode="cover" style={s.cover} />}
                 <View style={s.identity}>
                     <View style={[s.avatar, { backgroundColor: theme.colors.surface.elevated }]}>
                         {profile?.avatar_url ? <Image source={{ uri: profile.avatar_url }} style={StyleSheet.absoluteFill} />
@@ -86,41 +74,43 @@ export function MobileProfileHeader({ profile, userId, fallbackName = 'Creator',
                     <View style={s.identityText}>
                         <Text numberOfLines={2} style={[s.name, { color: ink }]}>{name}</Text>
                         <Text numberOfLines={1} style={[s.handle, { color: muted }]}>@{profile?.username || fallbackName}</Text>
-                        <View style={s.creatorLabel}><View style={[s.creatorDot, { backgroundColor: accent }]} /><Text style={[s.eyebrow, { color: muted }]}>DATARIOT CREATOR</Text></View>
                     </View>
                 </View>
                 {profile?.bio ? <Text style={[s.bio, { color: ink }]}>{profile.bio}</Text>
-                    : own && <Pressable accessibilityRole="button" onPress={onEdit}><Text style={[s.bio, { color: muted }]}>Add a little about yourself ↗</Text></Pressable>}
+                    : own && <Pressable accessibilityRole="button" onPress={onEdit}><Text style={[s.bio, { color: muted }]}>Add bio</Text></Pressable>}
                 <View style={s.stats}>
-                    {(['followers', 'following', 'videos'] as const).map((stat, i) => <Pressable key={stat}
-                        accessibilityRole={stat === 'videos' ? 'tab' : 'button'}
+                    {(['following', 'followers', 'videos'] as const).map(stat => <Pressable key={stat}
+                        accessibilityRole="button"
                         accessibilityLabel={`${profile?.[`${stat}_count`] || 0} ${stat}`}
                         onPress={() => stat === 'videos' ? onTab('videos') : setConnections(stat)}
                         style={s.stat}>
-                        <Text style={[s.statValue, { color: ink }]}>{number(profile?.[`${stat}_count`])}</Text>
-                        <Text style={[s.statLabel, { color: muted }]}>{stat[0].toUpperCase() + stat.slice(1)}</Text>
+                        <Text style={[s.statLabel, { color: muted }]}>
+                            <Text style={[s.statValue, { color: ink }]}>{number(profile?.[`${stat}_count`])}</Text>
+                            {' '}{stat[0].toUpperCase() + stat.slice(1)}
+                        </Text>
                     </Pressable>)}
                 </View>
                 <View style={s.actions}>
                     <Pressable accessibilityRole="button" disabled={!own && followPending} accessibilityState={{ disabled: !own && followPending, busy: !own && followPending }} onPress={own ? onEdit : onFollow}
-                        style={[s.primaryAction, { backgroundColor: accent }]}>
-                        <Ionicons name={own ? 'create-outline' : isFollowing ? 'checkmark' : 'add'} size={18} color={theme.colors.primary.onPrimary} />
-                        <Text style={[s.actionText, s.actionLabel, { color: theme.colors.primary.onPrimary }]}>{own ? 'Edit profile' : isFollowing ? 'Following' : 'Follow creator'}</Text>
+                        style={[s.action, { backgroundColor: actionFill, borderColor: actionFill }]}>
+                        <Ionicons name={own ? 'create-outline' : isFollowing ? 'checkmark' : 'add'} size={16} color={actionInk} />
+                        <Text style={[s.actionText, { color: actionInk }]}>{own ? 'Edit profile' : isFollowing ? 'Following' : 'Follow'}</Text>
                     </Pressable>
-                    <Pressable accessibilityRole="button" onPress={own ? handleShare : onMessage}
-                        style={[s.secondaryAction, { borderColor: theme.colors.surface.borderHover, backgroundColor: theme.colors.surface.elevated }]}>
-                        <Ionicons name={own ? 'share-outline' : 'chatbubble-outline'} size={18} color={ink} />
-                        <Text style={[s.actionText, s.actionLabel, { color: ink }]}>{own ? (shareStatus || 'Share') : 'Message'}</Text>
+                    {!own && onMessage && <Pressable accessibilityRole="button" onPress={onMessage}
+                        style={[s.action, { borderColor: actionBorder }]}>
+                        <Ionicons name="chatbubble-outline" size={16} color={ink} />
+                        <Text style={[s.actionText, { color: ink }]}>Message</Text>
+                    </Pressable>}
+                    <Pressable accessibilityRole="button" accessibilityLabel={shareStatus || 'Share profile'}
+                        onPress={handleShare} hitSlop={2} style={[s.shareAction, { borderColor: actionBorder }]}>
+                        <Ionicons name={shareStatus ? 'checkmark' : 'share-outline'} size={17} color={ink} />
                     </Pressable>
                 </View>
-                {own && onDNA && <Pressable accessibilityRole="button" accessibilityLabel="Open Creator DNA" onPress={onDNA}
-                    style={[s.dna, { backgroundColor: theme.colors.surface.elevated }]}>
-                    <View style={[s.dnaIcon, { backgroundColor: mode === 'dark' ? 'rgba(217,228,255,0.08)' : 'rgba(76,110,245,0.07)' }]}>
-                        <Ionicons name="finger-print-outline" size={26} color={accent} />
-                    </View>
-                    <View style={{ flex: 1 }}><Text style={[s.dnaTitle, { color: ink }]}>Your Creator DNA</Text>
-                        <Text style={[s.dnaSubtitle, { color: muted }]}>{profile?.top_category || 'Your interests'} · {number(profile?.arguments_count)} arguments</Text></View>
-                    <Ionicons name="arrow-forward" size={19} color={accent} />
+                {own && onActivity && <Pressable accessibilityRole="button" onPress={onActivity}
+                    style={[s.activity, { borderColor: line }]}>
+                    <Ionicons name="stats-chart-outline" size={16} color={muted} />
+                    <Text style={[s.activityLabel, { color: ink }]}>Activity</Text>
+                    <Ionicons name="chevron-forward" size={15} color={muted} />
                 </Pressable>}
             </View>
             <View style={[s.tabs, { borderBottomColor: line }]}>
@@ -185,35 +175,30 @@ function Connections({ visible, userId, onClose }: { visible: 'followers' | 'fol
     </Modal>;
 }
 const s = StyleSheet.create({
-    toolbar: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 },
-    wordmark: { flex: 1, fontFamily: 'Outfit_700Bold', fontSize: 20, letterSpacing: -0.7 },
-    toolbarActions: { flexDirection: 'row', gap: 4 }, iconButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+    toolbar: { height: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' },
+    toolbarTitle: { flex: 1, paddingHorizontal: 4, fontFamily: 'Outfit_600SemiBold', fontSize: 16 },
+    iconButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
     content: { paddingHorizontal: 20, paddingTop: 8 },
-    cover: { height: 132, borderRadius: 22, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(120,151,195,0.13)' },
-    coverSignature: { flex: 1, justifyContent: 'space-between', padding: 18 },
-    coverLine: { height: 2, width: 46, borderRadius: 2, backgroundColor: '#8FAEDB', opacity: 0.85 },
-    coverLabel: { margin: 0, fontFamily: 'Outfit_500Medium', fontSize: 10, letterSpacing: 2 },
-    identity: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: -26, paddingHorizontal: 8 },
-    avatar: { width: 80, height: 80, borderRadius: 22, borderWidth: 3, borderColor: '#FFFFFF', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-    initial: { fontFamily: 'Outfit_600SemiBold', fontSize: 35 }, identityText: { flex: 1, minWidth: 0 },
-    name: { fontFamily: 'Outfit_600SemiBold', fontSize: 23, letterSpacing: -0.7, lineHeight: 29 },
-    handle: { fontFamily: 'Outfit_400Regular', fontSize: 14, marginTop: 4 },
-    creatorLabel: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 10 }, creatorDot: { width: 4, height: 4, borderRadius: 2 },
-    eyebrow: { fontFamily: 'Outfit_500Medium', fontSize: 9, letterSpacing: 1.1 },
-    bio: { fontFamily: 'Outfit_400Regular', fontSize: 15, lineHeight: 22, marginTop: 18, marginBottom: 4 },
-    stats: { flexDirection: 'row', paddingVertical: 16, marginTop: 16 },
-    stat: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 44 },
-    statValue: { fontFamily: 'Outfit_600SemiBold', fontSize: 23, lineHeight: 27, letterSpacing: -0.6 },
-    statLabel: { fontFamily: 'Outfit_400Regular', fontSize: 12, marginTop: 3 }, actions: { flexDirection: 'row', gap: 10, marginTop: 18 },
-    primaryAction: { flex: 1, minHeight: 46, borderRadius: 14, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7, paddingHorizontal: 10 },
-    secondaryAction: { flex: 1, minHeight: 46, borderWidth: 1, borderRadius: 14, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7, paddingHorizontal: 10 },
-    actionLabel: { flexShrink: 1, textAlign: 'center' },
+    cover: { width: '100%', height: 76, borderRadius: 12, marginBottom: 14 },
+    identity: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    avatar: { width: 68, height: 68, borderRadius: 34, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+    initial: { fontFamily: 'Outfit_600SemiBold', fontSize: 29 },
+    identityText: { flex: 1, minWidth: 0 },
+    name: { fontFamily: 'Outfit_600SemiBold', fontSize: 20, lineHeight: 24 },
+    handle: { fontFamily: 'Outfit_400Regular', fontSize: 13, marginTop: 3 },
+    bio: { fontFamily: 'Outfit_400Regular', fontSize: 14, lineHeight: 20, marginTop: 12 },
+    stats: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 14, marginTop: 8 },
+    stat: { justifyContent: 'center', minHeight: 34 },
+    statValue: { fontFamily: 'Outfit_600SemiBold' },
+    statLabel: { fontFamily: 'Outfit_400Regular', fontSize: 13 },
+    actions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 4 },
+    action: { minHeight: 40, borderWidth: 1, borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, paddingHorizontal: 12 },
+    shareAction: { width: 40, height: 40, borderWidth: 1, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
     actionText: { fontFamily: 'Outfit_600SemiBold', fontSize: 14 },
-    dna: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 18, marginTop: 18, marginBottom: 4 },
-    dnaIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-    dnaTitle: { fontFamily: 'Outfit_500Medium', fontSize: 15 }, dnaSubtitle: { fontFamily: 'Outfit_400Regular', fontSize: 12, marginTop: 4 },
-    tabs: { flexDirection: 'row', marginTop: 18, borderBottomWidth: 1, paddingHorizontal: 12 },
-    tab: { flex: 1, minHeight: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, borderBottomWidth: 2 },
+    activity: { flexDirection: 'row', alignItems: 'center', minHeight: 40, gap: 8, paddingHorizontal: 10, borderWidth: 1, borderRadius: 10, marginTop: 12 },
+    activityLabel: { flex: 1, fontFamily: 'Outfit_500Medium', fontSize: 13 },
+    tabs: { flexDirection: 'row', marginTop: 12, borderBottomWidth: 1, paddingHorizontal: 12 },
+    tab: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, borderBottomWidth: 2 },
     tabText: { fontFamily: 'Outfit_500Medium', fontSize: 13 },
     modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.65)', justifyContent: 'flex-end' },
     sheet: { maxHeight: '80%', minHeight: 250, paddingHorizontal: 20, borderTopLeftRadius: 26, borderTopRightRadius: 26 },
