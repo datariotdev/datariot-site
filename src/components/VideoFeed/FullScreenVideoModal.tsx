@@ -54,10 +54,11 @@ interface InternalFullScreenVideoProps {
     videoUrl: string;
     isActive: boolean;
     isPaused: boolean;
+    isMuted: boolean;
     onTimeUpdate: (currentTime: number, duration: number) => void;
 }
 
-const InternalFullScreenVideo = ({ videoUrl, isActive, isPaused, onTimeUpdate }: InternalFullScreenVideoProps) => {
+const InternalFullScreenVideo = ({ videoUrl, isActive, isPaused, isMuted, onTimeUpdate }: InternalFullScreenVideoProps) => {
     const videoRef = useRef<Video>(null);
 
     return (
@@ -68,7 +69,7 @@ const InternalFullScreenVideo = ({ videoUrl, isActive, isPaused, onTimeUpdate }:
             resizeMode={ResizeMode.CONTAIN}
             shouldPlay={isActive && !isPaused}
             isLooping
-            isMuted={true}
+            isMuted={isMuted || !isActive}
             onPlaybackStatusUpdate={(status: any) => {
                 if (status.isLoaded && status.durationMillis) {
                     onTimeUpdate(status.positionMillis, status.durationMillis);
@@ -81,6 +82,7 @@ const InternalFullScreenVideo = ({ videoUrl, isActive, isPaused, onTimeUpdate }:
 function FullScreenVideoItem({
     item,
     isActive,
+    isMuted,
     height,
     onLike,
     onComment,
@@ -90,6 +92,7 @@ function FullScreenVideoItem({
 }: {
     item: any;
     isActive: boolean;
+    isMuted: boolean;
     height: number;
     onLike: () => void;
     onComment: () => void;
@@ -124,6 +127,7 @@ function FullScreenVideoItem({
                             videoUrl={item.videoUrl || item.url}
                             isActive={isActive}
                             isPaused={isPaused}
+                            isMuted={isMuted}
                             onTimeUpdate={(ct, dur) => {
                                 setCurrentTime(ct);
                                 setDuration(dur);
@@ -186,6 +190,7 @@ export function FullScreenVideoModal({
     const router = useRouter();
     const { height: screenHeight } = useWindowDimensions();
     const [activeIndex, setActiveIndex] = useState(0);
+    const [isMuted, setIsMuted] = useState(Platform.OS === 'web');
 
     // AI Pulsing Animation
     const pulseAnim = useSharedValue(1);
@@ -264,33 +269,44 @@ export function FullScreenVideoModal({
                         <Ionicons name="close" size={28} color="#FFF" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={() => {
-                            onClose();
-                            router.push('/ai');
-                        }}
-                        style={styles.aiLogoContainer}
-                    >
-                        <View style={[
-                            styles.aiLogoWrapper,
-                            {
-                                width: 38,
-                                height: 38,
-                                borderRadius: 19,
-                                borderWidth: 1,
-                                borderColor: 'rgba(217, 228, 255, 0.15)',
-                                backgroundColor: 'rgba(0, 8, 20, 0.5)',
-                                shadowColor: '#D9E4FF',
-                                shadowOffset: { width: 0, height: 0 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 6,
-                                elevation: 3,
-                            }
-                        ]}>
-                            <MaterialCommunityIcons name="robot-excited" size={18} color="#D9E4FF" />
-                        </View>
-                    </TouchableOpacity>
+                    <View style={styles.headerActions}>
+                        <TouchableOpacity
+                            accessibilityRole="button"
+                            accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
+                            style={styles.soundButton}
+                            onPress={() => setIsMuted(muted => !muted)}
+                        >
+                            <Ionicons name={isMuted ? 'volume-mute' : 'volume-high'} size={22} color="#FFF" />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={() => {
+                                onClose();
+                                router.push('/ai');
+                            }}
+                            style={styles.aiLogoContainer}
+                        >
+                            <View style={[
+                                styles.aiLogoWrapper,
+                                {
+                                    width: 38,
+                                    height: 38,
+                                    borderRadius: 19,
+                                    borderWidth: 1,
+                                    borderColor: 'rgba(217, 228, 255, 0.15)',
+                                    backgroundColor: 'rgba(0, 8, 20, 0.5)',
+                                    shadowColor: '#D9E4FF',
+                                    shadowOffset: { width: 0, height: 0 },
+                                    shadowOpacity: 0.3,
+                                    shadowRadius: 6,
+                                    elevation: 3,
+                                }
+                            ]}>
+                                <MaterialCommunityIcons name="robot-excited" size={18} color="#D9E4FF" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <FlatList
@@ -310,6 +326,7 @@ export function FullScreenVideoModal({
                         <FullScreenVideoItem
                             item={item}
                             isActive={index === activeIndex && isFocused}
+                            isMuted={isMuted}
                             height={screenHeight}
                             onLike={() => onLike(item.id)}
                             onComment={() => handleOpenComments(item.id)}
@@ -359,6 +376,19 @@ const styles = StyleSheet.create({
     closeButton: {
         width: 44,
         height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    soundButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'center',
         alignItems: 'center',
     },
