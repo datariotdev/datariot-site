@@ -9,9 +9,10 @@ interface CategoryPillsProps {
     activeCategory: string | null;
     onCategoryPress: (category: string) => void;
     showFilterLabel?: boolean;
+    rounded?: boolean;
 }
 
-export const CategoryPills = ({ categories, activeCategory, onCategoryPress, showFilterLabel = true }: CategoryPillsProps) => {
+export const CategoryPills = ({ categories, activeCategory, onCategoryPress, showFilterLabel = true, rounded = false }: CategoryPillsProps) => {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
@@ -31,6 +32,7 @@ export const CategoryPills = ({ categories, activeCategory, onCategoryPress, sho
                     category={category}
                     isActive={activeCategory === category}
                     isDark={isDark}
+                    rounded={rounded}
                     theme={theme}
                     onPress={() => onCategoryPress(category)}
                 />
@@ -43,12 +45,14 @@ const Chip = ({
     category,
     isActive,
     isDark,
+    rounded,
     theme,
     onPress,
 }: {
     category: string;
     isActive: boolean;
     isDark: boolean;
+    rounded: boolean;
     theme: any;
     onPress: () => void;
 }) => {
@@ -62,6 +66,7 @@ const Chip = ({
             onPress={onPress}
             style={[
                 styles.chip,
+                rounded && styles.roundedChip,
                 {
                     borderColor: isActive
                         ? accent
@@ -82,8 +87,7 @@ const Chip = ({
                 },
             ]}
         >
-            {/* Corner tick — active chips get a machined notch */}
-            {isActive && <View style={[styles.chipTick, { borderColor: accent }]} pointerEvents="none" />}
+            {isActive && !rounded && <View style={[styles.chipTick, { borderColor: accent }]} pointerEvents="none" />}
 
             <Text
                 allowFontScaling={false}
@@ -134,6 +138,9 @@ const styles = StyleSheet.create({
         position: 'relative',
         // @ts-ignore
         transition: 'all 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
+    },
+    roundedChip: {
+        borderRadius: 15,
     },
     chipTick: {
         position: 'absolute',
