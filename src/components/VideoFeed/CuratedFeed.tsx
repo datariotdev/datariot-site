@@ -50,7 +50,7 @@ function FeedCard({ entry, onPress, grid }: { entry: CuratedFeedEntry; onPress: 
             <View style={[styles.play, { backgroundColor: theme.colors.primary.glow }]}>
                 <Ionicons name="play" size={24} color={theme.colors.primary.DEFAULT} />
             </View>
-            <Text style={[styles.topic, { color: theme.colors.primary.DEFAULT }]} numberOfLines={1}>{topic}</Text>
+            <Text style={[styles.topic, { color: theme.colors.text.secondary }]} numberOfLines={1}>{topic}</Text>
             <Text style={[styles.title, { color: theme.colors.text.primary, fontFamily: theme.typography.fontFamilies.bold }]}
                 numberOfLines={grid ? 4 : 3}>{title}</Text>
             <Text style={[styles.creator, { color: theme.colors.text.secondary }]} numberOfLines={2}>{creator}</Text>
@@ -68,6 +68,7 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
     const [openingError, setOpeningError] = useState(false);
     const data = useMemo(() => mergeFeedEntries(videos, reels), [videos, reels]);
     const columns = grid ? (width > 1100 ? 3 : 2) : 1;
+    const topicCount = new Set(videos.map(video => video.category).filter(Boolean)).size;
     const selectedIndex = reels.findIndex(reel => reel.source_url === selectedUrl);
     const selected = reels[selectedIndex];
 
@@ -98,10 +99,32 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                 windowSize={5}
                 ListHeaderComponent={
                     <View style={styles.heading}>
-                        <Text style={[styles.headingTitle, { color: theme.colors.text.primary }]}>Worth your time</Text>
-                        <Text style={{ color: theme.colors.text.secondary }}>
-                            {reels.length} selected reels · ideas, science & how things work
+                        <View style={styles.eyebrowRow}>
+                            <Ionicons name="sparkles-outline" size={14} color={theme.colors.text.secondary} />
+                            <Text style={[styles.eyebrow, { color: theme.colors.text.secondary }]}>DISCOVER SOMETHING NEW</Text>
+                        </View>
+                        <Text style={[styles.headingTitle, { color: theme.colors.text.primary }]}>Worth your time.</Text>
+                        <Text style={[styles.headingSubtitle, { color: theme.colors.text.secondary }]}>
+                            Short videos. Big ideas. Pick something worth exploring.
                         </Text>
+                        <View style={styles.infoRow}>
+                            <View style={[styles.infoChip, { borderColor: theme.colors.surface.border }]}>
+                                <Ionicons name="play-circle-outline" size={14} color={theme.colors.text.primary} />
+                                <Text style={[styles.infoChipText, { color: theme.colors.text.primary }]}>{data.length} videos</Text>
+                            </View>
+                            <View style={[styles.infoChip, { borderColor: theme.colors.surface.border }]}>
+                                <Ionicons name="compass-outline" size={14} color={theme.colors.text.primary} />
+                                <Text style={[styles.infoChipText, { color: theme.colors.text.primary }]}>{topicCount} topics</Text>
+                            </View>
+                        </View>
+                        <View style={[styles.editorialNote, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.surface.border }]}>
+                            <Ionicons name="bulb-outline" size={18} color={theme.colors.text.primary} />
+                            <View style={{ flex: 1 }}>
+                                <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>Go beyond the clip</Text>
+                                <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Watch, question, and explore with Orvelis AI.</Text>
+                            </View>
+                        </View>
+                        <Text style={[styles.sectionLabel, { color: theme.colors.text.secondary }]}>EXPLORE THE FEED</Text>
                     </View>
                 }
                 ListEmptyComponent={<Text style={[styles.heading, { color: theme.colors.text.secondary }]}>No videos in this category.</Text>}
@@ -171,7 +194,17 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
 }
 
 const styles = StyleSheet.create({
-    heading: { paddingHorizontal: 12, paddingVertical: 20, gap: 6 },
+    heading: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 12, gap: 8 },
+    eyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    eyebrow: { fontSize: 10, fontWeight: '800', letterSpacing: 1.1 },
+    headingSubtitle: { fontSize: 13, lineHeight: 19 },
+    infoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 3 },
+    infoChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 11, paddingVertical: 7, borderWidth: 1, borderRadius: 20 },
+    infoChipText: { fontSize: 11, fontWeight: '700' },
+    editorialNote: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderRadius: 14, padding: 13, marginTop: 5 },
+    noteTitle: { fontSize: 13, fontWeight: '800' },
+    noteSubtitle: { fontSize: 11, lineHeight: 16, marginTop: 3 },
+    sectionLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.2, marginTop: 7 },
     headingTitle: { fontSize: 24, fontWeight: '800' },
     card: { borderWidth: 1, borderRadius: 18, padding: 16, overflow: 'hidden' },
     thumbnail: { height: 130, width: '100%', borderRadius: 10, marginBottom: 12 },

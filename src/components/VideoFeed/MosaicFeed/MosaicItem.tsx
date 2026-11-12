@@ -85,7 +85,7 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
 
                 {/* Dark Overlay for better text contrast */}
                 <LinearGradient
-                    colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.6)']}
+                    colors={['rgba(0,0,0,0.14)', 'rgba(0,0,0,0.12)', 'rgba(0,0,0,0.84)']}
                     style={StyleSheet.absoluteFill}
                 />
 
@@ -94,7 +94,7 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                     <View style={styles.topBadgeContainer}>
                         <View style={styles.categoryBadge}>
                             <Text style={styles.categoryText}>
-                                {`[ ${video.category.toUpperCase()} ]`}
+                                {video.category.toUpperCase()}
                             </Text>
                         </View>
                     </View>
@@ -103,18 +103,19 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                 {/* Bottom Overlay: Title & Stats */}
                 <View style={styles.bottomOverlay}>
                     <Text style={styles.title} numberOfLines={2}>
-                        {video.title ? video.title.toUpperCase() : ''}
+                        {video.title || ''}
                     </Text>
 
                     <View style={styles.footerRow}>
+                        <View style={styles.playPill}><Ionicons name="play" size={11} color="#101820" /></View>
                         <View style={styles.authorSection}>
                             <Text style={styles.authorName} numberOfLines={1}>
-                                {video.author ? `> @${video.author.toUpperCase()}` : ''}
+                                {video.author ? `@${video.author}` : 'Datariot creator'}
                             </Text>
                         </View>
 
                         <View style={styles.statsContainer}>
-                            <Ionicons name="heart-outline" size={10} color="#38BDF8" />
+                            <Ionicons name="heart-outline" size={10} color="#FFFFFF" />
                             <Text style={styles.statsText}>{formatNumber(video.likes)}</Text>
                         </View>
                     </View>
@@ -157,14 +158,14 @@ const styles = StyleSheet.create({
     categoryBadge: {
         backgroundColor: 'rgba(8, 9, 13, 0.65)',
         borderWidth: 1,
-        borderColor: '#38BDF8',
+        borderColor: 'rgba(255,255,255,0.24)',
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 4,
         zIndex: 20,
     },
     categoryText: {
-        color: '#38BDF8',
+        color: '#FFFFFF',
         fontSize: 9,
         fontWeight: '900',
         letterSpacing: 0.5,
@@ -179,9 +180,9 @@ const styles = StyleSheet.create({
     },
     title: {
         color: '#FFF',
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '800',
-        marginBottom: 6,
+        marginBottom: 10,
         textShadowColor: 'rgba(0,0,0,0.6)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 3,
@@ -189,6 +190,7 @@ const styles = StyleSheet.create({
         fontFamily: theme.typography.fontFamilies.bold,
         letterSpacing: 0.2,
     },
+    playPill: { width: 25, height: 25, borderRadius: 13, backgroundColor: '#F0F5FB', alignItems: 'center', justifyContent: 'center', marginRight: 7 },
     footerRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -209,11 +211,10 @@ const styles = StyleSheet.create({
     },
     authorName: {
         color: '#38BDF8',
-        fontSize: 10,
-        fontWeight: '700',
+        fontSize: 11,
+        fontWeight: '600',
         flex: 1,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-        letterSpacing: 0.5,
+        letterSpacing: 0,
     },
     statsContainer: {
         flexDirection: 'row',
