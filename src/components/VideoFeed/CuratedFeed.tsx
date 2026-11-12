@@ -68,7 +68,6 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
     const [openingError, setOpeningError] = useState(false);
     const data = useMemo(() => mergeFeedEntries(videos, reels), [videos, reels]);
     const columns = grid ? (width > 1100 ? 3 : 2) : 1;
-    const topicCount = new Set(videos.map(video => video.category).filter(Boolean)).size;
     const selectedIndex = reels.findIndex(reel => reel.source_url === selectedUrl);
     const selected = reels[selectedIndex];
 
@@ -99,29 +98,17 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                 windowSize={5}
                 ListHeaderComponent={
                     <View style={styles.heading}>
-                        <View style={styles.eyebrowRow}>
-                            <Ionicons name="sparkles-outline" size={14} color={theme.colors.text.secondary} />
-                            <Text style={[styles.eyebrow, { color: theme.colors.text.secondary }]}>CURATED FOR CURIOSITY</Text>
-                        </View>
-                        <Text style={[styles.headingTitle, { color: theme.colors.text.primary }]}>Worth your time.</Text>
-                        <Text style={[styles.headingSubtitle, { color: theme.colors.text.secondary }]}>
-                            Short videos. Bigger ideas.
+                        <Text accessibilityRole="header" style={[styles.headingTitle, { color: theme.colors.text.primary }]}>
+                            Things you’ll bring up later
                         </Text>
-                        <View style={styles.infoRow}>
-                            <View style={[styles.infoChip, { borderColor: theme.colors.surface.border }]}>
-                                <Ionicons name="play-circle-outline" size={14} color={theme.colors.text.primary} />
-                                <Text style={[styles.infoChipText, { color: theme.colors.text.primary }]}>{data.length} videos</Text>
-                            </View>
-                            <View style={[styles.infoChip, { borderColor: theme.colors.surface.border }]}>
-                                <Ionicons name="compass-outline" size={14} color={theme.colors.text.primary} />
-                                <Text style={[styles.infoChipText, { color: theme.colors.text.primary }]}>{topicCount} topics</Text>
-                            </View>
-                        </View>
+                        <Text style={[styles.headingSubtitle, { color: theme.colors.text.secondary }]}>
+                            How things work. Why people disagree.
+                        </Text>
                         <View style={[styles.editorialNote, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.surface.border }]}>
                             <Ionicons name="bulb-outline" size={18} color={theme.colors.text.primary} />
                             <View style={{ flex: 1 }}>
-                                <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>Go beyond the clip</Text>
-                                <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Ask Orvelis AI what happens beyond the video.</Text>
+                                <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>What did the clip leave out?</Text>
+                                <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Ask Orvelis AI for context or a second take.</Text>
                             </View>
                         </View>
                         <Text style={[styles.sectionLabel, { color: theme.colors.text.secondary }]}>LATEST VIDEOS</Text>
@@ -195,12 +182,7 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
 
 const styles = StyleSheet.create({
     heading: { paddingHorizontal: 12, paddingTop: 4, paddingBottom: 10, gap: 7 },
-    eyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    eyebrow: { fontSize: 10, fontWeight: '700', letterSpacing: 0.7 },
     headingSubtitle: { fontSize: 13, lineHeight: 18 },
-    infoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 3 },
-    infoChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 11, paddingVertical: 7, borderWidth: 1, borderRadius: 20 },
-    infoChipText: { fontSize: 11, fontWeight: '700' },
     editorialNote: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderRadius: 13, paddingHorizontal: 12, paddingVertical: 10, marginTop: 3 },
     noteTitle: { fontSize: 13, lineHeight: 17, fontWeight: '700' },
     noteSubtitle: { fontSize: 11, lineHeight: 15, marginTop: 2 },
