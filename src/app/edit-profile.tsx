@@ -11,7 +11,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
-import { useTheme } from '@components/Theme/ThemeProvider';
+import { lightColors } from '@components/Theme/ThemeProvider';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { supabase } from '@lib/supabase/client';
 
@@ -19,6 +19,7 @@ type ImageKind = 'avatar' | 'cover';
 type ProfileImage = { uri: string; asset?: ImagePicker.ImagePickerAsset };
 
 const profileFields = 'username, display_name, bio, avatar_url, banner_url';
+const { background, primary, surface, text } = lightColors;
 
 function errorMessage(error: unknown, fallback: string) {
     return error && typeof error === 'object' && 'message' in error && typeof error.message === 'string'
@@ -47,8 +48,6 @@ export default function EditProfile() {
     const navigation = useNavigation();
     const { user } = useAuth();
     const userId = user?.id;
-    const { theme, mode } = useTheme();
-    const { background, primary, surface, text } = theme.colors;
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
     const [saveError, setSaveError] = useState('');
@@ -161,8 +160,8 @@ export default function EditProfile() {
     const initial = (displayName.trim()[0] || username.trim()[0] || user?.email?.[0] || 'U').toUpperCase();
 
     return (
-        <SafeAreaView>
-            <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+        <SafeAreaView style={styles.screen}>
+            <StatusBar style="dark" />
             <View style={[styles.toolbar, { borderColor: surface.border }]}>
                 <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={goBack} disabled={saving || picking}
                     style={[styles.back, { backgroundColor: surface.elevated }]}>
@@ -171,9 +170,9 @@ export default function EditProfile() {
                 <Text numberOfLines={1} style={[styles.title, { color: text.primary }]}>Edit profile</Text>
                 <Pressable accessibilityRole="button" accessibilityLabel="Save profile"
                     accessibilityState={{ disabled, busy: saving }} disabled={disabled} onPress={saveProfile}
-                    style={[styles.save, { backgroundColor: primary.DEFAULT, opacity: disabled && !saving ? 0.45 : 1 }]}>
-                    {saving ? <ActivityIndicator color={primary.onPrimary} />
-                        : <Text style={[styles.buttonText, { color: primary.onPrimary }]}>Save</Text>}
+                    style={[styles.save, disabled && !saving && styles.disabled]}>
+                    {saving ? <ActivityIndicator color={text.primary} />
+                        : <Text style={[styles.buttonText, { color: text.primary }]}>Save</Text>}
                 </Pressable>
             </View>
 
@@ -250,10 +249,12 @@ export default function EditProfile() {
 }
 
 const styles = StyleSheet.create({
+    screen: { backgroundColor: background.primary },
     toolbar: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth },
     back: { width: 44, height: 44, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
     title: { flex: 1, minWidth: 0, fontFamily: 'Outfit_700Bold', fontSize: 22, letterSpacing: -0.5 },
-    save: { minWidth: 70, minHeight: 44, paddingHorizontal: 14, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+    save: { minWidth: 70, minHeight: 44, paddingHorizontal: 14, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: primary.ultra },
+    disabled: { opacity: 0.45 },
     buttonText: { fontFamily: 'Outfit_600SemiBold', fontSize: 14, flexShrink: 1 },
     body: { flex: 1 },
     content: { width: '100%', maxWidth: 580, alignSelf: 'center', padding: 16, paddingBottom: 32 },
