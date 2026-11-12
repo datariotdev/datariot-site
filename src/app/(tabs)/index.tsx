@@ -524,7 +524,7 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
             {isActive && (
                 <View style={[StyleSheet.absoluteFill, { padding: 2 }]}>
                     <LinearGradient
-                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#6B7FCC', '#99B4FF']}
+                        colors={isDark ? ['#D9E4FF', '#A5C6FF'] : ['#E8F1FF', '#BCD5FF']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={styles.tabIndicatorBackground}
@@ -538,7 +538,7 @@ const TabButton = ({ theme, label, isActive, onPress, isDark }: any) => {
                     styles.tabText,
                     { color: theme.colors.text.secondary, fontFamily: theme.typography.fontFamilies.medium },
                     isActive && {
-                        color: isDark ? '#000000' : '#FFFFFF',
+                        color: '#10151F',
                         fontFamily: theme.typography.fontFamilies.bold,
                         fontWeight: '800',
                     },

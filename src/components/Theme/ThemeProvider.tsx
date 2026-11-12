@@ -13,11 +13,11 @@ interface ThemeContextType {
     theme: Theme;
 }
 
-const THEME_STORAGE_KEY = '@orvelis_theme_mode';
+const THEME_STORAGE_KEY = '@orvelis_theme_mode_v2'; // New default: light; older dark setting must not leak into refreshed UI
 
 // Default values for context creation
 const defaultContext: ThemeContextType = {
-    mode: 'dark', // App is dark by default (Obsidian Premium)
+    mode: 'light', // Light is the default app experience
     toggleTheme: () => { },
     setThemeMode: () => { },
     theme: baseTheme,
@@ -80,7 +80,7 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-    const [mode, setModeState] = useState<ThemeMode>('dark');
+    const [mode, setModeState] = useState<ThemeMode>('light');
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
