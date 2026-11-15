@@ -1786,6 +1786,55 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 @media(max-width:760px){#manifesto .dt-feed-launch img{width:72px}#manifesto .mini-feed__grid.dt-feed-burst .mini-feed__item{overflow:hidden!important}}
 @media(prefers-reduced-motion:reduce){#manifesto .dt-feed-launch{display:none!important}}
 @media(prefers-reduced-motion:reduce){#manifesto .mini-feed__item,#manifesto .mini-feed__item.is-revealing{animation:none!important;transition:none!important;transform:none!important;filter:none!important;opacity:1!important}}
+/* Mobile profile shown inside the Feed showcase. */
+.feed-profile { margin-top: 16px; }
+.feed-profile summary {
+    list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 16px 22px; border: 1px solid rgba(113,137,173,.30); border-radius: 18px;
+    background: rgba(161,185,220,.10); cursor: pointer; font-family: 'Manrope', sans-serif;
+}
+.feed-profile summary::-webkit-details-marker { display: none; }
+.feed-profile summary:focus-visible { outline: 2px solid #83add9; outline-offset: 4px; }
+.feed-profile summary strong { display: block; font-size: 16px; }
+.feed-profile summary small { display: block; margin-top: 2px; font-size: 12px; opacity: .72; }
+.feed-profile__toggle { flex: 0 0 11px; height: 11px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-3px) rotate(45deg); margin: 0 4px; }
+.feed-profile[open] .feed-profile__toggle { transform: translateY(3px) rotate(225deg); }
+.feed-profile__screen {
+    width: min(100%, 388px); margin: 20px auto 0; overflow: hidden; border: 1px solid #dce4f0;
+    border-radius: 24px; background: #f7f8fc; color: #10151d; font: 500 14px/1.4 'Manrope', sans-serif;
+    box-shadow: 0 20px 58px #172d5226;
+}
+.feed-profile__header { padding: 16px 18px 0; }
+.feed-profile__top, .feed-profile__identity, .feed-profile__stats, .feed-profile__actions, .feed-profile__activity { display: flex; align-items: center; }
+.feed-profile__top { justify-content: space-between; font-size: 18px; margin-bottom: 15px; }
+.feed-profile__screen svg { width: 19px; height: 19px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.feed-profile__cover {
+    height: 77px; display: grid; place-items: center; overflow: hidden; border-radius: 13px;
+    background: radial-gradient(ellipse 83% 110% at 50% 151%, #183b55 57%, #6a99b7 70%, transparent 72%), linear-gradient(110deg, #b0937b, #e0c7ac 49%, #ab8b71);
+    color: #fffaf1; font: 400 35px/1 'Instrument Serif', Georgia, serif; text-shadow: 0 2px 5px #32231775;
+}
+.feed-profile__cover strong { font-weight: inherit; }
+.feed-profile__identity { gap: 12px; margin-top: 14px; }
+.feed-profile__identity img { flex: 0 0 auto; width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.feed-profile__identity strong, .feed-profile__identity span { display: block; }
+.feed-profile__identity strong { font-size: clamp(17px, 4.8vw, 22px); letter-spacing: -.035em; }
+.feed-profile__identity span, .feed-profile__bio, .feed-profile__stats, .feed-profile__tabs { color: #51596a; }
+.feed-profile__bio { margin: 12px 0; }
+.feed-profile__stats { list-style: none; padding: 0; margin: 0 0 13px; flex-wrap: wrap; gap: 5px 12px; font-size: 12px; }
+.feed-profile__stats b { color: #10151d; }
+.feed-profile__actions { gap: 8px; }
+.feed-profile__actions span { display: flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1px solid #dce2ec; border-radius: 10px; color: #10151d; }
+.feed-profile__actions span:first-child { background: #dce6fb; border-color: #dce6fb; font-weight: 800; }
+.feed-profile__activity { gap: 8px; margin-top: 11px; padding: 9px 11px; border: 1px solid #e2e6ef; border-radius: 10px; font-weight: 700; }
+.feed-profile__activity span { flex: 1; }
+.feed-profile__tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); text-align: center; font-size: 13px; font-weight: 700; margin-top: 10px; }
+.feed-profile__tabs span { border-bottom: 2px solid transparent; padding: 10px 2px; }
+.feed-profile__tabs .is-current { border-color: #7292ed; color: #10151d; }
+.feed-profile__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; list-style: none; margin: 0; padding: 0; }
+.feed-profile__grid li { position: relative; aspect-ratio: 1; background: #192535; overflow: hidden; }
+.feed-profile__grid li::after { content: ''; position: absolute; inset: 50% 0 0; background: linear-gradient(transparent, #000c); }
+.feed-profile__grid img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.feed-profile__grid span { position: absolute; z-index: 1; inset: auto 6px 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: white; font-size: 10px; font-weight: 800; }
 </style>
 <div class="mini-feed__shell">
 <div class="mini-feed__top"><div><div class="mini-feed__eyebrow">[ 01 — THE FEED ]</div><h2 class="mini-feed__title" id="miniFeedTitle">Less noise.<br><em>More signal.</em></h2></div><p class="mini-feed__intro">Short videos worth your attention. Choose a topic to uncover the idea behind it.</p></div>
@@ -1797,6 +1846,46 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 <button class="mini-feed__item" data-mini="3" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/hero-clip.jpg" alt="Discussion video preview" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">IDEAS · 00:14</span><span class="mini-feed__name">Logic versus emotion</span></div></button>
 </div>
 <div class="mini-feed__detail" aria-live="polite"><div class="mini-feed__detailcopy"><div class="mini-feed__detailtag">THE IDEA BEHIND THE CLIP</div><p class="mini-feed__detailtext" id="miniFeedDetail">Lidar measures how long laser light takes to return and uses that information to build a 3D map.</p></div><a class="mini-feed__link" href="#ai-core">Explore deeper ↗</a></div>
+<details class="feed-profile">
+    <summary>
+        <span><strong>Profile</strong><small>Preview the creator profile in Datariot</small></span>
+        <span class="feed-profile__toggle" aria-hidden="true"></span>
+    </summary>
+    <figure class="feed-profile__screen" aria-label="Datariot profile preview">
+        <div class="feed-profile__header">
+            <div class="feed-profile__top">
+                <strong>Profile</strong>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11m4 0h3M3 12h3m4 0h11M3 18h11m4 0h3"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg>
+            </div>
+            <div class="feed-profile__cover" aria-hidden="true"><strong>datariot</strong></div>
+            <div class="feed-profile__identity">
+                <img src="assets/datariot-mark.jpg" width="64" height="64" alt="" loading="lazy" decoding="async">
+                <div><strong>Datariot Editorial</strong><span>@datariot</span></div>
+            </div>
+            <p class="feed-profile__bio">Short videos with a point.</p>
+            <ul class="feed-profile__stats">
+                <li><b>0</b> Following</li><li><b>0</b> Followers</li><li><b>3</b> Videos</li>
+            </ul>
+            <div class="feed-profile__actions">
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6m-9 0 9-9"/></svg>Edit profile</span>
+                <span aria-label="Share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10H5v10h14V10h-3m-4 4V3m-4 4 4-4 4 4"/></svg></span>
+            </div>
+            <div class="feed-profile__activity">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V12h3v8zm6 0V4h3v16zm6 0V8h3v12z"/></svg>
+                <span>Activity</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </div>
+        </div>
+        <div class="feed-profile__tabs" aria-label="Profile sections">
+            <span class="is-current">Videos</span><span>Theses</span><span>Saved</span>
+        </div>
+        <ul class="feed-profile__grid" aria-label="Videos on the example profile">
+            <li><img src="assets/reel-lidar.jpg" alt="" loading="lazy" decoding="async"><span>How cars see the world</span></li>
+            <li><img src="assets/reel-bear.jpg" alt="" loading="lazy" decoding="async"><span>Why polar bears look white</span></li>
+            <li><img src="assets/reel-tower.jpg" alt="" loading="lazy" decoding="async"><span>Why skyscrapers sway</span></li>
+        </ul>
+    </figure>
+</details>
 </div>
 <script>
 (function(){
