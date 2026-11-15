@@ -1826,7 +1826,7 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 @media(prefers-reduced-motion:reduce){#manifesto .mini-feed__item,#manifesto .mini-feed__item.is-revealing{animation:none!important;transition:none!important;transform:none!important;filter:none!important;opacity:1!important}}
 /* Mobile profile shown inside The Feed and in the hero phone stack. */
 .feed-profile__screen {
-    width: min(100%, 400px); margin: 26px auto 0; scroll-margin-top: 88px; overflow: hidden; border: 1px solid #dce4f0;
+    width: min(100%, 400px); margin: 0; overflow: hidden; border: 1px solid #dce4f0;
     border-radius: 24px; background: #f7f8fc; color: #10151d; font: 500 14px/1.4 'Manrope', sans-serif;
     box-shadow: 0 20px 58px #172d5226;
 }
@@ -1895,45 +1895,6 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 <button class="mini-feed__item" data-mini="3" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/hero-clip.jpg" alt="Discussion video preview" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">IDEAS · 00:14</span><span class="mini-feed__name">Logic versus emotion</span></div></button>
 </div>
 <div class="mini-feed__detail" aria-live="polite"><div class="mini-feed__detailcopy"><div class="mini-feed__detailtag">THE IDEA BEHIND THE CLIP</div><p class="mini-feed__detailtext" id="miniFeedDetail">Lidar measures how long laser light takes to return and uses that information to build a 3D map.</p></div><a class="mini-feed__link" href="#ai-core">Explore deeper ↗</a></div>
-<figure id="feed-profile" class="feed-profile__screen" aria-label="Datariot profile preview">
-        <div class="feed-profile__header">
-            <div class="feed-profile__top">
-                <strong>Profile</strong>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11m4 0h3M3 12h3m4 0h11M3 18h11m4 0h3"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg>
-            </div>
-            <div class="feed-profile__cover" aria-hidden="true">
-                <img src="assets/datariot-mark.jpg" width="30" height="30" alt="" loading="lazy" decoding="async">
-                <strong>datariot</strong>
-            </div>
-            <div class="feed-profile__identity">
-                <img src="assets/datariot-mark.jpg" width="64" height="64" alt="" loading="lazy" decoding="async">
-                <div><strong>Datariot Editorial</strong><span>@datariot</span></div>
-            </div>
-            <p class="feed-profile__bio">Short videos with a point.</p>
-            <ul class="feed-profile__stats">
-                <li><b>0</b> Following</li><li><b>0</b> Followers</li><li><b>3</b> Videos</li>
-            </ul>
-            <div class="feed-profile__actions">
-                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6m-9 0 9-9"/></svg>Edit profile</span>
-                <span aria-label="Share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10H5v10h14V10h-3m-4 4V3m-4 4 4-4 4 4"/></svg></span>
-            </div>
-            <div class="feed-profile__activity">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V12h3v8zm6 0V4h3v16zm6 0V8h3v12z"/></svg>
-                <span>Activity</span>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-            </div>
-        </div>
-        <div class="feed-profile__tabs" aria-label="Profile sections">
-            <span class="is-current"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Videos</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4a7 7 0 0 0-6 10.6l-.8 3.1 3.1-.8A7 7 0 1 0 14 4Z"/><path d="M6.5 8.8A6 6 0 0 0 4 18l-.7 2.7L6 20a6 6 0 0 0 6-.1"/></svg>Theses</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"/></svg>Saved</span>
-        </div>
-        <ul class="feed-profile__grid" aria-label="Videos on the example profile">
-            <li><img src="assets/reel-lidar.jpg" alt="" loading="lazy" decoding="async"><span>How cars see the world</span></li>
-            <li><img src="assets/reel-bear.jpg" alt="" loading="lazy" decoding="async"><span>Why polar bears look white</span></li>
-            <li><img src="assets/reel-tower.jpg" alt="" loading="lazy" decoding="async"><span>Why skyscrapers sway</span></li>
-        </ul>
-    </figure>
 </div>
 <script>
 (function(){
