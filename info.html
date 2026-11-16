@@ -2019,38 +2019,7 @@ html[data-theme="dark"] #manifesto .feed-stage__intro h2 span { color: #b5d7ff; 
 })();
 </script>
 
-<style>
-/* ORVELIS AI: dimensional scanning console, using the existing product palette. */
-#ai-core .ai-showcase__visual{perspective:1100px;perspective-origin:50% 42%}
-#ai-core .aic-card{position:relative;isolation:isolate;transform-style:preserve-3d;transform:rotateX(3deg) rotateY(-3deg);transition:transform .7s cubic-bezier(.2,.8,.2,1),box-shadow .7s;box-shadow:0 22px 65px rgba(5,13,29,.28),0 0 0 1px rgba(157,199,244,.08);overflow:hidden}
-#ai-core .aic-depth-halo{position:absolute;z-index:0;inset:-25%;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(137,187,240,.12),transparent 55%);transform:translateZ(-8px)}
-#ai-core .aic-scanline{position:absolute;z-index:5;left:0;right:0;top:-12%;height:18%;pointer-events:none;opacity:.5;background:linear-gradient(180deg,transparent,rgba(162,205,251,.035) 55%,rgba(173,216,255,.19) 97%,transparent);filter:blur(.5px)}
-#ai-core .aic-head,#ai-core .aic-now,#ai-core .aic-block,#ai-core .aic-foot{position:relative;z-index:2;transform:translateZ(12px)}
-#ai-core .aic-now{transform:translateZ(25px);box-shadow:0 12px 27px rgba(0,0,0,.12)}
-#ai-core .aic-score-num{text-shadow:0 0 24px rgba(173,211,255,.16)}
-#ai-core .aic-meter i{transform-origin:center bottom}
-#ai-core .aic-online i{box-shadow:0 0 10px currentColor}
-@media(hover:hover) and (pointer:fine){#ai-core .aic-card:hover{transform:rotateX(0deg) rotateY(0deg) translateY(-7px);box-shadow:0 30px 85px rgba(8,22,43,.34),0 0 30px rgba(137,187,240,.08)}}
-@media(prefers-reduced-motion:no-preference){
- #ai-core .aic-card{animation:aic-console-float 7s ease-in-out infinite}
- #ai-core .aic-scanline{animation:aic-scan 5.2s linear infinite}
- #ai-core .aic-meter i{animation:aic-meter-rise 1s cubic-bezier(.15,.8,.2,1) both;animation-delay:calc(var(--meter-i,0) * 35ms)}
- #ai-core .aic-now-wave i{animation:aic-wave 1.1s ease-in-out infinite alternate;animation-delay:calc(var(--wave-i,0) * 100ms)}
- @keyframes aic-console-float{0%,100%{translate:0 0}50%{translate:0 -8px}}
- @keyframes aic-scan{0%{transform:translateY(-120%);opacity:0}12%{opacity:.6}80%{opacity:.6}100%{transform:translateY(720%);opacity:0}}
- @keyframes aic-meter-rise{from{opacity:.15;transform:scaleY(.18)}to{opacity:1;transform:scaleY(1)}}
- @keyframes aic-wave{from{transform:scaleY(.48)}to{transform:scaleY(1.25)}}
-}
-@media(max-width:760px){#ai-core .ai-showcase__visual{perspective:850px}#ai-core .aic-card{transform:rotateX(2deg) rotateY(-1deg);box-shadow:0 15px 42px rgba(5,13,29,.25)}#ai-core .aic-head,#ai-core .aic-now,#ai-core .aic-block,#ai-core .aic-foot{transform:none}#ai-core .aic-now{transform:translateZ(8px)}}
-@media(prefers-reduced-motion:reduce){#ai-core .aic-card,#ai-core .aic-scanline,#ai-core .aic-meter i,#ai-core .aic-now-wave i{animation:none!important;transition:none!important}}
-</style>
-<script>
-(function(){
- const root=document.getElementById('ai-core');if(!root)return;
- root.querySelectorAll('.aic-meter i').forEach((bar,i)=>bar.style.setProperty('--meter-i',i));
- root.querySelectorAll('.aic-now-wave i').forEach((bar,i)=>bar.style.setProperty('--wave-i',i));
-})();
-</script>
+
         <!-- The Arena: two perspectives, one question worth thinking about. -->
         <section class="section dt-dev" id="debates" data-inview aria-labelledby="dtDevTitle">
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
@@ -2121,141 +2090,85 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 </section>
 
         <!-- ORVELIS AI CORE SECTION -->
-        <section class="section section--ai" id="ai-core" data-inview>
-<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
-            <!-- the dithered wave behind the slide: pixel-field.js draws it,
-                 the CSS navy fill stands in when there is no WebGL -->
-            <div class="px-field" aria-hidden="true">
-                <canvas class="px-field__canvas"></canvas>
+        <section class="section orvelis-reading" id="ai-core" aria-labelledby="orvelisReadingTitle" data-inview>
+    <style>
+        #ai-core.orvelis-reading {
+            --reading-accent: #24456a;
+            --reading-muted: #50627b;
+            --reading-rule: #cbd6e4;
+            padding: clamp(54px, 9vw, 116px) clamp(17px, 5vw, 48px) !important;
+            scroll-margin-top: 78px;
+        }
+        html[data-theme="dark"] #ai-core.orvelis-reading {
+            --reading-accent: #c1d9f5;
+            --reading-muted: #adbcd0;
+            --reading-rule: #354152;
+        }
+        #ai-core .orvelis-reading__wrap {
+            position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, .83fr) minmax(0, 1.17fr);
+            max-width: 1080px; margin-inline: auto; gap: clamp(25px, 6vw, 84px); align-items: center;
+        }
+        #ai-core .orvelis-reading__intro { border-top: 1px solid var(--reading-rule); padding-top: 19px; }
+        #ai-core .orvelis-reading__name { color: var(--reading-accent); font: 750 14px/1.35 'Manrope', sans-serif; }
+        #ai-core .orvelis-reading__intro h2 {
+            margin: 12px 0 13px; font: 700 clamp(46px, 7.2vw, 81px)/.96 'Syne', sans-serif; letter-spacing: -.066em;
+        }
+        #ai-core .orvelis-reading__intro p {
+            max-width: 32ch; margin: 0 0 19px; color: var(--reading-muted); font: 550 16px/1.65 'Manrope', sans-serif;
+        }
+        #ai-core .orvelis-reading__link {
+            display: inline-flex; align-items: center; gap: 7px; min-height: 40px;
+            color: var(--reading-accent); text-decoration: underline; text-underline-offset: 4px;
+            font: 750 14px/1.4 'Manrope', sans-serif;
+        }
+        #ai-core .orvelis-reading__link svg { width: 15px; height: 15px; }
+        #ai-core .orvelis-reading__link:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+        #ai-core .orvelis-reading__note {
+            min-width: 0; padding: clamp(19px, 4vw, 46px); border-radius: 18px; border: 1px solid #cdd9e7;
+            color: #152438; background: #eef4fb; box-shadow: 0 20px 62px #0b172b39;
+            font: 550 15px/1.62 'Manrope', sans-serif;
+        }
+        #ai-core .orvelis-reading__label { margin: 0 0 8px; color: #465b74; font: 750 12px/1.4 'Manrope', sans-serif; }
+        #ai-core .orvelis-reading__question {
+            margin: 0; padding: 0; border: 0; color: inherit;
+            font: 500 clamp(33px, 4.2vw, 56px)/.99 'Instrument Serif', Georgia, serif;
+            letter-spacing: -.023em;
+        }
+        #ai-core .orvelis-reading__answer { border-top: 1px solid #bbcddd; margin-top: 20px; padding-top: 17px; }
+        #ai-core .orvelis-reading__answer p:last-child, #ai-core .orvelis-reading__check p { margin: 0; }
+        #ai-core .orvelis-reading__check { margin-top: 17px; padding: 11px 0 0 13px; border-left: 2px solid #7294b9; }
+        #ai-core .orvelis-reading__check h3 { margin: 0 0 3px; font: 800 13px/1.45 'Manrope', sans-serif; }
+        @media (max-width: 720px) {
+            #ai-core .orvelis-reading__wrap { grid-template-columns: minmax(0, 1fr); gap: 19px; }
+            #ai-core .orvelis-reading__intro { padding-top: 13px; }
+            #ai-core .orvelis-reading__intro h2 { font-size: clamp(44px, 11vw, 64px); margin-block: 8px 10px; }
+            #ai-core .orvelis-reading__intro p { margin-bottom: 6px; font-size: 14px; }
+            #ai-core .orvelis-reading__note { border-radius: 14px; font-size: 14px; }
+        }
+    </style>
+    <div class="orvelis-reading__wrap">
+        <header class="orvelis-reading__intro">
+            <span class="orvelis-reading__name">Orvelis AI</span>
+            <h2 id="orvelisReadingTitle">A second look.</h2>
+            <p>Get the point of a clip, see what supports it, and ask a follow-up.</p>
+            <a class="orvelis-reading__link" href="https://docs.datariot.xyz/#orvelis">How Orvelis works
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m4 12 8-8M6 4h6v6"/></svg>
+            </a>
+        </header>
+        <article class="orvelis-reading__note" aria-label="An example of a clip analysis">
+            <p class="orvelis-reading__label">Example question</p>
+            <blockquote class="orvelis-reading__question">What do ice cream sales have to do with shark encounters?</blockquote>
+            <div class="orvelis-reading__answer">
+                <p class="orvelis-reading__label">Orvelis</p>
+                <p>The numbers could rise for the same reason. In summer, more people buy ice cream and more people swim in the ocean. You’d need more evidence to show one causes the other.</p>
             </div>
-
-            <div class="section__container">
-                <div class="ai-core-layout">
-                    <div class="ai-showcase__visual">
-                        <div class="aic-card">
-                            <div class="aic-depth-halo" aria-hidden="true"></div><div class="aic-scanline" aria-hidden="true"></div>
-                            <div class="aic-strip">
-                                <span class="aic-strip-ticks" aria-hidden="true"></span>
-                                <span class="aic-strip-id">ORV / 3.0.1 / ARENA-LINK</span>
-                            </div>
-
-                            <div class="aic-head">
-                                <span class="aic-avatar" aria-hidden="true">
-                                    <svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v2h-2zM2 2h8v1h-8zM1 3h2v1h-2zM9 3h2v1h-2zM1 4h1v1h-1zM10 4h1v1h-1zM0 5h2v2h-2zM3 5h2v2h-2zM7 5h2v2h-2zM10 5h2v2h-2zM1 7h1v2h-1zM10 7h1v2h-1zM4 8h4v1h-4zM1 9h2v1h-2zM9 9h2v1h-2zM2 10h8v1h-8z"/></svg>
-                                </span>
-                                <span class="aic-head-text">
-                                    <b>ORVELIS</b>
-                                    <i>AI CORE <em>//</em> CONSENSUS ENGINE</i>
-                                </span>
-                                <span class="aic-online"><i aria-hidden="true"></i>ONLINE</span>
-                            </div>
-
-                            <div class="aic-now">
-                                <span class="aic-now-thumb" aria-hidden="true">
-                                    <svg viewBox="0 0 5 7" shape-rendering="crispEdges"><path fill="currentColor" d="M0 0h1v7h-1zM1 1h1v5h-1zM2 2h1v3h-1zM3 3h1v1h-1z"/></svg>
-                                </span>
-                                <span class="aic-now-body">
-                                    <b>NOW SCANNING</b>
-                                    <i>@tomas.thinks &mdash; ice cream &amp; sharks</i>
-                                </span>
-                                <span class="aic-now-wave" aria-hidden="true">
-                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                </span>
-                            </div>
-
-                            <div class="aic-block">
-                                <div class="aic-block-head">
-                                    <span class="aic-tag">LOGIC SCORE</span>
-                                    <span class="aic-block-id">01</span>
-                                </div>
-                                <div class="aic-score">
-                                    <span class="aic-score-num">92</span>
-                                    <span class="aic-score-unit">LQI</span>
-                                    <span class="aic-score-delta">
-                                        <svg viewBox="0 0 5 3" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 0h1v1h-1zM1 1h3v1h-3zM0 2h5v1h-5z"/></svg>
-                                        15%
-                                    </span>
-                                </div>
-                                <div class="aic-meter" aria-hidden="true">
-                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                                </div>
-                                <span class="aic-state">CLEAR AND FAIR</span>
-                                <p class="aic-copy">Clear claim, a good example, and the real cause named. One source would make it airtight.</p>
-                            </div>
-
-                            <div class="aic-block">
-                                <div class="aic-block-head">
-                                    <span class="aic-tag">THE POINT, CHECKED</span>
-                                    <span class="aic-block-id">02</span>
-                                </div>
-                                <div class="aic-row aic-row--ok">
-                                    <span class="aic-row-tag">THE POINT</span>
-                                    <p class="aic-copy">Rising together doesn’t mean one causes the other: summer drives both.</p>
-                                </div>
-                                <div class="aic-row aic-row--warn">
-                                    <span class="aic-row-tag">WATCH FOR</span>
-                                    <p class="aic-copy">The chart at 0:12 has no source yet, and shark numbers vary a lot by coast.</p>
-                                </div>
-                            </div>
-
-                            <div class="aic-foot">
-                                <span class="aic-foot-item"><b>0.4</b><i>S LATENCY</i></span>
-                                <span class="aic-foot-item"><b>12</b><i>SIGNALS</i></span>
-                                <span class="aic-foot-item"><b>96</b><i>% CONFIDENCE</i></span>
-                            </div>
-                        </div>
-
-                        <p class="aic-formula">
-                            <span>1 clip</span>
-                            <svg viewBox="0 0 9 6" shape-rendering="crispEdges" role="img" aria-label="becomes"><path fill="currentColor" d="M6 0h1v6h-1zM7 1h1v4h-1zM0 2h6v2h-6zM8 2h1v2h-1z"/></svg>
-                            <span>1 point, checked</span>
-                        </p>
-                    </div>
-
-                    <div class="ai-showcase__content">
-                        <div class="aic-intro">
-                            <span class="section__label">[ 04 — ORVELIS AI ]</span>
-                            <h2 class="section__title">IT FINDS THE POINT.<br><span class="aic-title-accent">AND THE HOLES IN IT.</span></h2>
-                            <p class="aic-lede">
-                                Meet <strong>Orvelis</strong>, the AI inside every clip. It pulls out what is actually being claimed, checks the logic, flags the tricks to the second and builds a Deep Dive, so you can go further than sixty seconds.
-                            </p>
-                        </div>
-
-                        <div class="aic-stack">
-                            <div class="aic-mod">
-                                <span class="aic-mod-index">01</span>
-                                <span class="aic-mod-tag">[ LOGIC // FALLACIES ]</span>
-                                <h4>Logic &amp; fallacy detection</h4>
-                                <p>Flags logical fallacies, emotional manipulation and rhetorical traps automatically, timestamped to the second they happen on camera.</p>
-                                <span class="aic-mod-meta">
-                                    <em>14 FALLACY CLASSES</em><em>REAL-TIME</em>
-                                </span>
-                            </div>
-                            <div class="aic-mod">
-                                <span class="aic-mod-index">02</span>
-                                <span class="aic-mod-tag">[ DEEP DIVE // EVERY CLIP ]</span>
-                                <h4>A Deep Dive on every clip</h4>
-                                <p>A summary, three key terms and three places to learn more, plus a chat that answers your questions about the video.</p>
-                                <p><a href="https://docs.datariot.xyz/#orvelis">How Orvelis works &amp; what is planned ↗</a></p>
-                                <span class="aic-mod-meta">
-                                    <em>SUMMARY</em><em>ASK AI</em>
-                                </span>
-                            </div>
-                            <div class="aic-mod">
-                                <span class="aic-mod-index">03</span>
-                                <span class="aic-mod-tag">[ PEOPLE // IDENTITY ]</span>
-                                <h4>One face, one voice</h4>
-                                <p>Every clip is tied to a verified human on camera. No anonymous pile-ons, no sock puppets, no bot swarms in the vote.</p>
-                                <span class="aic-mod-meta">
-                                    <em>100% VERIFIED</em><em>NO ANON VOTES</em>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="orvelis-reading__check">
+                <h3>What to check</h3>
+                <p>Does the chart show where the data came from and which months it covers?</p>
             </div>
-        </section>
+        </article>
+    </div>
+</section>
 
 
         <!-- GLOBAL NETWORK SECTION -->
