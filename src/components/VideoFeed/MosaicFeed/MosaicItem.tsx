@@ -115,7 +115,7 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                         </View>
 
                         <View style={styles.statsContainer}>
-                            <Ionicons name="heart-outline" size={10} color="#FFFFFF" />
+                            <Text accessible={false} style={[styles.likeIcon, { color: video.isLiked ? '#D9E4FF' : 'white' }]}>✦</Text>
                             <Text style={styles.statsText}>{formatNumber(video.likes)}</Text>
                         </View>
                     </View>
@@ -222,6 +222,11 @@ const styles = StyleSheet.create({
     statsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    likeIcon: {
+        fontSize: 13,
+        lineHeight: 14,
+        includeFontPadding: false,
     },
     statsText: {
         color: '#FFF',
