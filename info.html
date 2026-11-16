@@ -1800,7 +1800,8 @@ html[data-theme="dark"] #manifesto {
 #manifesto .mini-feed__meta { min-width: 0; flex: 1; }
 #manifesto .mini-feed__category { display: block; color: var(--feed-sub); font: 600 9px/1.35 'JetBrains Mono', monospace; letter-spacing: .06em; }
 #manifesto .mini-feed__name { display: block; margin-top: 4px; font: 800 14px/1.22 'Manrope', sans-serif; }
-#manifesto .mini-feed__item::after { content: '↗'; padding-right: 7px; color: var(--feed-active); font-size: 15px; }
+#manifesto .mini-feed__item::after { content: ''; flex: 0 0 7px; height: 7px; margin-right: 8px; border: solid var(--feed-active); border-width: 1.5px 1.5px 0 0; transform: rotate(45deg); }
+#manifesto .mini-feed__link svg { display: inline-block; width: 12px; height: 12px; margin-left: 3px; vertical-align: -.12em; }
 #manifesto .dt-feed-launch { position: absolute; z-index: 2; inset: 0; display: grid; place-items: center; pointer-events: none; opacity: 0; visibility: hidden; }
 #manifesto .dt-feed-launch img { width: 58px; height: 58px; border-radius: 14px; box-shadow: 0 0 32px #8db9ee73; }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
@@ -1918,7 +1919,7 @@ html[data-theme="dark"] #manifesto {
             <div class="mini-feed__detail">
                 <div class="mini-feed__detailtag">The takeaway</div>
                 <p class="mini-feed__detailtext" id="miniFeedDetail">Lidar measures how long laser light takes to return and uses that information to build a 3D map.</p>
-                <a class="mini-feed__link" href="#ai-core">Explore with Orvelis <span aria-hidden="true">↗</span></a>
+                <a class="mini-feed__link" href="#ai-core">Explore with Orvelis <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2.5 9.5 9.5 2.5m-5 0h5v5"/></svg></a>
             </div>
         </article>
         <div class="mini-feed__grid" role="group" aria-label="Explore video topics">
