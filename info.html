@@ -1738,92 +1738,105 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 <div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
-.mini-feed{padding:clamp(64px,8vw,108px) 20px!important;background:transparent!important;color:var(--text-primary,#10131b)}
-.mini-feed *{box-sizing:border-box}
-.mini-feed__shell{max-width:1100px;margin:auto}
-.mini-feed__top{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:29px}
-.mini-feed__eyebrow{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.15em;color:#17243a;margin-bottom:18px}
-.mini-feed__title{font:700 clamp(37px,5vw,66px)/1.05 'Syne',sans-serif;letter-spacing:-.065em;margin:0}
-.mini-feed__title em{font-style:normal;color:#17243a}
-.mini-feed__intro{font:400 15px/1.7 'Manrope',sans-serif;max-width:320px;opacity:.66;margin:0 0 4px}
-.mini-feed__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
-.mini-feed__item{border:1px solid rgba(85,113,166,.18);background:rgba(255,255,255,.65);border-radius:18px;overflow:hidden;min-width:0;cursor:pointer;color:inherit;text-align:left;padding:0;transition:transform .2s,border-color .2s,box-shadow .2s}
-.mini-feed__item[aria-pressed="true"]{border-color:#283a56;box-shadow:0 0 0 2px rgba(57,111,224,.12)}
-.mini-feed__item:hover{transform:translateY(-3px)}
-.mini-feed__image{display:block;width:100%;height:clamp(145px,19vw,225px);object-fit:cover;background:#131b2b}
-.mini-feed__meta{padding:16px 15px 17px}
-.mini-feed__category{font:700 9px 'JetBrains Mono',monospace;color:#17243a;letter-spacing:.1em}
-.mini-feed__name{display:block;font:700 clamp(14px,1.6vw,19px)/1.3 'Manrope',sans-serif;letter-spacing:-.03em;margin-top:9px;min-height:2.6em}
-.mini-feed__detail{display:flex;align-items:center;gap:20px;justify-content:space-between;margin-top:16px;padding:21px 23px;border:1px solid rgba(85,113,166,.18);background:rgba(255,255,255,.56);border-radius:18px}
-.mini-feed__detailcopy{min-width:0}
-.mini-feed__detailtag{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#17243a}
-.mini-feed__detailtext{font:500 14px/1.6 'Manrope',sans-serif;margin:8px 0 0;max-width:750px}
-.mini-feed__link{flex-shrink:0;font:700 12px 'Manrope',sans-serif;text-decoration:none!important;color:#17243a!important}
-[data-theme="dark"] .mini-feed__item,[data-theme="dark"] .mini-feed__detail{background:rgba(15,20,31,.83);border-color:rgba(163,184,229,.16)}
-[data-theme="dark"] .mini-feed__item[aria-pressed="true"]{border-color:#9eafc9}
-@media(max-width:760px){.mini-feed{padding:62px 16px!important}.mini-feed__top{display:block;margin-bottom:23px}.mini-feed__intro{margin-top:14px;max-width:480px}.mini-feed__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mini-feed__image{height:clamp(120px,37vw,195px)}.mini-feed__meta{padding:12px}.mini-feed__name{font-size:14px;min-height:2.6em}.mini-feed__detail{align-items:flex-start;flex-direction:column;gap:12px;padding:18px}.mini-feed__title{font-size:clamp(36px,9vw,52px)}}
-@media(prefers-reduced-motion:reduce){.mini-feed__item{transition:none}}
+#manifesto {
+    --feed-surface: #f5f8fd;
+    --feed-control: #ffffff;
+    --feed-line: #ccd8e7;
+    --feed-ink: #132035;
+    --feed-sub: #4b5c72;
+    --feed-active: #365d8d;
+    --feed-selected: #e2edf9;
+    padding: clamp(52px, 8vw, 102px) clamp(16px, 4vw, 44px) !important;
+}
+html[data-theme="dark"] #manifesto {
+    --feed-surface: #111923;
+    --feed-control: #111923;
+    --feed-line: #2d3d51;
+    --feed-ink: #f2f6fb;
+    --feed-sub: #b1c0d1;
+    --feed-active: #a5c9f1;
+    --feed-selected: #1a2b40;
+}
+#manifesto .mini-feed__shell { max-width: 1100px; margin: auto; color: var(--feed-ink); }
+#manifesto .mini-feed__top { display: flex; justify-content: space-between; align-items: end; gap: 28px; margin-bottom: 28px; }
+#manifesto .mini-feed__eyebrow {
+    display: flex; align-items: center; gap: 9px; margin: 0 0 12px;
+    font: 700 11px/1.3 'JetBrains Mono', monospace; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--feed-sub);
+}
+#manifesto .mini-feed__eyebrow::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--feed-active); }
+#manifesto .mini-feed__title { margin: 0; font: 700 clamp(40px, 6vw, 76px)/.99 'Syne', sans-serif; letter-spacing: -.065em; }
+#manifesto .mini-feed__title em { color: var(--feed-active); font-style: normal; }
+#manifesto .mini-feed__intro { max-width: 265px; margin: 0 0 4px; color: var(--feed-sub); font: 500 15px/1.65 'Manrope', sans-serif; }
+#manifesto .mini-feed__layout { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(240px, 1fr); gap: 18px; align-items: start; }
+#manifesto .mini-feed__feature { overflow: hidden; border: 1px solid var(--feed-line); border-radius: 22px; background: var(--feed-surface); }
+#manifesto .mini-feed__scene {
+    position: relative; display: flex; align-items: end; min-height: clamp(230px, 29vw, 370px);
+    overflow: hidden; isolation: isolate; color: #fff; background: #142031;
+}
+#manifesto .mini-feed__scene img, #manifesto .mini-feed__scene::after { position: absolute; inset: 0; width: 100%; height: 100%; }
+#manifesto .mini-feed__scene img { z-index: -2; object-fit: cover; }
+#manifesto .mini-feed__scene::after { z-index: -1; content: ''; background: linear-gradient(180deg, transparent 10%, #070e1a44 42%, #080e19eb 100%); }
+#manifesto .mini-feed__caption { padding: clamp(18px, 3vw, 32px); }
+#manifesto .mini-feed__feature-category {
+    display: inline-block; margin: 0 0 8px; padding: 5px 8px; border: 1px solid #c8dffb60; border-radius: 6px;
+    background: #102037e0; color: #d5e8ff; font: 600 10px/1.3 'JetBrains Mono', monospace; letter-spacing: .1em;
+}
+#manifesto .mini-feed__caption h3 { max-width: 15ch; margin: 0; color: #fff; font: 700 clamp(30px, 4vw, 51px)/1.04 'Syne', sans-serif; letter-spacing: -.05em; }
+#manifesto .mini-feed__detail { padding: 17px clamp(16px, 2.6vw, 27px) 20px; }
+#manifesto .mini-feed__detailtag { color: var(--feed-active); font: 700 10px/1.4 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+#manifesto .mini-feed__detailtext { margin: 6px 0 10px; color: var(--feed-ink); font: 500 14px/1.65 'Manrope', sans-serif; }
+#manifesto .mini-feed__link { color: var(--feed-active) !important; font: 800 12px/1.5 'Manrope', sans-serif; }
+#manifesto .mini-feed__link:hover { text-decoration: underline; }
+#manifesto .mini-feed__grid { position: relative; display: grid; gap: 8px; perspective: 900px; }
+#manifesto .mini-feed__item {
+    display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; min-height: 76px; padding: 7px;
+    border: 1px solid var(--feed-line); border-radius: 13px; background: var(--feed-control); color: var(--feed-ink);
+    text-align: left; cursor: pointer; --tilt-x: 0deg; --tilt-y: 0deg;
+}
+#manifesto .mini-feed__item[aria-pressed="true"] { border-color: var(--feed-active); background: var(--feed-selected); }
+#manifesto .mini-feed__item:focus-visible { outline: 2px solid var(--feed-active); outline-offset: 3px; }
+#manifesto .mini-feed__image { flex: 0 0 68px; width: 68px; aspect-ratio: 1; object-fit: cover; border-radius: 8px; }
+#manifesto .mini-feed__meta { min-width: 0; flex: 1; }
+#manifesto .mini-feed__category { display: block; color: var(--feed-sub); font: 600 9px/1.35 'JetBrains Mono', monospace; letter-spacing: .06em; }
+#manifesto .mini-feed__name { display: block; margin-top: 4px; font: 800 14px/1.22 'Manrope', sans-serif; }
+#manifesto .mini-feed__item::after { content: '↗'; padding-right: 7px; color: var(--feed-active); font-size: 15px; }
+#manifesto .dt-feed-launch { position: absolute; z-index: 2; inset: 0; display: grid; place-items: center; pointer-events: none; opacity: 0; visibility: hidden; }
+#manifesto .dt-feed-launch img { width: 58px; height: 58px; border-radius: 14px; box-shadow: 0 0 32px #8db9ee73; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    #manifesto .mini-feed__item:hover { transform: translateY(-2px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); }
+}
+@media (max-width: 720px) {
+    #manifesto .mini-feed__top { display: block; margin-bottom: 19px; }
+    #manifesto .mini-feed__title { font-size: clamp(38px, 10.5vw, 58px); }
+    #manifesto .mini-feed__intro { max-width: 35ch; margin-top: 12px; font-size: 14px; }
+    #manifesto .mini-feed__layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    #manifesto .mini-feed__feature { border-radius: 18px; }
+    #manifesto .mini-feed__scene { min-height: clamp(205px, 62vw, 330px); }
+    #manifesto .mini-feed__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #manifesto .mini-feed__item { min-height: 65px; gap: 7px; }
+    #manifesto .mini-feed__image { flex-basis: 42px; width: 42px; border-radius: 6px; }
+    #manifesto .mini-feed__name { font-size: 11.5px; }
+    #manifesto .mini-feed__category { font-size: 8px; }
+    #manifesto .mini-feed__item::after { display: none; }
+}
+@media (max-width: 350px) {
+    #manifesto .mini-feed__grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) {
+    #manifesto .dt-feed-burst .dt-feed-launch { animation: feed-mark .6s ease both; }
+    #manifesto .dt-feed-burst .mini-feed__item { animation: feed-fan .56s cubic-bezier(.19, 1, .22, 1) backwards; animation-delay: calc(230ms + var(--deal-delay, 0ms)); }
+    @keyframes feed-mark {
+        0% { opacity: 0; visibility: visible; transform: scale(.72); }
+        46% { opacity: 1; visibility: visible; transform: scale(1.05); }
+        100% { opacity: 0; visibility: hidden; transform: scale(.88); }
+    }
+    @keyframes feed-fan {
+        from { opacity: 0; transform: translate3d(var(--burst-x, 0px), var(--burst-y, 0px), -100px) rotateZ(var(--burst-r, 0deg)) scale(.48); }
+        to { opacity: 1; transform: none; }
+    }
+}
 
-/* Feed reveal: dimensional video cards, native to Datariot's icy palette. */
-#manifesto .mini-feed__grid{perspective:1500px;perspective-origin:50% 38%;gap:clamp(12px,1.6vw,20px);padding:30px 6px 28px;overflow:visible}
-#manifesto .mini-feed__item{position:relative;isolation:isolate;transform-style:preserve-3d;transform:translate3d(0,0,0) rotateX(0deg) rotateY(0deg);border-radius:19px;overflow:visible;box-shadow:0 15px 32px rgba(25,46,78,.10),0 3px 9px rgba(20,45,85,.08);will-change:transform;transition:transform .65s cubic-bezier(.2,.8,.2,1),box-shadow .5s,border-color .3s;--tilt-x:0deg;--tilt-y:0deg}
-#manifesto .mini-feed__item::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;background:linear-gradient(115deg,transparent 30%,rgba(223,239,255,.23) 49%,transparent 65%);opacity:.55;transform:translateZ(3px)}
-#manifesto .mini-feed__item::after{content:"";position:absolute;inset:9px -5px -10px;z-index:-1;border-radius:20px;background:linear-gradient(135deg,rgba(181,211,241,.35),rgba(86,127,190,.15));filter:blur(13px);opacity:.5;pointer-events:none}
-#manifesto .mini-feed__image{height:clamp(190px,23vw,260px);border-radius:18px 18px 0 0;object-fit:cover;transform:translateZ(1px)}
-#manifesto .mini-feed__meta{min-height:105px;border-radius:0 0 18px 18px;background:linear-gradient(160deg,rgba(245,250,255,.95),rgba(226,238,252,.89));transform:translateZ(1px)}
-#manifesto .mini-feed__category{color:#6686b0}
-#manifesto .mini-feed__item[aria-pressed="true"]{border-color:rgba(139,184,231,.75);box-shadow:0 26px 52px rgba(76,127,187,.22),0 0 0 1px rgba(181,214,248,.6)}
-#manifesto .mini-feed__item:hover,#manifesto .mini-feed__item:focus-visible{transform:translate3d(0,-16px,38px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));box-shadow:0 32px 60px rgba(53,97,155,.23)}
-#manifesto .mini-feed__item:focus-visible{outline:2px solid #93bde9;outline-offset:5px}
-#manifesto .mini-feed__item.is-revealing{animation:dt-feed-deal .95s cubic-bezier(.2,.7,.15,1) both;animation-delay:var(--deal-delay,0ms)}
-@keyframes dt-feed-deal{0%{opacity:0;transform:translate3d(var(--deal-x,0px),85px,-230px) rotateY(var(--deal-rotate,0deg)) rotateX(22deg) scale(.82);filter:blur(8px)}65%{opacity:1;filter:blur(0)}100%{opacity:1;transform:translate3d(0,0,0) rotateY(0) rotateX(0) scale(1);filter:blur(0)}}
-[data-theme="dark"] #manifesto .mini-feed__meta{background:linear-gradient(155deg,rgba(23,32,49,.98),rgba(14,22,36,.98))}
-[data-theme="dark"] #manifesto .mini-feed__item{box-shadow:0 20px 44px rgba(0,0,0,.27)}
-[data-theme="dark"] #manifesto .mini-feed__category{color:#b5cde9}
-@media(max-width:760px){#manifesto .mini-feed__grid{gap:12px;padding:18px 2px 16px;perspective:900px}#manifesto .mini-feed__image{height:clamp(155px,40vw,225px)}#manifesto .mini-feed__meta{min-height:92px}#manifesto .mini-feed__item:hover{transform:translate3d(0,-5px,8px)}}
-/* Mobile: always show the complete card, no staggered invisible frames or sticky hover transforms. */
-@media(max-width:760px){
- #manifesto .mini-feed__shell{width:100%;max-width:100%}
- #manifesto .mini-feed__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:24px 4px 22px;perspective:950px;perspective-origin:50% 38%;align-items:stretch}
- #manifesto .mini-feed__item,#manifesto .mini-feed__item.is-revealing,#manifesto .mini-feed__item:hover,#manifesto .mini-feed__item:active{display:flex;flex-direction:column;min-width:0;height:auto;opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important;animation:none!important;transition:border-color .2s,background-color .2s!important;overflow:hidden;will-change:auto;box-shadow:0 5px 16px rgba(0,0,0,.10);border-radius:13px}
- #manifesto .mini-feed__item::before,#manifesto .mini-feed__item::after{display:none}
- #manifesto .mini-feed__image{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:12px 12px 0 0;transform:none}
- #manifesto .mini-feed__meta{display:flex;flex-direction:column;flex:1;min-height:0!important;padding:11px 11px 13px;transform:none;opacity:1!important;visibility:visible!important;border-radius:0 0 12px 12px}
- #manifesto .mini-feed__category{display:block;opacity:1!important;visibility:visible!important;font-size:9px;line-height:1.45}
- #manifesto .mini-feed__name{display:block;opacity:1!important;visibility:visible!important;font-size:13px;line-height:1.3;margin-top:6px;min-height:0;overflow-wrap:anywhere}
- #manifesto .mini-feed__item[aria-pressed="true"]{box-shadow:0 0 0 1px rgba(157,194,235,.55),0 5px 16px rgba(0,0,0,.1)}
-}
-/* Mobile cinematic reveal: motion only while the section enters view.
-   Cards remain fully visible in the static/final state. */
-@media(max-width:760px) and (prefers-reduced-motion:no-preference){
- #manifesto .mini-feed__item{transform-style:preserve-3d;backface-visibility:hidden;transform-origin:50% 85%;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s!important}
- #manifesto .mini-feed__item.is-revealing{animation:dt-mobile-card-deal 1.05s cubic-bezier(.16,.8,.18,1) both!important;animation-delay:var(--deal-delay,0ms)!important}
- #manifesto .mini-feed__item:active{transform:translate3d(0,-9px,24px) rotateX(-5deg) scale(1.035)!important;box-shadow:0 24px 42px rgba(91,143,208,.30)!important}
- #manifesto .mini-feed__item[aria-pressed="true"]{box-shadow:0 0 0 1px rgba(168,204,247,.65),0 15px 29px rgba(71,123,193,.20)}
- @keyframes dt-mobile-card-deal{
-  0%{opacity:.25;transform:translate3d(var(--deal-x,0px),72px,-180px) rotateY(var(--deal-rotate,0deg)) rotateX(22deg) scale(.82)}
-  65%{opacity:1;transform:translate3d(0,-10px,18px) rotateY(0deg) rotateX(-4deg) scale(1.025)}
-  100%{opacity:1;transform:translate3d(0,0,0) rotateY(0deg) rotateX(0deg) scale(1)}
- }
-}
-/* Logo-to-cards burst: all four cards originate at the central Datariot mark. */
-#manifesto .mini-feed__grid{position:relative;isolation:isolate}
-#manifesto .dt-feed-launch{position:absolute;z-index:6;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;visibility:hidden}
-#manifesto .dt-feed-launch img{position:relative;z-index:2;width:clamp(66px,10vw,90px);height:auto;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 0 22px rgba(171,212,255,.36))}
-#manifesto .dt-feed-launch__halo{position:absolute;width:125px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(170,211,255,.4),rgba(95,151,219,.12) 55%,transparent 72%);transform:scale(.5)}
-@media(prefers-reduced-motion:no-preference){
- #manifesto .mini-feed__grid.dt-feed-burst .dt-feed-launch{visibility:visible;animation:dt-mark-disappear 1.5s ease both}
- #manifesto .mini-feed__grid.dt-feed-burst .dt-feed-launch img{animation:dt-mark-pulse 1.5s cubic-bezier(.2,.8,.2,1) both}
- #manifesto .mini-feed__grid.dt-feed-burst .dt-feed-launch__halo{animation:dt-mark-halo 1.25s ease-out both}
- #manifesto .mini-feed__grid.dt-feed-burst .mini-feed__item,#manifesto .mini-feed__grid.dt-feed-burst .mini-feed__item.is-revealing{animation:dt-card-burst 1.05s cubic-bezier(.16,.8,.16,1) both!important;animation-delay:calc(420ms + var(--deal-delay,0ms))!important;transform-origin:50% 50%;backface-visibility:hidden}
- @keyframes dt-mark-disappear{0%,55%{opacity:1}85%{opacity:.6}100%{opacity:0;visibility:hidden}}
- @keyframes dt-mark-pulse{0%{transform:scale(.65) rotate(-12deg);opacity:0}24%{transform:scale(1.08) rotate(0);opacity:1}48%{transform:scale(.94)}67%{transform:scale(1.18)}100%{transform:scale(.5);opacity:0}}
- @keyframes dt-mark-halo{0%{opacity:0;transform:scale(.3)}40%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(3)}}
- @keyframes dt-card-burst{0%{opacity:0;transform:translate3d(var(--burst-x,0px),var(--burst-y,0px),-280px) rotateY(var(--burst-r,0deg)) rotateX(22deg) scale(.22);filter:blur(7px)}58%{opacity:1;filter:blur(0)}82%{transform:translate3d(0,-9px,26px) rotateY(0) rotateX(-3deg) scale(1.025)}100%{opacity:1;transform:translate3d(0,0,0) rotateY(0) rotateX(0) scale(1);filter:none}}
-}
-@media(max-width:760px){#manifesto .dt-feed-launch img{width:72px}#manifesto .mini-feed__grid.dt-feed-burst .mini-feed__item{overflow:hidden!important}}
-@media(prefers-reduced-motion:reduce){#manifesto .dt-feed-launch{display:none!important}}
-@media(prefers-reduced-motion:reduce){#manifesto .mini-feed__item,#manifesto .mini-feed__item.is-revealing{animation:none!important;transition:none!important;transform:none!important;filter:none!important;opacity:1!important}}
 /* Mobile profile shown inside The Feed and in the hero phone stack. */
 .feed-profile__screen {
     width: min(100%, 400px); margin: 0; overflow: hidden; border: 1px solid #dce4f0;
@@ -1886,15 +1899,48 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 #hero .feed-profile--hero .feed-profile__grid span { font-size: 8px; }
 </style>
 <div class="mini-feed__shell">
-<div class="mini-feed__top"><div><div class="mini-feed__eyebrow">[ 01 — THE FEED ]</div><h2 class="mini-feed__title" id="miniFeedTitle">Less noise.<br><em>More signal.</em></h2></div><p class="mini-feed__intro">Short videos worth your attention. Choose a topic to uncover the idea behind it.</p></div>
-<div class="mini-feed__grid" role="group" aria-label="Explore video topics">
-<div class="dt-feed-launch" aria-hidden="true"><span class="dt-feed-launch__halo"></span><img src="assets/logo.png?v=brand-20261021" alt="" width="84" height="84" decoding="async"></div>
-<button class="mini-feed__item" data-mini="0" type="button" aria-pressed="true"><img class="mini-feed__image" src="assets/reel-lidar.jpg" alt="Street scene for lidar explainer" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">TECH · 00:44</span><span class="mini-feed__name">How cars see the world</span></div></button>
-<button class="mini-feed__item" data-mini="1" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/reel-bear.jpg" alt="Polar bear" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">NATURE · 00:31</span><span class="mini-feed__name">Why polar bears look white</span></div></button>
-<button class="mini-feed__item" data-mini="2" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/reel-tower.jpg" alt="Tall building" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">DESIGN · 00:38</span><span class="mini-feed__name">Why skyscrapers sway</span></div></button>
-<button class="mini-feed__item" data-mini="3" type="button" aria-pressed="false"><img class="mini-feed__image" src="assets/hero-clip.jpg" alt="Discussion video preview" loading="lazy"><div class="mini-feed__meta"><span class="mini-feed__category">IDEAS · 00:14</span><span class="mini-feed__name">Logic versus emotion</span></div></button>
-</div>
-<div class="mini-feed__detail" aria-live="polite"><div class="mini-feed__detailcopy"><div class="mini-feed__detailtag">THE IDEA BEHIND THE CLIP</div><p class="mini-feed__detailtext" id="miniFeedDetail">Lidar measures how long laser light takes to return and uses that information to build a 3D map.</p></div><a class="mini-feed__link" href="#ai-core">Explore deeper ↗</a></div>
+    <div class="mini-feed__top">
+        <div>
+            <p class="mini-feed__eyebrow">The Feed</p>
+            <h2 class="mini-feed__title" id="miniFeedTitle">Go down a<br><em>better rabbit hole.</em></h2>
+        </div>
+        <p class="mini-feed__intro">Pick a clip to see the idea behind it.</p>
+    </div>
+    <div class="mini-feed__layout">
+        <article class="mini-feed__feature" id="miniFeedFeature" aria-live="polite" aria-atomic="true">
+            <div class="mini-feed__scene">
+                <img id="miniFeedImage" src="assets/reel-lidar.jpg" alt="" loading="lazy" decoding="async">
+                <div class="mini-feed__caption">
+                    <span class="mini-feed__feature-category" id="miniFeedCategory">TECH · 00:44</span>
+                    <h3 id="miniFeedQuestion">How does a car see in the dark?</h3>
+                </div>
+            </div>
+            <div class="mini-feed__detail">
+                <div class="mini-feed__detailtag">The takeaway</div>
+                <p class="mini-feed__detailtext" id="miniFeedDetail">Lidar measures how long laser light takes to return and uses that information to build a 3D map.</p>
+                <a class="mini-feed__link" href="#ai-core">Explore with Orvelis <span aria-hidden="true">↗</span></a>
+            </div>
+        </article>
+        <div class="mini-feed__grid" role="group" aria-label="Explore video topics">
+            <div class="dt-feed-launch" aria-hidden="true"><img src="assets/logo.png?v=brand-20261021" alt="" width="58" height="58" decoding="async"></div>
+            <button class="mini-feed__item" data-mini="0" type="button" aria-pressed="true" aria-controls="miniFeedFeature">
+                <img class="mini-feed__image" src="assets/reel-lidar.jpg" alt="" loading="lazy" decoding="async">
+                <span class="mini-feed__meta"><span class="mini-feed__category">TECH · 00:44</span><span class="mini-feed__name">How cars see the world</span></span>
+            </button>
+            <button class="mini-feed__item" data-mini="1" type="button" aria-pressed="false" aria-controls="miniFeedFeature">
+                <img class="mini-feed__image" src="assets/reel-bear.jpg" alt="" loading="lazy" decoding="async">
+                <span class="mini-feed__meta"><span class="mini-feed__category">NATURE · 00:31</span><span class="mini-feed__name">Why polar bears look white</span></span>
+            </button>
+            <button class="mini-feed__item" data-mini="2" type="button" aria-pressed="false" aria-controls="miniFeedFeature">
+                <img class="mini-feed__image" src="assets/reel-tower.jpg" alt="" loading="lazy" decoding="async">
+                <span class="mini-feed__meta"><span class="mini-feed__category">DESIGN · 00:38</span><span class="mini-feed__name">Why skyscrapers sway</span></span>
+            </button>
+            <button class="mini-feed__item" data-mini="3" type="button" aria-pressed="false" aria-controls="miniFeedFeature">
+                <img class="mini-feed__image" src="assets/hero-clip.jpg" alt="" loading="lazy" decoding="async">
+                <span class="mini-feed__meta"><span class="mini-feed__category">IDEAS · 00:14</span><span class="mini-feed__name">Logic versus emotion</span></span>
+            </button>
+        </div>
+    </div>
 </div>
 <script>
 (function(){
@@ -1919,7 +1965,46 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 })();
 </script>
 <script>
-(function(){const root=document.getElementById('manifesto');if(!root)return;const notes=['Lidar measures how long laser light takes to return and uses that information to build a 3D map.','Polar bear fur is transparent and hollow, scattering light so it appears white.','Tall buildings are engineered to flex within safe limits under wind loads.','Emotion can help identify priorities while logic helps test choices against evidence.'];root.querySelectorAll('[data-mini]').forEach((button,i)=>button.addEventListener('click',()=>{root.querySelectorAll('[data-mini]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));root.querySelector('#miniFeedDetail').textContent=notes[i]}))})();
+(function () {
+    const root = document.getElementById('manifesto');
+    if (!root) return;
+
+    const topics = [
+        {
+            question: 'How does a car see in the dark?',
+            takeaway: 'Lidar measures how long laser light takes to return and uses that information to build a 3D map.',
+        },
+        {
+            question: 'Why do polar bears look white?',
+            takeaway: 'Polar bear fur is transparent and hollow, scattering light so it appears white.',
+        },
+        {
+            question: 'Why do skyscrapers sway?',
+            takeaway: 'Tall buildings are engineered to flex within safe limits under wind loads.',
+        },
+        {
+            question: 'What role does emotion play in a decision?',
+            takeaway: 'Emotion can help identify priorities while logic helps test choices against evidence.',
+        },
+    ];
+    const cards = [...root.querySelectorAll('[data-mini]')];
+    const image = root.querySelector('#miniFeedImage');
+    const category = root.querySelector('#miniFeedCategory');
+    const question = root.querySelector('#miniFeedQuestion');
+    const detail = root.querySelector('#miniFeedDetail');
+
+    cards.forEach((card) => {
+        const topic = topics[Number(card.dataset.mini)];
+        card.addEventListener('click', () => {
+            if (card.getAttribute('aria-pressed') === 'true') return;
+            cards.forEach((option) => option.setAttribute('aria-pressed', String(option === card)));
+            image.src = card.querySelector('img').src;
+            category.textContent = card.querySelector('.mini-feed__category').textContent;
+            question.textContent = topic.question;
+            detail.textContent = topic.takeaway;
+        });
+    });
+})();
 </script>
 </section>
 
