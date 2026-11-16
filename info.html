@@ -1302,6 +1302,38 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
  mask-image:linear-gradient(to bottom,transparent 0%,black 16%,black 84%,transparent 100%)!important;
 }
 </style>
+    <style id="datariot-mobile-menu">
+        @media (max-width: 900px), (pointer: coarse) and (orientation: portrait) {
+            #navOverlay .navx__bar {
+                flex-shrink: 0;
+                min-height: 66px;
+                padding: 12px max(18px, env(safe-area-inset-left));
+            }
+            #navOverlay .navx__status { display: none; }
+            #navOverlay .navx__body {
+                display: block;
+                min-height: 0;
+                padding: 10px max(18px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+                overflow-y: auto;
+            }
+            #navOverlay .navx__nav { justify-content: flex-start; }
+            #navOverlay .navx__item {
+                grid-template-columns: 28px minmax(0, 1fr) 18px;
+                min-height: 48px;
+                padding: 9px 4px;
+            }
+            #navOverlay .navx__item-text { font-size: clamp(20px, 5.8vw, 28px); line-height: 1.12; }
+            #navOverlay .navx__item-arrow { opacity: .58; transform: none; }
+            #navOverlay .navx__side {
+                justify-content: flex-start;
+                gap: 13px;
+                padding: 15px 0 0;
+                border: 0;
+            }
+            #navOverlay .navx__side-block:first-child { display: none; }
+            #navOverlay .navx__theme, #navOverlay .navx__cta { min-height: 44px; }
+        }
+    </style>
 </head>
 
 <body>
@@ -1383,12 +1415,12 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
                     </a>
                     <a class="navx__item" href="#features" data-navx-link data-section="features">
                         <span class="navx__item-num">02</span>
-                        <span class="navx__item-text">How it works</span>
+                        <span class="navx__item-text">Video replies</span>
                         <span class="navx__item-arrow" aria-hidden="true"></span>
                     </a>
                     <a class="navx__item" href="#debates" data-navx-link data-section="debates">
                         <span class="navx__item-num">03</span>
-                        <span class="navx__item-text">The arena</span>
+                        <span class="navx__item-text">Open source</span>
                         <span class="navx__item-arrow" aria-hidden="true"></span>
                     </a>
                     <a class="navx__item" href="#ai-core" data-navx-link data-section="ai-core">
@@ -1504,13 +1536,18 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
             var links = overlay.querySelectorAll('[data-navx-link]');
             for (var j = 0; j < links.length; j++) {
                 links[j].addEventListener('click', function (e) {
-                    var id = (this.getAttribute('href') || '').replace('#', '');
-                    var target = id && document.getElementById(id);
+                    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                    var anchor = this.getAttribute('href');
+                    var target = anchor && document.getElementById(anchor.slice(1));
+                    if (!target) return;
+
+                    e.preventDefault();
                     close();
-                    if (target) {
-                        e.preventDefault();
-                        setTimeout(function () { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 220);
-                    }
+                    if (window.location.hash !== anchor) window.history.pushState(null, '', anchor);
+                    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    window.requestAnimationFrame(function () {
+                        target.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'start' });
+                    });
                 });
             }
 
@@ -2386,8 +2423,8 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
                         <div class="foot__col">
                             <h5>[ PRODUCT ]</h5>
                             <a href="#manifesto">The feed</a>
-                            <a href="#features">How it works</a>
-                            <a href="#debates">The arena</a>
+                            <a href="#features">Video replies</a>
+                            <a href="#debates">Open source</a>
                             <a href="#ai-core">Orvelis AI</a>
                             <a href="https://datariot.xyz">Web app</a>
                         </div>
