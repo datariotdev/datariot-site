@@ -1738,84 +1738,27 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 <div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
 <div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
-#manifesto.feed-stage {
-    scroll-margin-top: 36px;
-    --feed-paper: #eaf1fa;
-    --feed-ink: #152236;
-    --feed-muted: #50617b;
-    --feed-line: #acbed4;
-    --feed-active: #254976;
-    padding: clamp(48px, 8vw, 105px) clamp(16px, 4vw, 44px) !important;
-}
-html[data-theme="dark"] #manifesto.feed-stage {
-    --feed-paper: #182438;
-    --feed-ink: #f2f6ff;
-    --feed-muted: #aebed3;
-    --feed-line: #35465c;
-    --feed-active: #b5d7ff;
-}
+#manifesto.feed-stage { padding: clamp(58px, 9vw, 114px) clamp(18px, 5vw, 50px) !important; scroll-margin-top: 52px; }
 #manifesto .feed-stage__shell {
-    position: relative; z-index: 1; display: grid; align-items: center;
-    grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); gap: clamp(24px, 6vw, 78px);
-    max-width: 1060px; margin-inline: auto; color: var(--feed-ink);
+    position: relative; z-index: 1; display: grid; align-items: center; gap: clamp(20px, 4vw, 64px);
+    grid-template-columns: minmax(0, 1fr) minmax(170px, .55fr); max-width: 960px; margin-inline: auto;
 }
 #manifesto .feed-stage__intro h2 {
-    margin: 0; font: 700 clamp(51px, 7.2vw, 98px)/.93 'Syne', sans-serif; letter-spacing: -.072em;
+    margin: 0; font: 700 clamp(56px, 9vw, 114px)/.91 'Syne', sans-serif; letter-spacing: -.073em;
 }
-#manifesto .feed-stage__intro h2 span { color: var(--feed-active); }
-#manifesto .feed-stage__intro p {
-    margin: 13px 0 22px; color: var(--feed-muted); font: 600 clamp(15px, 1.55vw, 18px)/1.5 'Manrope', sans-serif;
+#manifesto .feed-stage__intro h2 span { color: #416b9b; }
+html[data-theme="dark"] #manifesto .feed-stage__intro h2 span { color: #b5d7ff; }
+#manifesto .feed-stage__intro p { max-width: 32ch; margin: 14px 0 0; font: 600 clamp(15px, 2vw, 19px)/1.6 'Manrope', sans-serif; }
+#manifesto .feed-stage__art {
+    position: relative; display: grid; place-items: center; min-height: 210px;
+    background: radial-gradient(closest-side, #679de147, transparent);
 }
-#manifesto .feed-stage__choices { display: grid; border-top: 1px solid var(--feed-line); }
-#manifesto .feed-stage__choices[hidden] { display: none; }
-#manifesto .feed-stage__choice {
-    display: flex; align-items: center; gap: 10px; min-height: 47px; width: 100%; padding: 8px 2px;
-    color: var(--feed-muted); background: transparent; border: 0; border-bottom: 1px solid var(--feed-line);
-    text-align: left; cursor: pointer; font: 750 14px/1.3 'Manrope', sans-serif;
-}
-#manifesto .feed-stage__choice::before {
-    content: ''; width: 6px; height: 6px; flex: 0 0 6px; border: 1px solid currentColor; border-radius: 50%;
-}
-#manifesto .feed-stage__choice[aria-pressed="true"] { color: var(--feed-active); }
-#manifesto .feed-stage__choice[aria-pressed="true"]::before { background: currentColor; }
-#manifesto .feed-stage__screen { position: relative; min-width: 0; margin: 0; isolation: isolate; }
-#manifesto .feed-stage__screen::before {
-    content: ''; position: absolute; z-index: -1; inset: 6% 3% 14%; border-radius: 45%;
-    background: #679de17d; filter: blur(65px); opacity: .53;
-}
-#manifesto .feed-stage__media {
-    position: relative; isolation: isolate; aspect-ratio: 1; overflow: hidden; border-radius: 20px;
-    border: 1px solid #b2d2ff51; background: #0a101a; box-shadow: 0 18px 55px #0006;
-    touch-action: pan-y;
-}
-#manifesto .feed-stage__media video { display: block; width: 100%; height: 100%; object-fit: contain; }
-#manifesto .feed-stage__media video:not([controls]) { object-fit: cover; }
-#manifesto .feed-stage__play {
-    position: absolute; z-index: 1; top: 50%; left: 50%; translate: -50% -50%;
-    display: grid; place-items: center; width: 58px; height: 58px; padding: 0; border-radius: 50%;
-    border: 1px solid #c9e2ffb3; color: #162942; background: #dfedff; cursor: pointer;
-    box-shadow: 0 7px 30px #05101cad;
-}
-#manifesto .feed-stage__play svg { width: 25px; height: 25px; transform: translateX(2px); }
-#manifesto .feed-stage__play[hidden], #manifesto .feed-stage__nav[hidden] { display: none; }
-#manifesto .feed-stage__screen figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0 0; }
-#manifesto .feed-stage__title { margin: 0; color: var(--feed-ink); font: 800 clamp(16px, 1.7vw, 21px)/1.23 'Manrope', sans-serif; }
-#manifesto .feed-stage__position { display: block; margin-top: 3px; color: var(--feed-muted); font: 600 10px/1.3 'JetBrains Mono', monospace; }
-#manifesto .feed-stage__nav { display: flex; gap: 6px; flex-shrink: 0; }
-#manifesto .feed-stage__nav button {
-    display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--feed-line);
-    border-radius: 50%; color: var(--feed-ink); background: var(--feed-paper); cursor: pointer;
-}
-#manifesto .feed-stage__nav button svg { width: 17px; height: 17px; }
-#manifesto .feed-stage__nav button:hover, #manifesto .feed-stage__choice:hover { color: var(--feed-active); }
-#manifesto .feed-stage__shell button:focus-visible { outline: 2px solid var(--feed-active); outline-offset: 3px; }
-@media (max-width: 700px) {
-    #manifesto .feed-stage__shell { grid-template-columns: minmax(0,1fr); gap: 15px; }
-    #manifesto .feed-stage__intro h2 { font-size: clamp(49px, 12vw, 68px); }
-    #manifesto .feed-stage__intro p { margin: 7px 0 0; font-size: 14px; }
-    #manifesto .feed-stage__choices { display: none; }
-    #manifesto .feed-stage__media { border-radius: 16px; }
-    #manifesto .feed-stage__screen::before { filter: blur(42px); opacity: .4; }
+#manifesto .feed-stage__art img { width: clamp(76px, 12vw, 124px); height: auto; border-radius: 20%; }
+@media (max-width: 620px) {
+    #manifesto .feed-stage__shell { grid-template-columns: minmax(0, 1fr) minmax(82px, .28fr); gap: 12px; }
+    #manifesto .feed-stage__intro h2 { font-size: clamp(41px, 11vw, 64px); }
+    #manifesto .feed-stage__intro p { margin-top: 9px; font-size: 14px; }
+    #manifesto .feed-stage__art { min-height: 116px; }
 }
 
 /* Mobile profile shown inside The Feed and in the hero phone stack. */
@@ -1883,119 +1826,11 @@ html[data-theme="dark"] #manifesto.feed-stage {
     <div class="feed-stage__intro">
         <h2 id="miniFeedTitle">The <span>Feed.</span></h2>
         <p>Short videos with something to say.</p>
-        <div class="feed-stage__choices" role="group" aria-label="Choose a video" hidden>
-            <button class="feed-stage__choice" type="button" data-clip-index="0" aria-pressed="true">Logic versus emotion</button>
-            <button class="feed-stage__choice" type="button" data-clip-index="1" aria-pressed="false">Cold Drop</button>
-            <button class="feed-stage__choice" type="button" data-clip-index="2" aria-pressed="false">Dirt Line</button>
-        </div>
     </div>
-    <figure class="feed-stage__screen">
-        <div class="feed-stage__media">
-            <video controls playsinline preload="none" poster="assets/hero-clip.jpg" aria-label="Logic versus emotion">
-                <source src="assets/hero-clip.mp4" type="video/mp4">
-                <source src="assets/hero-clip.webm" type="video/webm">
-            </video>
-            <button class="feed-stage__play" type="button" aria-label="Play Logic versus emotion" hidden>
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.8a1 1 0 0 1 1.5-.9l12.2 7.1a1.1 1.1 0 0 1 0 2l-12.2 7.1a1 1 0 0 1-1.5-.9z"/></svg>
-            </button>
-        </div>
-        <figcaption>
-            <div aria-live="polite" aria-atomic="true">
-                <h3 class="feed-stage__title">Logic versus emotion</h3>
-                <span class="feed-stage__position">01 / 03</span>
-            </div>
-            <div class="feed-stage__nav" aria-label="Browse videos" role="group" hidden>
-                <button type="button" data-clip-step="-1" aria-label="Previous video">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
-                </button>
-                <button type="button" data-clip-step="1" aria-label="Next video">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
-                </button>
-            </div>
-        </figcaption>
-    </figure>
+    <div class="feed-stage__art" aria-hidden="true">
+        <img src="assets/datariot-mark.jpg" alt="" width="124" height="124" loading="lazy" decoding="async">
+    </div>
 </div>
-<script>
-(function () {
-    const section = document.getElementById('manifesto');
-    const player = section.querySelector('.feed-stage__media');
-    const video = player.querySelector('video');
-    const play = player.querySelector('button');
-    const nav = section.querySelector('.feed-stage__nav');
-    const choices = section.querySelector('.feed-stage__choices');
-    const buttons = [...choices.querySelectorAll('[data-clip-index]')];
-    const title = section.querySelector('.feed-stage__title');
-    const position = section.querySelector('.feed-stage__position');
-    const clips = [
-        { poster: 'assets/hero-clip.jpg', sources: ['assets/hero-clip.mp4', 'assets/hero-clip.webm'] },
-        { poster: 'assets/feed-cold-drop.jpg', sources: ['assets/feed-cold-drop.mp4'] },
-        { poster: 'assets/feed-dirt-line.jpg', sources: ['assets/feed-dirt-line.mp4'] },
-    ];
-    let index = 0;
-    let swipeStart = null;
-
-    function selectClip(next) {
-        const target = (next + clips.length) % clips.length;
-        if (target === index) return;
-
-        index = target;
-        const clip = clips[index];
-        const name = buttons[index].textContent.trim();
-        video.pause();
-        video.controls = false;
-        video.poster = clip.poster;
-        const sources = clip.sources.map((src) => {
-            const source = document.createElement('source');
-            source.src = src;
-            source.type = src.endsWith('.webm') ? 'video/webm' : 'video/mp4';
-            return source;
-        });
-        video.replaceChildren(...sources);
-        video.load();
-
-        title.textContent = name;
-        position.textContent = String(index + 1).padStart(2, '0') + ' / ' + String(clips.length).padStart(2, '0');
-        video.setAttribute('aria-label', name);
-        play.setAttribute('aria-label', 'Play ' + name);
-        play.hidden = false;
-        buttons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
-    }
-
-    play.addEventListener('click', () => {
-        const restoreFocus = document.activeElement === play;
-        video.controls = true;
-        play.hidden = true;
-        if (restoreFocus) video.focus({ preventScroll: true });
-        video.play().catch(() => {
-            // Keep native controls available if the browser blocks script-initiated play.
-        });
-    });
-    buttons.forEach((button) => button.addEventListener('click', () => selectClip(Number(button.dataset.clipIndex))));
-    nav.querySelectorAll('button').forEach((button) => button.addEventListener('click', () => selectClip(index + Number(button.dataset.clipStep))));
-    player.addEventListener('touchstart', (event) => {
-        swipeStart = !video.controls && event.touches.length === 1 ? event.touches[0] : null;
-    }, { passive: true });
-    player.addEventListener('touchend', (event) => {
-        if (!swipeStart) return;
-        const touch = event.changedTouches[0];
-        const dx = touch.clientX - swipeStart.clientX;
-        const dy = touch.clientY - swipeStart.clientY;
-        swipeStart = null;
-        if (Math.abs(dx) > 44 && Math.abs(dx) > 1.5 * Math.abs(dy)) selectClip(index + (dx < 0 ? 1 : -1));
-    }, { passive: true });
-    player.addEventListener('touchcancel', () => { swipeStart = null; }, { passive: true });
-    if ('IntersectionObserver' in window) {
-        new IntersectionObserver(([entry]) => {
-            if (!entry.isIntersecting) video.pause();
-        }).observe(player);
-    }
-
-    video.controls = false;
-    play.hidden = false;
-    choices.hidden = false;
-    nav.hidden = false;
-})();
-</script>
 </section>
 
         <section class="section reply-network" id="features" data-inview aria-labelledby="replyNetworkTitle">
