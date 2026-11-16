@@ -1303,6 +1303,22 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 }
 </style>
     <style id="datariot-mobile-menu">
+        #navOverlay { transition: visibility 0s linear .16s; }
+        #navOverlay.is-open { transition-delay: 0s; }
+        #navOverlay .navx__panel {
+            transform: none;
+            opacity: 0;
+            transition: opacity .16s ease;
+        }
+        #navOverlay.is-open .navx__panel { opacity: 1; }
+        #navOverlay.is-open .navx__item {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #navOverlay, #navOverlay .navx__panel { transition-duration: 0s; }
+        }
         @media (max-width: 900px), (pointer: coarse) and (orientation: portrait) {
             #navOverlay .navx__bar {
                 flex-shrink: 0;
