@@ -35,7 +35,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=JetBrains+Mono:wght@300..800&family=Manrope:wght@300..800&family=Orbitron:wght@400..900&family=Syne:wght@600..800&family=Instrument+Serif:ital@0;1&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="style.css?v=discord-20261025" />
+    <link rel="stylesheet" href="style.css?v=nav-header-20261117" />
     <!-- Cache-Bust-Hash: 5755257c-c1f2-4179-b6ef-7762c45251ae -->
     <style>
         :root {
@@ -1381,21 +1381,16 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
     </div>
 
 
-    <!-- Left Sidebar Navigation -->
-    <!-- The icon rail is gone: the MENU overlay above is the only navigation. -->
-
-    <!-- Fixed brand mark; balances the MENU trigger now that the icon rail is gone. -->
     <div class="curiosity-topbar" aria-hidden="true"></div>
     <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
         <img class="brandmark__logo" src="assets/datariot-mark.jpg?v=brand-20261021" alt="" aria-hidden="true" width="40" height="40" decoding="async">
-        <span class="brandmark__word">datariot</span>
+        <span class="brandmark__word">Datariot</span>
     </a>
 
     <!-- Menu trigger. One control at every width — the overlay below is the
          same menu on a phone and on a desktop. -->
-    <button class="navx-trigger" id="navTrigger" aria-label="Open menu" aria-expanded="false" aria-controls="navOverlay">
-        <span class="navx-trigger__bars" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="navx-trigger__label" data-open="MENU" data-close="CLOSE">MENU</span>
+    <button class="navx-trigger" id="navTrigger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navOverlay">
+        <span class="navx-trigger__bars" aria-hidden="true"><i></i><i></i></span>
     </button>
 
     <!-- Full-screen navigation -->
@@ -1509,7 +1504,6 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
             if (!overlay || !trigger) return;
 
             var root = document.documentElement;
-            var label = trigger.querySelector('.navx-trigger__label');
             var lastFocus = null;
 
             function isOpen() { return overlay.classList.contains('is-open'); }
@@ -1520,7 +1514,6 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
                 root.classList.toggle('navx-open', open);
                 trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
                 trigger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-                if (label) label.textContent = (open ? label.getAttribute('data-close') : label.getAttribute('data-open')) || 'MENU';
                 document.body.style.overflow = open ? 'hidden' : '';
                 if (window.FXBudget) { open ? window.FXBudget.pause() : window.FXBudget.resume(); }
             }

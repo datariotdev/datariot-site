@@ -12007,89 +12007,61 @@ html.gfx-lite .hw__caret {
 
 .navx-trigger {
     position: fixed;
-    top: 22px;
+    top: 21px;
     right: 22px;
     z-index: 30000;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
+    display: grid;
+    place-items: center;
+    width: 44px;
     height: 44px;
-    padding: 0 16px 0 14px;
-    border: 1px solid rgb(var(--brand-rgb) / 0.45);
-    border-radius: 0;
-    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-    background: rgba(255, 255, 255, 0.82);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    color: var(--brand-ink);
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #111827;
     cursor: pointer;
-    font-family: var(--font-tech), monospace;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    line-height: 1;
-    transition: border-color .3s ease, background .3s ease, color .3s ease, transform .2s ease;
+    transition: background .2s ease;
 }
 
-.navx-trigger::after {
-    /* corner tick, picks up the HUD language used across the page */
-    content: '';
-    position: absolute;
-    right: -1px;
-    bottom: -1px;
-    width: 10px;
-    height: 10px;
-    background: linear-gradient(135deg, transparent 50%, var(--brand-500) 50%);
-    pointer-events: none;
-}
-
-.navx-trigger:hover {
-    border-color: var(--brand-500);
-    background: #fff;
-}
-
-.navx-trigger:active {
-    transform: scale(0.96);
+.navx-trigger:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
 }
 
 .navx-trigger__bars {
     position: relative;
-    display: block;
-    width: 18px;
-    height: 12px;
-    flex: none;
+    width: 20px;
+    height: 16px;
 }
 
 .navx-trigger__bars i {
     position: absolute;
-    left: 0;
-    display: block;
-    height: 1.5px;
-    width: 100%;
+    right: 0;
+    height: 2px;
+    width: 20px;
+    border-radius: 2px;
     background: currentColor;
-    transition: transform .35s var(--ease-out-expo, cubic-bezier(.16, 1, .3, 1)), opacity .2s ease, width .35s ease;
+    transition: transform .25s ease, width .25s ease;
 }
 
-.navx-trigger__bars i:nth-child(1) { top: 0; }
-.navx-trigger__bars i:nth-child(2) { top: 5px; width: 12px; }
-.navx-trigger__bars i:nth-child(3) { top: 10px; }
+.navx-trigger__bars i:first-child { top: 4px; }
+.navx-trigger__bars i:last-child { top: 10px; width: 13px; }
 
-.navx-trigger.is-active .navx-trigger__bars i:nth-child(1) { transform: translateY(5px) rotate(45deg); }
-.navx-trigger.is-active .navx-trigger__bars i:nth-child(2) { opacity: 0; width: 0; }
-.navx-trigger.is-active .navx-trigger__bars i:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+.navx-trigger.is-active .navx-trigger__bars i:first-child { transform: translateY(3px) rotate(45deg); }
+.navx-trigger.is-active .navx-trigger__bars i:last-child { width: 20px; transform: translateY(-3px) rotate(-45deg); }
 
-.navx-trigger__label {
-    font-weight: 600;
+[data-theme="dark"] .navx-trigger { color: #DAE6F7; }
+
+.navx-trigger:active { background: rgb(17 24 39 / .09); }
+[data-theme="dark"] .navx-trigger:active { background: rgb(218 230 247 / .12); }
+
+@media (hover: hover) {
+    .navx-trigger:hover { background: rgb(17 24 39 / .07); }
+    [data-theme="dark"] .navx-trigger:hover { background: rgb(218 230 247 / .09); }
 }
 
-[data-theme="dark"] .navx-trigger {
-    background: rgba(7, 8, 12, 0.82);
-    color: #E8F0FB;
-    border-color: rgba(218, 230, 247, 0.45);
-}
-
-[data-theme="dark"] .navx-trigger:hover {
-    background: rgba(7, 8, 12, 0.96);
-    border-color: var(--brand-400);
+@media (max-width: 660px) {
+    .navx-trigger { top: 16px; right: 16px; }
 }
 
 /* --- overlay shell --- */
@@ -12565,18 +12537,6 @@ html.gfx-lite .hw__caret {
 }
 
 @media (max-width: 600px) {
-    .navx-trigger {
-        top: 16px;
-        right: 16px;
-        height: 42px;
-        padding: 0 13px 0 12px;
-    }
-
-    .navx-trigger__label {
-        font-size: 10px;
-        letter-spacing: 0.14em;
-    }
-
     .navx__item {
         grid-template-columns: 40px minmax(0, 1fr) 20px;
         padding: 12px 6px;
@@ -12613,7 +12573,9 @@ html.navx-open {
     .navx__panel,
     .navx__item,
     .navx__item-text,
-    .navx__item-arrow {
+    .navx__item-arrow,
+    .navx-trigger,
+    .navx-trigger__bars i {
         transition-duration: .01ms !important;
     }
 
@@ -12621,19 +12583,6 @@ html.navx-open {
         animation-duration: .01ms !important;
         animation-delay: 0s !important;
     }
-}
-
-/* trigger blends into the panel once the menu is open */
-.navx-trigger.is-active {
-    background: transparent;
-    border-color: rgb(var(--brand-rgb) / 0.35);
-    color: var(--brand-ink);
-}
-
-[data-theme="dark"] .navx-trigger.is-active {
-    background: transparent;
-    border-color: rgba(218, 230, 247, 0.35);
-    color: #EAF2FD;
 }
 
 .navx__brand em {
@@ -12665,12 +12614,12 @@ html.navx-open {
 /* === FIXED BRAND MARK — unframed logo and wordmark === */
 .brandmark {
     position: fixed;
-    top: 22px;
+    top: 21px;
     left: 24px;
     z-index: 30000;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
     height: 44px;
     padding: 0;
     border: 0;
@@ -12686,28 +12635,28 @@ html.navx-open {
 .brandmark__logo {
     display: block;
     flex: none;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     object-fit: contain;
     filter: invert(1);
     mix-blend-mode: multiply;
 }
 
 .brandmark__word {
-    font: 800 23px/1 'Syne', var(--font-sans);
-    letter-spacing: -0.055em;
+    font: 700 21px/1 'Manrope', sans-serif;
+    letter-spacing: -.035em;
     text-transform: none;
 }
 
-[data-theme="dark"] .brandmark { color: #E8F0FB; }
+[data-theme="dark"] .brandmark { color: #DAE6F7; }
 [data-theme="dark"] .brandmark__logo { filter: none; mix-blend-mode: screen; }
 
 html.navx-open .brandmark { opacity: 0; pointer-events: none; }
 
-@media (max-width: 600px) {
-    .brandmark { top: 16px; left: 16px; height: 42px; gap: 4px; }
-    .brandmark__logo { width: 34px; height: 34px; }
-    .brandmark__word { font-size: 20px; }
+@media (max-width: 660px) {
+    .brandmark { top: 16px; left: 16px; }
+    .brandmark__logo { width: 32px; height: 32px; }
+    .brandmark__word { font-size: 19px; }
 }
 
 /* ==========================================================================
