@@ -1,3 +1,4 @@
+import { OrvelisMark } from '../UI/OrvelisMark';
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import {
     Modal,
@@ -303,7 +304,7 @@ export function FullScreenVideoModal({
                                     elevation: 3,
                                 }
                             ]}>
-                                <MaterialCommunityIcons name="robot-excited" size={18} color="#D9E4FF" />
+                                <OrvelisMark size={18} color="#D9E4FF" />
                             </View>
                         </TouchableOpacity>
                     </View>

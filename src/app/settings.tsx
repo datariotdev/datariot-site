@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView, Pressable, Alert, Platform, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView, Alert, Platform, useWindowDimensions } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/Theme/ThemeProvider';
 import { useAuth } from '../lib/supabase/hooks/useAuth';
-import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -56,28 +55,6 @@ export default function SettingsScreen() {
                 </View>
 
                 <ScrollView style={styles.content} contentContainerStyle={desktop ? { paddingBottom: 48 } : undefined}>
-                    {/* Promote Business — gradient CTA */}
-                    <Pressable
-                        onPress={() => router.push('/business')}
-                        style={styles.promoteWrapper}
-                    >
-                        <LinearGradient
-                            colors={['#355EEB', '#7654E8', '#D94DAB']}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            style={styles.promoteGradient}
-                        >
-                            <View style={styles.promoteLeft}>
-                                <MaterialCommunityIcons name="rocket-launch-outline" size={22} color="#fff" />
-                                <View>
-                                    <Text style={[styles.promoteTitle, monoFont]}>Grow with Datariot</Text>
-                                    <Text style={[styles.promoteSubtitle, monoFont]}>Tools for creators and businesses</Text>
-                                </View>
-                            </View>
-                            <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.7)" />
-                        </LinearGradient>
-                    </Pressable>
-
                     <View style={[styles.section, { borderBottomColor: theme.colors.surface.overlay }]}>
                         <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }, monoFont]}>ACCOUNT</Text>
                         <TouchableOpacity style={[styles.row, { borderBottomColor: theme.colors.surface.overlay, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }]} onPress={() => router.push('/edit-profile')}>
@@ -161,41 +138,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     /* Promote Business */
-    promoteWrapper: {
-        marginHorizontal: 20,
-        marginTop: 24,
-        marginBottom: 14,
-        borderRadius: 24,
-        overflow: 'hidden',
-        shadowColor: '#D9E4FF',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.35,
-        shadowRadius: 12,
-        elevation: 8,
-    },
-    promoteGradient: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 25,
-        paddingHorizontal: 22,
-    },
-    promoteLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
-    },
-    promoteTitle: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: '700',
-    },
-    promoteSubtitle: {
-        color: 'rgba(255,255,255,0.7)',
-        fontSize: 12,
-        fontWeight: '500',
-        marginTop: 2,
-    },
     section: {
         marginBottom: 24,
         borderBottomWidth: 1,

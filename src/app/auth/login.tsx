@@ -48,7 +48,7 @@ export default function WelcomeScreen() {
                             {/* Blue 'Ice' Tone Overlay */}
                             <View style={{ position: 'absolute', width: 38, height: 38, backgroundColor: 'rgba(56, 189, 248, 0.15)', borderRadius: 19 }} />
                             <RNImage
-                                source={require('../../../assets/logo.jpg')}
+                                source={require('../../../assets/datariot-mark.jpg')}
                                 style={{ width: 32, height: 32, borderRadius: 16 }}
                             />
                         </View>

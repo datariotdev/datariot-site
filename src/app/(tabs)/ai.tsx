@@ -1,3 +1,4 @@
+import { OrvelisMark } from '../../components/UI/OrvelisMark';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, KeyboardAvoidingView, Platform, FlatList, Modal, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -66,7 +67,7 @@ const TypingIndicator = () => {
     return (
         <View style={styles.typingContainer}>
             <View style={styles.typingBubble}>
-                <MaterialCommunityIcons name="robot-excited-outline" size={14} color="rgba(255,255,255,0.4)" style={{ marginRight: 8 }} />
+                <OrvelisMark size={14} color="rgba(255,255,255,0.4)" style={{ marginRight: 8 }} />
                 <Animated.View style={[styles.typingDot, style1]} />
                 <Animated.View style={[styles.typingDot, style2]} />
                 <Animated.View style={[styles.typingDot, style3]} />
@@ -482,7 +483,7 @@ export default function AIScreen() {
                             backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(14, 165, 233, 0.08)',
                             borderColor: isDark ? 'rgba(56, 189, 248, 0.25)' : 'rgba(14, 165, 233, 0.2)'
                         }]}>
-                            <MaterialCommunityIcons name="robot-excited" size={22} color={theme.colors.primary.DEFAULT} />
+                            <OrvelisMark size={22} color={theme.colors.primary.DEFAULT} />
                         </View>
                         <View>
                             <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>Orvelis</Text>

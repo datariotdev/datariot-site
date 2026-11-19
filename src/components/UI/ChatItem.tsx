@@ -1,3 +1,4 @@
+import { OrvelisMark } from './OrvelisMark';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -36,7 +37,7 @@ export function ChatItem({
                 isAi && [styles.aiAvatarContainer, { backgroundColor: '#FFFFFF' }]
             ]}>
                 {isAi ? (
-                    <MaterialCommunityIcons name="robot-excited" size={24} color="#0EA5E9" />
+                    <OrvelisMark size={24} color="#0EA5E9" />
                 ) : (
                     <Text style={[styles.avatarText, { color: theme.colors.text.primary }]}>{name.charAt(0)}</Text>
                 )}

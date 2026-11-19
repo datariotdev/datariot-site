@@ -1,3 +1,4 @@
+import { OrvelisMark } from '../../components/UI/OrvelisMark';
 import React, { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { setAudioModeAsync } from 'expo-audio';
@@ -129,8 +130,7 @@ const TabLayout = () => {
                     options={{
                         title: 'Orvelis AI',
                         tabBarIcon: ({ focused, color }) => (
-                            <MaterialCommunityIcons
-                                name={focused ? "robot-excited" : "robot-excited-outline"}
+                            <OrvelisMark
                                 size={24}
                                 color={color}
                             />

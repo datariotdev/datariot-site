@@ -1,3 +1,4 @@
+import { OrvelisMark } from '../UI/OrvelisMark';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Modal,
@@ -146,7 +147,7 @@ export function DeepDiveModal({ visible, video, onClose }: DeepDiveModalProps) {
             <Animated.View entering={FadeIn.duration(200)} style={isUser ? styles.userBubbleContainer : styles.aiBubbleContainer}>
                 {!isUser && (
                     <View style={[styles.aiAvatar, { backgroundColor: theme.colors.primary.DEFAULT }]}>
-                        <MaterialCommunityIcons name="robot-excited" size={14} color="#FFF" />
+                        <OrvelisMark size={14} color="#FFF" />
                     </View>
                 )}
                 <View style={[

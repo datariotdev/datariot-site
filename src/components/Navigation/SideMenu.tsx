@@ -154,7 +154,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                         {/* Blue 'Ice' Tone Overlay */}
                         <View style={{ position: 'absolute', width: 28, height: 28, backgroundColor: 'rgba(56, 189, 248, 0.15)', borderRadius: 14 }} />
                         <RNImage
-                            source={require('../../../assets/logo.jpg')}
+                            source={require('../../../assets/datariot-mark.jpg')}
                             style={{ width: 22, height: 22, borderRadius: 11 }}
                         />
                     </View>

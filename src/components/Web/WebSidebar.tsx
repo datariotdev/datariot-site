@@ -1,3 +1,4 @@
+import { OrvelisMark } from '../UI/OrvelisMark';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, Image as RNImage, Platform } from 'react-native';
 import { Feather, Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
@@ -48,7 +49,7 @@ const NAV: NavEntry[] = [
         code: '04',
         label: 'Orvelis AI',
         path: '/ai',
-        icon: (c, s) => <MaterialCommunityIcons name="robot-outline" size={s} color={c} />,
+        icon: (c, s) => <OrvelisMark size={s} color={c} />,
     },
     {
         key: 'inbox',
@@ -245,7 +246,7 @@ export const WebSidebar = () => {
             <Pressable onPress={() => router.push('/')} style={[styles.logoRow, expanded && { paddingLeft: 18 }]}>
                 <View style={styles.logoGlyph}>
                     <View style={[styles.logoHalo, { backgroundColor: isDark ? 'rgba(217, 228, 255, 0.14)' : 'rgba(107, 127, 204, 0.10)' }]} />
-                    <RNImage source={require('../../../assets/logo.jpg')} style={{ width: 30, height: 30, borderRadius: 9 }} />
+                    <RNImage source={require('../../../assets/datariot-mark.jpg')} style={{ width: 30, height: 30, borderRadius: 9 }} />
                 </View>
                 {expanded && (
                     <Text
