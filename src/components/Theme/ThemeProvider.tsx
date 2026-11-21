@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Platform } from 'react-native';
+import { requireOptionalNativeModule } from 'expo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme as baseTheme, Theme } from '../../design-system/theme';
 
@@ -31,7 +33,7 @@ const ThemeContext = createContext<ThemeContextType>(defaultContext);
 
 const darkColors = { ...baseTheme.colors };
 
-const lightColors = {
+export const lightColors = {
     ...baseTheme.colors,
     primary: {
         DEFAULT: '#4C6EF5', // Premium high-contrast Royal Blue
@@ -44,6 +46,7 @@ const lightColors = {
         glowStrong: 'rgba(76, 110, 245, 0.25)',
         glowSubtle: 'rgba(76, 110, 245, 0.05)',
     },
+    // The logo's ice/near-white (#FAFBFE) is the light theme's ground
     background: {
         primary: '#FAFBFE',
         DEFAULT: '#FAFBFE',
@@ -100,6 +103,24 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
         loadTheme();
     }, []);
+
+    useEffect(() => {
+        if (Platform.OS !== 'android' || Platform.Version < 29) return;
+
+        // An existing development build may not have the navigation bar module yet.
+        if (!requireOptionalNativeModule('ExpoNavigationBar')) return;
+
+        let active = true;
+        import('expo-navigation-bar').then(({ setStyle }) => {
+            if (active) setStyle(mode);
+        }).catch((error) => {
+            if (active) console.warn('Android navigation bar style unavailable:', error);
+        });
+
+        return () => {
+            active = false;
+        };
+    }, [mode]);
 
     const setThemeMode = async (newMode: ThemeMode) => {
         setModeState(newMode);

@@ -1,163 +1,93 @@
+/** @jsxImportSource react */
 import React from 'react';
-import { ScrollView, Text, StyleSheet, Pressable, View, Platform } from 'react-native';
+import { ScrollView, Text, StyleSheet, Pressable, View } from 'react-native';
 import { useTheme } from '../Theme/ThemeProvider';
-
-const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
 
 interface CategoryPillsProps {
     categories: string[];
     activeCategory: string | null;
     onCategoryPress: (category: string) => void;
     showFilterLabel?: boolean;
-    rounded?: boolean;
+    desktop?: boolean;
 }
 
-export const CategoryPills = ({ categories, activeCategory, onCategoryPress, showFilterLabel = true, rounded = false }: CategoryPillsProps) => {
+export const CategoryPills = ({ categories, activeCategory, onCategoryPress, desktop = false }: CategoryPillsProps) => {
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
+    const solid = isDark ? '#DAE6F7' : '#07080C';
+    const onSolid = isDark ? '#07080C' : '#DAE6F7';
 
-    return (
-        <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.scrollStyle}
-            contentContainerStyle={styles.container}
-        >
-            {showFilterLabel && (
-                <Text style={[styles.gutterLabel, { color: theme.colors.text.muted, fontFamily: MONO }]}>FILTER //</Text>
-            )}
-            {categories.map((category) => (
-                <Chip
-                    key={category}
-                    category={category}
-                    isActive={activeCategory === category}
-                    isDark={isDark}
-                    rounded={rounded}
-                    theme={theme}
-                    onPress={() => onCategoryPress(category)}
-                />
-            ))}
+    const activeBg = desktop ? isDark ? '#26354C' : '#DFEBFB' : solid;
+    const activeText = desktop ? isDark ? '#D9E4FF' : '#25466D' : onSolid;
+    const chips = categories.map(category => {
+        const active = activeCategory === category;
+        return (
+            <Pressable
+                key={category}
+                accessibilityRole="button"
+                accessibilityLabel={`Filter by ${category}`}
+                accessibilityState={{ selected: active }}
+                aria-pressed={active}
+                onPress={() => onCategoryPress(category)}
+                style={({ pressed }) => [styles.chip, desktop && styles.desktopChip, {
+                    backgroundColor: active
+                        ? activeBg
+                        : pressed
+                            ? (isDark ? 'rgba(218,230,247,0.08)' : 'rgba(255,255,255,0.5)')
+                            : (isDark ? 'rgba(255,255,255,0.04)' : desktop ? '#FFFFFF' : 'rgba(0,0,0,0.03)'),
+                    borderColor: active
+                        ? activeBg
+                        : isDark
+                            ? 'rgba(218,230,247,0.22)'
+                            : desktop ? '#DFE5EE' : 'rgba(7,8,12,0.18)',
+                }]}
+            >
+                {active && !desktop && <View style={[styles.dot, { backgroundColor: onSolid }]} />}
+                <Text style={[styles.text, {
+                    fontFamily: active ? theme.typography.fontFamilies.semibold : theme.typography.fontFamilies.medium,
+                    color: active ? activeText : theme.colors.text.secondary,
+                    fontWeight: active ? '700' : '500',
+                }]}>{category}</Text>
+            </Pressable>
+        );
+    });
+
+    return desktop ? <View style={styles.wrap}>{chips}</View> : (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}
+            contentContainerStyle={styles.container}>
+            {chips}
         </ScrollView>
     );
 };
 
-const Chip = ({
-    category,
-    isActive,
-    isDark,
-    rounded,
-    theme,
-    onPress,
-}: {
-    category: string;
-    isActive: boolean;
-    isDark: boolean;
-    rounded: boolean;
-    theme: any;
-    onPress: () => void;
-}) => {
-    const [isHovered, setIsHovered] = React.useState(false);
-    const accent = theme.colors.primary.DEFAULT;
-
-    return (
-        <Pressable
-            onHoverIn={() => setIsHovered(true)}
-            onHoverOut={() => setIsHovered(false)}
-            onPress={onPress}
-            style={[
-                styles.chip,
-                rounded && styles.roundedChip,
-                {
-                    borderColor: isActive
-                        ? accent
-                        : isHovered
-                            ? (isDark ? 'rgba(217, 228, 255, 0.3)' : 'rgba(76, 110, 245, 0.35)')
-                            : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.09)'),
-                    backgroundColor: isActive
-                        ? (isDark ? 'rgba(217, 228, 255, 0.12)' : 'rgba(76, 110, 245, 0.10)')
-                        : isHovered
-                            ? (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.035)')
-                            : 'transparent',
-                },
-                isActive && {
-                    shadowColor: isDark ? '#D9E4FF' : '#4C6EF5',
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: isDark ? 0.3 : 0.15,
-                    shadowRadius: 12,
-                },
-            ]}
-        >
-            {isActive && !rounded && <View style={[styles.chipTick, { borderColor: accent }]} pointerEvents="none" />}
-
-            <Text
-                allowFontScaling={false}
-                style={[
-                    styles.text,
-                    {
-                        color: isActive
-                            ? accent
-                            : isHovered
-                                ? theme.colors.text.primary
-                                : theme.colors.text.secondary,
-                        fontFamily: MONO,
-                    },
-                ]}
-            >
-                {category.toUpperCase()}
-            </Text>
-        </Pressable>
-    );
-};
-
 const styles = StyleSheet.create({
-    scrollStyle: {
-        flex: 1,
-        width: '100%',
-    },
+    wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
+    desktopChip: { paddingHorizontal: 12 },
+    scroll: { flexGrow: 0, flexShrink: 0, width: '100%' },
     container: {
         paddingHorizontal: 16,
         gap: 8,
-        paddingTop: 8,
-        paddingBottom: 8,
-        flexDirection: 'row',
+        paddingVertical: 6,
         alignItems: 'center',
-    },
-    gutterLabel: {
-        fontSize: 9,
-        letterSpacing: 1.8,
-        marginRight: 4,
-        opacity: 0.8,
     },
     chip: {
-        height: 30,
-        paddingHorizontal: 14,
-        borderRadius: 6,
+        minHeight: 34,
+        flexShrink: 0,
+        paddingHorizontal: 15,
+        borderRadius: 999,
         borderWidth: 1,
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'relative',
-        // @ts-ignore
-        transition: 'all 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
     },
-    roundedChip: {
-        borderRadius: 15,
-    },
-    chipTick: {
-        position: 'absolute',
-        top: -1,
-        left: -1,
-        width: 7,
-        height: 7,
-        borderWidth: 1.5,
-        borderRightWidth: 0,
-        borderBottomWidth: 0,
-        borderTopLeftRadius: 6,
+    dot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        marginRight: 7,
     },
     text: {
-        fontSize: 9.5,
-        fontWeight: '700',
-        letterSpacing: 1.4,
+        fontSize: 13,
         includeFontPadding: false,
-        textAlignVertical: 'center',
     },
 });

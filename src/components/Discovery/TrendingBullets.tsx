@@ -26,8 +26,8 @@ export const TrendingBullets: React.FC<TrendingBulletsProps> = ({ onItemPress })
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Ionicons name="flash-outline" size={16} color="#38BDF8" />
-                <Text style={[styles.headerText, { color: '#38BDF8', fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>[ TRENDING.NOW ]</Text>
+                <Ionicons name="flash-outline" size={16} color="#6A849B" />
+                <Text style={[styles.headerText, { color: '#6A849B', fontFamily: undefined }]}>[ TRENDING.NOW ]</Text>
             </View>
 
             <View style={styles.list}>
@@ -38,14 +38,14 @@ export const TrendingBullets: React.FC<TrendingBulletsProps> = ({ onItemPress })
                         onPress={() => onItemPress(item.id)}
                     >
                         <View style={styles.bulletRow}>
-                            <View style={[styles.bullet, { backgroundColor: theme.colors.primary.DEFAULT }]} />
+                            <View style={[styles.bullet, { backgroundColor: '#B8CCDF' }]} />
                             <MaterialCommunityIcons
                                 name={item.icon as any}
                                 size={18}
                                 color={theme.colors.text.muted}
                                 style={styles.icon}
                             />
-                            <Text style={[styles.label, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{item.label.toUpperCase()}</Text>
+                            <Text style={[styles.label, { color: theme.colors.text.secondary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{item.label}</Text>
                         </View>
 
                         <View style={styles.trendRow}>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         padding: 20,
         backgroundColor: 'rgba(0,0,0,0.02)',
-        borderRadius: 24,
+        borderRadius: 18,
         borderWidth: 1,
         borderColor: 'rgba(0,0,0,0.03)',
     },

@@ -1,14 +1,9 @@
-import React, { memo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Dimensions, Image, Platform } from 'react-native';
+import React, { memo, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../Theme/ThemeProvider';
-import { theme } from '@design-system/theme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const GRID_SPACING = 12;
 // Item width is handled by flex and numColumns in parent
 
 interface MosaicItemProps {
@@ -66,14 +61,16 @@ const MosaicVideo = ({ videoUrl, isActive, isScreenFocused }: MosaicVideoProps) 
 };
 
 export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: MosaicItemProps) => {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+    const [thumbnailFailed, setThumbnailFailed] = useState(false);
+    useEffect(() => setThumbnailFailed(false), [video.thumbnailUrl]);
 
     return (
         <Pressable onPress={onPress} style={styles.container}>
             <View style={styles.card}>
                 {/* Video Layer */}
-                {video.videoUrl ? (
+                {video.thumbnailUrl && !thumbnailFailed ? (
+                    <Image source={{ uri: video.thumbnailUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" onError={() => setThumbnailFailed(true)} />
+                ) : video.videoUrl ? (
                     <MosaicVideo
                         videoUrl={video.videoUrl}
                         isActive={isActive}
@@ -115,16 +112,12 @@ export const MosaicItem = memo(({ video, isActive, isScreenFocused, onPress }: M
                         </View>
 
                         <View style={styles.statsContainer}>
-                            <Text accessible={false} style={[styles.likeIcon, { color: video.isLiked ? '#D9E4FF' : 'white' }]}>✦</Text>
-                            <Text style={styles.statsText}>{formatNumber(video.likes)}</Text>
+                            <Ionicons name="heart-outline" size={12} color="#FFFFFF" />
+                            <Text style={styles.statsText}>{formatNumber(video.likes ?? 0)}</Text>
                         </View>
                     </View>
                 </View>
 
-                {/* Active Indicator Border */}
-                {isActive && (
-                    <View style={[styles.activeBorder, { borderColor: theme.colors.primary.DEFAULT }]} />
-                )}
             </View>
         </Pressable>
     );
@@ -135,16 +128,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1, // Use flex instead of fixed width
         aspectRatio: 1, // Keep it square
-        marginHorizontal: GRID_SPACING / 2,
-        marginBottom: GRID_SPACING,
-        borderRadius: 24,
+        marginHorizontal: 0,
+        marginBottom: 14,
+        borderRadius: 18,
         overflow: 'hidden',
         // High-end shadow
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.08,
         shadowRadius: 8,
-        elevation: 6,
+        elevation: 1,
     },
     card: {
         flex: 1,
@@ -169,7 +162,6 @@ const styles = StyleSheet.create({
         fontSize: 9,
         fontWeight: '700',
         letterSpacing: 0.5,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     bottomOverlay: {
         position: 'absolute',
@@ -189,8 +181,6 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgba(0,0,0,0.6)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 3,
-        textTransform: 'uppercase',
-        fontFamily: theme.typography.fontFamilies.bold,
         letterSpacing: 0.2,
     },
     playPill: { width: 25, height: 25, borderRadius: 13, backgroundColor: '#F0F5FB', alignItems: 'center', justifyContent: 'center', marginRight: 7 },
@@ -204,16 +194,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
     },
-    avatar: {
-        width: 18,
-        height: 18,
-        borderRadius: 9,
-        marginRight: 6,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.3)',
-    },
     authorName: {
-        color: '#38BDF8',
+        color: '#FFFFFF',
         fontSize: 10,
         fontWeight: '600',
         flex: 1,
@@ -223,20 +205,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    likeIcon: {
-        fontSize: 13,
-        lineHeight: 14,
-        includeFontPadding: false,
-    },
     statsText: {
         color: '#FFF',
         fontSize: 10,
         fontWeight: '700',
         marginLeft: 2,
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     activeBorder: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         borderWidth: 2,
         borderRadius: 24,
     }

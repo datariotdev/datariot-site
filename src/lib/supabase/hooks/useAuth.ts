@@ -12,30 +12,32 @@ export function useAuth() {
     const [authState, setAuthState] = useState<AuthState>({
         session: null,
         user: null,
-        loading: true,
+        loading: Boolean(supabase),
     });
 
     useEffect(() => {
-        // Get initial session
-        if (!supabase) {
-            setAuthState(prev => ({ ...prev, loading: false }));
-            return;
-        }
-
-        supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
-            setAuthState({
-                session,
-                user: session?.user ?? null,
-                loading: false,
-            });
-        });
-
-        // Listen for auth changes
         if (!supabase) return;
+        let active = true;
+        let authEventReceived = false;
+        const timeout = setTimeout(() => {
+            if (active && !authEventReceived) setAuthState({ session: null, user: null, loading: false });
+        }, 10_000);
+        supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
+            if (!active || authEventReceived) return;
+            clearTimeout(timeout);
+            setAuthState({ session, user: session?.user ?? null, loading: false });
+        }).catch(() => {
+            if (!active || authEventReceived) return;
+            clearTimeout(timeout);
+            setAuthState({ session: null, user: null, loading: false });
+        });
 
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event: any, session: Session | null) => {
+            authEventReceived = true;
+            clearTimeout(timeout);
+            if (!active) return;
             setAuthState({
                 session,
                 user: session?.user ?? null,
@@ -43,10 +45,11 @@ export function useAuth() {
             });
         });
 
-        return () => subscription.unsubscribe();
+        return () => { active = false; clearTimeout(timeout); subscription.unsubscribe(); };
     }, []);
 
     const signIn = async (email: string, password: string) => {
+        if (!supabase) return { data: null, error: new Error('Sign-in is temporarily unavailable.') };
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -55,6 +58,7 @@ export function useAuth() {
     };
 
     const signUp = async (email: string, password: string, username: string) => {
+        if (!supabase) return { data: null, error: new Error('Sign-up is temporarily unavailable.') };
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -69,6 +73,7 @@ export function useAuth() {
     };
 
     const signOut = async () => {
+        if (!supabase) return { error: null };
         const { error } = await supabase.auth.signOut();
         return { error };
     };

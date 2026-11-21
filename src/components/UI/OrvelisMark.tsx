@@ -26,3 +26,4 @@ export function OrvelisMark({ size = 24, color = '#D9E4FF', style }: Props) {
         </View>
     );
 }
+

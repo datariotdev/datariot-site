@@ -23,6 +23,7 @@ export interface Video {
     isSaved: boolean;
     isFollowing: boolean;
     thumbnailUrl?: string; // Optional thumbnail URL
+    duration?: number;
     category?: string;
     dnaRationale?: string;
     isHighSynergy?: boolean;
@@ -39,6 +40,7 @@ export type FeedType = 'trending' | 'following' | 'ai' | 'user' | 'search';
 interface UseVideosProps {
     type: FeedType;
     userId?: string;
+    videoId?: string;
     searchQuery?: string;
     hashtag?: string;
     category?: string;
@@ -52,12 +54,13 @@ function getPlaybackUrl(video: { url?: string | null; s3_url?: string | null }) 
     return [video.url?.trim(), video.s3_url?.trim()].find(url => url && !retiredVideoHost.test(url));
 }
 
-export function useVideos({ type, userId, searchQuery, hashtag, category, sort = 'recent' }: UseVideosProps) {
+export function useVideos({ type, userId, videoId, searchQuery, hashtag, category, sort = 'recent' }: UseVideosProps) {
     const { user } = useAuth();
     const [videos, setVideos] = useState<Video[]>([]);
     const [loading, setLoading] = useState(true);
-    const [fetchError, setFetchError] = useState(false);
+    const [fetchError, setFetchError] = useState<string | null>(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
@@ -92,9 +95,8 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             isLiked: isLiked,
             isSaved: false,
             isFollowing: false,
-            thumbnailUrl: video.thumbnail_url || video.thumbnail || (video.category === ANIMATED_SHORTS_CATEGORY
-                ? undefined
-                : `https://picsum.photos/seed/${video.id}/800/1200`),
+            thumbnailUrl: video.thumbnail_url || video.thumbnail || undefined,
+            duration: video.duration || undefined,
             category: video.category || null,
             dnaRationale: Math.random() > 0.5 ? "Matches your interest in Engineering & Dev" : "Popular in your local DNA community",
             isHighSynergy: (video.id.charCodeAt(0) % 10 < 7) || Math.random() > 0.3, // ~70-80% chance for synergy to ensure sections aren't empty
@@ -104,14 +106,15 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
 
     const fetchVideos = useCallback(async (pageNum: number, isRefresh: boolean = false) => {
         if (!supabase) {
-            setFetchError(true);
+            setFetchError('Video service is not configured');
             setLoading(false);
             setRefreshing(false);
             return;
         }
         try {
-            setFetchError(false);
+            setFetchError(null);
             if (!isRefresh) setLoading(true);
+            setFetchError(null);
 
             // 1. Fetch videos - Increased range to fetch more in case many are filtered out
             let query = supabase
@@ -130,6 +133,7 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             if (userId) {
                 query = query.eq('user_id', userId);
             }
+            if (videoId) query = query.eq('id', videoId);
 
             if (hashtag) {
                 // Assuming hashtag is stored in description or a separate array
@@ -148,7 +152,10 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
                 .range(pageNum * 12, (pageNum + 1) * 12 - 1); // Load 12 at a time (optimized)
 
             if (videoError) throw videoError;
-            if (!videoData) return;
+            if (!videoData) {
+                if (isRefresh) setVideos([]);
+                return;
+            }
 
             // 2. Parallelize dependent fetches (Profiles and Likes)
             const userIds = [...new Set(videoData.map((v: any) => v.user_id).filter(Boolean))];
@@ -301,20 +308,22 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
             }
 
             setHasMore(videoData.length === 12);
-        } catch (error) {
-            setFetchError(true);
-            console.error('Error fetching videos:', error);
+        } catch (err: any) {
+            console.error('Error fetching videos:', err);
+            const msg = err instanceof Error ? err.message : (err?.message || 'Failed to load videos');
+            setError(msg);
+            setFetchError(msg);
         } finally {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [type, userId, searchQuery, hashtag, category, user, formatVideo, sort]);
+    }, [type, userId, videoId, searchQuery, hashtag, category, user, formatVideo, sort]);
 
     useEffect(() => {
         // console.log('useVideos component mounted or dependencies changed.');
         setPage(0);
         fetchVideos(0, true);
-    }, [type, userId, searchQuery, hashtag, category, user, fetchVideos]);
+    }, [type, userId, videoId, searchQuery, hashtag, category, user, fetchVideos]);
 
     const loadMore = () => {
         if (!loading && !refreshing && !fetchError && hasMore) {
@@ -397,15 +406,39 @@ export function useVideos({ type, userId, searchQuery, hashtag, category, sort =
         }
     };
 
+    const toggleSave = async (videoId: string) => {
+        if (!user || !supabase) return;
+        const current = videos.find(v => v.id === videoId);
+        if (!current) return;
+        const wasSaved = current.isSaved;
+        setVideos(prev => prev.map(v => v.id === videoId
+            ? { ...v, isSaved: !wasSaved, saved: !wasSaved ? v.saved + 1 : Math.max(0, v.saved - 1) }
+            : v));
+        try {
+            if (wasSaved) {
+                await supabase.from('save_actions').delete().eq('user_id', user.id).eq('video_id', videoId);
+            } else {
+                await supabase.from('save_actions').insert({ user_id: user.id, video_id: videoId });
+            }
+        } catch (err) {
+            console.error('Error toggling save:', err);
+            setVideos(prev => prev.map(v => v.id === videoId
+                ? { ...v, isSaved: wasSaved, saved: wasSaved ? v.saved + 1 : Math.max(0, v.saved - 1) }
+                : v));
+        }
+    };
+
     return {
         videos,
         loading,
-        refreshing,
         fetchError,
+        refreshing,
+        error,
         hasMore,
         loadMore,
         refresh,
         toggleLike,
+        toggleSave,
         toggleFollow,
     };
 }

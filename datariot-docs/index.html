@@ -99,15 +99,15 @@
                 <p>A useful video can leave you with more questions than answers. Orvelis helps you unpack the topic, explore another perspective and bring your own thinking into the conversation.</p>
 
                 <div class="callout availability">
-                    <p class="callout__title">Beta foundation &amp; planned features</p>
-                    <p>Deep Dive and video Q&amp;A are the foundation in the current beta. The five features marked <strong>Planned</strong> below show where Orvelis is headed. Their examples illustrate the intended experience; availability will be announced as each feature ships.</p>
+                    <p class="callout__title">Orvelis Live beta &amp; planned features</p>
+                    <p>For supported public clips, Orvelis now analyzes video and audio, follows playback with timestamped notes, answers questions, checks claims with web sources and helps outline a video reply. Features still marked <strong>Planned</strong> below remain on the roadmap.</p>
                 </div>
 
-                <h2 class="doc-section__subtitle">Start with Deep Dive</h2>
+                <h2 class="doc-section__subtitle">Watch with Orvelis Live</h2>
                 <ol class="doc-steps">
                     <li><strong>Find an idea.</strong> Open a video that makes you curious.</li>
-                    <li><strong>Open Orvelis.</strong> In the video options, choose <strong>Orvelis AI Deep Dive</strong>.</li>
-                    <li><strong>Get your bearings.</strong> Read the summary, explore three key terms and browse suggested videos, articles or podcasts.</li>
+                    <li><strong>Open Orvelis.</strong> Use the Orvelis notes card in the player, the Orvelis button at the top, or <strong>Unpack this clip</strong> in the feed. Sign in to use video analysis.</li>
+                    <li><strong>Get your bearings.</strong> Explore <strong>Understand</strong> for the summary, key moments, terms and a quick comprehension question. Open <strong>Examine the claim</strong> to separate the claim, its evidence and missing context.</li>
                     <li><strong>Ask your question.</strong> Use the chat to ask for a simpler explanation, a concrete example or a closer look at an assumption.</li>
                 </ol>
                 <div class="doc-example">
@@ -115,7 +115,7 @@
                     <blockquote>“The video says correlation does not prove causation. Can you explain that with an everyday example?”</blockquote>
                     <p>Keep asking follow-up questions in the same chat to explore the topic at your own pace.</p>
                 </div>
-                <p class="doc-note">In the current beta, Deep Dive uses the video's title and description as context. It may miss details in the spoken audio or visuals. Suggested resources need checking; an AI explanation is not proof that a claim is true.</p>
+                <p class="doc-note">Orvelis Live uses the actual video and audio of supported public clips. The first analysis takes time; its saved notes then follow playback without a new AI request every second. Use the switch on the notes card to pause automatic notes. Private or inaccessible media is not analyzed. An AI interpretation is not proof that a claim is true; use Check sources to examine independent evidence.</p>
                 <nav class="guide-jumps" aria-label="Explore planned Orvelis features">
                     <a href="#go-deeper">Follow a question <span aria-hidden="true">↗</span></a>
                     <a href="#missing-context">Check the context <span aria-hidden="true">↗</span></a>
@@ -141,9 +141,9 @@
             </section>
 
             <section class="doc-section" id="missing-context" aria-labelledby="missing-context-title">
-                <div class="feature-heading"><span class="doc-eyebrow">02 / FIND THE MISSING CONTEXT</span><span class="status-badge">Planned</span></div>
+                <div class="feature-heading"><span class="doc-eyebrow">02 / FIND THE MISSING CONTEXT</span><span class="status-badge">Beta</span></div>
                 <h2 class="doc-section__title" id="missing-context-title">Look behind a confident claim.</h2>
-                <p>Orvelis is intended to separate the claim, the evidence offered and the assumptions connecting them. The planned analysis would link concerns to the relevant moment in a clip, with original sources and human video replies where available.</p>
+                <p>Open Examine the claim to separate the main claim, the evidence shown and the context the clip leaves out. Timestamped notes point back to the relevant moment. Check sources runs a separate web search and displays the sources returned by the provider. Evidence presented in a clip and independent verification are labeled separately.</p>
                 <div class="doc-example">
                     <span class="doc-example__label">EXAMPLE SCENARIO</span>
                     <blockquote>“AI will replace all programmers in two years.”</blockquote>
@@ -167,9 +167,9 @@
             </section>
 
             <section class="doc-section" id="video-replies" aria-labelledby="video-replies-title">
-                <div class="feature-heading"><span class="doc-eyebrow">04 / BUILD A VIDEO REPLY</span><span class="status-badge">Planned</span></div>
+                <div class="feature-heading"><span class="doc-eyebrow">04 / BUILD A VIDEO REPLY</span><span class="status-badge">Beta</span></div>
                 <h2 class="doc-section__title" id="video-replies-title">Turn a reaction into a clear point.</h2>
-                <p>The planned reply assistant would help you work out exactly what you agree or disagree with, find supporting evidence and make a short outline for your response.</p>
+                <p>Each supported clip includes a short reply outline in Examine the claim. Use Build a reply to develop your own 30-second response in chat: a clear point, a concrete reason or example, and a conclusion. Orvelis does not record or publish on your behalf.</p>
                 <div class="doc-example">
                     <span class="doc-example__label">EXAMPLE SCENARIO</span>
                     <blockquote>“I disagree with the conclusion, but I can't explain why. Help me structure a 30-second reply.”</blockquote>
@@ -226,7 +226,7 @@
                         </tr>
                         <tr>
                             <td><strong>AI Engine</strong></td>
-                            <td>OpenAI GPT-4</td>
+                            <td>Gemini via authenticated server-side Orvelis API; OpenAI fallback for general chat</td>
                         </tr>
                         <tr>
                             <td><strong>State</strong></td>

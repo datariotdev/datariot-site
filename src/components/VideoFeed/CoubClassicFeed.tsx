@@ -1,11 +1,10 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react';
-import { View, StyleSheet, FlatList, ViewToken, Platform, useWindowDimensions } from 'react-native';
+import React, { useRef, useState, useMemo } from 'react';
+import { View, Text, StyleSheet, FlatList, ListViewToken } from 'react-native';
 import { CoubClassicItem } from './CoubClassicItem';
-import { useTheme } from '../Theme/ThemeProvider';
+import { usePalette } from '../../design-system/palette';
 import { SectionHeader } from '../Discovery/SectionHeader';
-import { DiscoveryCarousel } from '../Discovery/DiscoveryCarousel';
-import { FeaturedHero } from '../Discovery/FeaturedHero';
-import { DeckGrid } from './DeckFeed/DeckGrid';
+import { ArenaPager } from '../Discovery/ArenaPager';
+import { OriginalsStrip } from '../Discovery/OriginalsStrip';
 import { Video } from '../../lib/supabase/hooks/useVideos';
 
 interface CoubClassicFeedProps {
@@ -21,6 +20,8 @@ interface CoubClassicFeedProps {
     initialScrollIndex?: number;
     paddingTop?: number;
     paddingBottom?: number;
+    collection?: boolean;
+    title?: string;
 }
 
 export function CoubClassicFeed({
@@ -36,23 +37,13 @@ export function CoubClassicFeed({
     initialScrollIndex = 0,
     paddingTop = 0,
     paddingBottom = 40,
+    collection = false,
+    title = 'Latest videos',
 }: CoubClassicFeedProps) {
     const [activeVideoIndex, setActiveVideoIndex] = useState(initialScrollIndex);
     const flatListRef = useRef<FlatList>(null);
-    const { theme } = useTheme();
-    const { width } = useWindowDimensions();
-    const isDesktopWeb = Platform.OS === 'web' && width > 768;
-
-    const ensureMinCount = useCallback(<T,>(list: T[], min: number): T[] => {
-        if (list.length === 0) return [];
-        if (list.length >= min) return list;
-
-        const padded = [...list];
-        while (padded.length < min) {
-            padded.push(...list);
-        }
-        return padded.slice(0, min);
-    }, []);
+    const p = usePalette();
+    const background = p.isDark ? '#08090D' : '#F7F8FA';
 
     const allSynergy = useMemo(() => videos.filter(v => v.isHighSynergy), [videos]);
 
@@ -68,8 +59,8 @@ export function CoubClassicFeed({
             likes: v.likes,
             logicStats: v.logicStats
         }));
-        return ensureMinCount(base, 5);
-    }, [allSynergy, ensureMinCount]);
+        return base;
+    }, [allSynergy]);
 
     const synergyVideos = useMemo(() => {
         let base;
@@ -81,49 +72,51 @@ export function CoubClassicFeed({
             // Otherwise, show the next set for discovery
             base = allSynergy.slice(3, 11);
         }
-        return ensureMinCount(base, 5);
-    }, [allSynergy, ensureMinCount]);
+        return base;
+    }, [allSynergy]);
 
-    const scrollVideos = useMemo(() => {
-        let base;
-        // Define which videos go to the main vertical scroll
-        // This ensures no single video dominates all UI sections too much
-        if (allSynergy.length <= 3) {
-            base = videos;
-        } else {
-            base = videos.filter(v => !v.isHighSynergy || videos.indexOf(v) > 8);
-        }
-        return ensureMinCount(base, 5);
-    }, [videos, allSynergy, ensureMinCount]);
+    const scrollVideos = videos;
 
-    const onViewableItemsChanged = useCallback(
-        ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const onViewableItemsChanged = useRef(
+        ({ viewableItems }: { viewableItems: ListViewToken[] }) => {
             if (viewableItems.length > 0) {
                 const index = viewableItems[0].index;
-                if (index !== null) {
+                if (index != null) {
                     setActiveVideoIndex(index);
                 }
             }
-        },
-        []
-    );
+        }
+    ).current;
 
-    const viewabilityConfig = useMemo(() => ({
+    const viewabilityConfig = useRef({
         itemVisiblePercentThreshold: 60,
-    }), []);
+    }).current;
 
-    const header = (
+    const header = collection ? (
+        <View style={[styles.collectionHeader, { paddingTop: paddingTop + 12 }]}>
+            <Text style={[styles.collectionTitle, { color: p.text, fontFamily: p.fonts.semibold }]}>{title}</Text>
+            <Text style={[styles.count, { color: p.sub, fontFamily: p.fonts.regular }]}>{videos.length} {videos.length === 1 ? 'video' : 'videos'}</Text>
+        </View>
+    ) : videos.length <= 5 ? (
+        <View style={[styles.feedHeader, { paddingTop: paddingTop + 18 }]}>
+            <View style={styles.headerMeta}>
+                <Text style={[styles.eyebrow, { color: p.faint, fontFamily: p.fonts.medium }]}>THE FEED</Text>
+                <Text style={[styles.count, { color: p.faint, fontFamily: p.fonts.regular }]}>{videos.length} {videos.length === 1 ? 'video' : 'videos'}</Text>
+            </View>
+            <Text style={[styles.feedTitle, { color: p.text, fontFamily: p.fonts.semibold }]}>{title}</Text>
+            <Text style={[styles.feedSubtitle, { color: p.sub, fontFamily: p.fonts.regular }]}>New ideas, one video at a time.</Text>
+        </View>
+    ) : (
         <View style={{ marginBottom: 8, marginTop: paddingTop + 10 }}>
             {featuredVideos.length > 0 && (
                 <>
                     <SectionHeader
-                        title="Live Arena"
-                        subtitle="Debates running right now"
+                        title="Featured videos"
+                        subtitle="Recent videos worth exploring"
                         index="01"
-                        meta={`${featuredVideos.length} OPEN`}
-                        containerStyle={isDesktopWeb ? { paddingHorizontal: 0, paddingTop: 20 } : undefined}
+                        meta={`${featuredVideos.length} PICKS`}
                     />
-                    <FeaturedHero featuredVideos={featuredVideos} onVideoPress={onSelect} />
+                    <ArenaPager featuredVideos={featuredVideos} onVideoPress={onSelect} />
                 </>
             )}
 
@@ -132,37 +125,17 @@ export function CoubClassicFeed({
                 subtitle="Curated high-signal video"
                 index="02"
                 meta={`${synergyVideos.length} PICKS`}
-                containerStyle={isDesktopWeb ? { paddingHorizontal: 0 } : undefined}
             />
-            <DiscoveryCarousel videos={synergyVideos} onSelect={onSelect} />
+            <OriginalsStrip videos={synergyVideos} onSelect={onSelect} />
 
             <SectionHeader
-                title="The Deck"
+                title="Latest videos"
                 subtitle="Everything moving across the platform"
                 index="03"
                 meta={`${scrollVideos.length} SIGNALS`}
-                containerStyle={isDesktopWeb ? { paddingHorizontal: 0 } : undefined}
             />
         </View>
     );
-
-    /* Desktop web gets the asymmetric deck grid instead of a single column. */
-    if (isDesktopWeb) {
-        return (
-            <View style={styles.container}>
-                <DeckGrid
-                    videos={scrollVideos}
-                    onSelect={onSelect}
-                    onLike={onLike}
-                    onComment={onComment}
-                    onMore={onMore}
-                    onEndReached={onEndReached}
-                    ListHeaderComponent={header}
-                    contentPaddingBottom={paddingBottom + 80}
-                />
-            </View>
-        );
-    }
 
     const renderItem = ({ item, index }: { item: Video; index: number }) => {
         const isActive = index === activeVideoIndex && isScreenFocused;
@@ -181,12 +154,12 @@ export function CoubClassicFeed({
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: background }]}>
             <FlatList
                 ref={flatListRef}
                 data={scrollVideos}
                 renderItem={renderItem}
-                keyExtractor={(item, index) => `${item.id}-${index}`}
+                keyExtractor={item => item.id}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={header}
                 onViewableItemsChanged={onViewableItemsChanged}
@@ -209,10 +182,7 @@ export function CoubClassicFeed({
                     width: '100%',
                     // No max width here. This container holds the section
                     // headers and the horizontal rows as well as the video
-                    // items, so capping it at 720 inside a wider column inset
-                    // every row from the headings above it and cut the
-                    // carousels short. CoubClassicItem caps itself at 700 and
-                    // centres, so the vertical feed keeps its reading width.
+                    // items. Each CoubClassicItem caps and centres itself.
                     paddingHorizontal: 0,
                 }}
             />
@@ -221,7 +191,13 @@ export function CoubClassicFeed({
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+    container: { flex: 1 },
+    collectionHeader: { paddingHorizontal: 18, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+    collectionTitle: { fontSize: 24, lineHeight: 29, letterSpacing: -0.6, flex: 1 },
+    feedHeader: { paddingHorizontal: 20, paddingBottom: 23 },
+    headerMeta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 9 },
+    eyebrow: { fontSize: 9, letterSpacing: 1.7 },
+    count: { fontSize: 11 },
+    feedTitle: { fontSize: 30, lineHeight: 35, letterSpacing: -1 },
+    feedSubtitle: { fontSize: 13, marginTop: 6 },
 });

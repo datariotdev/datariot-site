@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         zIndex: 100,
     },
     backdrop: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
     },
     content: {
         flex: 1,

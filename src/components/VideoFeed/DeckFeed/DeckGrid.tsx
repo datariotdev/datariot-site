@@ -108,7 +108,7 @@ export const DeckGrid = ({
             renderItem={renderRow}
             keyExtractor={(row) => row.key}
             showsVerticalScrollIndicator={false}
-            ListHeaderComponent={ListHeaderComponent}
+            ListHeaderComponent={ListHeaderComponent ?? undefined}
             onEndReached={onEndReached}
             onEndReachedThreshold={0.6}
             removeClippedSubviews={false}

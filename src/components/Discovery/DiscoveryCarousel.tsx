@@ -44,7 +44,7 @@ const Card = ({ item, index, onSelect }: { item: Video; index: number; onSelect:
             <Image
                 source={{ uri: item.thumbnailUrl || `https://picsum.photos/seed/${item.id}/500/700` }}
                 style={[
-                    StyleSheet.absoluteFillObject,
+                    StyleSheet.absoluteFill,
                     {
                         // @ts-ignore web transition
                         transition: 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -57,7 +57,7 @@ const Card = ({ item, index, onSelect }: { item: Video; index: number; onSelect:
             <LinearGradient
                 colors={['rgba(4,5,9,0.25)', 'rgba(4,5,9,0.5)', 'rgba(4,5,9,0.95)']}
                 locations={[0, 0.45, 1]}
-                style={StyleSheet.absoluteFillObject}
+                style={StyleSheet.absoluteFill}
                 pointerEvents="none"
             />
 
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.4,
     },
     playWrap: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         alignItems: 'center',
         justifyContent: 'center',
     },

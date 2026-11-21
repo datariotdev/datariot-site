@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.background.secondary,
     },
     thumbnail: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         opacity: 0.7,
     },
     liveBadge: {

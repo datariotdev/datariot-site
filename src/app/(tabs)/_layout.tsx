@@ -1,12 +1,50 @@
-import { OrvelisMark } from '../../components/UI/OrvelisMark';
+/** @jsxImportSource react */
 import React, { useEffect } from 'react';
-import { Tabs } from 'expo-router';
+import { OrvelisMark } from '../../components/AI/OrvelisMark';
+import { Tabs, usePathname } from 'expo-router';
+import { BottomTabBar } from 'expo-router/build/layouts/Tabs';
 import { setAudioModeAsync } from 'expo-audio';
+import { AppNavigationIcon } from '../../components/Navigation/AppNavigationIcon';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Platform, useWindowDimensions } from 'react-native';
+import { View, Platform, useWindowDimensions, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { usePalette } from '../../design-system/palette';
+import { NavVisibilityProvider, useNavVisibility } from '../../context/NavVisibilityContext';
+import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import * as SystemUI from 'expo-system-ui';
+
+function AnimatedTabBar(props: any) {
+    const { isNavVisible } = useNavVisibility();
+    const { width } = useWindowDimensions();
+    const isDesktopWeb = Platform.OS === 'web' && width > 768;
+
+    const animStyle = useAnimatedStyle(() => ({
+        transform: [{
+            translateY: withTiming(isNavVisible ? 0 : 120, {
+                duration: 250,
+                easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+            }),
+        }],
+        opacity: withTiming(isNavVisible ? 1 : 0, {
+            duration: 220,
+            easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        }),
+    }), [isNavVisible]);
+
+    if (isDesktopWeb) return null;
+
+    return (
+        <Animated.View
+            pointerEvents={isNavVisible ? 'auto' : 'none'}
+            style={[{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 999 }, animStyle]}
+        >
+            <BottomTabBar {...props} />
+        </Animated.View>
+    );
+}
+
 
 const TabLayout = () => {
     useEffect(() => {
@@ -24,22 +62,40 @@ const TabLayout = () => {
     }, []);
 
     const { width } = useWindowDimensions();
+    const pathname = usePathname();
+    const activeWebRoute = pathname.split('/').filter(Boolean)[0] || 'index';
     const insets = useSafeAreaInsets();
-    const bottomInset = Math.max(insets.bottom, 8);
-    const { mode } = useTheme();
-    const isDark = mode === 'dark';
-    const activeTabColor = isDark ? '#E1E8F5' : '#111318';
-    const inactiveTabColor = isDark ? '#A0ACBE' : '#242830';
+    const { theme, mode } = useTheme();
+    const p = usePalette();
+    const isDark = p.isDark;
+    const background = theme.colors.background.primary;
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
 
+    useEffect(() => {
+        if (Platform.OS === 'android') {
+            const barColor = isDark ? '#0B0D18' : '#FAFBFE';
+            SystemUI.setBackgroundColorAsync(barColor).catch(() => {});
+        }
+    }, [isDark]);
+
+    const activeTabColor = isDark ? '#E1E8F5' : '#8BB8F3';
+    const inactiveTabColor = isDark ? '#A0ACBE' : '#252A34';
+    const bottomInset = Platform.OS === 'web' ? (insets.bottom || 0) : Math.max(insets.bottom, 8);
+    const barHeight = 58 + bottomInset;
+
     return (
-        <ResponsiveLayout>
-            <Tabs
-                screenOptions={{
+        <NavVisibilityProvider>
+            <ResponsiveLayout>
+                <Tabs
+                    tabBar={(props) => <AnimatedTabBar {...props} />}
+                    screenOptions={({ route }) => ({
                     headerShown: false,
-                    // Let the layout's HUD backdrop show through instead of the
-                    // navigator's default light scene background.
-                    sceneStyle: { backgroundColor: 'transparent' },
+                    // The web screen fallback can keep inactive tabs mounted.
+                    // Hide their scenes explicitly so Inbox never paints over Feed.
+                    sceneStyle: {
+                        backgroundColor: background,
+                        ...(Platform.OS === 'web' && { display: route.name === activeWebRoute ? 'flex' : 'none' }),
+                    },
                     tabBarActiveTintColor: activeTabColor,
                     tabBarInactiveTintColor: inactiveTabColor,
                     tabBarShowLabel: false,
@@ -49,7 +105,7 @@ const TabLayout = () => {
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: 52 + bottomInset,
+                        height: barHeight,
                         backgroundColor: 'transparent',
                         borderWidth: 0,
                         borderTopWidth: 0,
@@ -61,26 +117,30 @@ const TabLayout = () => {
                         shadowOffset: { width: 0, height: 0 },
                         shadowRadius: 0,
                         paddingBottom: bottomInset,
-                        paddingTop: 16,
+                        paddingTop: 6,
                     },
                     tabBarBackground: () => null,
+                    tabBarLabelStyle: {
+                        display: 'none',
+                    },
                     tabBarItemStyle: {
                         flex: 1,
                         alignItems: 'center',
                         justifyContent: 'center',
                     },
                     tabBarHideOnKeyboard: true,
-                }}
+                })}
             >
                 <Tabs.Screen
                     name="index"
                     options={{
-                        title: 'Home',
-                        tabBarIcon: ({ focused, color }) => (
+                        title: 'Feed',
+                        tabBarAccessibilityLabel: 'Feed',
+                        tabBarIcon: ({ focused }) => (
                             <MaterialCommunityIcons
-                                name={focused ? "home-variant" : "home-variant-outline"}
-                                size={22}
-                                color={color}
+                                name={focused ? 'home-variant' : 'home-variant-outline'}
+                                size={24}
+                                color={focused ? activeTabColor : inactiveTabColor}
                             />
                         ),
                     }}
@@ -89,11 +149,12 @@ const TabLayout = () => {
                     name="discover"
                     options={{
                         title: 'Discover',
-                        tabBarIcon: ({ focused, color }) => (
+                        tabBarAccessibilityLabel: 'Discover',
+                        tabBarIcon: ({ focused }) => (
                             <Ionicons
-                                name={focused ? "navigate-circle" : "navigate-circle-outline"}
+                                name={focused ? 'navigate-circle' : 'navigate-circle-outline'}
                                 size={24}
-                                color={color}
+                                color={focused ? activeTabColor : inactiveTabColor}
                             />
                         ),
                     }}
@@ -102,24 +163,27 @@ const TabLayout = () => {
                     name="create"
                     options={{
                         title: 'Create',
+                        tabBarAccessibilityLabel: 'Create',
                         tabBarIcon: () => (
-                            <View style={{
-                                width: 40,
-                                height: 40,
-                                borderRadius: 20,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: isDark ? '#E1E8F5' : '#111318',
-                                shadowColor: '#111318',
-                                shadowOffset: { width: 0, height: 4 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 8,
-                                elevation: 4,
-                            }}>
+                            <View
+                                style={{
+                                    width: 44,
+                                    height: 44,
+                                    borderRadius: 22,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: '#D9E4FF',
+                                    shadowColor: '#111318',
+                                    shadowOffset: { width: 0, height: 4 },
+                                    shadowOpacity: 0.25,
+                                    shadowRadius: 6,
+                                    elevation: 4,
+                                }}
+                            >
                                 <Feather
                                     name="plus"
                                     size={21}
-                                    color={isDark ? '#293548' : '#F7F9FC'}
+                                    color="#111318"
                                 />
                             </View>
                         ),
@@ -129,10 +193,12 @@ const TabLayout = () => {
                     name="ai"
                     options={{
                         title: 'Orvelis AI',
-                        tabBarIcon: ({ focused, color }) => (
-                            <OrvelisMark
+                        tabBarAccessibilityLabel: 'Orvelis AI',
+                        tabBarIcon: ({ focused }) => (
+                            <Ionicons
+                                name={focused ? 'sparkles' : 'sparkles-outline'}
                                 size={24}
-                                color={color}
+                                color={focused ? activeTabColor : inactiveTabColor}
                             />
                         ),
                     }}
@@ -141,11 +207,12 @@ const TabLayout = () => {
                     name="inbox"
                     options={{
                         title: 'Inbox',
-                        tabBarIcon: ({ focused, color }) => (
+                        tabBarAccessibilityLabel: 'Inbox',
+                        tabBarIcon: ({ focused }) => (
                             <Ionicons
-                                name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"}
+                                name={focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'}
                                 size={24}
-                                color={color}
+                                color={focused ? activeTabColor : inactiveTabColor}
                             />
                         ),
                     }}
@@ -153,11 +220,13 @@ const TabLayout = () => {
                 <Tabs.Screen
                     name="profile"
                     options={{
-                        href: null, // This is the correct way in Expo Router to completely remove the tab
+                        tabBarButton: () => null,
+                        tabBarItemStyle: { display: 'none' },
                     }}
                 />
             </Tabs>
         </ResponsiveLayout>
+    </NavVisibilityProvider>
     );
 };
 

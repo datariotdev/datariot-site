@@ -1,324 +1,349 @@
-import { OrvelisMark } from '../UI/OrvelisMark';
-import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+/** @jsxImportSource react */
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
     Modal,
     View,
     Text,
-    Image,
     StyleSheet,
-    TouchableOpacity,
+    Image,
     Pressable,
     FlatList,
-    Dimensions,
-    ViewToken,
     StatusBar,
+    Platform,
     useWindowDimensions,
-    Platform
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Video, ResizeMode } from 'expo-av';
+import { VideoView, useVideoPlayer } from 'expo-video';
+import { useEventListener } from 'expo';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useIsFocused } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
+import { useRouter, useIsFocused } from 'expo-router';
 import { encodeVideoUrl } from '../../lib/utils/url';
 import { VideoControls } from '../VideoPlayer/VideoControls';
 import { CommentsModal } from './CommentsModal';
 import { DeepDiveModal } from './DeepDiveModal';
+import { LiveAnalysisStrip } from './LiveAnalysisStrip';
 import { MoreOptionsModal } from './MoreOptionsModal';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withRepeat,
-    withTiming,
-    withSequence,
-    FadeIn
-} from 'react-native-reanimated';
-import { useTheme } from '../Theme/ThemeProvider';
+import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
+import type { FeedType, Video as FeedVideo } from '../../lib/supabase/hooks/useVideos';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const FEED_TABS = [
+    { key: 'ai', label: 'ARENA' },
+    { key: 'trending', label: 'FEED' },
+    { key: 'following', label: 'CIRCLE' },
+] as const;
 
-interface FullScreenVideoModalProps {
+export interface FullScreenVideoModalProps {
     visible: boolean;
-    videos: any[];
+    videos: FeedVideo[];
     initialVideoId: string | null;
     onClose: () => void;
     onLike: (id: string) => void;
-    onComment: (id: string) => void;
     onSave: (id: string) => void;
-    onMore: (id: string) => void;
-    onFollow: (id: string) => void;
+    openOptionsOnMount?: boolean;
+    activeTab?: FeedType;
+    onSelectTab?: (tab: FeedType) => void;
+    onEndReached?: () => void;
 }
-
-interface InternalFullScreenVideoProps {
-    videoUrl: string;
-    isActive: boolean;
-    isPaused: boolean;
-    isMuted: boolean;
-    onTimeUpdate: (currentTime: number, duration: number) => void;
-}
-
-const InternalFullScreenVideo = ({ videoUrl, isActive, isPaused, isMuted, onTimeUpdate }: InternalFullScreenVideoProps) => {
-    const videoRef = useRef<Video>(null);
-
-    return (
-        <Video
-            ref={videoRef}
-            source={{ uri: encodeVideoUrl(videoUrl) || '' }}
-            style={StyleSheet.absoluteFill}
-            resizeMode={ResizeMode.CONTAIN}
-            shouldPlay={isActive && !isPaused}
-            isLooping
-            isMuted={isMuted || !isActive}
-            onPlaybackStatusUpdate={(status: any) => {
-                if (status.isLoaded && status.durationMillis) {
-                    onTimeUpdate(status.positionMillis, status.durationMillis);
-                }
-            }}
-        />
-    );
-};
 
 function FullScreenVideoItem({
     item,
     isActive,
-    isMuted,
     height,
+    topPadding,
+    bottomPadding,
+    clearDisplay,
+    muted,
+    rate,
+    restart,
+    onToggleMute,
     onLike,
     onComment,
     onSave,
+    onComposeComment,
     onMore,
-    onFollow,
+    onOrvelis,
+    seekTo,
 }: {
-    item: any;
+    item: FeedVideo;
     isActive: boolean;
-    isMuted: boolean;
     height: number;
+    topPadding: number;
+    bottomPadding: number;
+    clearDisplay: boolean;
+    muted: boolean;
+    rate: number;
+    restart: { id: string } | null;
+    onToggleMute: () => void;
     onLike: () => void;
     onComment: () => void;
     onSave: () => void;
+    onComposeComment: () => void;
     onMore: () => void;
-    onFollow: () => void;
+    onOrvelis: (seconds: number) => void;
+    seekTo?: { seconds: number; nonce: number };
 }) {
+    const router = useRouter();
+    const author = item.author.split(' | ')[0];
     const [isPaused, setIsPaused] = useState(false);
+    const [avatarFailed, setAvatarFailed] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+
+    const player = useVideoPlayer(encodeVideoUrl(item.videoUrl) || '', (p) => {
+        p.loop = true;
+        p.muted = muted;
+        p.playbackRate = rate;
+        p.timeUpdateEventInterval = 0.2;
+        if (isActive && !isPaused) {
+            p.play();
+        }
+    });
+
+    useEffect(() => {
+        if (isActive && !isPaused) {
+            player.play();
+        } else {
+            player.pause();
+        }
+    }, [isActive, isPaused, player]);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/immutability -- Expo VideoPlayer is an imperative SharedObject.
+        player.muted = muted;
+        player.playbackRate = rate;
+    }, [muted, player, rate]);
+
+    useEffect(() => {
+        if (!restart) return;
+        player.currentTime = 0;
+        setIsPaused(false);
+    }, [player, restart]);
+
+    useEffect(() => { if (seekTo) { player.currentTime = seekTo.seconds; setIsPaused(false); } }, [player, seekTo]);
+
+    useEventListener(player, 'timeUpdate', (event: any) => {
+        const current = Number(event?.currentTime ?? player.currentTime ?? 0);
+        const total = Number(player.duration ?? 0);
+        setCurrentTime(Number.isFinite(current) && current >= 0 ? current * 1000 : 0);
+        setDuration(Number.isFinite(total) && total > 0 ? total * 1000 : 0);
+    });
 
     const togglePlayback = () => {
         setIsPaused(!isPaused);
     };
 
     const handleSeek = (value: number) => {
-        console.log('Seek not yet implemented with hook isolation');
+        try {
+            // eslint-disable-next-line react-hooks/immutability -- Seeking is part of Expo's imperative player API.
+            player.currentTime = value / 1000;
+        } catch (e) {
+            console.warn('Video seek failed:', e);
+        }
     };
 
     // Double tap to like gesture
     const doubleTap = Gesture.Tap()
         .numberOfTaps(2)
         .maxDuration(250)
+        .runOnJS(true)
         .onEnd(() => { onLike(); });
 
     return (
-        <GestureDetector gesture={doubleTap}>
-            <View style={{ width: SCREEN_WIDTH, height, backgroundColor: '#000' }}>
-                <Pressable style={StyleSheet.absoluteFill} onPress={togglePlayback}>
-                    {(item.videoUrl || item.url) ? (
-                        <InternalFullScreenVideo
-                            videoUrl={item.videoUrl || item.url}
-                            isActive={isActive}
-                            isPaused={isPaused}
-                            isMuted={isMuted}
-                            onTimeUpdate={(ct, dur) => {
-                                setCurrentTime(ct);
-                                setDuration(dur);
-                            }}
+        <View style={[styles.page, { height, paddingTop: topPadding, paddingBottom: bottomPadding }]}>
+            {item.thumbnailUrl && (
+                <Image source={{ uri: item.thumbnailUrl }} blurRadius={32} style={styles.ambientPoster} />
+            )}
+            <LinearGradient
+                colors={['rgba(11,13,20,0.25)', 'rgba(8,10,16,0.72)', '#08090D']}
+                locations={[0, 0.67, 1]}
+                style={StyleSheet.absoluteFill}
+                pointerEvents="none"
+            />
+
+            <View style={styles.stage}>
+                <GestureDetector gesture={doubleTap}>
+                    <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={isPaused ? 'Play video' : 'Pause video'}
+                        style={StyleSheet.absoluteFill}
+                        onPress={togglePlayback}
+                    >
+                        <VideoView
+                            player={player}
+                            style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
+                            contentFit="contain"
+                            nativeControls={false}
+                            surfaceType="textureView"
                         />
-                    ) : (
-                        <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}>
-                            <Ionicons name="videocam-off" size={64} color="rgba(255,255,255,0.15)" />
-                        </View>
-                    )}
+                        {isPaused && !clearDisplay && (
+                            <View style={styles.pauseOverlay}>
+                                <Ionicons name="play" size={54} color="#FFF" />
+                            </View>
+                        )}
+                    </Pressable>
+                </GestureDetector>
 
-                    {isPaused && (
-                        <View style={styles.pauseOverlay}>
-                            <Ionicons name="pause" size={64} color="white" />
-                        </View>
-                    )}
-                </Pressable>
-
-                <VideoControls
-                    isPlaying={isActive && !isPaused}
-                    title={item.title || ''}
-                    author={item.author || item.authorName || ''}
-                    authorId={item.authorId || ''}
-                    avatarUrl={item.avatarUrl}
-                    hashtag={item.hashtag}
-                    currentTime={currentTime}
-                    duration={duration}
-                    onSeek={handleSeek}
-                    likes={item.likes || 0}
-                    comments={item.comments || 0}
-                    saved={item.saved || 0}
-                    isLiked={item.isLiked || false}
-                    isSaved={item.isSaved || false}
-                    isFollowing={item.isFollowing || false}
-                    isLive={item.isLive}
-                    onLike={onLike}
-                    onComment={onComment}
-                    onSave={onSave}
-                    onMore={onMore}
-                    onFollow={onFollow}
-                />
+                {!clearDisplay && (
+                    <Pressable accessibilityRole="button" accessibilityLabel={muted ? 'Unmute video' : 'Mute video'}
+                        style={[styles.iconButton, styles.muteButton]} onPress={onToggleMute}>
+                        <Ionicons name={muted ? 'volume-mute' : 'volume-medium'} size={19} color="#FFF" />
+                    </Pressable>
+                )}
             </View>
-        </GestureDetector>
+
+            {!clearDisplay && <VideoControls
+                companion={<LiveAnalysisStrip videoId={item.id} active={isActive} seconds={Math.floor(currentTime / 1000)} compact
+                    onOpen={() => onOrvelis(Math.floor(currentTime / 1000))} />}
+                attribution={(
+                    <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`Open ${author}'s profile`}
+                        disabled={!item.authorId}
+                        onPress={() => router.push({ pathname: '/user/[id]', params: { id: item.authorId } })}
+                        style={styles.attribution}
+                    >
+                        <View style={styles.avatar}>
+                            <Text style={styles.avatarText}>{author[0]?.toUpperCase()}</Text>
+                            {item.avatarUrl && !avatarFailed && (
+                                <Image source={{ uri: item.avatarUrl }} onError={() => setAvatarFailed(true)} style={StyleSheet.absoluteFill} />
+                            )}
+                        </View>
+                        <Text style={styles.author} numberOfLines={1}>@{author}</Text>
+                    </Pressable>
+                )}
+                bottomPadding={bottomPadding}
+                title={item.title}
+                hashtag={item.hashtag}
+                currentTime={currentTime}
+                duration={duration}
+                onSeek={handleSeek}
+                likes={item.likes}
+                comments={item.comments}
+                saved={item.saved}
+                isLiked={item.isLiked}
+                isSaved={item.isSaved}
+                onLike={onLike}
+                onComment={onComment}
+                onSave={onSave}
+                onComposeComment={onComposeComment}
+                onMore={onMore}
+            />}
+        </View>
     );
 }
 
-export function FullScreenVideoModal({
-    visible,
+export function FullScreenVideoModal(props: FullScreenVideoModalProps) {
+    if (!props.visible) return null;
+    return <FullScreenVideoSession key={props.initialVideoId ?? 'feed'} {...props} />;
+}
+
+function FullScreenVideoSession({
     videos,
     initialVideoId,
     onClose,
     onLike,
-    onComment,
     onSave,
-    onMore,
-    onFollow,
+    openOptionsOnMount = false,
+    activeTab = 'trending',
+    onSelectTab,
+    onEndReached,
 }: FullScreenVideoModalProps) {
     const insets = useSafeAreaInsets();
-    const { theme } = useTheme();
     const router = useRouter();
-    const { height: screenHeight } = useWindowDimensions();
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [isMuted, setIsMuted] = useState(Platform.OS === 'web');
-
-    // AI Pulsing Animation
-    const pulseAnim = useSharedValue(1);
-    useEffect(() => {
-        pulseAnim.value = withRepeat(
-            withSequence(
-                withTiming(0.4, { duration: 1000 }),
-                withTiming(1, { duration: 1000 })
-            ),
-            -1,
-            true
-        );
-    }, []);
-
-    const animatedPulseStyle = useAnimatedStyle(() => ({
-        opacity: pulseAnim.value,
-    }));
-    const flatListRef = useRef<FlatList>(null);
-    const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
-    const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
-    const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
-
-    const handleOpenComments = useCallback((id: string) => {
-        setCommentsVideoId(id);
-        onComment(id);
-    }, [onComment]);
-
-    const handleCloseComments = useCallback(() => {
-        setCommentsVideoId(null);
-    }, []);
-
-    // Jump to correct video when opened
-    useEffect(() => {
-        if (visible && initialVideoId) {
-            const index = videos.findIndex((v: any) => v.id === initialVideoId);
-            if (index !== -1) {
-                setActiveIndex(index);
-                requestAnimationFrame(() => {
-                    flatListRef.current?.scrollToIndex({ index, animated: false });
-                });
-            }
-        }
-    }, [visible, initialVideoId, videos]);
+    const { width, height: windowHeight } = useWindowDimensions();
+    const desktop = Platform.OS === 'web' && width > 768;
+    const frameWidth = Math.max(1, Math.min(480, (windowHeight - 32) * 9 / 16, width - 32));
+    const frameHeight = frameWidth * 16 / 9;
+    const [viewportHeight, setViewportHeight] = useState(0);
+    const initialIndex = Math.max(0, videos.findIndex((video) => video.id === initialVideoId));
+    const [viewableIndex, setViewableIndex] = useState<number | null>(null);
+    const activeIndex = viewableIndex ?? initialIndex;
+    const [commentSheet, setCommentSheet] = useState<{ videoId: string; compose: boolean } | null>(null);
+    const [deepDiveVideo, setDeepDiveVideo] = useState<FeedVideo | null>(null);
+    const [analysisSeconds, setAnalysisSeconds] = useState(0);
+    const [seekRequest, setSeekRequest] = useState<{ id: string; seconds: number; nonce: number }>();
+    const [moreOptionsId, setMoreOptionsId] = useState(openOptionsOnMount ? initialVideoId : null);
+    const [clearDisplay, setClearDisplay] = useState(false);
+    const [muted, setMuted] = useState(Platform.OS === 'web');
+    const [rate, setRate] = useState(1);
+    const [restart, setRestart] = useState<{ id: string } | null>(null);
+    const moreOptionsVideo = videos.find(item => item.id === moreOptionsId);
+    const playerIsVisible = !commentSheet && !moreOptionsVideo && !deepDiveVideo;
+    const closeOptions = () => setMoreOptionsId(null);
+    const toggleMute = () => setMuted(current => !current);
 
     const viewabilityConfig = useMemo(() => ({ itemVisiblePercentThreshold: 60 }), []);
     const isFocused = useIsFocused();
 
-    const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-        if (viewableItems.length > 0 && viewableItems[0].index !== null) {
-            setActiveIndex(viewableItems[0].index!);
+    const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: any[] }) => {
+        if (viewableItems.length > 0 && viewableItems[0].index != null) {
+            setViewableIndex(viewableItems[0].index);
         }
     }, []);
 
-    if (!visible) return null;
+    const handleBack = () => {
+        if (moreOptionsVideo) closeOptions();
+        else if (clearDisplay) setClearDisplay(false);
+        else onClose();
+    };
 
     return (
         <Modal
-            visible={visible}
+            visible={isFocused}
             transparent={false}
             animationType="slide"
-            statusBarTranslucent
-            onRequestClose={onClose}
+            onRequestClose={handleBack}
         >
-            <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
-            <View style={styles.container}>
-                <LinearGradient
-                    colors={['rgba(0,0,0,0.6)', 'transparent']}
-                    style={[styles.statusShadow, { height: insets.top + 30 }]}
-                    pointerEvents="none"
-                />
-                <View style={[styles.headerWrapper, { top: Math.max(insets.top, 20) }]}>
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={onClose}
-                    >
-                        <Ionicons name="close" size={28} color="#FFF" />
-                    </TouchableOpacity>
-
-                    <View style={styles.headerActions}>
-                        <TouchableOpacity
-                            accessibilityRole="button"
-                            accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
-                            style={styles.soundButton}
-                            onPress={() => setIsMuted(muted => !muted)}
-                        >
-                            <Ionicons name={isMuted ? 'volume-mute' : 'volume-high'} size={22} color="#FFF" />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={() => {
-                                onClose();
-                                router.push('/ai');
-                            }}
-                            style={styles.aiLogoContainer}
-                        >
-                            <View style={[
-                                styles.aiLogoWrapper,
-                                {
-                                    width: 38,
-                                    height: 38,
-                                    borderRadius: 19,
-                                    borderWidth: 1,
-                                    borderColor: 'rgba(217, 228, 255, 0.15)',
-                                    backgroundColor: 'rgba(0, 8, 20, 0.5)',
-                                    shadowColor: '#D9E4FF',
-                                    shadowOffset: { width: 0, height: 0 },
-                                    shadowOpacity: 0.3,
-                                    shadowRadius: 6,
-                                    elevation: 3,
-                                }
-                            ]}>
-                                <OrvelisMark size={18} color="#D9E4FF" />
-                            </View>
-                        </TouchableOpacity>
+            <StatusBar barStyle="light-content" />
+            <GestureHandlerRootView style={[styles.container, desktop && styles.desktopContainer]}>
+                <View style={[styles.frame, desktop ? { width: frameWidth, height: frameHeight, flexShrink: 0, borderRadius: 20 } : styles.mobileFrame]}
+                    accessibilityElementsHidden={!!moreOptionsVideo} importantForAccessibility={moreOptionsVideo ? 'no-hide-descendants' : 'auto'}
+                    aria-hidden={!!moreOptionsVideo} onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}>
+                {clearDisplay ? (
+                    <Pressable accessibilityRole="button" accessibilityLabel="Restore video controls" onPress={() => setClearDisplay(false)}
+                        style={[styles.iconButton, styles.restoreButton, { top: Math.max(insets.top, 8) }]}>
+                        <Ionicons name="scan-outline" size={20} color="#FFF" />
+                    </Pressable>
+                ) : <View style={[styles.header, { top: Math.max(insets.top, 8) }]}>
+                    <Pressable accessibilityRole="button" accessibilityLabel="Close full-screen feed" style={styles.iconButton} onPress={onClose}>
+                        <Ionicons name="close" size={24} color="#FFF" />
+                    </Pressable>
+                    <View style={styles.tabs}>
+                        {(onSelectTab ? FEED_TABS : FEED_TABS.slice(1, 2)).map((tab) => (
+                            <Pressable
+                                key={tab.key}
+                                accessibilityRole="tab"
+                                accessibilityState={{ selected: activeTab === tab.key }}
+                                style={[styles.tab, activeTab === tab.key && styles.activeTab]}
+                                onPress={onSelectTab ? () => {
+                                    if (tab.key !== activeTab) onSelectTab(tab.key);
+                                } : undefined}
+                            >
+                                <Text style={[styles.tabLabel, activeTab === tab.key && styles.activeTabLabel]}>{tab.label}</Text>
+                            </Pressable>
+                        ))}
                     </View>
-                </View>
+                    <Pressable accessibilityRole="button" accessibilityLabel="More options" style={styles.iconButton}
+                        disabled={!videos[activeIndex]} onPress={() => setMoreOptionsId(videos[activeIndex]?.id ?? null)}>
+                        <Ionicons name="ellipsis-horizontal" size={23} color="#FFF" />
+                    </Pressable>
+                </View>}
 
-                <FlatList
-                    ref={flatListRef}
+                {viewportHeight > 0 && <FlatList
+                    initialScrollIndex={initialIndex}
                     data={videos}
                     keyExtractor={item => item.id}
                     pagingEnabled
+                    onEndReached={onEndReached}
+                    onEndReachedThreshold={0.5}
+                    initialNumToRender={1}
+                    maxToRenderPerBatch={2}
+                    windowSize={3}
                     showsVerticalScrollIndicator={false}
                     getItemLayout={(_, index) => ({
-                        length: screenHeight,
-                        offset: screenHeight * index,
+                        length: viewportHeight,
+                        offset: viewportHeight * index,
                         index,
                     })}
                     viewabilityConfig={viewabilityConfig}
@@ -326,100 +351,108 @@ export function FullScreenVideoModal({
                     renderItem={({ item, index }) => (
                         <FullScreenVideoItem
                             item={item}
-                            isActive={index === activeIndex && isFocused}
-                            isMuted={isMuted}
-                            height={screenHeight}
+                            isActive={index === activeIndex && isFocused && playerIsVisible}
+                            height={viewportHeight}
+                            topPadding={clearDisplay ? 0 : Math.max(insets.top, 8) + 52}
+                            bottomPadding={clearDisplay ? 0 : Math.max(insets.bottom, 8)}
+                            clearDisplay={clearDisplay}
+                            muted={muted}
+                            rate={rate}
+                            restart={restart?.id === item.id ? restart : null}
+                            onToggleMute={toggleMute}
                             onLike={() => onLike(item.id)}
-                            onComment={() => handleOpenComments(item.id)}
+                            onComment={() => setCommentSheet({ videoId: item.id, compose: false })}
+                            onComposeComment={() => setCommentSheet({ videoId: item.id, compose: true })}
                             onSave={() => onSave(item.id)}
-                            onMore={() => setMoreOptionsVideo(item)}
-                            onFollow={() => onFollow(item.authorId)}
+                            onMore={() => setMoreOptionsId(item.id)}
+                            onOrvelis={seconds => { setAnalysisSeconds(seconds); setDeepDiveVideo(item); }}
+                            seekTo={seekRequest?.id === item.id ? seekRequest : undefined}
                         />
                     )}
-                />
-            </View>
+                />}
+                </View>
+                {moreOptionsVideo && (
+                    <MoreOptionsModal
+                        key={moreOptionsVideo.id}
+                        video={moreOptionsVideo}
+                        muted={muted}
+                        rate={rate}
+                        onClose={closeOptions}
+                        onClearDisplay={() => { closeOptions(); setClearDisplay(true); }}
+                        onRestart={() => { closeOptions(); setRestart({ id: moreOptionsVideo.id }); }}
+                        onToggleMute={() => { closeOptions(); toggleMute(); }}
+                        onRateChange={speed => { setRate(speed); closeOptions(); }}
+                        onComments={() => { closeOptions(); setCommentSheet({ videoId: moreOptionsVideo.id, compose: false }); }}
+                        onAuthor={moreOptionsVideo.authorId ? () => {
+                            closeOptions();
+                            onClose();
+                            router.push({ pathname: '/user/[id]', params: { id: moreOptionsVideo.authorId } });
+                        } : undefined}
+                        onDeepDive={() => { closeOptions(); setDeepDiveVideo(moreOptionsVideo); }}
+                    />
+                )}
+            </GestureHandlerRootView>
             <CommentsModal
-                visible={!!commentsVideoId}
-                videoId={commentsVideoId}
-                onClose={handleCloseComments}
+                visible={!!commentSheet}
+                videoId={commentSheet?.videoId ?? null}
+                focusComposer={commentSheet?.compose}
+                onClose={() => setCommentSheet(null)}
             />
             <DeepDiveModal
                 visible={deepDiveVideo !== null}
                 video={deepDiveVideo}
-                onClose={() => setDeepDiveVideo(null)}
-            />
-            <MoreOptionsModal
-                visible={moreOptionsVideo !== null}
-                onClose={() => setMoreOptionsVideo(null)}
-                onDeepDive={() => {
-                    setDeepDiveVideo(moreOptionsVideo);
+                seconds={analysisSeconds}
+                onSeek={seconds => {
+                    if (deepDiveVideo) setSeekRequest({ id: deepDiveVideo.id, seconds, nonce: Date.now() });
+                    setDeepDiveVideo(null);
                 }}
+                onClose={() => setDeepDiveVideo(null)}
             />
         </Modal>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
+    container: { flex: 1, backgroundColor: '#08090D' },
+    desktopContainer: { alignItems: 'center', justifyContent: 'center' },
+    frame: { minHeight: 0, position: 'relative', overflow: 'hidden', backgroundColor: '#08090D' },
+    mobileFrame: { flex: 1, width: '100%' },
+    page: { width: '100%', backgroundColor: '#08090D', overflow: 'hidden' },
+    ambientPoster: { ...StyleSheet.absoluteFill, opacity: 0.54 },
+    header: {
+        position: 'absolute', left: 10, right: 10, zIndex: 200,
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     },
-    headerWrapper: {
+    tabs: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    tab: { minHeight: 38, justifyContent: 'center', paddingHorizontal: 2, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+    activeTab: { borderBottomColor: '#FFF' },
+    tabLabel: { color: '#C1C2C7', fontSize: 12, fontWeight: '700', letterSpacing: 1.7 },
+    activeTabLabel: { color: '#FFF' },
+    iconButton: {
+        width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center',
+        backgroundColor: 'rgba(8,9,13,0.45)',
+    },
+    restoreButton: { position: 'absolute', right: 10, zIndex: 200 },
+    muteButton: {
         position: 'absolute',
-        left: 0,
-        right: 0,
-        zIndex: 200,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        justifyContent: 'space-between',
+        right: 14,
+        bottom: 12,
+        zIndex: 20,
     },
-    closeButton: {
-        width: 44,
-        height: 44,
-        justifyContent: 'center',
-        alignItems: 'center',
+    stage: { flex: 1, minHeight: 0 },
+    stageFooter: {
+        position: 'absolute', left: 14, right: 14, bottom: 9,
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10,
     },
-    headerActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
+    attribution: { flexDirection: 'row', flexShrink: 1, alignItems: 'center', gap: 8, minHeight: 44 },
+    avatar: {
+        width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: '#FFF', overflow: 'hidden',
+        backgroundColor: '#D9E4FF', alignItems: 'center', justifyContent: 'center',
     },
-    soundButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
+    avatarText: { color: '#101521', fontSize: 15, fontWeight: '700' },
+    author: {
+        flexShrink: 1, color: '#FFF', fontSize: 17, fontWeight: '700',
+        textShadowColor: 'rgba(0,0,0,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
     },
-    pauseOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.2)',
-    },
-    aiLogoContainer: {
-        width: 44,
-        height: 44,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    aiLogoWrapper: {
-        width: 36,
-        height: 36,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    aiLogo: {
-        width: 32,
-        height: 32,
-    },
-    statusShadow: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 160,
-    },
+    pauseOverlay: { ...StyleSheet.absoluteFill, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' },
 });

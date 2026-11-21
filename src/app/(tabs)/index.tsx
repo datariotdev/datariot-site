@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text, Pressable, StatusBar, useWindowDimensions, Platform } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Text, Pressable, StatusBar, useWindowDimensions, Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
 import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
-import { useRouter } from 'expo-router';
+import { useRouter, useIsFocused } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { SideMenu } from '../../components/Navigation/SideMenu';
-import { useIsFocused } from '@react-navigation/native';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { CommentsModal } from '../../components/VideoFeed/CommentsModal';
 import { BlurView } from 'expo-blur';
@@ -17,24 +16,22 @@ import { PulseFeed } from '../../components/VideoFeed/PulseFeed/PulseFeed';
 import { MosaicFeed } from '../../components/VideoFeed/MosaicFeed/MosaicFeed';
 import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideoModal';
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
-import { MoreOptionsModal } from '../../components/VideoFeed/MoreOptionsModal';
-import { CommandBar, LiveTicker, HudButton, CommandTab } from '../../components/Web/CommandBar';
+import { WebFeedHeader, WebFeedViewSwitch } from '../../components/Web/WebFeedHeader';
+import { WebRightPanel } from '../../components/Web/WebRightPanel';
 import { CuratedFeed } from '../../components/VideoFeed/CuratedFeed';
+import { useCuratedReels } from '../../lib/curated/useCuratedReels';
+import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import { useNavVisibility } from '../../context/NavVisibilityContext';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
-const TABS: CommandTab[] = [
-    { key: 'ai', label: 'ARENA', hint: 'BETA' },
-    { key: 'trending', label: 'FEED' },
-    { key: 'following', label: 'CIRCLE' },
-];
+const TABS = [
+    { key: 'ai', label: 'Arena' },
+    { key: 'trending', label: 'Feed' },
+    { key: 'following', label: 'Circle' },
+] as const satisfies ReadonlyArray<{ key: FeedType; label: string }>;
 
-const TICKER_ITEMS = [
-    'ARENA OPEN — CHALLENGE ANY USER TO A LIVE DEBATE',
-    'WEEKLY MISSION: SLOW MOTION — 5,000 XP POOL',
-    'NEW: DNA MATCHING NOW RANKS YOUR FEED',
-    '1,248 PILOTS ENROLLED THIS CYCLE',
-];
+const MIN_THREE_COLUMN_WIDTH = 744;
 
 const HomeScreen = () => {
     const router = useRouter();
@@ -44,38 +41,61 @@ const HomeScreen = () => {
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [viewMode, setViewMode] = useState<ViewMode>(Platform.OS === 'web' ? 'classic' : 'mosaic');
-    const { theme, mode, toggleTheme } = useTheme();
+    const [compactLatest, setCompactLatest] = useState(true);
+    const [latestGridFits, setLatestGridFits] = useState(false);
+    const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
+    const { isNavVisible } = useNavVisibility();
+    const topBarAnimStyle = useAnimatedStyle(() => ({
+        transform: [{
+            translateY: withTiming(isNavVisible ? 0 : -140, {
+                duration: 250,
+                easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+            }),
+        }],
+        opacity: withTiming(isNavVisible ? 1 : 0, {
+            duration: 220,
+            easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        }),
+    }), [isNavVisible]);
 
     const { width } = useWindowDimensions();
     const isWeb = Platform.OS === 'web' && width > 768; // Web Desktop Mode
+    const isLatest = activeTab === 'trending';
+    const latestGrid = compactLatest && latestGridFits;
 
     const {
         videos,
         loading,
+        fetchError,
+        refresh,
         loadMore,
         toggleLike,
         toggleFollow,
     } = useVideos({
         type: activeTab,
-        category: activeCategory || undefined,
+        category: (!isWeb || activeTab === 'trending') ? activeCategory || undefined : undefined,
     });
 
     const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+    const [deepDiveVideo, setDeepDiveVideo] = useState<(typeof videos)[number] | null>(null);
     const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
-    const [deepDiveVideo, setDeepDiveVideo] = useState<any | null>(null);
-    const [moreOptionsVideo, setMoreOptionsVideo] = useState<any | null>(null);
+    const [openOptionsOnMount, setOpenOptionsOnMount] = useState(false);
+    const curatedReels = useCuratedReels(activeTab === 'trending', activeCategory);
 
-    const handleSelectVideo = (videoId: string) => setSelectedVideoId(videoId);
+    const handleSelectVideo = (videoId: string) => {
+        setOpenOptionsOnMount(false);
+        setSelectedVideoId(videoId);
+    };
     const handleComment = (videoId: string) => setCommentsVideoId(videoId);
     const handleSave = (videoId: string) => console.log('Save:', videoId);
 
     const handleMore = (videoId: string) => {
-        const vid = videos.find(v => v.id === videoId);
-        if (vid) setMoreOptionsVideo(vid);
+        setOpenOptionsOnMount(true);
+        setSelectedVideoId(videoId);
     };
 
-    if (activeTab !== 'trending' && loading && videos.length === 0) {
+    if (!isWeb && activeTab !== 'trending' && loading && videos.length === 0) {
         return (
             <View style={[styles.loadingContainer, { backgroundColor: 'transparent' }]}>
                 <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
@@ -86,16 +106,15 @@ const HomeScreen = () => {
     const isFeedActive =
         isFocused &&
         selectedVideoId === null &&
-        commentsVideoId === null &&
         deepDiveVideo === null &&
-        moreOptionsVideo === null;
+        commentsVideoId === null;
 
-    const feedPaddingTop = isWeb ? 8 : (activeTab === 'trending' ? insets.top + 120 : insets.top + 64);
+    const feedPaddingTop = isWeb ? 0 : (activeTab === 'trending' ? insets.top + 104 : insets.top + 58);
 
-    const feed = activeTab === 'trending' ? (
-        <CuratedFeed videos={videos} reels={[]} grid={viewMode === 'mosaic'}
+    const feed = isLatest ? (
+        <CuratedFeed key={isWeb ? activeCategory || 'all' : 'mobile'} videos={videos} reels={curatedReels} fetchError={fetchError} loading={loading} grid={isWeb ? latestGrid : viewMode === 'mosaic'} desktop={isWeb} onRetry={refresh}
             isFocused={isFeedActive} paddingTop={feedPaddingTop} onEndReached={loadMore}
-            onSelectNative={handleSelectVideo} />
+            onSelectNative={handleSelectVideo} onOpenOrvelis={setDeepDiveVideo} />
     ) : videos.length > 0 ? (
         viewMode === 'mosaic' ? (
             <MosaicFeed
@@ -129,6 +148,21 @@ const HomeScreen = () => {
                 paddingTop={feedPaddingTop}
             />
         )
+    ) : isWeb ? (
+        <View style={styles.webEmpty}>
+            {loading ? (
+                <ActivityIndicator size="small" color={isDark ? '#D9E4FF' : '#46658B'} />
+            ) : (
+                <Text style={[styles.webEmptyText, { color: theme.colors.text.secondary }]}>
+                    {fetchError ? 'Couldn’t load videos.' : activeTab === 'following' ? 'No videos from creators you follow yet.' : 'No videos in Arena yet.'}
+                </Text>
+            )}
+            {!loading && fetchError && (
+                <Pressable accessibilityRole="button" onPress={refresh} style={styles.webRetry}>
+                    <Text style={[styles.webEmptyText, { color: isDark ? '#D9E4FF' : '#355C8B' }]}>Try again</Text>
+                </Pressable>
+            )}
+        </View>
     ) : !loading ? (
         <View style={styles.emptyContainer}>
             <BlurView
@@ -162,6 +196,7 @@ const HomeScreen = () => {
 
     const modals = (
         <>
+            <DeepDiveModal visible={deepDiveVideo !== null} video={deepDiveVideo} onClose={() => setDeepDiveVideo(null)} />
             <CommentsModal
                 visible={!!commentsVideoId}
                 videoId={commentsVideoId}
@@ -174,81 +209,54 @@ const HomeScreen = () => {
                 initialVideoId={selectedVideoId}
                 onClose={() => setSelectedVideoId(null)}
                 onLike={toggleLike}
-                onComment={handleComment}
                 onSave={handleSave}
-                onMore={handleMore}
-                onFollow={toggleFollow}
+                openOptionsOnMount={openOptionsOnMount}
             />
 
-            <MoreOptionsModal
-                visible={moreOptionsVideo !== null}
-                onClose={() => setMoreOptionsVideo(null)}
-                onDeepDive={() => setDeepDiveVideo(moreOptionsVideo)}
-            />
-            <DeepDiveModal
-                visible={deepDiveVideo !== null}
-                video={deepDiveVideo}
-                onClose={() => setDeepDiveVideo(null)}
-            />
         </>
     );
 
-    /* ---------------- Desktop web: docked command deck ---------------- */
     if (isWeb) {
+        const showCompanion = isLatest && width >= 1330;
+        const selectedTopic = activeCategory || 'All';
+        const title = activeTab === 'ai' ? 'Arena' : activeTab === 'following' ? 'Circle' : activeCategory || 'Latest videos';
+
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, styles.webPage, { paddingHorizontal: width >= 1190 ? 36 : 24 }]}>
                 <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-
-                <CommandBar
-                    tabs={TABS}
-                    activeKey={activeTab}
-                    onTabPress={(key) => setActiveTab(key as FeedType)}
-                    readout={['SIGNAL NOMINAL', '2.4K ONLINE', 'LAT 12MS']}
-                    actions={
-                        <>
-                            <HudButton
-                                label="Toggle grid layout"
-                                active={viewMode === 'mosaic'}
-                                onPress={() => setViewMode(viewMode === 'mosaic' ? 'classic' : 'mosaic')}
-                                icon={
-                                    <Ionicons
-                                        name={viewMode === 'mosaic' ? 'grid' : 'apps-outline'}
-                                        size={17}
-                                        color={viewMode === 'mosaic' ? theme.colors.primary.DEFAULT : theme.colors.text.secondary}
-                                    />
-                                }
-                            />
-                            <HudButton
-                                label="Toggle theme"
-                                onPress={toggleTheme}
-                                icon={<Feather name={isDark ? 'sun' : 'moon'} size={16} color={theme.colors.text.secondary} />}
-                            />
-                        </>
-                    }
-                />
-
-                <LiveTicker items={TICKER_ITEMS} />
-
-                {activeTab === 'trending' && (
-                    <View
-                        style={[
-                            styles.filterRow,
-                            {
-                                backgroundColor: isDark ? '#0A0B11' : '#FBFBFD',
-                                borderBottomColor: isDark ? 'rgba(217, 228, 255, 0.07)' : 'rgba(0,0,0,0.06)',
-                            },
-                        ]}
-                    >
-                        <CategoryPills
-                            categories={['All', ...VIDEO_CATEGORIES]}
-                            activeCategory={activeCategory || 'All'}
-                            onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
-                        />
+                <WebFeedHeader tabs={TABS} activeTab={activeTab} onTabPress={setActiveTab} isFocused={isFocused} />
+                <View style={styles.webBody}>
+                    <View style={styles.webFeedColumn}>
+                        <View style={styles.webHeadingRow}>
+                            <Text accessibilityRole="header" aria-level={1}
+                                style={[styles.webTitle, { color: theme.colors.text.primary }]}>{title}</Text>
+                            {(!isLatest || latestGridFits) && (
+                                <WebFeedViewSwitch grid={isLatest ? latestGrid : viewMode === 'mosaic'}
+                                    onChange={isLatest ? setCompactLatest : grid => setViewMode(grid ? 'mosaic' : 'classic')} />
+                            )}
+                        </View>
+                        {isLatest && (
+                            <View style={styles.webFilters}>
+                                <CategoryPills
+                                    desktop
+                                    categories={['All', ...VIDEO_CATEGORIES]}
+                                    activeCategory={selectedTopic}
+                                    onCategoryPress={category => setActiveCategory(category === 'All' ? null : category)}
+                                />
+                            </View>
+                        )}
+                        <View style={styles.deckBody}
+                            onLayout={({ nativeEvent }) => setLatestGridFits(nativeEvent.layout.width >= MIN_THREE_COLUMN_WIDTH)}>
+                            {feed}
+                        </View>
                     </View>
-                )}
-
-                <View style={styles.deckBody}>{feed}</View>
-
+                    {showCompanion && (
+                        <ScrollView style={styles.webCompanion} contentContainerStyle={styles.webCompanionContent}
+                            showsVerticalScrollIndicator={false}>
+                            <WebRightPanel activeCategory={activeCategory} onSelectCategory={setActiveCategory} />
+                        </ScrollView>
+                    )}
+                </View>
                 {modals}
             </View>
         );
@@ -256,35 +264,45 @@ const HomeScreen = () => {
 
     /* ---------------- Mobile: original floating chrome ---------------- */
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+        <View style={[styles.container, { backgroundColor: isDark ? theme.colors.background.primary : '#F8F9FC' }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
-            <View style={[styles.topNav, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+            {feed}
+
+            <Animated.View
+                style={[
+                    styles.topNav,
+                    { paddingTop: insets.top + 8 },
+                    topBarAnimStyle,
+                ]}
+                pointerEvents={isNavVisible ? 'box-none' : 'none'}
+            >
                 <View style={styles.topNavContent} pointerEvents="box-none">
-                    <View style={styles.leftActionsContainer}>
+                    <View style={styles.leftActionsContainer} pointerEvents="box-none">
                         <Pressable
                             style={[
                                 styles.roundButton,
                                 {
-                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)',
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : '#FFFFFF',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                                 },
                             ]}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             onPress={() => setIsMenuOpen(true)}
                         >
-                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <BlurView pointerEvents="none" intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
                             <Feather name="menu" size={22} color={theme.colors.text.primary} />
                         </Pressable>
                     </View>
 
-                    <View style={styles.pillContainer}>
+                    <View style={styles.pillContainer} pointerEvents="box-none">
                         <BlurView
                             intensity={70}
                             tint={isDark ? 'dark' : 'light'}
                             style={[
                                 styles.pillBlur,
                                 {
-                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : 'rgba(255, 255, 255, 0.8)',
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.5)' : '#E5EDF9',
                                     borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)',
                                 },
                             ]}
@@ -293,7 +311,7 @@ const HomeScreen = () => {
                                 <TabButton
                                     key={tab.key}
                                     theme={theme}
-                                    label={tab.label}
+                                    label={tab.label.toUpperCase()}
                                     isActive={activeTab === tab.key}
                                     onPress={() => setActiveTab(tab.key as FeedType)}
                                     isDark={isDark}
@@ -302,25 +320,24 @@ const HomeScreen = () => {
                         </BlurView>
                     </View>
 
-                    <View style={styles.rightActionsContainer}>
+                    <View style={styles.rightActionsContainer} pointerEvents="box-none">
                         <Pressable
                             style={[
                                 styles.roundButton,
                                 {
-                                    backgroundColor: viewMode === 'mosaic'
-                                        ? theme.colors.primary.DEFAULT
-                                        : (isDark ? 'rgba(8, 9, 13, 0.65)' : 'rgba(255, 255, 255, 0.9)'),
+                                    backgroundColor: isDark ? 'rgba(8, 9, 13, 0.65)' : '#FFFFFF',
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                                     marginRight: 8,
                                 },
                             ]}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             onPress={() => setViewMode(viewMode === 'mosaic' ? 'classic' : 'mosaic')}
                         >
-                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <BlurView pointerEvents="none" intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
                             <Ionicons
-                                name={viewMode === 'mosaic' ? 'grid' : 'apps'}
+                                name={viewMode === 'mosaic' ? 'grid-outline' : 'grid'}
                                 size={22}
-                                color={viewMode === 'mosaic' ? '#000' : theme.colors.text.primary}
+                                color={theme.colors.text.primary}
                             />
                         </Pressable>
 
@@ -332,9 +349,10 @@ const HomeScreen = () => {
                                     borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
                                 },
                             ]}
-                            onPress={() => router.push('/profile')}
+                            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                            onPress={() => router.push('/(tabs)/profile')}
                         >
-                            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+                            <BlurView pointerEvents="none" intensity={60} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
                             <Feather name="user" size={22} color={theme.colors.text.primary} />
                         </Pressable>
                     </View>
@@ -346,14 +364,11 @@ const HomeScreen = () => {
                                 activeCategory={activeCategory || 'All'}
                                 onCategoryPress={(cat) => setActiveCategory(cat === 'All' ? null : cat)}
                                 showFilterLabel={false}
-                                rounded
                             />
                         </View>
                     )}
                 </View>
-            </View>
-
-            {feed}
+            </Animated.View>
 
             <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
@@ -365,14 +380,20 @@ const HomeScreen = () => {
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
 
 const styles = StyleSheet.create({
+    webPage: { minWidth: 0, width: '100%' },
+    webBody: { flex: 1, minHeight: 0, flexDirection: 'row', gap: 34 },
+    webFeedColumn: { flex: 1, minWidth: 0, minHeight: 0 },
+    webHeadingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 15, paddingTop: 27, paddingBottom: 17 },
+    webTitle: { flexShrink: 1, fontFamily: 'Outfit_600SemiBold', fontSize: 46, lineHeight: 50, letterSpacing: -2.25 },
+    webFilters: { paddingBottom: 19 },
+    webCompanion: { width: 238, flexGrow: 0, flexShrink: 0 },
+    webCompanionContent: { paddingTop: 34, paddingBottom: 24 },
+    webEmpty: { alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 140 },
+    webEmptyText: { fontFamily: 'Inter_500Medium', fontSize: 14 },
+    webRetry: { minHeight: 40, justifyContent: 'center', paddingHorizontal: 16 },
+
     container: {
         flex: 1,
-    },
-    filterRow: {
-        height: 46,
-        justifyContent: 'center',
-        borderBottomWidth: 1,
-        zIndex: 18,
     },
     deckBody: {
         flex: 1,
@@ -382,10 +403,11 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 10,
+        zIndex: 999,
+        elevation: 20,
     },
     topNavContent: {
-        height: 44,
+        height: 48,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -393,8 +415,8 @@ const styles = StyleSheet.create({
     },
     roundButton: {
         width: 44,
-        height: 44,
-        borderRadius: 22,
+        height: 48,
+        borderRadius: 24,
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
@@ -407,7 +429,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     rightActionsContainer: {
-        width: 148,
+        minWidth: 100,
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
@@ -418,10 +440,10 @@ const styles = StyleSheet.create({
     },
     categoryFiltersContainer: {
         position: 'absolute',
-        top: 54,
+        top: 50,
         left: 0,
         right: 0,
-        height: 58,
+        height: 48,
     },
     pillBlur: {
         flexDirection: 'row',
@@ -434,7 +456,7 @@ const styles = StyleSheet.create({
     },
     tabButton: {
         flex: 1,
-        height: 36,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 4,
@@ -450,9 +472,9 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     tabText: {
-        fontSize: 10,
+        fontSize: 13,
         fontWeight: '700',
-        letterSpacing: 0.5,
+        letterSpacing: 0,
     },
     loadingContainer: {
         flex: 1,

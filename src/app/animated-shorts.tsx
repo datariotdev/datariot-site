@@ -222,5 +222,6 @@ const styles = StyleSheet.create({
     playerBar: { flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%', maxWidth: 440, paddingHorizontal: 20, paddingBottom: 12 },
     playerTitle: { flex: 1, color: '#F1F5FA', fontSize: 18, fontWeight: '700' },
     player: { overflow: 'hidden', borderRadius: 14, backgroundColor: '#101827' },
-    playerState: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', padding: 20 },
+    playerState: { ...StyleSheet.absoluteFill, justifyContent: 'center', alignItems: 'center', padding: 20 },
 });
+
