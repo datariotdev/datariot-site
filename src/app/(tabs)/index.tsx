@@ -264,7 +264,7 @@ const HomeScreen = () => {
 
     /* ---------------- Mobile: original floating chrome ---------------- */
     return (
-        <View style={[styles.container, { backgroundColor: '#F8F9FC' }]}>
+        <View style={[styles.container, { backgroundColor: isDark ? theme.colors.background.primary : '#F8F9FC' }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
             {feed}
