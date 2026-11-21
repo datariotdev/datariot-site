@@ -20,11 +20,12 @@ interface Props {
     onRateChange: (rate: number) => void;
     onComments: () => void;
     onAuthor?: () => void;
+    onInsights?: () => void;
     onDeepDive: () => void;
 }
 
 export function MoreOptionsModal({
-    video, muted, rate, onClose, onClearDisplay, onRestart, onToggleMute, onRateChange, onComments, onAuthor, onDeepDive,
+    video, muted, rate, onClose, onClearDisplay, onRestart, onToggleMute, onRateChange, onComments, onAuthor, onDeepDive, onInsights,
 }: Props) {
     const p = usePalette();
     const insets = useSafeAreaInsets();
@@ -68,6 +69,7 @@ export function MoreOptionsModal({
         { icon: 'rotate-ccw', title: 'Restart video', onPress: onRestart },
         { icon: muted ? 'volume-2' : 'volume-x', title: muted ? 'Unmute video' : 'Mute video', onPress: onToggleMute },
         { icon: 'message-circle', title: 'View comments', onPress: onComments },
+        ...(onInsights ? [{ icon: 'bar-chart-2' as const, title: 'Video insights', onPress: onInsights }] : []),
         ...(onAuthor ? [{ icon: 'user' as const, title: 'View creator profile', onPress: onAuthor }] : []),
         { icon: 'zap', title: 'Orvelis AI Deep Dive', onPress: onDeepDive },
     ];

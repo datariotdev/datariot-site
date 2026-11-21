@@ -48,7 +48,7 @@ interface FeedVideoProps {
     active: boolean;
     paused: boolean;
     muted: boolean;
-    onTime: (currentMs: number, durationMs: number) => void;
+    onTime: (currentMs: number, durationMs: number, playing: boolean) => void;
 }
 
 /** The clip itself. Its picture (or a soft gradient) shows until the first frame is there. */
@@ -58,7 +58,7 @@ function WebFeedVideo({ url, seed, thumb, active, paused, muted, onTime }: FeedV
     const [ready, setReady] = useState(false);
     const [failed, setFailed] = useState(false);
     return <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <InlineVideo url={url} playing={active && !paused} muted={muted} onTimeUpdate={onTime} onFirstFrame={() => setReady(true)} onError={() => { setReady(false); setFailed(true); }} />
+        <InlineVideo url={url} playing={active && !paused} muted={muted} onTimeUpdate={(current, duration) => onTime(current, duration, active && !paused)} onFirstFrame={() => setReady(true)} onError={() => { setReady(false); setFailed(true); }} />
         {!ready && <View style={StyleSheet.absoluteFill}>
             {thumb ? <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : <PosterArt seed={seed} isDark glyph={false} />}
             {active && !failed && <View style={styles.loading}><ActivityIndicator color="white" /></View>}
@@ -81,7 +81,7 @@ const NativeFeedVideo = ({ url, seed, thumb, active, paused, muted, onTime }: Fe
 
     useEventListener(player, 'timeUpdate', ({ currentTime }) => {
         if (currentTime > 0 && !started) setStarted(true);
-        onTime(currentTime * 1000, (player.duration || 0) * 1000);
+        onTime(currentTime * 1000, (player.duration || 0) * 1000, player.playing);
     });
 
     const ready = status === 'readyToPlay' || started;

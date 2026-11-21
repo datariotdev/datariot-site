@@ -25,6 +25,8 @@ import { DeepDiveModal } from './DeepDiveModal';
 import { LiveAnalysisStrip } from './LiveAnalysisStrip';
 import { MoreOptionsModal } from './MoreOptionsModal';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { usePlaybackAnalytics } from '../../lib/creator/usePlaybackAnalytics';
+import type { VideoSurface } from '../../lib/creator/playback';
 import type { FeedType, Video as FeedVideo } from '../../lib/supabase/hooks/useVideos';
 
 const FEED_TABS = [
@@ -44,11 +46,15 @@ export interface FullScreenVideoModalProps {
     activeTab?: FeedType;
     onSelectTab?: (tab: FeedType) => void;
     onEndReached?: () => void;
+    analyticsSurface?: VideoSurface;
+    viewerId?: string;
 }
 
 function FullScreenVideoItem({
     item,
     isActive,
+    viewerId,
+    analyticsSurface,
     height,
     topPadding,
     bottomPadding,
@@ -67,6 +73,8 @@ function FullScreenVideoItem({
 }: {
     item: FeedVideo;
     isActive: boolean;
+    viewerId?: string;
+    analyticsSurface: VideoSurface;
     height: number;
     topPadding: number;
     bottomPadding: number;
@@ -89,6 +97,7 @@ function FullScreenVideoItem({
     const [avatarFailed, setAvatarFailed] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const samplePlayback = usePlaybackAnalytics(item.id, item.authorId, viewerId, analyticsSurface, isActive);
 
     const player = useVideoPlayer(encodeVideoUrl(item.videoUrl) || '', (p) => {
         p.loop = true;
@@ -125,6 +134,7 @@ function FullScreenVideoItem({
     useEventListener(player, 'timeUpdate', (event: any) => {
         const current = Number(event?.currentTime ?? player.currentTime ?? 0);
         const total = Number(player.duration ?? 0);
+        samplePlayback(current, total, rate, player.playing && !isPaused);
         setCurrentTime(Number.isFinite(current) && current >= 0 ? current * 1000 : 0);
         setDuration(Number.isFinite(total) && total > 0 ? total * 1000 : 0);
     });
@@ -248,6 +258,8 @@ function FullScreenVideoSession({
     activeTab = 'trending',
     onSelectTab,
     onEndReached,
+    analyticsSurface = 'other',
+    viewerId,
 }: FullScreenVideoModalProps) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
@@ -351,6 +363,8 @@ function FullScreenVideoSession({
                     renderItem={({ item, index }) => (
                         <FullScreenVideoItem
                             item={item}
+                            viewerId={viewerId}
+                            analyticsSurface={analyticsSurface}
                             isActive={index === activeIndex && isFocused && playerIsVisible}
                             height={viewportHeight}
                             topPadding={clearDisplay ? 0 : Math.max(insets.top, 8) + 52}
@@ -387,6 +401,11 @@ function FullScreenVideoSession({
                             closeOptions();
                             onClose();
                             router.push({ pathname: '/user/[id]', params: { id: moreOptionsVideo.authorId } });
+                        } : undefined}
+                        onInsights={viewerId && viewerId === moreOptionsVideo.authorId ? () => {
+                            closeOptions();
+                            onClose();
+                            router.push({ pathname: '/creator-studio', params: { video: moreOptionsVideo.id } });
                         } : undefined}
                         onDeepDive={() => { closeOptions(); setDeepDiveVideo(moreOptionsVideo); }}
                     />

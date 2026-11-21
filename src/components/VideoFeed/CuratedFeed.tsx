@@ -1,9 +1,11 @@
 /** @jsxImportSource react */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
     FlatList, Image, Linking, Modal, Pressable, StyleSheet,
     Text, useWindowDimensions, View,
 } from 'react-native';
+import type { ListViewToken } from 'react-native';
+import { recordVideoExposure } from '../../lib/creator/playback';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +30,9 @@ interface Props {
     onEndReached: () => void;
     onSelectNative: (id: string) => void;
     onOpenOrvelis?: (video: Video) => void;
+    viewerId?: string;
+    feedOrder: 'ranked' | 'recent';
+    onFeedOrder: (value: 'ranked' | 'recent') => void;
 }
 
 function FeedCard({ entry, onPress, grid, columns, desktop }: {
@@ -112,7 +117,24 @@ function FeedCard({ entry, onPress, grid, columns, desktop }: {
     );
 }
 
-export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndReached, onSelectNative, fetchError, loading, desktop = false, onRetry, onOpenOrvelis }: Props) {
+export function FeedOrderSwitch({ value, onChange }: { value: 'ranked' | 'recent'; onChange: (mode: 'ranked' | 'recent') => void }) {
+    const p = usePalette();
+    return (
+        <View style={{ flexDirection: 'row', alignSelf: 'flex-start', padding: 3, borderRadius: 14, backgroundColor: p.soft }}>
+            {(['ranked', 'recent'] as const).map(mode => (
+                <Pressable key={mode} accessibilityRole="button" accessibilityState={{ selected: mode === value }}
+                    onPress={() => onChange(mode)}
+                    style={{ minHeight: 38, paddingHorizontal: 16, justifyContent: 'center', borderRadius: 11, backgroundColor: mode === value ? p.card : 'transparent' }}>
+                    <Text style={{ color: mode === value ? p.text : p.sub, fontSize: 13, fontFamily: p.fonts.semibold }}>
+                        {mode === 'ranked' ? 'For you' : 'Latest'}
+                    </Text>
+                </Pressable>
+            ))}
+        </View>
+    );
+}
+
+export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndReached, onSelectNative, fetchError, loading, desktop = false, onRetry, onOpenOrvelis, viewerId, feedOrder, onFeedOrder }: Props) {
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
     const insets = useSafeAreaInsets();
@@ -120,7 +142,18 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
     const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
     const [failed, setFailed] = useState(false);
     const [openingError, setOpeningError] = useState(false);
-    const data = useMemo(() => mergeFeedEntries(videos, reels), [videos, reels]);
+    const data = useMemo(() => feedOrder === 'ranked' ? mergeFeedEntries(videos, []) : mergeFeedEntries(videos, reels), [videos, reels, feedOrder]);
+    const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50, minimumViewTime: 650 }).current;
+    const visibility = useRef({ viewerId, active: isFocused && !selectedUrl });
+    visibility.current = { viewerId, active: isFocused && !selectedUrl };
+    const onViewableItemsChanged = useRef(({ changed }: { changed: ListViewToken[] }) => {
+        const { viewerId: viewer, active } = visibility.current;
+        if (!viewer || !active) return;
+        changed.forEach(({ item: visibleItem, isViewable }) => {
+            const item: CuratedFeedEntry = visibleItem;
+            if (isViewable && item.kind === 'native') recordVideoExposure(viewer, item.video.id, item.video.authorId, 'feed');
+        });
+    }).current;
     const columns = desktop ? grid ? 3 : 2 : grid ? (width > 1000 ? 3 : 2) : (width > 560 ? 2 : 1);
     const selectedIndex = reels.findIndex(reel => reel.source_url === selectedUrl);
     const selected = reels[selectedIndex];
@@ -139,10 +172,12 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
     return (
         <>
             <FlatList
-                key={`curated-${desktop}-${columns}`}
+                key={`curated-${desktop}-${columns}-${feedOrder}`}
                 data={data}
                 keyExtractor={entry => entry.key}
                 numColumns={columns}
+                viewabilityConfig={viewabilityConfig}
+                onViewableItemsChanged={onViewableItemsChanged}
                 contentContainerStyle={desktop ? styles.webList : { paddingTop, paddingBottom: 120, paddingHorizontal: 8 }}
                 columnWrapperStyle={desktop ? styles.webRow : undefined}
                 showsVerticalScrollIndicator={false}
@@ -168,7 +203,7 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                                 <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Ask Orvelis AI for context or a second take.</Text>
                             </View>
                         </View>
-                        <Text style={[styles.sectionLabel, { color: theme.colors.text.secondary }]}>LATEST VIDEOS</Text>
+                        <FeedOrderSwitch value={feedOrder} onChange={onFeedOrder} />
                     </View>
                 )}
                 ListEmptyComponent={desktop ? (

@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useIsFocused } from 'expo-router';
 import { usePalette } from '../../design-system/palette';
+import { usePlaybackAnalytics } from '../../lib/creator/usePlaybackAnalytics';
+import type { VideoSurface } from '../../lib/creator/playback';
 import { Avatar } from '../UI/Avatar';
 import { LiveAnalysisStrip } from './LiveAnalysisStrip';
 import { DeepDiveModal } from './DeepDiveModal';
@@ -14,6 +16,8 @@ import { FeedVideo, realThumb, formatNumber, formatClock, ago } from './feedMedi
 interface FeedItemProps {
     item: any;
     isActive: boolean;
+    viewerId?: string;
+    analyticsSurface?: VideoSurface;
     onLike: () => void;
     onComment: () => void;
     onSave: () => void;
@@ -51,7 +55,7 @@ function FeedAction({ icon, count, label, selected, onPress, scale, like }: {
     </Animated.View>;
 }
 
-export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, onLike, onComment, onSave, onMore, onSelect }: FeedItemProps) {
+export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, viewerId, analyticsSurface = 'other', onLike, onComment, onSave, onMore, onSelect }: FeedItemProps) {
     const p = usePalette();
     const { width: windowWidth } = useWindowDimensions();
     const [containerWidth, setContainerWidth] = useState(0);
@@ -65,6 +69,7 @@ export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, o
     const mediaHeight = Math.round(cardWidth * 9 / 16);
     const router = useRouter();
     const focused = useIsFocused();
+    const samplePlayback = usePlaybackAnalytics(item.id, item.authorId, viewerId, analyticsSurface, isActive && focused && !analysisOpen);
     const thumb = realThumb(item.thumbnailUrl);
     const when = ago(item.createdAt);
     const metadata = [item.views > 0 ? `${formatNumber(item.views)} views` : null, when ? (when === 'now' ? 'Just now' : `${when} ago`) : null].filter(Boolean).join(' · ');
@@ -89,7 +94,8 @@ export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, o
                 >
                     <View style={StyleSheet.absoluteFill} pointerEvents="none">
                         {item.videoUrl ? <FeedVideo url={item.videoUrl} seed={String(item.id)} thumb={thumb} active={isActive && focused} paused={paused} muted={muted}
-                            onTime={(current, duration) => {
+                            onTime={(current, duration, playing) => {
+                                samplePlayback(current / 1000, duration / 1000, 1, playing && !paused);
                                 setProgress(duration > 0 ? Math.max(0, Math.min(1, current / duration)) : 0);
                                 setDurationMs(previous => Math.abs(previous - duration) > 250 ? duration : previous);
                             }} /> : <PosterArt seed={String(item.id)} isDark />}

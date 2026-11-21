@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, Pressable, StatusBar } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack, useIsFocused } from 'expo-router';
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
+import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,6 +13,8 @@ import { FullScreenVideoModal } from '../components/VideoFeed/FullScreenVideoMod
 
 export default function VideoPlayerScreen() {
     const focused = useIsFocused();
+    const { user } = useAuth();
+    const viewerId = user?.is_anonymous ? undefined : user?.id;
     const params = useLocalSearchParams<{
         type?: FeedType; userId?: string; hashtag?: string; searchQuery?: string;
         initialVideoId?: string; videoId?: string; openComments?: string; sort?: 'recent' | 'popular';
@@ -31,6 +34,7 @@ export default function VideoPlayerScreen() {
         return text && text !== 'undefined' ? text : undefined;
     };
     const type = (value(params.type) || 'trending') as FeedType;
+    const analyticsSurface = type === 'user' ? 'profile' : 'other';
     const search = value(params.searchQuery);
     const videoId = value(params.videoId);
     const initialId = value(params.initialVideoId) || videoId;
@@ -75,12 +79,12 @@ export default function VideoPlayerScreen() {
                 <Pressable onPress={error ? refresh : back} accessibilityRole="button" style={[s.retry, { backgroundColor: p.accent }]}>
                     <Text style={{ color: p.onAccent, fontFamily: p.fonts.medium }}>{error ? 'Try again' : 'Explore videos'}</Text>
                 </Pressable>
-            </View> : <CoubClassicFeed videos={videos} collection title={title} paddingBottom={insets.bottom + 12}
+            </View> : <CoubClassicFeed videos={videos} viewerId={viewerId} analyticsSurface={analyticsSurface} collection title={title} paddingBottom={insets.bottom + 12}
                 isScreenFocused={focused && !selectedId && !commentsId}
                 onEndReached={loadMore} onLike={toggleLike} onComment={setCommentsId} onSave={toggleSave}
                 onMore={id => openPlayer(id, true)} onFollow={toggleFollow} onSelect={openPlayer} initialScrollIndex={initialIndex} />}
         <CommentsModal visible={!!commentsId} videoId={commentsId} onClose={() => setCommentsId(null)} />
-        <FullScreenVideoModal visible={!!selectedId} videos={videos} initialVideoId={selectedId} onClose={() => setSelectedId(null)}
+        <FullScreenVideoModal viewerId={viewerId} analyticsSurface={analyticsSurface} visible={!!selectedId} videos={videos} initialVideoId={selectedId} onClose={() => setSelectedId(null)}
             onLike={toggleLike} onSave={toggleSave} openOptionsOnMount={openOptionsOnMount} />
     </View>;
 }

@@ -5,6 +5,7 @@ import { usePalette } from '../../design-system/palette';
 import { SectionHeader } from '../Discovery/SectionHeader';
 import { ArenaPager } from '../Discovery/ArenaPager';
 import { OriginalsStrip } from '../Discovery/OriginalsStrip';
+import type { VideoSurface } from '../../lib/creator/playback';
 import { Video } from '../../lib/supabase/hooks/useVideos';
 
 interface CoubClassicFeedProps {
@@ -22,6 +23,8 @@ interface CoubClassicFeedProps {
     paddingBottom?: number;
     collection?: boolean;
     title?: string;
+    viewerId?: string;
+    analyticsSurface?: VideoSurface;
 }
 
 export function CoubClassicFeed({
@@ -39,8 +42,10 @@ export function CoubClassicFeed({
     paddingBottom = 40,
     collection = false,
     title = 'Latest videos',
+    viewerId,
+    analyticsSurface = 'other',
 }: CoubClassicFeedProps) {
-    const [activeVideoIndex, setActiveVideoIndex] = useState(initialScrollIndex);
+    const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null);
     const flatListRef = useRef<FlatList>(null);
     const p = usePalette();
     const background = p.isDark ? '#08090D' : '#F7F8FA';
@@ -79,12 +84,7 @@ export function CoubClassicFeed({
 
     const onViewableItemsChanged = useRef(
         ({ viewableItems }: { viewableItems: ListViewToken[] }) => {
-            if (viewableItems.length > 0) {
-                const index = viewableItems[0].index;
-                if (index != null) {
-                    setActiveVideoIndex(index);
-                }
-            }
+            setActiveVideoIndex(viewableItems[0]?.index ?? null);
         }
     ).current;
 
@@ -144,6 +144,8 @@ export function CoubClassicFeed({
             <CoubClassicItem
                 item={item}
                 isActive={isActive}
+                viewerId={viewerId}
+                analyticsSurface={analyticsSurface}
                 onLike={() => onLike(item.id)}
                 onComment={() => onComment(item.id)}
                 onSave={() => onSave(item.id)}
