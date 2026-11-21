@@ -87,11 +87,11 @@ export function WebSidebar({ compact = false }: { compact?: boolean }) {
                 <View style={styles.footer}>
                     <Pressable accessibilityRole="link" accessibilityLabel="Create clip" onPress={() => router.push('/create')}
                         style={({ pressed }) => [styles.create, compact && styles.centered, {
-                            backgroundColor: p.isDark ? LOGO_ICE_COLOR : '#17253A',
+                            backgroundColor: quiet,
                             opacity: pressed ? 0.75 : 1,
                         }]}>
-                        <Feather name="plus" size={20} color={p.isDark ? '#17253A' : LOGO_ICE_COLOR} />
-                        {!compact && <Text style={[styles.label, { color: p.isDark ? '#17253A' : '#FFFFFF' }]}>Create clip</Text>}
+                        <AppNavigationIcon name="create" size={32} />
+                        {!compact && <Text style={[styles.label, { color: p.text }]}>Create clip</Text>}
                     </Pressable>
                     <View style={styles.footerSpace} />
                     {renderLink({ label: 'Settings', path: '/settings', icon: 'settings' })}
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     label: { fontFamily: 'Inter_600SemiBold', fontSize: 13, letterSpacing: -0.1 },
     groupSpace: { height: 11 },
     footerSpace: { height: 5 },
-    create: { minHeight: 45, borderRadius: 11, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 11 },
+    create: { minHeight: 45, borderRadius: 11, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 6 },
     footer: { paddingTop: 8, gap: 2 },
     account: { flexDirection: 'row', alignItems: 'center', marginTop: 4, borderRadius: 11, paddingHorizontal: 3 },
     accountLink: { flex: 1, minWidth: 0, minHeight: 44, gap: 9, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4 },

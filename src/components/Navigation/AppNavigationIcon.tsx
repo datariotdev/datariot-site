@@ -3,7 +3,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../Theme/ThemeProvider';
-import { OrvelisMark } from '../AI/OrvelisMark';
+import { OrvelisMark } from '../UI/OrvelisMark';
 import { NotificationBellIcon } from '../Notifications/NotificationBell';
 
 export type NavigationDestination =
@@ -35,7 +35,7 @@ export function AppNavigationIcon({
     color?: string;
     size?: number;
 }) {
-    const { theme } = useTheme();
+    const { theme, mode } = useTheme();
     const ink = color || (selected ? theme.colors.primary.DEFAULT : theme.colors.text.secondary);
 
     switch (name) {
@@ -56,13 +56,7 @@ export function AppNavigationIcon({
                 />
             );
         case 'ai':
-            return (
-                <Ionicons
-                    name={selected ? 'sparkles' : 'sparkles-outline'}
-                    size={size}
-                    color={ink}
-                />
-            );
+            return <OrvelisMark size={size} color={ink} />;
         case 'inbox':
             return (
                 <Ionicons
@@ -91,22 +85,27 @@ export function AppNavigationIcon({
             return <Feather name="sun" size={size} color={ink} />;
         case 'moon':
             return <Feather name="moon" size={size} color={ink} />;
-        case 'create':
+        case 'create': {
+            const isDark = mode === 'dark';
             return (
-                <View style={[s.create, { backgroundColor: '#D9E4FF', shadowColor: '#111318' }]}>
-                    <Feather name="plus" size={21} color="#111318" />
+                <View style={[s.create, {
+                    width: size,
+                    height: size,
+                    borderRadius: size / 2,
+                    backgroundColor: isDark ? '#E1E8F5' : '#111318',
+                }]}>
+                    <Feather name="plus" size={Math.round(size * 0.525)} color={isDark ? '#293548' : '#F7F9FC'} />
                 </View>
             );
+        }
     }
 }
 
 const s = StyleSheet.create({
     create: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
+        shadowColor: '#111318',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,

@@ -1,16 +1,13 @@
 /** @jsxImportSource react */
 import React, { useEffect } from 'react';
-import { OrvelisMark } from '../../components/AI/OrvelisMark';
 import { Tabs, usePathname } from 'expo-router';
 import { BottomTabBar } from 'expo-router/build/layouts/Tabs';
 import { setAudioModeAsync } from 'expo-audio';
 import { AppNavigationIcon } from '../../components/Navigation/AppNavigationIcon';
-import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Platform, useWindowDimensions, StyleSheet } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { usePalette } from '../../design-system/palette';
 import { NavVisibilityProvider, useNavVisibility } from '../../context/NavVisibilityContext';
 import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import * as SystemUI from 'expo-system-ui';
@@ -66,8 +63,7 @@ const TabLayout = () => {
     const activeWebRoute = pathname.split('/').filter(Boolean)[0] || 'index';
     const insets = useSafeAreaInsets();
     const { theme, mode } = useTheme();
-    const p = usePalette();
-    const isDark = p.isDark;
+    const isDark = mode === 'dark';
     const background = theme.colors.background.primary;
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
 
@@ -78,10 +74,10 @@ const TabLayout = () => {
         }
     }, [isDark]);
 
-    const activeTabColor = isDark ? '#E1E8F5' : '#8BB8F3';
-    const inactiveTabColor = isDark ? '#A0ACBE' : '#252A34';
+    const activeTabColor = isDark ? '#E1E8F5' : '#111318';
+    const inactiveTabColor = isDark ? '#A0ACBE' : '#242830';
     const bottomInset = Platform.OS === 'web' ? (insets.bottom || 0) : Math.max(insets.bottom, 8);
-    const barHeight = 58 + bottomInset;
+    const barHeight = 52 + bottomInset;
 
     return (
         <NavVisibilityProvider>
@@ -117,7 +113,7 @@ const TabLayout = () => {
                         shadowOffset: { width: 0, height: 0 },
                         shadowRadius: 0,
                         paddingBottom: bottomInset,
-                        paddingTop: 6,
+                        paddingTop: 16,
                     },
                     tabBarBackground: () => null,
                     tabBarLabelStyle: {
@@ -137,11 +133,8 @@ const TabLayout = () => {
                         title: 'Feed',
                         tabBarAccessibilityLabel: 'Feed',
                         tabBarIcon: ({ focused }) => (
-                            <MaterialCommunityIcons
-                                name={focused ? 'home-variant' : 'home-variant-outline'}
-                                size={24}
-                                color={focused ? activeTabColor : inactiveTabColor}
-                            />
+                            <AppNavigationIcon name="feed" selected={focused}
+                                color={focused ? activeTabColor : inactiveTabColor} size={22} />
                         ),
                     }}
                 />
@@ -151,11 +144,8 @@ const TabLayout = () => {
                         title: 'Discover',
                         tabBarAccessibilityLabel: 'Discover',
                         tabBarIcon: ({ focused }) => (
-                            <Ionicons
-                                name={focused ? 'navigate-circle' : 'navigate-circle-outline'}
-                                size={24}
-                                color={focused ? activeTabColor : inactiveTabColor}
-                            />
+                            <AppNavigationIcon name="discover" selected={focused}
+                                color={focused ? activeTabColor : inactiveTabColor} />
                         ),
                     }}
                 />
@@ -164,29 +154,7 @@ const TabLayout = () => {
                     options={{
                         title: 'Create',
                         tabBarAccessibilityLabel: 'Create',
-                        tabBarIcon: () => (
-                            <View
-                                style={{
-                                    width: 44,
-                                    height: 44,
-                                    borderRadius: 22,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: '#D9E4FF',
-                                    shadowColor: '#111318',
-                                    shadowOffset: { width: 0, height: 4 },
-                                    shadowOpacity: 0.25,
-                                    shadowRadius: 6,
-                                    elevation: 4,
-                                }}
-                            >
-                                <Feather
-                                    name="plus"
-                                    size={21}
-                                    color="#111318"
-                                />
-                            </View>
-                        ),
+                        tabBarIcon: () => <AppNavigationIcon name="create" size={40} />,
                     }}
                 />
                 <Tabs.Screen
@@ -195,11 +163,8 @@ const TabLayout = () => {
                         title: 'Orvelis AI',
                         tabBarAccessibilityLabel: 'Orvelis AI',
                         tabBarIcon: ({ focused }) => (
-                            <Ionicons
-                                name={focused ? 'sparkles' : 'sparkles-outline'}
-                                size={24}
-                                color={focused ? activeTabColor : inactiveTabColor}
-                            />
+                            <AppNavigationIcon name="ai" selected={focused}
+                                color={focused ? activeTabColor : inactiveTabColor} />
                         ),
                     }}
                 />
@@ -209,11 +174,8 @@ const TabLayout = () => {
                         title: 'Inbox',
                         tabBarAccessibilityLabel: 'Inbox',
                         tabBarIcon: ({ focused }) => (
-                            <Ionicons
-                                name={focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'}
-                                size={24}
-                                color={focused ? activeTabColor : inactiveTabColor}
-                            />
+                            <AppNavigationIcon name="inbox" selected={focused}
+                                color={focused ? activeTabColor : inactiveTabColor} />
                         ),
                     }}
                 />
