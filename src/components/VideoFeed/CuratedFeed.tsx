@@ -134,6 +134,28 @@ export function FeedOrderSwitch({ value, onChange }: { value: 'ranked' | 'recent
     );
 }
 
+export function CuratedFeedIntro({ desktop = false }: { desktop?: boolean }) {
+    const { theme } = useTheme();
+    return (
+        <View style={[styles.intro, desktop && styles.webIntro]}>
+            <Text accessibilityRole="header" aria-level={desktop ? 1 : undefined}
+                style={[styles.headingTitle, desktop && styles.webIntroTitle, { color: theme.colors.text.primary }]}>
+                Things you’ll bring up later
+            </Text>
+            <Text style={[styles.headingSubtitle, { color: theme.colors.text.secondary }]}>
+                How things work. Why people disagree.
+            </Text>
+            <View style={[styles.editorialNote, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.surface.border }]}>
+                <Ionicons name="bulb-outline" size={18} color={theme.colors.text.primary} />
+                <View style={styles.noteCopy}>
+                    <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>What did the clip leave out?</Text>
+                    <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Ask Orvelis AI for context or a second take.</Text>
+                </View>
+            </View>
+        </View>
+    );
+}
+
 export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndReached, onSelectNative, fetchError, loading, desktop = false, onRetry, onOpenOrvelis, viewerId, feedOrder, onFeedOrder }: Props) {
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
@@ -190,19 +212,7 @@ export function CuratedFeed({ videos, reels, grid, isFocused, paddingTop, onEndR
                 windowSize={5}
                 ListHeaderComponent={desktop ? undefined : (
                     <View style={styles.heading}>
-                        <Text accessibilityRole="header" style={[styles.headingTitle, { color: theme.colors.text.primary }]}>
-                            Things you’ll bring up later
-                        </Text>
-                        <Text style={[styles.headingSubtitle, { color: theme.colors.text.secondary }]}>
-                            How things work. Why people disagree.
-                        </Text>
-                        <View style={[styles.editorialNote, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.surface.border }]}>
-                            <Ionicons name="bulb-outline" size={18} color={theme.colors.text.primary} />
-                            <View style={{ flex: 1 }}>
-                                <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>What did the clip leave out?</Text>
-                                <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Ask Orvelis AI for context or a second take.</Text>
-                            </View>
-                        </View>
+                        <CuratedFeedIntro />
                         <FeedOrderSwitch value={feedOrder} onChange={onFeedOrder} />
                     </View>
                 )}
@@ -320,8 +330,12 @@ const styles = StyleSheet.create({
     likes: { flexDirection: 'row', alignItems: 'center', gap: 3 },
     likesText: { color: '#FFFFFF', fontSize: 11, fontWeight: '600' },
     heading: { paddingHorizontal: 8, paddingTop: 0, paddingBottom: 8, gap: 5 },
+    intro: { gap: 5 },
+    webIntro: { flexShrink: 1, alignItems: 'flex-start' },
+    webIntroTitle: { fontSize: 17, lineHeight: 21, letterSpacing: -0.25 },
     headingSubtitle: { fontSize: 12, lineHeight: 16 },
     editorialNote: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 8, marginTop: 2 },
+    noteCopy: { flexShrink: 1 },
     noteTitle: { fontSize: 12, lineHeight: 16, fontWeight: '700' },
     noteSubtitle: { fontSize: 10.5, lineHeight: 14, marginTop: 1 },
     sectionLabel: { fontSize: 9.5, fontWeight: '700', letterSpacing: 0.8, marginTop: 4 },
