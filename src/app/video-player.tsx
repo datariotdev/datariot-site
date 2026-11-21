@@ -1,158 +1,96 @@
-import React from 'react';
-import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+/** @jsxImportSource react */
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, ActivityIndicator, Text, Pressable, StatusBar } from 'react-native';
+import { useLocalSearchParams, useRouter, Stack, useIsFocused } from 'expo-router';
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
 import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
-import { theme } from '@design-system/theme';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useIsFocused } from '@react-navigation/native';
+import { usePalette } from '../design-system/palette';
+import { CommentsModal } from '../components/VideoFeed/CommentsModal';
+import { FullScreenVideoModal } from '../components/VideoFeed/FullScreenVideoModal';
 
 export default function VideoPlayerScreen() {
-    const isFocused = useIsFocused();
+    const focused = useIsFocused();
     const params = useLocalSearchParams<{
-        type: FeedType;
-        userId?: string;
-        hashtag?: string;
-        searchQuery?: string;
-        initialVideoId?: string;
-        sort?: 'recent' | 'popular';
+        type?: FeedType; userId?: string; hashtag?: string; searchQuery?: string;
+        initialVideoId?: string; videoId?: string; openComments?: string; sort?: 'recent' | 'popular';
     }>();
-
     const router = useRouter();
     const insets = useSafeAreaInsets();
-
-    const getStringParam = (param: string | string[] | undefined) => {
-        if (!param || param === "undefined") return undefined;
-        const val = Array.isArray(param) ? param[0] : param;
-        return val === "" ? undefined : val;
+    const p = usePalette();
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [commentsId, setCommentsId] = useState<string | null>(null);
+    const [openOptionsOnMount, setOpenOptionsOnMount] = useState(false);
+    const openPlayer = (id: string, options = false) => {
+        setOpenOptionsOnMount(options);
+        setSelectedId(id);
     };
+    const value = (param: string | string[] | undefined) => {
+        const text = Array.isArray(param) ? param[0] : param;
+        return text && text !== 'undefined' ? text : undefined;
+    };
+    const type = (value(params.type) || 'trending') as FeedType;
+    const search = value(params.searchQuery);
+    const videoId = value(params.videoId);
+    const initialId = value(params.initialVideoId) || videoId;
+    const openComments = value(params.openComments);
 
-    const cleanSearchQuery = getStringParam(params.searchQuery);
-    const cleanHashtag = getStringParam(params.hashtag);
-    const cleanUserId = getStringParam(params.userId);
-    const cleanType = (getStringParam(params.type) || 'trending') as FeedType;
-    const cleanSort = getStringParam(params.sort) as 'recent' | 'popular' | undefined;
-    const initialVideoId = getStringParam(params.initialVideoId);
-
-    console.log("VideoPlayerScreen clean params:", { cleanType, cleanSearchQuery, cleanHashtag, cleanUserId, cleanSort, initialVideoId });
-
-    const {
-        videos,
-        loading,
-        loadMore,
-        toggleLike,
-        toggleFollow
-    } = useVideos({
-        type: cleanType,
-        userId: cleanUserId,
-        hashtag: cleanHashtag,
-        searchQuery: cleanSearchQuery,
-        sort: cleanSort
-    });
-
-    console.log(`VideoPlayerScreen loaded ${videos.length} videos. loading: ${loading}`);
-
-    // Handle back navigation
-    const handleBack = () => {
-        if (router.canGoBack()) {
-            router.back();
-        } else {
-            router.replace('/(tabs)');
+    useEffect(() => {
+        if (openComments && (videoId || initialId)) {
+            setCommentsId(videoId || initialId || null);
         }
-    };
+    }, [openComments, videoId, initialId]);
 
-    const handleComment = (videoId: string) => {
-        console.log('Comment on:', videoId);
-    };
-
-    const handleSave = (videoId: string) => {
-        console.log('Save:', videoId);
-    };
-
-    const handleMore = (videoId: string) => {
-        console.log('More options:', videoId);
-    };
-
-    // Filter videos to start from the initialVideoId if provided
-    // Ideally, we would scroll to the index, but filtering/reordering might be easier for now
-    // Or we rely on VerticalFeed to handle initialScrollIndex (not implemented there yet)
-    // For now, let's just show the feed as returned.
-    // TODO: Implement initialScrollIndex in VerticalFeed if needed for exact positioning.
-
-    if (loading && videos.length === 0) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
-            </View>
-        );
-    }
-
-    if (!loading && videos.length === 0) {
-        return (
-            <View style={styles.loadingContainer}>
-                <Text style={{ color: 'white' }}>Video not found</Text>
-                <TouchableOpacity onPress={handleBack} style={{ marginTop: 20, padding: 10, backgroundColor: theme.colors.primary.DEFAULT, borderRadius: 8 }}>
-                    <Text style={{ color: 'white' }}>Go Back</Text>
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
-    // Identify start index based on initialVideoId
-    let initialScrollIndex = 0;
-    if (initialVideoId && videos.length > 0) {
-        const foundIdx = videos.findIndex(v => v.id === initialVideoId);
-        if (foundIdx !== -1) {
-            initialScrollIndex = foundIdx;
-        }
-    }
-
-    return (
-        <View style={styles.container}>
-            <Stack.Screen options={{ headerShown: false }} />
-
-            <CoubClassicFeed
-                videos={videos}
-                isScreenFocused={isFocused}
-                onEndReached={loadMore}
-                onLike={toggleLike}
-                onComment={handleComment}
-                onSave={handleSave}
-                onMore={handleMore}
-                onFollow={toggleFollow}
-                onSelect={(id) => console.log('Selected:', id)}
-                initialScrollIndex={initialScrollIndex}
-            />
-
-            {/* Back Button Overlay */}
-            <TouchableOpacity
-                style={[styles.backButton, { top: insets.top + 10 }]}
-                onPress={handleBack}
-            >
-                <Feather name="arrow-left" size={24} color="white" />
-            </TouchableOpacity>
-        </View>
+    const { videos, loading, error, loadMore, refresh, toggleLike, toggleFollow, toggleSave } = useVideos(
+        videoId
+            ? { type: 'trending', videoId }
+            : {
+                type,
+                userId: value(params.userId),
+                hashtag: value(params.hashtag),
+                searchQuery: search,
+                sort: value(params.sort) as 'recent' | 'popular' | undefined,
+            }
     );
+    const back = () => router.canGoBack() ? router.back() : router.replace('/(tabs)');
+    const background = p.isDark ? '#08090D' : '#F7F8FA';
+    const initialIndex = Math.max(0, videos.findIndex(video => video.id === initialId));
+    const title = type === 'user' ? 'Video library' : search ? 'Search results' : 'Latest videos';
+    return <View style={[s.root, { backgroundColor: background }]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <StatusBar barStyle={p.isDark ? 'light-content' : 'dark-content'} />
+        <View style={[s.toolbar, { paddingTop: insets.top + 4 }]}>
+            <Pressable onPress={back} accessibilityRole="button" accessibilityLabel="Go back" style={s.back} hitSlop={4}>
+                <Feather name="arrow-left" size={22} color={p.text} />
+            </Pressable>
+            <Text style={[s.wordmark, { color: p.text, fontFamily: p.fonts.semibold }]}>datariot<Text style={{ color: p.faint, fontFamily: p.fonts.regular }}> / watch</Text></Text>
+            <View style={{ width: 44 }} />
+        </View>
+        {loading && videos.length === 0 ? <View style={s.center}><ActivityIndicator color={p.accent} /></View>
+            : videos.length === 0 ? <View style={s.center}>
+                <Feather name="play-circle" size={34} color={p.faint} />
+                <Text style={[s.emptyTitle, { color: p.text, fontFamily: p.fonts.semibold }]}>{error ? 'Couldn’t load these videos' : 'Nothing here yet'}</Text>
+                <Text style={[s.emptyText, { color: p.sub, fontFamily: p.fonts.regular }]}>{error ? 'Give it another try.' : 'New videos will appear here.'}</Text>
+                <Pressable onPress={error ? refresh : back} accessibilityRole="button" style={[s.retry, { backgroundColor: p.accent }]}>
+                    <Text style={{ color: p.onAccent, fontFamily: p.fonts.medium }}>{error ? 'Try again' : 'Explore videos'}</Text>
+                </Pressable>
+            </View> : <CoubClassicFeed videos={videos} collection title={title} paddingBottom={insets.bottom + 12}
+                isScreenFocused={focused && !selectedId && !commentsId}
+                onEndReached={loadMore} onLike={toggleLike} onComment={setCommentsId} onSave={toggleSave}
+                onMore={id => openPlayer(id, true)} onFollow={toggleFollow} onSelect={openPlayer} initialScrollIndex={initialIndex} />}
+        <CommentsModal visible={!!commentsId} videoId={commentsId} onClose={() => setCommentsId(null)} />
+        <FullScreenVideoModal visible={!!selectedId} videos={videos} initialVideoId={selectedId} onClose={() => setSelectedId(null)}
+            onLike={toggleLike} onSave={toggleSave} openOptionsOnMount={openOptionsOnMount} />
+    </View>;
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#000',
-    },
-    backButton: {
-        position: 'absolute',
-        left: 20,
-        zIndex: 10,
-        padding: 8,
-        borderRadius: 20,
-        backgroundColor: 'rgba(0,0,0,0.3)',
-    }
+const s = StyleSheet.create({
+    root: { flex: 1 },
+    toolbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10, paddingBottom: 4 },
+    back: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+    wordmark: { fontSize: 15, letterSpacing: -0.4 },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
+    emptyTitle: { fontSize: 23, letterSpacing: -0.5, textAlign: 'center', marginTop: 18 },
+    emptyText: { fontSize: 14, textAlign: 'center', marginTop: 8 },
+    retry: { paddingHorizontal: 22, paddingVertical: 13, borderRadius: 14, marginTop: 24 },
 });

@@ -1,638 +1,197 @@
-import { OrvelisMark } from '../UI/OrvelisMark';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {
-    Modal,
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    Pressable,
-    FlatList,
-    ScrollView,
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    Dimensions,
-} from 'react-native';
-import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+/** @jsxImportSource react */
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../Theme/ThemeProvider';
-import { generateDeepDive, chatWithVideo, DeepDiveData, DeepDiveMessage } from '../../lib/ai/client';
-import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeIn, FadeInDown, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, withDelay } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
+import { WebView } from 'react-native-webview';
+import { OrvelisMark } from '../UI/OrvelisMark';
+import { askAboutClip, ClipAnalysis, DeepDiveMessage, getClipAnalysis, OrvelisError, orvelisErrorMessage, VideoAction } from '../../lib/ai/client';
 
-interface DeepDiveModalProps {
-    visible: boolean;
-    video: any | null;
-    onClose: () => void;
+type Tab = 'understand' | 'examine' | 'ask';
+interface Props {
+    visible: boolean; video: { id: string; title?: string } | null; onClose: () => void;
+    seconds?: number; onSeek?: (seconds: number) => void;
 }
-
-type TabType = 'summary' | 'resources' | 'chat';
-
-// Typing dots for Q&A loading state
-const TypingIndicator = () => {
-    const dot1 = useSharedValue(0.3);
-    const dot2 = useSharedValue(0.3);
-    const dot3 = useSharedValue(0.3);
-
-    useEffect(() => {
-        dot1.value = withRepeat(withSequence(withTiming(1, { duration: 400 }), withTiming(0.3, { duration: 400 })), -1, false);
-        dot2.value = withRepeat(withSequence(withDelay(150, withTiming(1, { duration: 400 })), withTiming(0.3, { duration: 400 })), -1, false);
-        dot3.value = withRepeat(withSequence(withDelay(300, withTiming(1, { duration: 400 })), withTiming(0.3, { duration: 400 })), -1, false);
-    }, []);
-
-    const style1 = useAnimatedStyle(() => ({ opacity: dot1.value, transform: [{ scale: 0.8 + dot1.value * 0.4 }] }));
-    const style2 = useAnimatedStyle(() => ({ opacity: dot2.value, transform: [{ scale: 0.8 + dot2.value * 0.4 }] }));
-    const style3 = useAnimatedStyle(() => ({ opacity: dot3.value, transform: [{ scale: 0.8 + dot3.value * 0.4 }] }));
-
-    return (
-        <View style={styles.typingContainer}>
-            <View style={styles.typingBubble}>
-                <Animated.View style={[styles.typingDot, style1]} />
-                <Animated.View style={[styles.typingDot, style2]} />
-                <Animated.View style={[styles.typingDot, style3]} />
-            </View>
-        </View>
-    );
+const stamp = (n: number) => `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`;
+const reasoningLabels: Record<ClipAnalysis['reasoning'], string> = {
+    supported_in_clip: 'Evidence presented in the clip', needs_context: 'Needs more context',
+    opinion: 'Opinion or interpretation', no_checkable_claim: 'No factual claim to check',
 };
 
-export function DeepDiveModal({ visible, video, onClose }: DeepDiveModalProps) {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
+// Search suggestions must be displayed when the provider returns grounded results.
+function SearchSuggestions({ html }: { html: string }) {
+    if (Platform.OS === 'web') return React.createElement('iframe', {
+        srcDoc: html, title: 'Google Search suggestions', sandbox: 'allow-popups allow-popups-to-escape-sandbox',
+        style: { width: '100%', height: 120, border: 0 },
+    });
+    return <WebView originWhitelist={['*']} source={{ html }} javaScriptEnabled={false} style={{ height: 120, backgroundColor: 'transparent' }}
+        onShouldStartLoadWithRequest={request => {
+            if (request.url === 'about:blank') return true;
+            if (request.url.startsWith('https://')) Linking.openURL(request.url).catch(() => {});
+            return false;
+        }} />;
+}
+
+export function DeepDiveModal({ visible, video, onClose, seconds = 0, onSeek }: Props) {
+    const router = useRouter();
     const insets = useSafeAreaInsets();
-
-    const [activeTab, setActiveTab] = useState<TabType>('summary');
+    const { width } = useWindowDimensions();
+    const [tab, setTab] = useState<Tab>('understand');
+    const [analysis, setAnalysis] = useState<ClipAnalysis | null>(null);
     const [loading, setLoading] = useState(false);
-    const [deepDiveData, setDeepDiveData] = useState<DeepDiveData | null>(null);
+    const [error, setError] = useState('');
+    const [signIn, setSignIn] = useState(false);
+    const [retry, setRetry] = useState(0);
+    const [history, setHistory] = useState<DeepDiveMessage[]>([]);
+    const [input, setInput] = useState('');
+    const [sending, setSending] = useState(false);
+    const [chatError, setChatError] = useState('');
+    const [answer, setAnswer] = useState<number | null>(null);
+    const [moment, setMoment] = useState(seconds);
+    const generation = useRef(0);
+    const list = useRef<FlatList>(null);
+    const busy = useRef(false);
 
-    // Q&A Chat State
-    const [chatHistory, setChatHistory] = useState<DeepDiveMessage[]>([]);
-    const [inputText, setInputText] = useState('');
-    const [chatLoading, setChatLoading] = useState(false);
-
-    const chatListRef = useRef<FlatList>(null);
-    const chatInputRef = useRef<TextInput>(null);
-
-    // Load AI deep dive content on video change
     useEffect(() => {
-        if (visible && video) {
-            setLoading(true);
-            setDeepDiveData(null);
-            setChatHistory([
-                {
-                    role: 'assistant',
-                    content: `Hello! I'm **Orvelis**, your logic partner. I've scanned **"${video.title || 'this video'}"**. Ask me any clarifying questions, or review the tabs above for a full brief.`,
-                }
-            ]);
-            setActiveTab('summary');
+        const current = ++generation.current;
+        busy.current = false; setSending(false); setHistory([]); setInput(''); setChatError('');
+        setAnalysis(null); setError(''); setAnswer(null); setTab('understand'); setMoment(seconds);
+        if (!visible || !video?.id) { setLoading(false); return; }
+        setLoading(true); setSignIn(false);
+        getClipAnalysis(video.id).then(value => {
+            if (generation.current === current) setAnalysis(value);
+        }).catch(e => {
+            if (generation.current === current) { setError(orvelisErrorMessage(e)); setSignIn(e instanceof OrvelisError && e.code === 'SIGN_IN_REQUIRED'); }
+        }).finally(() => { if (generation.current === current) setLoading(false); });
+        return () => { generation.current++; };
+    }, [visible, video?.id, retry]);
 
-            generateDeepDive(video.title || 'Educational Topic', video.description || '')
-                .then((data) => {
-                    setDeepDiveData(data);
-                })
-                .catch((err) => {
-                    console.error('Deep Dive fetch error:', err);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        }
-    }, [visible, video]);
-
-    const handleSendMessage = async () => {
-        if (!inputText.trim() || !video) return;
-
-        const userMsg: DeepDiveMessage = { role: 'user', content: inputText };
-        setChatHistory(prev => [...prev, userMsg]);
-        const textToSend = inputText;
-        setInputText('');
-        setChatLoading(true);
-
-        // Scroll to bottom
-        setTimeout(() => chatListRef.current?.scrollToEnd({ animated: true }), 100);
-
+    async function send(question: string, action: VideoAction = 'ask') {
+        if (!video?.id || !question.trim() || busy.current) return;
+        const current = generation.current;
+        busy.current = true; setSending(true); setChatError(''); setTab('ask'); setInput('');
+        const previous = history;
+        setHistory(h => [...h, { role: 'user', content: question }]);
         try {
-            const formattedHistory = chatHistory.map(h => ({
-                role: h.role,
-                content: h.content
-            }));
-            const response = await chatWithVideo(
-                video.title || 'Video Topic',
-                video.description || '',
-                textToSend,
-                formattedHistory
-            );
-            setChatHistory(prev => [...prev, { role: 'assistant', content: response }]);
+            const response = await askAboutClip(video.id, question.trim(), previous, moment, action);
+            if (generation.current === current) setHistory(h => [...h, { role: 'assistant', content: response.content, sources: response.sources, searchEntryPoint: response.searchEntryPoint }]);
         } catch (e) {
-            console.error('Video Chat error:', e);
-            setChatHistory(prev => [...prev, {
-                role: 'assistant',
-                content: "Apologies, my synaptic bridge is experiencing latency. Let's try that question again.",
-            }]);
+            if (generation.current === current) { setChatError(orvelisErrorMessage(e)); setInput(question); }
         } finally {
-            setChatLoading(false);
-            setTimeout(() => chatListRef.current?.scrollToEnd({ animated: true }), 150);
+            if (generation.current === current) { busy.current = false; setSending(false); }
         }
-    };
-
-    const bg = isDark ? '#000814' : '#FFFFFF';
-    const handleBg = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-    const textColor = theme.colors.text.primary;
-    const subtitleColor = theme.colors.text.secondary;
-
-    const renderChatBubble = ({ item }: { item: DeepDiveMessage }) => {
-        const isUser = item.role === 'user';
-        return (
-            <Animated.View entering={FadeIn.duration(200)} style={isUser ? styles.userBubbleContainer : styles.aiBubbleContainer}>
-                {!isUser && (
-                    <View style={[styles.aiAvatar, { backgroundColor: theme.colors.primary.DEFAULT }]}>
-                        <OrvelisMark size={14} color="#FFF" />
-                    </View>
-                )}
-                <View style={[
-                    styles.chatBubble,
-                    isUser
-                        ? [styles.userBubble, { backgroundColor: theme.colors.primary.DEFAULT }]
-                        : [styles.aiBubble, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0,0,0,0.04)' }]
-                ]}>
-                    <Text style={[styles.chatText, { color: isUser ? '#FFF' : textColor }]}>
-                        {item.content}
-                    </Text>
-                </View>
-            </Animated.View>
-        );
-    };
-
+    }
+    const jump = (value: number) => { setMoment(value); if (onSeek) onSeek(value); else { setTab('ask'); setInput(`Explain the moment at ${stamp(value)}.`); } };
+    const actionButton = (label: string, icon: keyof typeof Ionicons.glyphMap, action: VideoAction, prompt: string) => (
+        <Pressable key={action} disabled={sending || !analysis} onPress={() => send(prompt, action)} accessibilityRole="button" style={styles.action}>
+            <Ionicons name={icon} size={17} color="#385E91" /><Text style={styles.actionText}>{label}</Text>
+        </Pressable>
+    );
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-            <View style={styles.modalContainer}>
-                <Pressable style={styles.backdrop} onPress={onClose} />
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={[styles.sheet, { backgroundColor: bg }]}
-                    keyboardVerticalOffset={0}
-                >
-                    {/* Handle bar */}
-                    <View style={[styles.handle, { backgroundColor: handleBg }]} />
-
-                    {/* Header */}
-                    <View style={styles.sheetHeader}>
-                        <View style={styles.headerInfo}>
-                            <View style={[styles.headerIconWrapper, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(14, 165, 233, 0.1)' }]}>
-                                <MaterialCommunityIcons name="brain" size={20} color={theme.colors.primary.DEFAULT} />
-                            </View>
-                            <View style={styles.headerTitles}>
-                                <Text style={[styles.sheetTitle, { color: textColor }]}>ORVELIS DEEP DIVE</Text>
-                                <Text style={[styles.videoTitle, { color: subtitleColor }]} numberOfLines={1}>
-                                    {video?.title || 'Understanding the Topic'}
-                                </Text>
-                            </View>
-                        </View>
-                        <Pressable onPress={onClose} hitSlop={12} style={styles.closeButton}>
-                            <Ionicons name="close" size={24} color={textColor} style={{ opacity: 0.6 }} />
-                        </Pressable>
+            <View style={styles.backdrop}>
+                <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close Orvelis" />
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                    style={[styles.sheet, { width: Math.min(width, 680), paddingBottom: insets.bottom, marginTop: Math.max(insets.top, 28) }]}>
+                    <View style={styles.header}>
+                        <View style={styles.mark}><OrvelisMark size={25} color="#587EB5" /></View>
+                        <View style={{ flex: 1, gap: 3 }}><Text style={styles.brand}>Orvelis</Text><Text style={styles.caption} numberOfLines={1}>{video?.title || 'Explore this video'}</Text></View>
+                        <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel="Close analysis" style={styles.iconButton}><Ionicons name="close" size={23} color="#40536D" /></Pressable>
                     </View>
-
-                    {/* Tab Navigation */}
-                    <View style={[styles.tabsRow, { borderBottomColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}>
-                        {(['summary', 'resources', 'chat'] as TabType[]).map((tab) => {
-                            const isActive = activeTab === tab;
-                            let icon = '';
-                            let label = '';
-                            if (tab === 'summary') { icon = 'book-outline'; label = 'Summary'; }
-                            else if (tab === 'resources') { icon = 'library-outline'; label = 'Resources'; }
-                            else { icon = 'chatbubble-ellipses-outline'; label = 'Ask AI'; }
-
-                            return (
-                                <Pressable
-                                    key={tab}
-                                    onPress={() => setActiveTab(tab)}
-                                    style={[styles.tabButton, isActive && { borderBottomColor: theme.colors.primary.DEFAULT }]}
-                                >
-                                    <Ionicons
-                                        name={icon as any}
-                                        size={18}
-                                        color={isActive ? theme.colors.primary.DEFAULT : isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'}
-                                    />
-                                    <Text style={[
-                                        styles.tabLabel,
-                                        { color: isActive ? theme.colors.primary.DEFAULT : isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }
-                                    ]}>
-                                        {label}
-                                    </Text>
-                                </Pressable>
-                            );
-                        })}
+                    <View style={styles.tabs}>
+                        {(['understand', 'examine', 'ask'] as Tab[]).map(value => <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: tab === value }}
+                            onPress={() => setTab(value)} style={[styles.tab, tab === value && styles.tabActive]}>
+                            <Text style={[styles.tabText, tab === value && styles.tabTextActive]}>{value === 'understand' ? 'Understand' : value === 'examine' ? 'Examine the claim' : 'Ask Orvelis'}</Text>
+                        </Pressable>)}
                     </View>
-
-                    {/* Content Section */}
-                    {loading ? (
-                        <View style={styles.loaderContainer}>
-                            <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
-                            <Text style={[styles.loaderText, { color: subtitleColor }]}>Synthesizing cognitive models...</Text>
+                    {loading ? <View style={styles.empty}><ActivityIndicator color="#587EB5" /><Text style={styles.body}>Watching the video and listening to the audio…</Text><Text style={styles.caption}>The first analysis can take a little longer.</Text></View>
+                    : error ? <View style={styles.empty}><Text style={styles.body}>{error}</Text><Pressable style={styles.action} accessibilityRole="button" onPress={() => {
+                        if (signIn) { onClose(); router.push('/auth/login'); } else setRetry(v => v + 1);
+                    }}><Text style={styles.actionText}>{signIn ? 'Sign in' : 'Try again'}</Text></Pressable></View>
+                    : tab === 'ask' ? <View style={{ flex: 1 }}>
+                        <FlatList<DeepDiveMessage> ref={list} data={history} keyExtractor={(_, i) => String(i)} contentContainerStyle={styles.scroll}
+                            onContentSizeChange={() => list.current?.scrollToEnd({ animated: true })}
+                            ListEmptyComponent={<View style={{ gap: 12 }}><Text style={styles.title}>What made you curious?</Text>
+                                <Text style={styles.body}>Ask about the idea, the evidence, or the moment at {stamp(moment)}.</Text>
+                                {analysis?.questions.map(q => <Pressable key={q} onPress={() => send(q)} accessibilityRole="button" style={styles.prompt}><Text style={styles.body}>{q}</Text><Ionicons name="arrow-forward" size={17} color="#587EB5" /></Pressable>)}
+                            </View>}
+                            renderItem={({ item }) => <View style={[styles.bubble, item.role === 'user' ? styles.userBubble : styles.aiBubble]}>
+                                <Text style={styles.speaker}>{item.role === 'user' ? 'YOU' : 'ORVELIS'}</Text><Text selectable style={styles.body}>{item.content}</Text>
+                                {!!item.sources?.length && <View style={{ gap: 8, marginTop: 12 }}><Text style={styles.label}>SOURCES RETURNED BY SEARCH</Text>{item.sources.map((source, i) =>
+                                    <Pressable key={`${source.url}-${i}`} accessibilityRole="link" onPress={() => Linking.openURL(source.url).catch(() => setChatError('Could not open this source.'))}>
+                                        <Text style={styles.source}>{i + 1}. {source.title} ↗</Text>
+                                    </Pressable>)}</View>}
+                                {item.searchEntryPoint && <SearchSuggestions html={item.searchEntryPoint} />}
+                            </View>}
+                            ListFooterComponent={sending ? <View style={{ padding: 16 }}><ActivityIndicator color="#587EB5" /></View> : undefined} />
+                        {!!chatError && <Text accessibilityRole="alert" style={styles.error}>{chatError}</Text>}
+                        <View style={styles.inputRow}><TextInput value={input} onChangeText={setInput} placeholder={`Ask about ${stamp(moment)} or the whole clip…`}
+                            placeholderTextColor="#7B899C" style={styles.input} maxLength={4000} multiline accessibilityLabel="Question about this video" />
+                            <Pressable disabled={sending || !input.trim()} onPress={() => send(input)} accessibilityRole="button" accessibilityLabel="Send question" style={[styles.send, (sending || !input.trim()) && { opacity: 0.4 }]}><Ionicons name="arrow-up" size={23} color="#FFF" /></Pressable>
                         </View>
-                    ) : (
-                        <View style={styles.contentWrapper}>
-                            {activeTab === 'summary' && (
-                                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                                    <Animated.View entering={FadeInDown.duration(300)}>
-                                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }]}>CONCEPT BRIEF</Text>
-                                        <View style={[styles.cardContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0,0,0,0.02)', borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}>
-                                            <Text style={[styles.summaryText, { color: textColor }]}>
-                                                {deepDiveData?.summary || 'Generating summary summary details...'}
-                                            </Text>
-                                        </View>
-
-                                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT, marginTop: 24 }]}>KEY TERMINOLOGY</Text>
-                                        {deepDiveData?.keyTerms.map((term, index) => (
-                                            <View
-                                                key={index}
-                                                style={[
-                                                    styles.termCard,
-                                                    {
-                                                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0,0,0,0.01)',
-                                                        borderLeftColor: theme.colors.primary.DEFAULT
-                                                    }
-                                                ]}
-                                            >
-                                                <Text style={[styles.termName, { color: textColor }]}>{term.term}</Text>
-                                                <Text style={[styles.termDef, { color: subtitleColor }]}>{term.definition}</Text>
-                                            </View>
-                                        ))}
-                                    </Animated.View>
-                                </ScrollView>
-                            )}
-
-                            {activeTab === 'resources' && (
-                                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                                    <Animated.View entering={FadeInDown.duration(300)}>
-                                        <Text style={[styles.sectionTitle, { color: theme.colors.primary.DEFAULT }]}>RECOMMENDED STUDY</Text>
-                                        {deepDiveData?.recommendations.map((rec, index) => {
-                                            let icon = 'book';
-                                            let iconColor = '#38BDF8';
-                                            if (rec.type === 'Video') { icon = 'videocam'; iconColor = '#F43F5E'; }
-                                            else if (rec.type === 'Podcast') { icon = 'mic'; iconColor = '#10B981'; }
-
-                                            return (
-                                                <View
-                                                    key={index}
-                                                    style={[
-                                                        styles.resourceCard,
-                                                        {
-                                                            backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                                            borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
-                                                        }
-                                                    ]}
-                                                >
-                                                    <View style={styles.resourceHeader}>
-                                                        <View style={[styles.resourceIcon, { backgroundColor: iconColor + '20' }]}>
-                                                            <Ionicons name={icon as any} size={16} color={iconColor} />
-                                                        </View>
-                                                        <View style={styles.resourceMeta}>
-                                                            <Text style={[styles.resourceTitle, { color: textColor }]}>{rec.title}</Text>
-                                                            <View style={styles.badgeRow}>
-                                                                <Text style={[styles.typeBadge, { color: iconColor }]}>{rec.type.toUpperCase()}</Text>
-                                                                {(rec.readTime || rec.duration) && (
-                                                                    <Text style={styles.timeBadge}>{rec.readTime || rec.duration}</Text>
-                                                                )}
-                                                            </View>
-                                                        </View>
-                                                    </View>
-                                                    <Text style={[styles.resourceReason, { color: subtitleColor }]}>{rec.reason}</Text>
-                                                </View>
-                                            );
-                                        })}
-                                    </Animated.View>
-                                </ScrollView>
-                            )}
-
-                            {activeTab === 'chat' && (
-                                <View style={styles.chatWrapper}>
-                                    <FlatList
-                                        ref={chatListRef}
-                                        data={chatHistory}
-                                        keyExtractor={(_, index) => index.toString()}
-                                        renderItem={renderChatBubble}
-                                        contentContainerStyle={styles.chatListContent}
-                                        showsVerticalScrollIndicator={false}
-                                        ListFooterComponent={() => (
-                                            chatLoading ? <TypingIndicator /> : null
-                                        )}
-                                    />
-
-                                    {/* Input bar */}
-                                    <View style={[styles.inputRow, { borderTopColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', paddingBottom: insets.bottom + 8 }]}>
-                                        <TextInput
-                                            ref={chatInputRef}
-                                            value={inputText}
-                                            onChangeText={setInputText}
-                                            placeholder="Ask Orvelis a question..."
-                                            placeholderTextColor={isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}
-                                            style={[
-                                                styles.input,
-                                                {
-                                                    backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                                                    color: textColor,
-                                                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                                                }
-                                            ]}
-                                            multiline={false}
-                                            onSubmitEditing={handleSendMessage}
-                                            returnKeyType="send"
-                                        />
-                                        <Pressable
-                                            onPress={handleSendMessage}
-                                            disabled={chatLoading || !inputText.trim()}
-                                            style={[
-                                                styles.sendBtn,
-                                                {
-                                                    backgroundColor: inputText.trim() ? theme.colors.primary.DEFAULT : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'
-                                                }
-                                            ]}
-                                        >
-                                            {chatLoading ? (
-                                                <ActivityIndicator size="small" color="#FFF" />
-                                            ) : (
-                                                <Ionicons name="arrow-up" size={18} color={inputText.trim() ? '#FFF' : isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'} />
-                                            )}
-                                        </Pressable>
-                                    </View>
+                    </View> : <ScrollView contentContainerStyle={styles.scroll}>
+                        {analysis && <>
+                            <View style={styles.context}><Ionicons name="videocam-outline" size={15} color="#587EB5" /><Text style={styles.caption}>Based on the video and audio · AI interpretation</Text></View>
+                            {tab === 'understand' ? <>
+                                <Text style={styles.title}>The idea, unpacked.</Text><Text style={styles.body}>{analysis.summary}</Text>
+                                <View style={styles.note}><Text style={styles.label}>WHAT YOU CAN TAKE AWAY</Text><Text style={styles.body}>{analysis.learningValue}</Text></View>
+                                <View style={styles.actionRow}>
+                                    {actionButton('Explain simply', 'bulb-outline', 'explain', `Explain the moment at ${stamp(moment)} simply, with a concrete example.`)}
+                                    {actionButton('Check sources', 'search-outline', 'check', 'Check the main factual claim in this clip against authoritative sources.')}
+                                    {actionButton('Build a reply', 'videocam-outline', 'reply', 'Help me structure a thoughtful 30-second video reply to this clip.')}
                                 </View>
-                            )}
-                        </View>
-                    )}
+                                <Text style={styles.label}>FOLLOW THE VIDEO</Text>
+                                {analysis.moments.map((m, i) => <Pressable key={i} onPress={() => jump(m.seconds)} accessibilityRole="button" accessibilityLabel={`Explore moment at ${stamp(m.seconds)}`} style={styles.moment}>
+                                    <Text style={styles.time}>{stamp(m.seconds)}</Text><View style={{ flex: 1, gap: 4 }}><Text style={styles.label}>{m.kind.toUpperCase()}</Text><Text style={styles.body}>{m.text}</Text></View>
+                                    <Ionicons name={onSeek ? 'play-outline' : 'chatbubble-outline'} color="#587EB5" size={17} />
+                                </Pressable>)}
+                                {!!analysis.keyTerms.length && <Text style={styles.label}>KEY IDEAS</Text>}
+                                {analysis.keyTerms.map(term => <View key={term.term} style={{ gap: 4 }}><Text style={styles.term}>{term.term}</Text><Text style={styles.body}>{term.definition}</Text></View>)}
+                                <View style={styles.note}><Text style={styles.label}>DID IT CLICK?</Text><Text style={styles.term}>{analysis.quiz.question}</Text>
+                                    {analysis.quiz.options.map((option, i) => <Pressable key={i} disabled={answer !== null} accessibilityRole="button" accessibilityState={{ selected: answer === i }} onPress={() => setAnswer(i)}
+                                        style={[styles.option, answer === i && { borderColor: '#587EB5', backgroundColor: '#E6EEFC' }]}><Text style={styles.body}>{option}</Text></Pressable>)}
+                                    {answer !== null && <Text accessibilityLiveRegion="polite" style={styles.body}>{answer === analysis.quiz.correctIndex ? 'Exactly. ' : 'Take another look. '}{analysis.quiz.explanation}</Text>}
+                                </View>
+                            </> : <>
+                                <Text style={styles.title}>Look behind the claim.</Text><Text style={styles.reasoning}>{reasoningLabels[analysis.reasoning]}</Text>
+                                <Text style={styles.label}>THE CLAIM</Text><Text style={styles.body}>{analysis.claim}</Text>
+                                <Text style={styles.label}>EVIDENCE IN THE VIDEO</Text><Text style={styles.body}>{analysis.evidence}</Text>
+                                <View style={styles.note}><Text style={styles.label}>WHAT IS MISSING?</Text><Text style={styles.body}>{analysis.missingContext}</Text></View>
+                                <Text style={styles.caption}>This examines the argument. Use Check sources for independent evidence.</Text>
+                                {actionButton('Check the claim with sources', 'search-outline', 'check', 'Check the main factual claim in this clip against authoritative sources. Explain what is known and what remains uncertain.')}
+                                <Text style={styles.label}>YOUR 30-SECOND VIDEO REPLY</Text>
+                                {analysis.replyOutline.map((line, i) => <View key={i} style={styles.moment}><Text style={styles.time}>0{i + 1}</Text><Text style={[styles.body, { flex: 1 }]}>{line}</Text></View>)}
+                                {actionButton('Develop my reply', 'videocam-outline', 'reply', 'Help me turn this outline into a thoughtful 30-second video reply. Ask for my position if needed.')}
+                            </>}
+                        </>}
+                    </ScrollView>}
                 </KeyboardAvoidingView>
             </View>
         </Modal>
     );
 }
-
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'flex-end',
-    },
-    backdrop: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    sheet: {
-        height: '75%',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        overflow: 'hidden',
-    },
-    handle: {
-        width: 36,
-        height: 4,
-        borderRadius: 2,
-        alignSelf: 'center',
-        marginTop: 12,
-        marginBottom: 4,
-    },
-    sheetHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingVertical: 14,
-    },
-    headerInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        flex: 1,
-    },
-    headerIconWrapper: {
-        width: 38,
-        height: 38,
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    headerTitles: {
-        flex: 1,
-    },
-    sheetTitle: {
-        fontSize: 12,
-        fontWeight: '800',
-        letterSpacing: 2,
-    },
-    videoTitle: {
-        fontSize: 14,
-        fontWeight: '600',
-        marginTop: 2,
-    },
-    closeButton: {
-        padding: 4,
-    },
-    // Tabs
-    tabsRow: {
-        flexDirection: 'row',
-        paddingHorizontal: 10,
-        borderBottomWidth: 1,
-    },
-    tabButton: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 6,
-        paddingVertical: 12,
-        borderBottomWidth: 2,
-        borderBottomColor: 'transparent',
-    },
-    tabLabel: {
-        fontSize: 13,
-        fontWeight: '600',
-    },
-    // Content wrapper
-    contentWrapper: {
-        flex: 1,
-    },
-    loaderContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 40,
-        gap: 12,
-    },
-    loaderText: {
-        fontSize: 14,
-        fontWeight: '600',
-        letterSpacing: 0.5,
-    },
-    scrollContent: {
-        padding: 20,
-        paddingBottom: 40,
-    },
-    sectionTitle: {
-        fontSize: 10,
-        fontWeight: '800',
-        letterSpacing: 2,
-        marginBottom: 12,
-    },
-    cardContainer: {
-        borderWidth: 1,
-        borderRadius: 16,
-        padding: 16,
-    },
-    summaryText: {
-        fontSize: 14,
-        lineHeight: 22,
-    },
-    termCard: {
-        borderLeftWidth: 3,
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 12,
-    },
-    termName: {
-        fontSize: 14,
-        fontWeight: '700',
-        marginBottom: 4,
-    },
-    termDef: {
-        fontSize: 13,
-        lineHeight: 18,
-    },
-    // Resources
-    resourceCard: {
-        borderWidth: 1,
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 14,
-    },
-    resourceHeader: {
-        flexDirection: 'row',
-        gap: 12,
-        marginBottom: 10,
-    },
-    resourceIcon: {
-        width: 32,
-        height: 32,
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    resourceMeta: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    resourceTitle: {
-        fontSize: 14,
-        fontWeight: '700',
-    },
-    badgeRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        marginTop: 2,
-    },
-    typeBadge: {
-        fontSize: 9,
-        fontWeight: '800',
-        letterSpacing: 0.5,
-    },
-    timeBadge: {
-        fontSize: 11,
-        color: 'rgba(150,150,160,0.8)',
-        fontWeight: '600',
-    },
-    resourceReason: {
-        fontSize: 13,
-        lineHeight: 18,
-    },
-    // Chat Screen
-    chatWrapper: {
-        flex: 1,
-    },
-    chatListContent: {
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        gap: 12,
-    },
-    userBubbleContainer: {
-        alignSelf: 'flex-end',
-        maxWidth: '85%',
-    },
-    aiBubbleContainer: {
-        flexDirection: 'row',
-        gap: 8,
-        alignSelf: 'flex-start',
-        maxWidth: '85%',
-    },
-    aiAvatar: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 4,
-    },
-    chatBubble: {
-        paddingHorizontal: 14,
-        paddingVertical: 10,
-        borderRadius: 16,
-    },
-    userBubble: {
-        borderBottomRightRadius: 4,
-    },
-    aiBubble: {
-        borderBottomLeftRadius: 4,
-    },
-    chatText: {
-        fontSize: 14,
-        lineHeight: 20,
-    },
-    typingContainer: {
-        alignSelf: 'flex-start',
-        paddingLeft: 32,
-        paddingVertical: 4,
-    },
-    typingBubble: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 16,
-        backgroundColor: 'rgba(255,255,255,0.04)',
-    },
-    typingDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: 'rgba(56, 189, 248, 0.8)',
-        marginHorizontal: 1.5,
-    },
-    inputRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        paddingHorizontal: 16,
-        paddingTop: 10,
-        borderTopWidth: StyleSheet.hairlineWidth,
-    },
-    input: {
-        flex: 1,
-        borderRadius: 22,
-        borderWidth: 1,
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        fontSize: 14,
-        maxHeight: 44,
-    },
-    sendBtn: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
+    backdrop: { flex: 1, backgroundColor: 'rgba(14,24,40,0.42)', justifyContent: 'flex-end', alignItems: 'center' },
+    sheet: { height: '90%', maxHeight: 900, backgroundColor: '#FCFDFF', borderTopLeftRadius: 26, borderTopRightRadius: 26, overflow: 'hidden' },
+    header: { flexDirection: 'row', alignItems: 'center', padding: 20, gap: 12 }, mark: { padding: 9, borderRadius: 16, backgroundColor: '#EAF0FC' },
+    brand: { fontSize: 22, color: '#18283F', fontWeight: '700', letterSpacing: -0.6 }, caption: { fontSize: 11, lineHeight: 16, color: '#67788F' },
+    iconButton: { padding: 10 }, tabs: { flexDirection: 'row', paddingHorizontal: 12, borderBottomWidth: 1, borderColor: '#E7EDF6' },
+    tab: { flex: 1, alignItems: 'center', paddingVertical: 14, borderBottomWidth: 2, borderColor: 'transparent' }, tabActive: { borderColor: '#587EB5' },
+    tabText: { fontSize: 11, color: '#738198', fontWeight: '600' }, tabTextActive: { color: '#264C83' },
+    scroll: { padding: 22, gap: 18, paddingBottom: 40 }, empty: { flex: 1, padding: 28, alignItems: 'center', justifyContent: 'center', gap: 15 },
+    title: { fontSize: 26, lineHeight: 31, letterSpacing: -0.7, fontWeight: '700', color: '#192A43' },
+    body: { fontSize: 14, lineHeight: 22, color: '#34475F' }, label: { fontSize: 9, lineHeight: 14, letterSpacing: 1.1, fontWeight: '700', color: '#6B7F9B' },
+    term: { fontSize: 15, lineHeight: 22, fontWeight: '600', color: '#1C3555' }, context: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+    note: { padding: 18, borderRadius: 17, backgroundColor: '#EFF4FC', gap: 12 }, actionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    action: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingHorizontal: 12, paddingVertical: 13, borderWidth: 1, borderColor: '#D8E4F5', borderRadius: 12 },
+    actionText: { fontSize: 11, color: '#385E91', fontWeight: '600' }, moment: { flexDirection: 'row', gap: 14, paddingVertical: 12, alignItems: 'center', borderBottomWidth: 1, borderColor: '#E8EEF6' },
+    time: { fontSize: 12, fontWeight: '600', color: '#557DB3', minWidth: 36 }, option: { padding: 12, borderWidth: 1, borderColor: '#D7E2F1', borderRadius: 11 },
+    reasoning: { fontSize: 12, color: '#456389', backgroundColor: '#EDF2FA', padding: 12, borderRadius: 10 },
+    prompt: { flexDirection: 'row', gap: 10, justifyContent: 'space-between', alignItems: 'center', padding: 14, borderWidth: 1, borderColor: '#DCE5F2', borderRadius: 12 },
+    bubble: { gap: 6, padding: 16, borderRadius: 17, maxWidth: '98%' }, userBubble: { backgroundColor: '#E5EDFA', alignSelf: 'flex-end' }, aiBubble: { backgroundColor: '#F2F5F9', alignSelf: 'flex-start' },
+    speaker: { fontSize: 9, color: '#6F829D', fontWeight: '700', letterSpacing: 1 }, source: { color: '#385E91', fontSize: 12, lineHeight: 18 },
+    inputRow: { flexDirection: 'row', gap: 10, alignItems: 'center', padding: 14, borderTopWidth: 1, borderColor: '#E7EDF6' },
+    input: { flex: 1, minHeight: 44, maxHeight: 110, padding: 12, borderRadius: 14, backgroundColor: '#F0F4FA', color: '#243A56', fontSize: 13 },
+    send: { width: 44, height: 44, borderRadius: 15, backgroundColor: '#587EB5', alignItems: 'center', justifyContent: 'center' }, error: { color: '#815B51', fontSize: 12, paddingHorizontal: 18, paddingTop: 8 },
 });

@@ -1,3 +1,4 @@
+import { MOBILE_CONTENT_WIDTH } from '../Layout/ScreenFrame';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Modal,
@@ -21,6 +22,7 @@ import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { useTheme } from '../Theme/ThemeProvider';
 
 interface CommentsModalProps {
+    focusComposer?: boolean;
     visible: boolean;
     videoId: string | null;
     onClose: () => void;
@@ -121,7 +123,7 @@ function CommentRow({
     );
 }
 
-export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps) {
+export function CommentsModal({ visible, videoId, onClose, focusComposer = false }: CommentsModalProps) {
     const { mode } = useTheme();
     const isDark = mode === 'dark';
     const insets = useSafeAreaInsets();
@@ -130,7 +132,7 @@ export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps)
     const [text, setText] = useState('');
     const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
     const slideAnim = useRef(new Animated.Value(0)).current;
-    const inputRef = useRef<TextInput>(null);
+    const inputRef = useRef<any>(null);
 
     useEffect(() => {
         if (visible && videoId) {
@@ -162,12 +164,13 @@ export function CommentsModal({ visible, videoId, onClose }: CommentsModalProps)
     const handleBg = isDark ? '#333' : '#ddd';
 
     return (
-        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}
+            onShow={focusComposer && user ? () => inputRef.current?.focus() : undefined}>
             <View style={styles.modalContainer}>
                 <Pressable style={styles.backdrop} onPress={onClose} />
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={[styles.sheet, { backgroundColor: bg }]}
+                    style={[styles.sheet, Platform.OS === 'web' && { width: '100%', maxWidth: MOBILE_CONTENT_WIDTH, alignSelf: 'center' }, { backgroundColor: bg }]}
                     keyboardVerticalOffset={0}
                 >
                     {/* Handle bar */}

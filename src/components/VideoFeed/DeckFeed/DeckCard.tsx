@@ -2,9 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Image, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, Ionicons } from '@expo/vector-icons';
-import { Video as ExpoVideo, ResizeMode } from 'expo-av';
+import { InlineVideo } from '../../VideoPlayer/InlineVideo';
 import { useTheme } from '../../Theme/ThemeProvider';
-import { encodeVideoUrl } from '../../../lib/utils/url';
 import type { Video } from '../../../lib/supabase/hooks/useVideos';
 
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
@@ -58,7 +57,6 @@ export const DeckCard = ({
             hoverTimer.current = setTimeout(() => setPreviewing(true), 380);
         } else {
             if (hoverTimer.current) clearTimeout(hoverTimer.current);
-            setPreviewing(false);
         }
         return () => {
             if (hoverTimer.current) clearTimeout(hoverTimer.current);
@@ -76,7 +74,10 @@ export const DeckCard = ({
         <Pressable
             onPress={onSelect}
             onHoverIn={() => setHovered(true)}
-            onHoverOut={() => setHovered(false)}
+            onHoverOut={() => {
+                setHovered(false);
+                setPreviewing(false);
+            }}
             style={[
                 styles.card,
                 {
@@ -98,7 +99,7 @@ export const DeckCard = ({
                 <Image
                     source={{ uri: thumb }}
                     style={[
-                        StyleSheet.absoluteFillObject,
+                        StyleSheet.absoluteFill,
                         {
                             // @ts-ignore — web transition
                             transition: 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease',
@@ -111,14 +112,7 @@ export const DeckCard = ({
                 />
 
                 {previewing && item.videoUrl ? (
-                    <ExpoVideo
-                        source={{ uri: encodeVideoUrl(item.videoUrl) || '' }}
-                        style={StyleSheet.absoluteFillObject}
-                        resizeMode={ResizeMode.COVER}
-                        shouldPlay
-                        isLooping
-                        isMuted
-                    />
+                    <InlineVideo url={item.videoUrl} playing />
                 ) : null}
             </View>
 
@@ -126,7 +120,7 @@ export const DeckCard = ({
             <LinearGradient
                 colors={['rgba(4,5,9,0.15)', 'rgba(4,5,9,0.55)', 'rgba(4,5,9,0.94)']}
                 locations={[0, 0.48, 1]}
-                style={StyleSheet.absoluteFillObject}
+                style={StyleSheet.absoluteFill}
                 pointerEvents="none"
             />
 
@@ -136,7 +130,7 @@ export const DeckCard = ({
                     colors={['transparent', isDark ? 'rgba(217, 228, 255, 0.10)' : 'rgba(76, 110, 245, 0.12)']}
                     start={{ x: 0.2, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={StyleSheet.absoluteFillObject}
+                    style={StyleSheet.absoluteFill}
                     pointerEvents="none"
                 />
             )}
@@ -289,7 +283,7 @@ const styles = StyleSheet.create({
         cursor: 'pointer',
     },
     mediaLayer: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         overflow: 'hidden',
     },
     bracket: {
@@ -345,7 +339,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
     playWrap: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 3,

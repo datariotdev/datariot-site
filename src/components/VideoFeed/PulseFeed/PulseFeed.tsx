@@ -33,6 +33,7 @@ const NODE_POSITIONS = [
 
 interface PulseFeedProps {
     videos: any[];
+    onSelect?: (id: string) => void;
     onLike: (id: string) => void;
     onComment: (id: string) => void;
     onSave: (id: string) => void;
@@ -43,6 +44,7 @@ interface PulseFeedProps {
 
 export const PulseFeed = ({
     videos,
+    onSelect,
     onLike,
     onComment,
     onSave,
@@ -133,7 +135,13 @@ export const PulseFeed = ({
                                     x: pos.x,
                                     y: pos.y
                                 }}
-                                onSelect={() => handleSelect(index)}
+                                onSelect={() => {
+                                    if (activeIndex === index) {
+                                        onSelect?.(video.id);
+                                    } else {
+                                        handleSelect(index);
+                                    }
+                                }}
                                 isMuted={activeIndex !== index}
                                 isScreenFocused={isFocused}
                             />
@@ -151,7 +159,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
     },
     plane: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         justifyContent: 'center',
         alignItems: 'center',
     }

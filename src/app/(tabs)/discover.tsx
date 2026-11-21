@@ -1,253 +1,383 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, Pressable, FlatList, useWindowDimensions, ActivityIndicator, Platform, RefreshControl } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { SafeAreaView } from '@components/UI/SafeAreaView';
-import { theme as baseTheme } from '@design-system/theme';
-import { useRecommendedUsers } from '@lib/supabase/hooks/useRecommendedUsers';
-import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import type { ComponentProps } from 'react';
+import {
+    ActivityIndicator, FlatList, Image, Keyboard, Platform, Pressable, RefreshControl,
+    StyleSheet, Text, TextInput, View, useWindowDimensions,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../components/Theme/ThemeProvider';
-import { usePosts } from '@lib/supabase/hooks/usePosts';
-import { AmbientGlow } from '../../components/UI/AmbientGlow';
 import { LinearGradient } from 'expo-linear-gradient';
-
-// Intelligence Hub Components
-import { SectionHeader } from '@components/Discovery/SectionHeader';
-import { DNAMatchCard } from '@components/Discovery/DNAMatchCard';
+import { useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
 import { DebateCard } from '@components/Debate/DebateCard';
-import { TrendingTopics } from '@components/Discovery/TrendingTopics';
-import { TrendingBullets } from '@components/Discovery/TrendingBullets';
 import { DebateSwitcher } from '@components/Discovery/DebateSwitcher';
-import { IntellectRecommendations } from '@components/Discovery/IntellectRecommendations';
+import type { DebateTab } from '@components/Discovery/DebateSwitcher';
+import { UserSearchResults } from '@components/Discovery/UserSearchResults';
+import { SafeAreaView } from '@components/UI/SafeAreaView';
+import { usePalette } from '@design-system/palette';
+import { useAuth } from '@lib/supabase/hooks/useAuth';
+import { usePosts } from '@lib/supabase/hooks/usePosts';
+import type { Post } from '@lib/supabase/hooks/usePosts';
+import { useRecommendedUsers } from '@lib/supabase/hooks/useRecommendedUsers';
+import type { RecommendedUser } from '@lib/supabase/hooks/useRecommendedUsers';
+import { useUserSearch } from '@lib/supabase/hooks/useUserSearch';
 
-export default function DiscoverScreen() {
-    const { theme, mode } = useTheme();
-    const isDark = mode === 'dark';
-    const [searchQuery, setSearchQuery] = useState('');
-    const [refreshing, setRefreshing] = useState(false);
-    const [activeBranch, setActiveBranch] = useState('active');
-    const router = useRouter();
+type IconName = ComponentProps<typeof Ionicons>['name'];
+type Topic = { title: string; description: string; icon: IconName; match: RegExp; tint?: string };
 
-    // 1. Fetch Debates (Posts)
-    const {
-        posts: textPosts,
-        refresh: refreshPosts
-    } = usePosts();
+const topics: Topic[] = [
+    { title: 'The Resource Crisis', description: 'Scarcity, energy and who gets what.', icon: 'earth-outline', match: /\b(resources?|scarcity|climate|energy|water)\b/i, tint: '#EAF2F8' },
+    { title: 'Life on Mars', description: 'What would it take to start over?', icon: 'planet-outline', match: /\b(mars|space|colony|colonies|coloniz\w*)\b/i, tint: '#E8EEF9' },
+    { title: 'The Future of Money', description: 'Bitcoin, banks and who holds the keys.', icon: 'logo-bitcoin', match: /\b(bitcoin|crypto\w*|bank\w*|finance|money)\b/i, tint: '#EBF0F6' },
+];
 
-    // 2. Recommended Minds (Real Data)
-    const {
-        users: recommendedUsers,
-        toggleFollowUser
-    } = useRecommendedUsers();
+const focusTopics: Topic[] = [
+    { title: 'Artificial intelligence', description: 'Models, ethics and what comes next.', icon: 'hardware-chip-outline', match: /\b(ai|artificial intelligence|llms?|machine learning|chatgpt|language models?)\b/i },
+    { title: 'The future of work', description: 'Automation, skills and jobs.', icon: 'briefcase-outline', match: /\b(jobs?|careers?|workers?|employment|automation|future of work)\b/i },
+];
 
-    // --- Intelligence Hub Data ---
-
-    // 1. Recommended Accounts (Top 5 active)
-    const recommendedAccounts = (recommendedUsers || []).slice(0, 5).map((user, i) => ({
-        id: user.id || `u-${i}`,
-        username: user.username || 'Thinker',
-        avatarUrl: user.avatarUrl || `https://i.pravatar.cc/150?u=${i}`,
-        logicScore: Math.floor(Math.random() * 15000) + 5000,
-        activity: i % 2 === 0 ? 'Active in AI Ethics' : 'Top Rebutter in Space Law'
-    }));
-
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        refreshPosts();
-        setTimeout(() => setRefreshing(false), 1000);
-    }, [refreshPosts]);
-
-    const renderHeader = () => (
-        <View style={styles.headerContainer}>
-            {!searchQuery && <LinearGradient colors={isDark ? ['#1C2340', '#111524', '#0B0D17'] : ['#E4E9FF', '#F0EAFE', '#EAF3FF']} start={{x:0,y:0}} end={{x:1,y:1}} style={styles.discoveryHero}>
-                <View style={styles.heroEyebrow}><Ionicons name="sparkles" size={14} color={isDark ? '#A9BCFF' : '#4C6EF5'} /><Text style={[styles.heroEyebrowText,{color:isDark?'#A9BCFF':'#4C6EF5'}]}>EXPLORE YOUR CURIOSITY</Text></View>
-                <Text style={[styles.heroTitle,{color:theme.colors.text.primary}]}>Find something worth thinking about.</Text>
-                <Text style={[styles.heroSubtitle,{color:theme.colors.text.secondary}]}>Ideas, creators and debates beyond your usual feed.</Text>
-                <View style={styles.heroActions}><Pressable onPress={() => setSearchQuery('AI')} style={styles.heroChip}><Ionicons name="hardware-chip-outline" size={15} color="#fff"/><Text style={styles.heroChipText}>Artificial intelligence</Text></Pressable><Pressable onPress={() => setSearchQuery('Science')} style={[styles.heroChip,{backgroundColor:'#7259D8'}]}><Text style={styles.heroChipText}>Science</Text></Pressable></View>
-            </LinearGradient>}
-
-            {!searchQuery && (
-                <Pressable
-                    accessibilityRole="link"
-                    onPress={() => router.push('/animated-shorts')}
-                    style={[styles.shortsLink, { backgroundColor: isDark ? '#19243A' : '#EAF0FA' }]}
-                >
-                    <Ionicons name="film-outline" size={25} color={theme.colors.text.primary} />
-                    <View style={styles.shortsCopy}>
-                        <Text style={[styles.shortsTitle, { color: theme.colors.text.primary }]}>Animated Shorts</Text>
-                        <Text style={{ color: theme.colors.text.secondary }}>Short cartoons that explain how things work.</Text>
-                    </View>
-                    <Ionicons name="arrow-forward" size={19} color={theme.colors.text.primary} />
-                </Pressable>
-            )}
-            {/* 1. Trending Topics (Primary Hierarchy) */}
-            {!searchQuery && (
-                <View style={styles.sectionPadding}>
-                    <TrendingTopics onItemPress={(id) => setSearchQuery(id)} />
-                </View>
-            )}
-
-            {/* 2. Trending Now (Secondary Categories) */}
-            {!searchQuery && (
-                <View style={styles.sectionPadding}>
-                    <TrendingBullets onItemPress={(id) => setSearchQuery(id)} />
-                </View>
-            )}
-
-            {/* 3. Recommended Accounts (5 accounts) */}
-            {!searchQuery && (
-                <View style={styles.sectionPadding}>
-                    <IntellectRecommendations
-                        intellects={recommendedAccounts}
-                        onFollow={(id) => toggleFollowUser(id)}
-                        onPress={(id) => router.push(`/(tabs)/profile`)}
-                    />
-                </View>
-            )}
-
-            {/* 4. Debate Switcher & Feed Header */}
-            <View style={{ marginTop: 8 }}>
-                <SectionHeader
-                    title={searchQuery ? 'Strategic Search' : 'Active Debates'}
-                    subtitle={searchQuery ? `Logic for "${searchQuery}"` : 'Filter by knowledge branch'}
-                />
-                {!searchQuery && (
-                    <DebateSwitcher
-                        activeTab={activeBranch}
-                        onTabChange={setActiveBranch}
-                    />
-                )}
-            </View>
-        </View>
-    );
-
-    const renderDebateItem = ({ item }: { item: any }) => (
-        <DebateCard
-            item={{
-                ...item,
-                createdAt: item.createdAt || new Date().toISOString()
-            }}
-            onPress={() => {
-                router.push({
-                    pathname: '/(tabs)',
-                    params: { postId: item.id }
-                });
-            }}
-        />
-    );
-
-    const filteredPosts = searchQuery
-        ? textPosts.filter(p => p.content.toLowerCase().includes(searchQuery.toLowerCase()))
-        : textPosts;
-
+function CreatorAvatar({ creator, backgroundColor, color }: {
+    creator: RecommendedUser;
+    backgroundColor: string;
+    color: string;
+}) {
+    const [imageFailed, setImageFailed] = useState(false);
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            <AmbientGlow color={isDark ? "rgba(217, 228, 255, 0.08)" : "rgba(217, 228, 255, 0.04)"} size={380} opacity={0.6} duration={25000} delay={0} />
-            <SafeAreaView style={styles.safeArea}>
-
-                {/* Search Bar */}
-                <View style={styles.searchContainer}>
-                    <BlurView intensity={50} tint={isDark ? "dark" : "light"} style={styles.searchBarBlur}>
-                        <View style={[styles.searchBar, {
-                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)',
-                            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'
-                        }]}>
-                            <Ionicons name="search-outline" size={18} color={theme.colors.text.muted} />
-                            <TextInput
-                                style={[styles.searchInput, { color: theme.colors.text.primary }]}
-                                placeholder="Search the Arena..."
-                                placeholderTextColor={theme.colors.text.muted}
-                                value={searchQuery}
-                                onChangeText={setSearchQuery}
-                            />
-                            {searchQuery.length > 0 && (
-                                <Pressable onPress={() => setSearchQuery('')}>
-                                    <Ionicons name="close-circle" size={18} color={theme.colors.text.muted} />
-                                </Pressable>
-                            )}
-                        </View>
-                    </BlurView>
-                </View>
-
-                <FlatList
-                    data={filteredPosts}
-                    renderItem={renderDebateItem}
-                    keyExtractor={(item) => item.id}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 100 }}
-                    ListHeaderComponent={renderHeader}
-                    ListEmptyComponent={
-                        <View style={styles.emptyContainer}>
-                            <Text style={[styles.emptyText, { color: theme.colors.text.muted }]}>No debates found matching your search.</Text>
-                        </View>
-                    }
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                            tintColor={theme.colors.primary.light}
-                        />
-                    }
-                />
-            </SafeAreaView>
+        <View style={[styles.avatar, { backgroundColor }]}>
+            {creator.avatarUrl && !imageFailed ? (
+                <Image source={{ uri: creator.avatarUrl }} style={styles.coverImage} onError={() => setImageFailed(true)} />
+            ) : (
+                <Text style={[styles.avatarInitial, { color }]}>{creator.displayName.charAt(0).toUpperCase()}</Text>
+            )}
         </View>
     );
 }
 
+export default function DiscoverScreen() {
+    const p = usePalette();
+    const { width } = useWindowDimensions();
+    const desktop = Platform.OS === 'web' && width > 768;
+    const wide = desktop && width >= 900;
+    const { q } = useLocalSearchParams<{ q?: string }>();
+    const routeQuery = typeof q === 'string' ? q : '';
+    const isFocused = useIsFocused();
+    const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState(routeQuery);
+    const [searchFocused, setSearchFocused] = useState(false);
+    const [topic, setTopic] = useState<Topic | null>(null);
+    const [activeTab, setActiveTab] = useState<DebateTab>('latest');
+    const [refreshing, setRefreshing] = useState(false);
+    const list = useRef<FlatList<Post>>(null);
+    const debateOffset = useRef(0);
+    const { user } = useAuth();
+    const { posts, loading: loadingPosts, refresh: refreshPosts } = usePosts();
+    const { users: creators, toggleFollowUser } = useRecommendedUsers();
+
+    const query = searchQuery.trim();
+    const isTagSearch = query.startsWith('@');
+    const browsing = !query && !topic;
+    const userSearch = useUserSearch(query, user?.id);
+    const line = p.isDark ? '#263548' : '#DDE6F0';
+    const accent = p.isDark ? '#C9DFFA' : '#365A80';
+    const iconFill = p.isDark ? '#1E3046' : '#EAF2FB';
+    const muted = p.isDark ? '#ACBBD0' : '#51637A';
+
+    useEffect(() => {
+        if (isFocused && routeQuery) {
+            setTopic(null);
+            setSearchQuery(routeQuery);
+            list.current?.scrollToOffset({ offset: 0, animated: false });
+        }
+    }, [isFocused, routeQuery]);
+
+    function changeSearch(value: string) {
+        setTopic(null);
+        setSearchQuery(value);
+        if (routeQuery) router.setParams({ q: undefined });
+        list.current?.scrollToOffset({ offset: 0, animated: false });
+    }
+
+    function selectTopic(nextTopic: Topic) {
+        Keyboard.dismiss();
+        setTopic(nextTopic);
+        list.current?.scrollToOffset({ offset: 0, animated: false });
+    }
+
+    async function onRefresh() {
+        setRefreshing(true);
+        try {
+            await refreshPosts();
+        } finally {
+            setRefreshing(false);
+        }
+    }
+
+    let visiblePosts = posts;
+    if (isTagSearch) {
+        visiblePosts = [];
+    } else if (topic) {
+        visiblePosts = posts.filter(post => topic.match.test(post.content));
+    } else if (query) {
+        const normalizedQuery = query.toLowerCase();
+        visiblePosts = posts.filter(post => post.content.toLowerCase().includes(normalizedQuery));
+    } else if (activeTab === 'discussed') {
+        visiblePosts = [...posts].sort((left, right) => right.comments - left.comments || right.likes - left.likes);
+    } else if (activeTab === 'video') {
+        visiblePosts = posts.filter(post => !!post.videoUrl);
+    }
+
+    const listHeader = (
+        <View>
+            {browsing && (
+                <View style={styles.dashboard}>
+                    <Pressable accessibilityRole="link" onPress={() => router.push('/animated-shorts')}
+                        style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, borderRadius: 17, borderWidth: 1, borderColor: line, backgroundColor: iconFill }}>
+                        <Ionicons name="film-outline" size={24} color={accent} />
+                        <View style={{ flex: 1 }}><Text style={[styles.rowTitle, { color: p.text }]}>Animated Shorts</Text>
+                            <Text style={[styles.rowDetail, { color: muted }]}>Short cartoons that explain how things work.</Text></View>
+                        <Ionicons name="arrow-forward" size={18} color={accent} />
+                    </Pressable>
+                    <View style={[styles.spotlight, wide && styles.spotlightWide]}>
+                        <View style={[styles.hero, wide && styles.heroWide]}>
+                            <Image accessible={false} source={require('../../../assets/discover-orbit.jpg')}
+                                style={styles.coverImage} resizeMode="cover" />
+                            <LinearGradient
+                                colors={['rgba(5, 13, 28, 0.99)', 'rgba(5, 13, 28, 0.80)', 'rgba(5, 13, 28, 0.04)']}
+                                locations={wide ? [0, 0.36, 0.86] : [0, 0.38, 1]}
+                                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                                style={StyleSheet.absoluteFill}
+                            />
+                            <View style={[styles.heroCopy, wide && styles.heroCopyWide]}>
+                                <Text accessibilityRole="header"
+                                    style={[styles.heroTitle, wide && styles.heroTitleWide]}>
+                                    Find your next{'\n'}<Text style={styles.heroAccent}>rabbit hole.</Text>
+                                </Text>
+                                <Text style={styles.heroNote}>Big questions worth debating.</Text>
+                                <Pressable accessibilityRole="button"
+                                    onPress={() => list.current?.scrollToOffset({ offset: debateOffset.current, animated: true })}
+                                    style={({ pressed }) => [styles.heroAction, pressed && styles.pressed]}>
+                                    <Text style={styles.heroActionLabel}>Browse debates</Text>
+                                    <Ionicons name="arrow-down" size={15} color="#132A43" />
+                                </Pressable>
+                            </View>
+                        </View>
+
+                        <View style={[styles.focus, wide && styles.focusWide, { backgroundColor: p.card, borderColor: line }]}>
+                            <View style={styles.focusHeader}>
+                                <Ionicons name="pulse-outline" size={21} color={accent} />
+                                <Text accessibilityRole="header" style={[styles.focusTitle, { color: p.text }]}>In focus</Text>
+                            </View>
+                            {focusTopics.map((item, index) => (
+                                <Pressable key={item.title} accessibilityRole="button" onPress={() => selectTopic(item)}
+                                    style={({ pressed }) => [
+                                        styles.focusItem, { borderColor: line }, index > 0 && styles.focusDivider,
+                                        pressed && styles.pressed,
+                                    ]}>
+                                    <View style={[styles.focusIcon, { backgroundColor: iconFill }]}>
+                                        <Ionicons name={item.icon} size={19} color={accent} />
+                                    </View>
+                                    <View style={styles.flex}>
+                                        <Text style={[styles.rowTitle, { color: p.text }]}>{item.title}</Text>
+                                        <Text style={[styles.rowDetail, { color: muted }]}>{item.description}</Text>
+                                    </View>
+                                    <Ionicons name="arrow-forward" size={16} color={accent} />
+                                </Pressable>
+                            ))}
+                        </View>
+                    </View>
+
+                    <View style={styles.section}>
+                        <Text accessibilityRole="header" style={[styles.sectionTitle, { color: p.text }]}>Explore topics</Text>
+                        <View style={[styles.topics, wide && styles.topicsWide]}>
+                            {topics.map(item => (
+                                <Pressable key={item.title} accessibilityRole="button" onPress={() => selectTopic(item)}
+                                    style={({ pressed }) => [
+                                        styles.topicCard, wide && styles.topicCardWide,
+                                        { backgroundColor: p.isDark ? '#142236' : item.tint, borderColor: line },
+                                        pressed && styles.pressed,
+                                    ]}>
+                                    <View pointerEvents="none" style={styles.topicArtwork}>
+                                        <Ionicons name={item.icon} size={112} color={accent} />
+                                    </View>
+                                    <View style={styles.topicCopy}>
+                                        <Text style={[styles.topicTitle, { color: p.text }]}>{item.title}</Text>
+                                        <Text style={[styles.rowDetail, { color: muted }]}>{item.description}</Text>
+                                    </View>
+                                    <View style={[styles.topicArrow, { backgroundColor: p.card }]}>
+                                        <Ionicons name="arrow-up-outline" size={16} color={accent} style={styles.diagonalArrow} />
+                                    </View>
+                                </Pressable>
+                            ))}
+                        </View>
+                    </View>
+
+                    {creators.length > 0 && (
+                        <View style={styles.section}>
+                            <Text accessibilityRole="header" style={[styles.sectionTitle, { color: p.text }]}>People to discover</Text>
+                            <View style={[styles.creators, wide && styles.creatorsWide]}>
+                                {creators.slice(0, 3).map(creator => (
+                                    <View key={creator.id}
+                                        style={[styles.creatorCard, wide && styles.creatorCardWide, { backgroundColor: p.card, borderColor: line }]}>
+                                        <Pressable accessibilityRole="button" accessibilityLabel={`View @${creator.username} profile`}
+                                            onPress={() => router.push({ pathname: '/user/[id]', params: { id: creator.id } })}
+                                            style={({ pressed }) => [styles.creatorProfile, pressed && styles.pressed]}>
+                                            <CreatorAvatar key={creator.avatarUrl} creator={creator} backgroundColor={iconFill} color={accent} />
+                                            <View style={styles.flex}>
+                                                <Text numberOfLines={1} style={[styles.rowTitle, { color: p.text }]}>{creator.displayName}</Text>
+                                                <Text numberOfLines={1} style={[styles.rowDetail, { color: muted }]}>@{creator.username}</Text>
+                                            </View>
+                                        </Pressable>
+                                        {user && (
+                                            <Pressable accessibilityRole="button"
+                                                accessibilityLabel={`${creator.isFollowing ? 'Unfollow' : 'Follow'} @${creator.username}`}
+                                                onPress={() => toggleFollowUser(creator.id)}
+                                                style={({ pressed }) => [styles.follow, { backgroundColor: iconFill }, pressed && styles.pressed]}>
+                                                <Ionicons name={creator.isFollowing ? 'checkmark' : 'person-add-outline'} size={17} color={accent} />
+                                            </Pressable>
+                                        )}
+                                    </View>
+                                ))}
+                            </View>
+                        </View>
+                    )}
+                </View>
+            )}
+
+            {!!query && <UserSearchResults {...userSearch} onRetry={userSearch.retry} />}
+
+            {!isTagSearch && (
+                <View onLayout={event => { debateOffset.current = event.nativeEvent.layout.y; }} style={styles.debateHeader}>
+                    {topic && (
+                        <Pressable accessibilityRole="button" onPress={() => setTopic(null)}
+                            style={({ pressed }) => [styles.back, pressed && styles.pressed]}>
+                            <Ionicons name="arrow-back" size={17} color={accent} />
+                            <Text style={[styles.rowTitle, { color: accent }]}>All topics</Text>
+                        </Pressable>
+                    )}
+                    <Text accessibilityRole="header" style={[styles.sectionTitle, { color: p.text }]}>
+                        {topic?.title ?? (query ? 'Debate results' : 'Active debates')}
+                    </Text>
+                    {browsing && <DebateSwitcher activeTab={activeTab} onTabChange={setActiveTab} />}
+                </View>
+            )}
+        </View>
+    );
+
+    const emptyMessage = topic ? 'No debates on this topic yet.'
+        : query ? 'No debates match your search.'
+        : activeTab === 'video' ? 'No debates with video yet.' : 'No debates yet.';
+
+    return (
+        <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
+            <View style={[styles.masthead, desktop && styles.mastheadDesktop]}>
+                <Text accessibilityRole="header" aria-level={1}
+                    style={[styles.title, desktop && styles.titleDesktop, { color: p.text }]}>Discover</Text>
+                <View style={[
+                    styles.search, desktop && styles.searchDesktop,
+                    { backgroundColor: p.card, borderColor: searchFocused ? accent : line },
+                ]}>
+                    <Ionicons name="search-outline" size={19} color={accent} />
+                    <TextInput
+                        style={[styles.searchInput, { color: p.text }]}
+                        accessibilityLabel="Search debates or users by username"
+                        placeholder="Search debates or @username"
+                        placeholderTextColor={muted}
+                        value={searchQuery}
+                        onChangeText={changeSearch}
+                        onFocus={() => setSearchFocused(true)}
+                        onBlur={() => setSearchFocused(false)}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        returnKeyType="search"
+                    />
+                    {!!searchQuery && (
+                        <Pressable accessibilityRole="button" accessibilityLabel="Clear search" onPress={() => changeSearch('')} hitSlop={10}>
+                            <Ionicons name="close-circle-outline" size={20} color={muted} />
+                        </Pressable>
+                    )}
+                </View>
+            </View>
+
+            <FlatList
+                ref={list}
+                data={visiblePosts}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => (
+                    <DebateCard item={item}
+                        onPress={() => router.push({ pathname: '/debate/[id]', params: { id: item.id } })} />
+                )}
+                ListHeaderComponent={listHeader}
+                ListEmptyComponent={!isTagSearch ? (
+                    <View style={[styles.empty, { backgroundColor: p.card, borderColor: line }]}>
+                        {loadingPosts ? <ActivityIndicator color={accent} /> : (
+                            <Text style={[styles.rowDetail, { color: muted }]}>{emptyMessage}</Text>
+                        )}
+                    </View>
+                ) : undefined}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={accent} />}
+            />
+        </SafeAreaView>
+    );
+}
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    safeArea: {
-        flex: 1,
-    },
-    discoveryHero: { marginHorizontal: 18, marginTop: 12, marginBottom: 16, borderRadius: 28, padding: 24, overflow: 'hidden' },
-    shortsLink: { flexDirection: 'row', alignItems: 'center', gap: 13, marginHorizontal: 18, borderRadius: 18, padding: 16 },
-    shortsCopy: { flex: 1 },
-    shortsTitle: { fontSize: 18, fontWeight: '700', marginBottom: 3 },
-    heroEyebrow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
-    heroEyebrowText: { fontSize: 11, fontWeight: '800', letterSpacing: 1.6 },
-    heroTitle: { fontSize: 30, lineHeight: 35, fontWeight: '800', letterSpacing: -1.2, maxWidth: 300 },
-    heroSubtitle: { fontSize: 14, lineHeight: 21, marginTop: 12, maxWidth: 290 },
-    heroActions: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 22 },
-    heroChip: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#4C6EF5', paddingHorizontal: 13, paddingVertical: 11, borderRadius: 18 },
-    heroChipText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-    headerContainer: {
-        paddingTop: Platform.OS === 'android' ? 10 : 0,
-        gap: 8,
-    },
-    searchContainer: {
-        paddingHorizontal: baseTheme.spacing.lg,
-        paddingTop: 12,
-        paddingBottom: 16,
-    },
-    searchBarBlur: {
-        borderRadius: 25,
-        overflow: 'hidden',
-    },
-    searchBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        height: 50,
-        borderWidth: 1,
-        gap: 10,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 15,
-        color: baseTheme.colors.text.primary,
-        height: '100%',
-    },
-    sectionPadding: {
-        paddingBottom: 8,
-    },
-    emptyContainer: {
-        padding: 40,
-        alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 14,
-        textAlign: 'center',
-    },
+    screen: { flex: 1, minHeight: 0 },
+    flex: { flex: 1, minWidth: 0 },
+    masthead: { marginHorizontal: 16, paddingTop: 14, paddingBottom: 18, gap: 12 },
+    mastheadDesktop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 25, paddingBottom: 20, gap: 24 },
+    title: { fontFamily: 'Outfit_700Bold', fontSize: 35, lineHeight: 42, letterSpacing: -1.5 },
+    titleDesktop: { fontSize: 48, lineHeight: 54, letterSpacing: -2.4 },
+    search: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 15, borderRadius: 15, borderWidth: 1 },
+    searchDesktop: { flex: 1, maxWidth: 380 },
+    searchInput: { flex: 1, minWidth: 0, minHeight: 46, padding: 0, fontFamily: 'Inter_400Regular', fontSize: 14 },
+    listContent: { paddingBottom: 104 },
+    dashboard: { marginHorizontal: 16, gap: 26 },
+    spotlight: { gap: 12 },
+    spotlightWide: { flexDirection: 'row', alignItems: 'stretch', gap: 14 },
+    hero: { justifyContent: 'center', minHeight: 243, borderRadius: 24, overflow: 'hidden', backgroundColor: '#071120' },
+    heroWide: { flex: 2.2, minHeight: 280 },
+    coverImage: { ...StyleSheet.absoluteFill, width: '100%', height: '100%' },
+    heroCopy: { alignItems: 'flex-start', paddingVertical: 26, paddingHorizontal: 22 },
+    heroCopyWide: { paddingHorizontal: 34, paddingVertical: 35 },
+    heroTitle: { fontFamily: 'Outfit_700Bold', fontSize: 36, lineHeight: 37, letterSpacing: -1.35, color: '#FFFFFF' },
+    heroTitleWide: { fontSize: 54, lineHeight: 52, letterSpacing: -2.2 },
+    heroAccent: { color: '#BFDAFA' },
+    heroNote: { color: '#D5E2F0', fontFamily: 'Inter_400Regular', fontSize: 13, lineHeight: 20, marginTop: 12 },
+    heroAction: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 13, paddingHorizontal: 14, minHeight: 44, marginTop: 20, backgroundColor: '#D8EAFE' },
+    heroActionLabel: { color: '#132A43', fontFamily: 'Inter_600SemiBold', fontSize: 13 },
+    focus: { borderRadius: 23, borderWidth: 1, paddingHorizontal: 16, paddingVertical: 13 },
+    focusWide: { flex: 1, justifyContent: 'center', paddingHorizontal: 17, paddingVertical: 16 },
+    focusHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 5 },
+    focusTitle: { fontFamily: 'Outfit_600SemiBold', fontSize: 22, letterSpacing: -0.35 },
+    focusItem: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 72, paddingVertical: 10 },
+    focusDivider: { borderTopWidth: 1 },
+    focusIcon: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+    rowTitle: { fontFamily: 'Inter_600SemiBold', fontSize: 13, lineHeight: 19 },
+    rowDetail: { fontFamily: 'Inter_400Regular', fontSize: 12, lineHeight: 18 },
+    section: { gap: 11 },
+    sectionTitle: { fontFamily: 'Outfit_600SemiBold', fontSize: 26, lineHeight: 31, letterSpacing: -0.6 },
+    topics: { gap: 8 },
+    topicsWide: { flexDirection: 'row', gap: 12 },
+    topicCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+        padding: 14, minHeight: 82, borderWidth: 1, borderRadius: 17, overflow: 'hidden' },
+    topicCardWide: { flex: 1, minWidth: 0, alignItems: 'flex-end', minHeight: 119 },
+    topicArtwork: { position: 'absolute', right: 16, top: -34, opacity: 0.14, transform: [{ rotate: '-13deg' }] },
+    topicCopy: { flex: 1, minWidth: 0, gap: 3 },
+    topicTitle: { fontFamily: 'Outfit_600SemiBold', fontSize: 19, lineHeight: 23, letterSpacing: -0.3 },
+    topicArrow: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+    diagonalArrow: { transform: [{ rotate: '45deg' }] },
+    creators: { gap: 8 },
+    creatorsWide: { flexDirection: 'row', gap: 12 },
+    creatorCard: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 67,
+        borderWidth: 1, borderRadius: 17, paddingHorizontal: 10, paddingVertical: 8 },
+    creatorCardWide: { flex: 1, minWidth: 0 },
+    creatorProfile: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 9, minWidth: 0 },
+    avatar: { width: 39, height: 39, borderRadius: 14, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+    avatarInitial: { fontFamily: 'Outfit_600SemiBold', fontSize: 18 },
+    follow: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 13 },
+    debateHeader: { marginHorizontal: 16, paddingTop: 24, paddingBottom: 14, gap: 10 },
+    back: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, minHeight: 40 },
+    empty: { alignItems: 'center', marginHorizontal: 16, paddingVertical: 26, paddingHorizontal: 12, borderWidth: 1, borderRadius: 17 },
+    pressed: { opacity: 0.75 },
 });

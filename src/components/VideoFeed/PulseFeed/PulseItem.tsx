@@ -60,12 +60,14 @@ const PulseVideo = ({ videoUrl, isActive, isMuted }: PulseVideoProps) => {
     }, [isActive, player]);
 
     return (
-        <VideoView
-            player={player}
-            style={StyleSheet.absoluteFill}
-            contentFit="cover"
-            nativeControls={false}
-        />
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+            <VideoView
+                player={player}
+                style={StyleSheet.absoluteFill}
+                contentFit="cover"
+                nativeControls={false}
+            />
+        </View>
     );
 };
 
@@ -84,11 +86,7 @@ export const PulseItem = memo(({
     const [isPaused, setIsPaused] = useState(false);
 
     const togglePlayback = () => {
-        if (isFocus) {
-            setIsPaused(!isPaused);
-        } else {
-            onSelect();
-        }
+        onSelect();
     };
 
     const animatedStyle = useAnimatedStyle(() => {
@@ -119,10 +117,11 @@ export const PulseItem = memo(({
                         style={styles.neonBorder}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
+                        pointerEvents="none"
                     />
                 )}
 
-                <View style={styles.contentContainer}>
+                <View style={styles.contentContainer} pointerEvents="none">
                     {video.videoUrl ? (
                         <PulseVideo
                             videoUrl={video.videoUrl}
@@ -216,14 +215,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
     },
     pauseOverlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.2)',
     },
 
     overlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         justifyContent: 'space-between',
         padding: 16,
     },

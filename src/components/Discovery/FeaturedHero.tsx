@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions, ScrollView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '@design-system/theme';
-import { encodeVideoUrl } from '@lib/utils/url';
-import { Video, ResizeMode } from 'expo-av';
+import { InlineVideo } from '../VideoPlayer/InlineVideo';
 import { EdgeFade } from './EdgeFade';
 
 interface FeaturedVideo {
@@ -39,17 +36,11 @@ interface FeaturedHeroProps {
 }
 
 const FeaturedVideoPlayer = ({ videoUrl, isCurrent }: { videoUrl: string, isCurrent: boolean }) => {
-    const videoRef = React.useRef<Video>(null);
-
     return (
-        <Video
-            ref={videoRef}
-            source={{ uri: encodeVideoUrl(videoUrl) || '' }}
+        <InlineVideo
+            url={videoUrl}
+            playing={isCurrent}
             style={[styles.video, StyleSheet.absoluteFill, { opacity: isCurrent ? 1 : 0 }]}
-            resizeMode={ResizeMode.COVER}
-            shouldPlay={isCurrent}
-            isLooping
-            isMuted={true}
         />
     );
 };
@@ -275,7 +266,7 @@ const styles = StyleSheet.create({
         opacity: 0.8, // Slightly dim video for better text contrast
     },
     overlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         justifyContent: 'space-between',
     },
     topBar: {

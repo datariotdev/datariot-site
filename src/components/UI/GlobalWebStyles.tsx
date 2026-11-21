@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
 /**
- * Injects the web-only keyframes / global chrome the HUD design language needs.
+ * Shared web focus, scrolling and animation primitives.
  * Runs once per document — safe to mount from multiple places.
  */
 const STYLE_ID = 'datariot-hud-globals';
@@ -64,19 +64,26 @@ const CSS = `
 }
 .dr-sweep { animation: dr-sweep 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
 
+[data-testid="feed-preview-image"] { transition: transform 180ms ease-out; }
+
 /* --- Global chrome ----------------------------------------------------- */
-::selection { background: rgba(217, 228, 255, 0.28); color: #fff; }
+::selection { background: rgba(107, 127, 204, 0.35); }
+[role="button"]:focus-visible, [role="link"]:focus-visible, [role="tab"]:focus-visible {
+    outline: 2px solid #6B7FCC;
+    outline-offset: 3px;
+}
+[role="button"]:hover, [role="link"]:hover, [role="tab"]:hover { filter: brightness(0.94); }
 
 *::-webkit-scrollbar { width: 9px; height: 9px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-    background: rgba(217, 228, 255, 0.14);
-    border-radius: 0;
-    border-left: 1px solid rgba(217, 228, 255, 0.22);
+    background: rgba(125, 140, 170, 0.32);
+    border-radius: 8px;
 }
-*::-webkit-scrollbar-thumb:hover { background: rgba(217, 228, 255, 0.26); }
+*::-webkit-scrollbar-thumb:hover { background: rgba(125, 140, 170, 0.5); }
 
 @media (prefers-reduced-motion: reduce) {
+    [data-testid="feed-preview-image"] { transition: none !important; transform: none !important; }
     .dr-drift-a, .dr-drift-b, .dr-scan, .dr-ticker, .dr-flicker, .status-pulse-anim {
         animation: none !important;
     }

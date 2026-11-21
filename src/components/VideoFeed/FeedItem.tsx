@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions, Text, Pressable } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Ionicons } from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from 'expo-router';
 import { encodeVideoUrl } from '../../lib/utils/url';
 
 interface FeedItemProps {
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
     },
     overlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         justifyContent: 'flex-end',
         padding: 20,
     },
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     pauseOverlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.2)',

@@ -1,9 +1,9 @@
 import React, { useRef, useState, useCallback, useMemo } from 'react';
-import { View, StyleSheet, FlatList, ViewToken, Dimensions, Platform } from 'react-native';
+import { View, StyleSheet, FlatList, Dimensions, Platform } from 'react-native';
 import { MosaicItem } from './MosaicItem';
 import { useTheme } from '../../Theme/ThemeProvider';
+import { useNavVisibility } from '../../../context/NavVisibilityContext';
 import { Video } from '../../../lib/supabase/hooks/useVideos';
-import { SectionHeader } from '../../Discovery/SectionHeader';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_SPACING = 12;
@@ -27,12 +27,13 @@ export function MosaicFeed({
 }: MosaicFeedProps) {
     const { theme } = useTheme();
     const { width } = Dimensions.get('window');
+    const { handleScroll } = useNavVisibility();
     const isWeb = Platform.OS === 'web' && width > 768;
     const numColumns = isWeb ? 3 : 2;
     const [viewableItems, setViewableItems] = useState<Set<string>>(new Set());
 
     const onViewableItemsChanged = useCallback(
-        ({ viewableItems: currentlyViewable }: { viewableItems: ViewToken[] }) => {
+        ({ viewableItems: currentlyViewable }: { viewableItems: any[] }) => {
             const newViewable = new Set<string>();
             currentlyViewable.forEach(item => {
                 if (item.isViewable && item.key) {
@@ -66,26 +67,19 @@ export function MosaicFeed({
             <FlatList
                 data={videos}
                 renderItem={renderItem}
-                ListHeaderComponent={
-                    <View style={{ marginTop: 12, marginBottom: 12 }}>
-                        <SectionHeader
-                            title="Datariot Daily Synergy"
-                            subtitle="Curated based on your Creator DNA"
-                            containerStyle={{ paddingTop: 0 }}
-                        />
-                    </View>
-                }
                 keyExtractor={(item) => item.id}
                 key={isWeb ? 'web-mosaic' : 'mobile-mosaic'}
                 numColumns={numColumns}
                 showsVerticalScrollIndicator={false}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
                 onViewableItemsChanged={onViewableItemsChanged}
                 viewabilityConfig={viewabilityConfig}
                 onEndReached={onEndReached}
                 onEndReachedThreshold={0.5}
                 columnWrapperStyle={styles.columnWrapper}
                 contentContainerStyle={{
-                    paddingTop: paddingTop + GRID_SPACING,
+                    paddingTop: paddingTop + 8,
                     paddingBottom: paddingBottom + 80,
                     paddingHorizontal: GRID_SPACING,
                 }}
@@ -104,5 +98,6 @@ const styles = StyleSheet.create({
     },
     columnWrapper: {
         justifyContent: 'space-between',
+        gap: 12,
     },
 });

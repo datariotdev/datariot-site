@@ -11,6 +11,8 @@ import { ANIMATED_SHORTS_CATEGORY, PUBLISH_VIDEO_CATEGORIES, CATEGORY_DISPLAY_NA
 import { supabase } from '../lib/supabase/client';
 import { generateDebateSeed, generateVideoAnalysis, DebateSeed } from '../lib/ai/client';
 import { useTheme } from '../components/Theme/ThemeProvider';
+import * as FileSystem from 'expo-file-system/legacy';
+import { decode } from 'base64-arraybuffer';
 
 const showAlert = (title: string, message: string) => {
     if (Platform.OS === 'web') {
@@ -23,15 +25,14 @@ const showAlert = (title: string, message: string) => {
 export default function PublishScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const { videoUri, trimStart, trimEnd, debateId, side } = params;
+    const { videoUri, trimStart, trimEnd, debateId, side, thesis } = params;
     const { user } = useAuth();
     const { theme, mode } = useTheme();
     const isDark = mode === 'dark';
 
-    const [caption, setCaption] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<VideoCategory | null>(
-        videoUri && !debateId && params.category === ANIMATED_SHORTS_CATEGORY ? ANIMATED_SHORTS_CATEGORY : null,
-    );
+    // A thesis can arrive prefilled, e.g. from Orvelis
+    const [caption, setCaption] = useState(typeof thesis === 'string' ? thesis : '');
+    const [selectedCategory, setSelectedCategory] = useState<VideoCategory | null>(videoUri && !debateId && params.category === ANIMATED_SHORTS_CATEGORY ? ANIMATED_SHORTS_CATEGORY : null);
     const [uploading, setUploading] = useState(false);
     const isAnimatedShort = !!videoUri && !debateId && selectedCategory === ANIMATED_SHORTS_CATEGORY;
 
@@ -134,9 +135,18 @@ export default function PublishScreen() {
 
         const uploadFile = async (uri: string, bucket: string, path: string) => {
             let body: any;
-            const filename = uri.split('/').pop() || 'file';
-            const exc = filename.split('.').pop() || '';
-            const type = bucket === 'videos' ? 'video/mp4' : (bucket === 'images' ? 'image/jpeg' : 'audio/mpeg');
+            const cleanUri = uri.split('?')[0].split('#')[0];
+            const ext = cleanUri.split('.').pop()?.toLowerCase() || '';
+
+            let type = 'application/octet-stream';
+            if (bucket === 'videos' || ext === 'mp4') type = 'video/mp4';
+            else if (ext === 'mov') type = 'video/quicktime';
+            else if (ext === 'webm') type = 'video/webm';
+            else if (ext === 'jpg' || ext === 'jpeg' || bucket === 'posts' || bucket === 'images' || bucket === 'avatars') type = 'image/jpeg';
+            else if (ext === 'png') type = 'image/png';
+            else if (ext === 'webp') type = 'image/webp';
+            else if (ext === 'mp3') type = 'audio/mpeg';
+            else if (ext === 'm4a') type = 'audio/m4a';
 
             if (Platform.OS === 'web') {
                 try {
@@ -147,13 +157,15 @@ export default function PublishScreen() {
                     throw new Error("Could not read local file. Please try again.");
                 }
             } else {
-                const formData = new FormData();
-                formData.append('file', {
-                    uri,
-                    name: filename,
-                    type: type,
-                } as any);
-                body = formData;
+                try {
+                    const base64 = await FileSystem.readAsStringAsync(uri, {
+                        encoding: 'base64',
+                    });
+                    body = decode(base64);
+                } catch (readErr) {
+                    console.error("Failed to read file on native:", readErr);
+                    throw new Error("Could not read local file for upload.");
+                }
             }
 
             const { data, error } = await supabase.storage
@@ -263,7 +275,7 @@ export default function PublishScreen() {
             await new Promise(resolve => setTimeout(resolve, 500));
 
             showAlert('Success', 'Published!');
-            router.replace('/(tabs)/profile'); // Or back to feed
+            router.replace('/profile'); // Or back to feed
         } catch (error: any) {
             console.error(error);
             showAlert('Error', 'Failed to publish: ' + (error.message || 'Unknown error'));
@@ -385,6 +397,7 @@ export default function PublishScreen() {
                             {
                                 color: theme.colors.text.primary,
                                 fontFamily: theme.typography.fontFamilies.regular,
+                                // @ts-ignore - Web outline reset
                                 outlineWidth: 0,
                             }
                         ]}
@@ -802,7 +815,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     verificationOverlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         backgroundColor: 'rgba(0,0,0,0.7)',
         justifyContent: 'center',
         alignItems: 'center',
@@ -815,7 +828,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     errorOverlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         backgroundColor: 'rgba(0,0,0,0.85)',
         justifyContent: 'center',
         alignItems: 'center',

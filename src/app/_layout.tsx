@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ScreenFrame } from '../components/Layout/ScreenFrame';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider, useTheme } from '../components/Theme/ThemeProvider';
+import * as SystemUI from 'expo-system-ui';
+import { lightColors, ThemeProvider, useTheme } from '../components/Theme/ThemeProvider';
+import { NotificationsProvider } from '../components/Notifications/NotificationsProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import {
     useFonts,
@@ -48,15 +51,11 @@ import {
 } from '@expo-google-fonts/space-grotesk';
 
 import { Feather, Ionicons, MaterialCommunityIcons, Entypo, SimpleLineIcons, AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
+import VercelAnalytics from '../components/Web/VercelAnalytics';
 
 SplashScreen.preventAutoHideAsync();
 
-function AppContent() {
-    const { mode } = useTheme();
-    const systemAreaBackground = mode === 'dark' ? '#08090D' : '#FAFBFE';
+export default function RootLayout() {
     const [fontsLoaded, fontError] = useFonts({
         Oxanium_400Regular,
         Oxanium_500Medium,
@@ -83,6 +82,8 @@ function AppContent() {
         SpaceGrotesk_400Regular,
         SpaceGrotesk_500Medium,
         SpaceGrotesk_700Bold,
+        // Dot-matrix digits for the video timer (same face as the website's counters)
+        Doto_900Black: require('../../assets/fonts/Doto_900Black.ttf'),
         ...Feather.font,
         ...Ionicons.font,
         ...MaterialCommunityIcons.font,
@@ -104,28 +105,69 @@ function AppContent() {
     }
 
     return (
-        <>
-            <GestureHandlerRootView style={{ flex: 1, backgroundColor: systemAreaBackground }}>
-                <SafeAreaProvider>
-                    <Stack screenOptions={{ contentStyle: { backgroundColor: '#08090D' } }}>
-                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                        <Stack.Screen name="user/[id]" options={{ headerShown: false }} />
-                        <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
-                        <Stack.Screen name="auth" options={{ headerShown: false }} />
-                        <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
-                    </Stack>
-                </SafeAreaProvider>
-            </GestureHandlerRootView>
-            {Platform.OS === 'web' && (
-                <>
-                    <Analytics />
-                    <SpeedInsights />
-                </>
-            )}
-        </>
+        <ThemeProvider>
+            <ThemedAppContent />
+            <VercelAnalytics />
+        </ThemeProvider>
     );
 }
 
-export default function RootLayout() {
-    return <ThemeProvider><AppContent /></ThemeProvider>;
+function ThemedAppContent() {
+    const { mode, theme } = useTheme();
+    const isDark = mode === 'dark';
+    const bg = theme.colors.background.primary;
+
+    return (
+        <GestureHandlerRootView style={{ flex: 1, backgroundColor: bg }}>
+            <SafeAreaProvider>
+                <NotificationsProvider>
+                    <SystemBarsSync />
+                    <Stack
+                        screenLayout={({ children, route }) => (
+                            <ScreenFrame fullWidth={route.name === '(tabs)' || route.name === 'profile' || route.name === 'business' || route.name === 'notifications' || route.name.startsWith('user/')}>
+                                {children}
+                            </ScreenFrame>
+                        )}
+                        screenOptions={{ contentStyle: { backgroundColor: bg } }}
+                    >
+                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                        <Stack.Screen name="user/[id]" options={{ headerShown: false }} />
+                        <Stack.Screen name="auth" options={{ headerShown: false }} />
+                        <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
+                        <Stack.Screen name="notifications" options={{ headerShown: false }} />
+                        <Stack.Screen name="video-player" options={{ headerShown: false }} />
+                        <Stack.Screen name="profile" options={{ headerShown: false }} />
+                        <Stack.Screen name="edit-profile" options={{
+                            headerShown: false,
+                            contentStyle: { backgroundColor: lightColors.background.primary },
+                        }} />
+                    </Stack>
+                </NotificationsProvider>
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
+    );
+}
+
+function SystemBarsSync() {
+    const { mode } = useTheme();
+    const isDark = mode === 'dark';
+    const barColor = isDark ? '#0B0D18' : '#FAFBFE';
+
+    useEffect(() => {
+        if (Platform.OS === 'android') {
+            SystemUI.setBackgroundColorAsync(barColor).catch(() => {});
+        } else if (Platform.OS === 'web' && typeof document !== 'undefined') {
+            try {
+                let meta = document.querySelector('meta[name="theme-color"]');
+                if (!meta) {
+                    meta = document.createElement('meta');
+                    meta.setAttribute('name', 'theme-color');
+                    document.head.appendChild(meta);
+                }
+                meta.setAttribute('content', barColor);
+            } catch (e) {}
+        }
+    }, [isDark, barColor]);
+
+    return <StatusBar style={isDark ? 'light' : 'dark'} />;
 }

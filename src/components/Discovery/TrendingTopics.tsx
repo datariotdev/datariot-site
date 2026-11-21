@@ -42,7 +42,7 @@ export const TrendingTopics: React.FC<TrendingTopicsProps> = ({ onItemPress }) =
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={[styles.headerText, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>[ TRENDING.TOPICS ]</Text>
+                <Text style={[styles.headerText, { color: theme.colors.text.primary, fontFamily: undefined }]}>[ TRENDING.TOPICS ]</Text>
             </View>
 
             <View style={styles.list}>
@@ -55,16 +55,16 @@ export const TrendingTopics: React.FC<TrendingTopicsProps> = ({ onItemPress }) =
                         }]}
                         onPress={() => onItemPress(topic.id)}
                     >
-                        <View style={[styles.iconBox, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }]}>
+                        <View style={[styles.iconBox, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(217, 228, 255, 0.4)' }]}>
                             <MaterialCommunityIcons
                                 name={topic.icon as any}
                                 size={22}
-                                color={theme.colors.primary.DEFAULT}
+                                color={isDark ? '#D9E4FF' : '#536D85'}
                             />
                         </View>
                         <View style={styles.content}>
-                            <Text style={[styles.label, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{topic.label.toUpperCase()}</Text>
-                            <Text style={[styles.description, { color: theme.colors.text.muted, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{topic.description.toUpperCase()}</Text>
+                            <Text style={[styles.label, { color: theme.colors.text.primary, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{topic.label}</Text>
+                            <Text style={[styles.description, { color: theme.colors.text.muted, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }]}>{topic.description}</Text>
                         </View>
                         <MaterialCommunityIcons
                             name="chevron-right"
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
-        borderRadius: 24,
+        borderRadius: 18,
         borderWidth: 1,
     },
     iconBox: {
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 15,
-        fontWeight: '800',
+        fontWeight: '700',
     },
     description: {
         fontSize: 12,

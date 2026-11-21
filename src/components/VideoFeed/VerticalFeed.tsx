@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react';
-import { FlatList, ViewToken, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { FlatList, ListViewToken, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { FeedItem } from './FeedItem';
 
 interface Video {
@@ -56,10 +56,10 @@ export function VerticalFeed({
     const flatListRef = useRef<FlatList>(null);
 
     const onViewableItemsChanged = useCallback(
-        ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+        ({ viewableItems }: { viewableItems: ListViewToken[] }) => {
             if (viewableItems.length > 0) {
                 const index = viewableItems[0].index;
-                if (index !== null) {
+                if (index != null) {
                     setActiveVideoIndex(index);
                 }
             }

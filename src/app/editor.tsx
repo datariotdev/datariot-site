@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Platform, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEventListener } from 'expo';
@@ -9,7 +9,8 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS } from 'react-native-reanimated';
 import { theme } from '@design-system/theme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: windowWidth } = Dimensions.get('window');
+const SCREEN_WIDTH = Platform.OS === 'web' ? Math.min(windowWidth, 640) : windowWidth;
 const TIMELINE_HEIGHT = 60;
 const HANDLE_WIDTH = 20;
 const TIMELINE_PADDING = 20;
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     pauseOverlay: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
     },
     controlsContainer: {
         height: 200,
@@ -277,8 +278,10 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     timeText: {
-        color: 'white',
-        fontVariant: ['tabular-nums'],
+        color: 'rgba(226,235,250,0.95)',
+        fontFamily: 'Doto_900Black',
+        fontSize: 20,
+        letterSpacing: 1,
     },
     timelineContainer: {
         height: TIMELINE_HEIGHT,
@@ -288,7 +291,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     timelineTrack: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         backgroundColor: '#333',
         borderRadius: 8,
         overflow: 'hidden',

@@ -278,13 +278,14 @@ const InternalProfileVideoGridItem = ({ videoUrl }: { videoUrl: string }) => {
     );
 };
 
-const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { item: any, onPress: () => void, isDark: boolean, featured?: boolean }) => {
+const ProfileVideoGridItem = ({ item, onPress, isDark }: { item: any, onPress: () => void, isDark: boolean }) => {
     const { width } = useWindowDimensions();
-    const tileWidth = featured ? width : (width - 4) / 3;
+    const containerWidth = Math.min(width, 640);
+    const tileWidth = Math.floor((containerWidth - 6) / 3);
     const thumbnail = item.thumbnailUrl || item.thumbnail_url || item.thumbnail;
     return (
         <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`Play ${item.title || 'video'}`}
-            style={{ width: tileWidth, height: featured ? tileWidth * 0.56 : tileWidth, marginRight: featured ? 0 : 1, marginBottom: 1 }}>
+            style={{ width: tileWidth, height: tileWidth, margin: 1 }}>
             <View style={{ flex: 1, overflow: 'hidden', backgroundColor: isDark ? '#171C26' : '#E9EDF5' }}>
                 {thumbnail ? <Image source={{ uri: thumbnail }} resizeMode="cover" style={StyleSheet.absoluteFill} />
                     : <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
@@ -301,45 +302,9 @@ const ProfileVideoGridItem = ({ item, onPress, isDark, featured = false }: { ite
     );
 };
 
-// Renders videos in a 3-col grid with the first item being full-width featured
 const EssenceGrid = ({ videos, onPress, isDark }: { videos: any[], onPress: (id: string, idx: number) => void, isDark: boolean }) => {
     if (!videos || videos.length === 0) return null;
-
-    const [featured, ...rest] = videos;
-    // Group rest into rows of 3
-    const rows: any[][] = [];
-    for (let i = 0; i < rest.length; i += 3) {
-        rows.push(rest.slice(i, i + 3));
-    }
-
-    return (
-        <View style={{ paddingTop: 12 }}>
-            {/* Featured (first) video */}
-            <ProfileVideoGridItem
-                item={featured}
-                onPress={() => onPress(featured.id, 0)}
-                isDark={isDark}
-                featured={true}
-            />
-            {/* Grid rows */}
-            {rows.map((row, rowIdx) => (
-                <View key={rowIdx} style={[styles.videoColumnWrapper]}>
-                    {row.map((item, colIdx) => (
-                        <ProfileVideoGridItem
-                            key={item.id}
-                            item={item}
-                            onPress={() => onPress(item.id, rowIdx * 3 + colIdx + 1)}
-                            isDark={isDark}
-                        />
-                    ))}
-                    {/* Fill empty slots to keep alignment */}
-                    {row.length < 3 && Array.from({ length: 3 - row.length }).map((_, i) => (
-                        <View key={`empty-${i}`} style={{ width: VIDEO_ITEM_WIDTH, height: VIDEO_ITEM_WIDTH * 1.3 }} />
-                    ))}
-                </View>
-            ))}
-        </View>
-    );
+    return null;
 };
 
 export default function ProfileScreen() {
@@ -632,8 +597,7 @@ export default function ProfileScreen() {
                     </View>
                 );
             }
-            // Render the custom essence grid
-            return mobile ? null : <EssenceGrid videos={videos} onPress={navigateToVideoById} isDark={isDark} />;
+            return null;
         }
 
         if (activeTab === 'posts') {
@@ -654,10 +618,6 @@ export default function ProfileScreen() {
                     </View>
                 );
             }
-            // For posts, we might want to render them here or use the FlatList?
-            // Since FlatList is configured for NUM_COLUMNS=3 for videos, we cannot easily mix layout unless we change key/numColumns dynamically.
-            // Best to use a separate list or conditional render in the main FlatList.
-            // The main FlatList is the page body.
             return null;
         }
 
@@ -678,33 +638,29 @@ export default function ProfileScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-            {!mobile && <AmbientGlow color={isDark ? "rgba(217, 228, 255, 0.08)" : "rgba(217, 228, 255, 0.04)"} size={400} opacity={0.6} duration={25000} delay={0} />}
             <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
-            {/* Sticky Header Overlay */}
-            {!mobile && <StickyHeader scrollY={scrollY} user={user} handleSignOut={handleSignOut} router={router} />}
-
             <Animated.FlatList
-                key={`${activeTab}-${mobile ? 'mobile' : 'desktop'}`}
-                data={(activeTab === 'posts' ? posts : activeTab === 'videos' && mobile ? videos : []) as any}
+                key={`${activeTab}-grid`}
+                data={(activeTab === 'posts' ? posts : activeTab === 'videos' ? videos : []) as any}
                 renderItem={(props: any) => activeTab === 'videos' ? renderVideoItem(props) : renderPostItem(props)}
                 keyExtractor={(item) => item.id}
-                numColumns={mobile && activeTab === 'videos' ? 3 : 1}
-                columnWrapperStyle={mobile && activeTab === 'videos' ? styles.videoColumnWrapper : undefined}
+                numColumns={activeTab === 'videos' ? 3 : 1}
+                columnWrapperStyle={activeTab === 'videos' ? styles.videoColumnWrapper : undefined}
                 contentContainerStyle={[styles.flatListContent, { paddingBottom: 88 + insets.bottom }]}
                 ListHeaderComponent={(
                     <>
-                        {mobile ? <MobileProfileHeader profile={profile} userId={user.id} fallbackName={user.email?.split('@')[0]}
-                            own activeTab={activeTab} onTab={setActiveTab} onEdit={() => router.push('/edit-profile')}
-                            onSettings={() => router.push('/settings')} onDNA={() => setShowAchievements(true)} /> : <ProfileHeader
+                        <MobileProfileHeader
                             profile={profile}
-                            user={user}
-                            scrollY={scrollY}
-                            headerImageUrl={headerImageUrl}
+                            userId={user.id}
+                            fallbackName={user.email?.split('@')[0]}
+                            own
                             activeTab={activeTab}
-                            setActiveTab={setActiveTab}
-                            onShowAchievements={() => setShowAchievements(true)}
-                        />}
+                            onTab={setActiveTab}
+                            onEdit={() => router.push('/edit-profile')}
+                            onSettings={() => router.push('/settings')}
+                            onActivity={() => setShowAchievements(true)}
+                        />
                         {renderContent()}
                     </>
                 )}
@@ -741,7 +697,7 @@ export default function ProfileScreen() {
 
                         <View style={styles.modalHeader}>
                             <View>
-                                <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>Creator DNA</Text>
+                                <Text style={[styles.modalTitle, { color: theme.colors.text.primary }]}>{mobile ? 'Activity' : 'Creator DNA'}</Text>
                                 <Text style={[styles.modalSubtitle, { color: theme.colors.text.secondary }]}>Identity · Stats · History</Text>
                             </View>
                             <Pressable onPress={() => setShowAchievements(false)} style={styles.modalCloseBtn}>
@@ -824,7 +780,7 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     stickyHeaderBackground: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         borderBottomWidth: 1,
     },
     stickyUsername: {

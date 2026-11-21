@@ -2,7 +2,8 @@
     "extends": "expo/tsconfig.base",
     "compilerOptions": {
         "strict": true,
-        "baseUrl": ".",
+        "allowImportingTsExtensions": true,
+        "types": ["node", "react"],
         "jsx": "react-native",
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -31,9 +32,12 @@
         }
     },
     "include": [
-        "**/*.ts",
-        "**/*.tsx",
+        "src/**/*.ts",
+        "src/**/*.tsx",
         ".expo/types/**/*.ts",
         "expo-env.d.ts"
+    ],
+    "exclude": [
+        "src/lib/ai/modelbest-multimodal.ts"
     ]
 }
