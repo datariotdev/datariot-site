@@ -123,8 +123,10 @@ function FullScreenVideoItem({
     useEffect(() => { if (seekTo) { player.currentTime = seekTo.seconds; setIsPaused(false); } }, [player, seekTo]);
 
     useEventListener(player, 'timeUpdate', (event: any) => {
-        setCurrentTime((event?.currentTime ?? player.currentTime ?? 0) * 1000);
-        setDuration((player.duration ?? 0) * 1000);
+        const current = Number(event?.currentTime ?? player.currentTime ?? 0);
+        const total = Number(player.duration ?? 0);
+        setCurrentTime(Number.isFinite(current) && current >= 0 ? current * 1000 : 0);
+        setDuration(Number.isFinite(total) && total > 0 ? total * 1000 : 0);
     });
 
     const togglePlayback = () => {
@@ -190,11 +192,9 @@ function FullScreenVideoItem({
                 )}
             </View>
 
-            {!clearDisplay && <View style={{ marginHorizontal: 14, marginTop: 8, marginBottom: 4 }}>
-                <LiveAnalysisStrip videoId={item.id} active={isActive} seconds={Math.floor(currentTime / 1000)} compact
-                    onOpen={() => onOrvelis(Math.floor(currentTime / 1000))} />
-            </View>}
             {!clearDisplay && <VideoControls
+                companion={<LiveAnalysisStrip videoId={item.id} active={isActive} seconds={Math.floor(currentTime / 1000)} compact
+                    onOpen={() => onOrvelis(Math.floor(currentTime / 1000))} />}
                 attribution={(
                     <Pressable
                         accessibilityRole="button"
