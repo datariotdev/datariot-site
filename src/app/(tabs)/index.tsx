@@ -231,7 +231,7 @@ const HomeScreen = () => {
     if (isWeb) {
         const showCompanion = isLatest && width >= 1330;
         const selectedTopic = activeCategory || 'All';
-        const title = activeTab === 'ai' ? 'Arena' : activeTab === 'following' ? 'Circle' : activeCategory || (feedOrder === 'ranked' ? 'Feed' : 'Latest videos');
+        const title = activeTab === 'ai' ? 'Arena' : activeTab === 'following' ? 'Circle' : activeCategory || 'Latest videos';
 
         return (
             <View style={[styles.container, styles.webPage, { paddingHorizontal: width >= 1190 ? 36 : 24 }]}>
