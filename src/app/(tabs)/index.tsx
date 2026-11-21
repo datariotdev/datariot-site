@@ -18,7 +18,7 @@ import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideo
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { WebFeedHeader, WebFeedViewSwitch } from '../../components/Web/WebFeedHeader';
 import { WebRightPanel } from '../../components/Web/WebRightPanel';
-import { CuratedFeed } from '../../components/VideoFeed/CuratedFeed';
+import { CuratedFeed, CuratedFeedIntro } from '../../components/VideoFeed/CuratedFeed';
 import { useCuratedReels } from '../../lib/curated/useCuratedReels';
 import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import { useNavVisibility } from '../../context/NavVisibilityContext';
@@ -219,7 +219,6 @@ const HomeScreen = () => {
     if (isWeb) {
         const showCompanion = isLatest && width >= 1330;
         const selectedTopic = activeCategory || 'All';
-        const title = activeTab === 'ai' ? 'Arena' : activeTab === 'following' ? 'Circle' : activeCategory || 'Latest videos';
 
         return (
             <View style={[styles.container, styles.webPage, { paddingHorizontal: width >= 1190 ? 36 : 24 }]}>
@@ -227,9 +226,13 @@ const HomeScreen = () => {
                 <WebFeedHeader tabs={TABS} activeTab={activeTab} onTabPress={setActiveTab} isFocused={isFocused} />
                 <View style={styles.webBody}>
                     <View style={styles.webFeedColumn}>
-                        <View style={styles.webHeadingRow}>
-                            <Text accessibilityRole="header" aria-level={1}
-                                style={[styles.webTitle, { color: theme.colors.text.primary }]}>{title}</Text>
+                        <View style={[styles.webHeadingRow, isLatest && styles.webIntroRow]}>
+                            {isLatest ? <CuratedFeedIntro desktop /> : (
+                                <Text accessibilityRole="header" aria-level={1}
+                                    style={[styles.webTitle, { color: theme.colors.text.primary }]}>
+                                    {activeTab === 'ai' ? 'Arena' : 'Circle'}
+                                </Text>
+                            )}
                             {(!isLatest || latestGridFits) && (
                                 <WebFeedViewSwitch grid={isLatest ? latestGrid : viewMode === 'mosaic'}
                                     onChange={isLatest ? setCompactLatest : grid => setViewMode(grid ? 'mosaic' : 'classic')} />
@@ -384,6 +387,7 @@ const styles = StyleSheet.create({
     webBody: { flex: 1, minHeight: 0, flexDirection: 'row', gap: 34 },
     webFeedColumn: { flex: 1, minWidth: 0, minHeight: 0 },
     webHeadingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 15, paddingTop: 27, paddingBottom: 17 },
+    webIntroRow: { alignItems: 'flex-start', paddingTop: 17, paddingBottom: 12 },
     webTitle: { flexShrink: 1, fontFamily: 'Outfit_600SemiBold', fontSize: 46, lineHeight: 50, letterSpacing: -2.25 },
     webFilters: { paddingBottom: 19 },
     webCompanion: { width: 238, flexGrow: 0, flexShrink: 0 },
