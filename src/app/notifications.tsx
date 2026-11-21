@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -8,6 +8,10 @@ import { useTheme } from '../components/Theme/ThemeProvider';
 import { useNotifications } from '../components/Notifications/NotificationsProvider';
 import { useAuth } from '../lib/supabase/hooks/useAuth';
 import { ActivityNotification, notificationTarget, notificationTime } from '../lib/supabase/notifications';
+import { PlatformUpdates } from '../components/Notifications/PlatformUpdates';
+import { CommunityUploads } from '../components/Notifications/CommunityUploads';
+import { fetchCommunityUploads, type CommunityUpload } from '../lib/supabase/communityActivity';
+import { supabase } from '../lib/supabase/client';
 
 const ICONS: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
     follow: 'person-add-outline', video_like: 'heart-outline', post_like: 'heart-outline',
@@ -50,7 +54,27 @@ export default function NotificationsScreen() {
     const { user, loading: authLoading } = useAuth();
     const activity = useNotifications();
     const { refresh } = activity;
-    useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
+    const [community, setCommunity] = useState<{ scope: string | null; items: CommunityUpload[]; loading: boolean; error: boolean }>({ scope: user?.id ?? null, items: [], loading: true, error: false });
+    const communityRequest = useRef(0);
+    const scope = user?.id ?? null;
+    const loadCommunity = useCallback(async () => {
+        const request = ++communityRequest.current;
+        setCommunity(previous => ({ scope, items: previous.scope === scope ? previous.items : [], loading: true, error: false }));
+        try {
+            if (!supabase) throw new Error('Video service unavailable');
+            const items = await fetchCommunityUploads(supabase);
+            if (request === communityRequest.current) setCommunity({ scope, items, loading: false, error: false });
+        } catch {
+            if (request === communityRequest.current) setCommunity(previous => ({ ...previous, loading: false, error: true }));
+        }
+    }, [scope]);
+    useFocusEffect(useCallback(() => {
+        void refresh();
+        if (!authLoading) void loadCommunity();
+        return () => { communityRequest.current++; };
+    }, [refresh, loadCommunity, authLoading]));
+    const visibleCommunity = community.scope === scope ? community : { items: [], loading: true, error: false };
+    const refreshAll = () => { void refresh(); void loadCommunity(); };
 
     const openNotification = async (item: ActivityNotification) => {
         const target = notificationTarget(item);
@@ -66,14 +90,17 @@ export default function NotificationsScreen() {
     const empty = (
         <View style={styles.empty}>
             <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primary.glowSubtle }]}>
-                <Ionicons name={activity.filter === 'unread' ? 'checkmark-done-outline' : 'notifications-outline'} size={36} color={theme.colors.primary.DEFAULT} />
+                <Ionicons name={activity.filter === 'unread' ? 'checkmark-done-outline' : 'notifications-outline'} size={22} color={theme.colors.primary.DEFAULT} />
             </View>
             <Text style={[styles.emptyTitle, { color: theme.colors.text.primary }]}>
-                {!user ? 'Your activity, in one place' : activity.filter === 'unread' ? 'You’re all caught up' : 'No notifications yet'}
+                {!user ? 'Your activity, in one place' : activity.filter === 'unread' ? 'You’re all caught up' : 'Make the first connection'}
             </Text>
             <Text style={[styles.emptyText, { color: theme.colors.text.secondary }]}>
-                {!user ? 'Sign in to see your notifications.' : 'New followers, reactions, replies and messages will appear here.'}
+                {!user ? 'Sign in to see your notifications.' : activity.filter === 'unread' ? 'You’ve seen every update. Find a new idea while you’re here.' : 'Follow a creator, leave a thought, start a conversation. This is where it comes back to you.'}
             </Text>
+            {!!user && <Pressable accessibilityRole="button" onPress={() => router.push('/discover')} style={[styles.signIn, { backgroundColor: theme.colors.background.tertiary }]}>
+                <Text style={{ color: theme.colors.text.primary, fontWeight: '700', fontSize: 12 }}>Find your people</Text>
+            </Pressable>}
             {!user && <Pressable accessibilityRole="button" onPress={() => router.push('/auth/login')} style={[styles.signIn, { backgroundColor: theme.colors.primary.DEFAULT }]}>
                 <Text style={{ color: theme.colors.background.primary, fontWeight: '700' }}>Sign in</Text>
             </Pressable>}
@@ -91,7 +118,7 @@ export default function NotificationsScreen() {
                     <View style={styles.heading}>
                         <Text style={[styles.title, { color: theme.colors.text.primary }]}>Notifications</Text>
                         <Text accessibilityLiveRegion="polite" style={[styles.subtitle, { color: theme.colors.text.secondary }]}>
-                            {activity.unreadCount ? `${activity.unreadCount} unread` : 'Stay in the loop'}
+                            {activity.unreadCount ? `${activity.unreadCount} unread` : 'Your people. Your platform.'}
                         </Text>
                     </View>
                     {!!user && <Pressable accessibilityRole="button" accessibilityLabel="Mark all notifications as read"
@@ -100,7 +127,23 @@ export default function NotificationsScreen() {
                         {activity.markingRead ? <ActivityIndicator color={theme.colors.primary.DEFAULT} /> : <Ionicons name="checkmark-done-outline" size={24} color={theme.colors.text.primary} />}
                     </Pressable>}
                 </View>
-                {!!user && <View accessibilityRole="tablist" style={[styles.filters, { backgroundColor: theme.colors.background.secondary }]}>
+                {!!(activity.error || activity.actionError) && <View style={styles.error}>
+                    <Text accessibilityRole="alert" style={{ color: theme.colors.text.secondary }}>{activity.actionError || activity.error}</Text>
+                    {!!activity.error && <Pressable accessibilityRole="button" onPress={() => { void refresh(); }} style={styles.retry}>
+                        <Text style={{ color: theme.colors.text.primary }}>Try again</Text>
+                    </Pressable>}
+                </View>}
+                <FlatList
+                    data={activity.items} keyExtractor={item => item.id} contentContainerStyle={styles.list}
+                    renderItem={({ item }) => <NotificationRow key={`${item.id}:${item.actor?.avatar_url}`} item={item} disabled={activity.markingRead} onPress={() => { void openNotification(item); }} />}
+                    ListHeaderComponent={<View>
+                        <PlatformUpdates />
+                        {activity.filter === 'all' && <CommunityUploads items={visibleCommunity.items} loading={visibleCommunity.loading || authLoading} error={visibleCommunity.error} onRetry={() => { void loadCommunity(); }} />}
+                        <View style={styles.personalHeading}>
+                            <Text style={[styles.personalTitle, { color: theme.colors.text.primary }]}>For you</Text>
+                            <Text style={[styles.personalHint, { color: theme.colors.text.muted }]}>Your personal activity</Text>
+                        </View>
+                        {!!user && <View accessibilityRole="tablist" style={[styles.filters, { backgroundColor: theme.colors.background.secondary }]}>
                     {(['all', 'unread'] as const).map(filter => (
                         <Pressable key={filter} accessibilityRole="tab" accessibilityState={{ selected: activity.filter === filter }}
                             disabled={activity.markingRead} onPress={() => activity.setFilter(filter)}
@@ -111,17 +154,9 @@ export default function NotificationsScreen() {
                         </Pressable>
                     ))}
                 </View>}
-                {!!(activity.error || activity.actionError) && <View style={styles.error}>
-                    <Text accessibilityRole="alert" style={{ color: theme.colors.text.secondary }}>{activity.actionError || activity.error}</Text>
-                    {!!activity.error && <Pressable accessibilityRole="button" onPress={() => { void refresh(); }} style={styles.retry}>
-                        <Text style={{ color: theme.colors.text.primary }}>Try again</Text>
-                    </Pressable>}
-                </View>}
-                <FlatList
-                    data={activity.items} keyExtractor={item => item.id} contentContainerStyle={styles.list}
-                    renderItem={({ item }) => <NotificationRow key={`${item.id}:${item.actor?.avatar_url}`} item={item} disabled={activity.markingRead} onPress={() => { void openNotification(item); }} />}
+                    </View>}
                     ListEmptyComponent={activity.loading || authLoading ? <ActivityIndicator style={styles.loading} color={theme.colors.primary.DEFAULT} /> : !activity.error ? empty : undefined}
-                    refreshControl={<RefreshControl refreshing={activity.refreshing && !activity.loading} onRefresh={() => { void refresh(); }} tintColor={theme.colors.primary.DEFAULT} />}
+                    refreshControl={<RefreshControl refreshing={activity.refreshing && !activity.loading} onRefresh={refreshAll} tintColor={theme.colors.primary.DEFAULT} />}
                     ListFooterComponent={activity.hasMore ? <Pressable accessibilityRole="button" disabled={activity.loadingMore || activity.refreshing} onPress={() => { void activity.loadMore(); }} style={styles.loadMore}>
                         {activity.loadingMore ? <ActivityIndicator color={theme.colors.primary.DEFAULT} /> : <Text style={{ color: theme.colors.text.primary }}>Load older notifications</Text>}
                     </Pressable> : undefined}
@@ -136,7 +171,8 @@ const styles = StyleSheet.create({
     header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 24, gap: 8 },
     back: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
     heading: { flex: 1, minWidth: 0 }, title: { fontSize: 26, fontWeight: '800', letterSpacing: -0.6 }, subtitle: { fontSize: 13, marginTop: 4 },
-    filters: { flexDirection: 'row', marginHorizontal: 24, marginBottom: 20, padding: 4, borderRadius: 16, gap: 4 },
+    personalHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 16 }, personalTitle: { fontSize: 18, fontWeight: '700', letterSpacing: -0.45 }, personalHint: { fontSize: 11 },
+    filters: { flexDirection: 'row', marginBottom: 10, padding: 4, borderRadius: 14, gap: 4 },
     filter: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 12 },
     list: { paddingHorizontal: 24, paddingBottom: 40, gap: 10, flexGrow: 1 },
     row: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 14, borderRadius: 20, borderWidth: 1, minHeight: 100 },
@@ -146,9 +182,9 @@ const styles = StyleSheet.create({
     rowContent: { flex: 1, minWidth: 0 }, rowText: { fontSize: 14, lineHeight: 21 }, name: { fontWeight: '700' },
     preview: { marginTop: 4, fontSize: 13, lineHeight: 18 }, time: { fontSize: 11, marginTop: 8 },
     unreadDot: { width: 7, height: 7, borderRadius: 4 },
-    empty: { alignItems: 'center', paddingTop: 80, paddingHorizontal: 16 }, emptyIcon: { width: 88, height: 88, borderRadius: 28, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
-    emptyTitle: { fontSize: 21, fontWeight: '700', textAlign: 'center' }, emptyText: { textAlign: 'center', marginTop: 12, fontSize: 14, lineHeight: 22, maxWidth: 300 },
-    signIn: { paddingHorizontal: 28, paddingVertical: 14, borderRadius: 16, marginTop: 24 },
+    empty: { alignItems: 'center', paddingTop: 24, paddingBottom: 20, paddingHorizontal: 16 }, emptyIcon: { width: 48, height: 48, borderRadius: 17, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
+    emptyTitle: { fontSize: 16, fontWeight: '700', textAlign: 'center' }, emptyText: { textAlign: 'center', marginTop: 8, fontSize: 12, lineHeight: 20, maxWidth: 340 },
+    signIn: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 13, marginTop: 16 },
     error: { paddingHorizontal: 24, paddingBottom: 16 }, retry: { paddingVertical: 12 },
     loading: { marginTop: 80 }, loadMore: { padding: 20, alignItems: 'center' },
 });
