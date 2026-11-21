@@ -1,5 +1,5 @@
 /** @jsxImportSource react */
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
     Modal,
     View,
@@ -22,7 +22,7 @@ import { encodeVideoUrl } from '../../lib/utils/url';
 import { VideoControls } from '../VideoPlayer/VideoControls';
 import { CommentsModal } from './CommentsModal';
 import { DeepDiveModal } from './DeepDiveModal';
-import { LiveAnalysisStrip } from './LiveAnalysisStrip';
+import { LiveAnalysisButton } from './LiveAnalysisButton';
 import { MoreOptionsModal } from './MoreOptionsModal';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import type { FeedType, Video as FeedVideo } from '../../lib/supabase/hooks/useVideos';
@@ -62,7 +62,7 @@ function FullScreenVideoItem({
     onSave,
     onComposeComment,
     onMore,
-    onOrvelis,
+    onPlaybackTime,
     seekTo,
 }: {
     item: FeedVideo;
@@ -80,7 +80,7 @@ function FullScreenVideoItem({
     onSave: () => void;
     onComposeComment: () => void;
     onMore: () => void;
-    onOrvelis: (seconds: number) => void;
+    onPlaybackTime: (videoId: string, seconds: number) => void;
     seekTo?: { seconds: number; nonce: number };
 }) {
     const router = useRouter();
@@ -127,6 +127,7 @@ function FullScreenVideoItem({
         const total = Number(player.duration ?? 0);
         setCurrentTime(Number.isFinite(current) && current >= 0 ? current * 1000 : 0);
         setDuration(Number.isFinite(total) && total > 0 ? total * 1000 : 0);
+        if (isActive) onPlaybackTime(item.id, Number.isFinite(current) && current >= 0 ? Math.floor(current) : 0);
     });
 
     const togglePlayback = () => {
@@ -193,8 +194,6 @@ function FullScreenVideoItem({
             </View>
 
             {!clearDisplay && <VideoControls
-                companion={<LiveAnalysisStrip videoId={item.id} active={isActive} seconds={Math.floor(currentTime / 1000)} compact
-                    onOpen={() => onOrvelis(Math.floor(currentTime / 1000))} />}
                 attribution={(
                     <Pressable
                         accessibilityRole="button"
@@ -262,6 +261,10 @@ function FullScreenVideoSession({
     const [commentSheet, setCommentSheet] = useState<{ videoId: string; compose: boolean } | null>(null);
     const [deepDiveVideo, setDeepDiveVideo] = useState<FeedVideo | null>(null);
     const [analysisSeconds, setAnalysisSeconds] = useState(0);
+    const playbackTime = useRef({ videoId: '', seconds: 0 });
+    const rememberPlaybackTime = useCallback((videoId: string, seconds: number) => {
+        playbackTime.current = { videoId, seconds };
+    }, []);
     const [seekRequest, setSeekRequest] = useState<{ id: string; seconds: number; nonce: number }>();
     const [moreOptionsId, setMoreOptionsId] = useState(openOptionsOnMount ? initialVideoId : null);
     const [clearDisplay, setClearDisplay] = useState(false);
@@ -272,6 +275,10 @@ function FullScreenVideoSession({
     const playerIsVisible = !commentSheet && !moreOptionsVideo && !deepDiveVideo;
     const closeOptions = () => setMoreOptionsId(null);
     const toggleMute = () => setMuted(current => !current);
+    const openAnalysis = (video: FeedVideo) => {
+        setAnalysisSeconds(playbackTime.current.videoId === video.id ? playbackTime.current.seconds : 0);
+        setDeepDiveVideo(video);
+    };
 
     const viewabilityConfig = useMemo(() => ({ itemVisiblePercentThreshold: 60 }), []);
     const isFocused = useIsFocused();
@@ -306,9 +313,11 @@ function FullScreenVideoSession({
                         <Ionicons name="scan-outline" size={20} color="#FFF" />
                     </Pressable>
                 ) : <View style={[styles.header, { top: Math.max(insets.top, 8) }]}>
-                    <Pressable accessibilityRole="button" accessibilityLabel="Close full-screen feed" style={styles.iconButton} onPress={onClose}>
-                        <Ionicons name="close" size={24} color="#FFF" />
-                    </Pressable>
+                    <View style={!onSelectTab && styles.balancedLeading}>
+                        <Pressable accessibilityRole="button" accessibilityLabel="Close full-screen feed" style={styles.iconButton} onPress={onClose}>
+                            <Ionicons name="close" size={24} color="#FFF" />
+                        </Pressable>
+                    </View>
                     <View style={styles.tabs}>
                         {(onSelectTab ? FEED_TABS : FEED_TABS.slice(1, 2)).map((tab) => (
                             <Pressable
@@ -324,10 +333,14 @@ function FullScreenVideoSession({
                             </Pressable>
                         ))}
                     </View>
-                    <Pressable accessibilityRole="button" accessibilityLabel="More options" style={styles.iconButton}
-                        disabled={!videos[activeIndex]} onPress={() => setMoreOptionsId(videos[activeIndex]?.id ?? null)}>
-                        <Ionicons name="ellipsis-horizontal" size={23} color="#FFF" />
-                    </Pressable>
+                    <View style={styles.headerActions}>
+                        <LiveAnalysisButton dark active={isFocused && playerIsVisible} disabled={!videos[activeIndex]}
+                            onOpen={() => { if (videos[activeIndex]) openAnalysis(videos[activeIndex]); }} />
+                        <Pressable accessibilityRole="button" accessibilityLabel="More options" style={styles.iconButton}
+                            disabled={!videos[activeIndex]} onPress={() => setMoreOptionsId(videos[activeIndex]?.id ?? null)}>
+                            <Ionicons name="ellipsis-horizontal" size={23} color="#FFF" />
+                        </Pressable>
+                    </View>
                 </View>}
 
                 {viewportHeight > 0 && <FlatList
@@ -365,7 +378,7 @@ function FullScreenVideoSession({
                             onComposeComment={() => setCommentSheet({ videoId: item.id, compose: true })}
                             onSave={() => onSave(item.id)}
                             onMore={() => setMoreOptionsId(item.id)}
-                            onOrvelis={seconds => { setAnalysisSeconds(seconds); setDeepDiveVideo(item); }}
+                            onPlaybackTime={rememberPlaybackTime}
                             seekTo={seekRequest?.id === item.id ? seekRequest : undefined}
                         />
                     )}
@@ -388,7 +401,7 @@ function FullScreenVideoSession({
                             onClose();
                             router.push({ pathname: '/user/[id]', params: { id: moreOptionsVideo.authorId } });
                         } : undefined}
-                        onDeepDive={() => { closeOptions(); setDeepDiveVideo(moreOptionsVideo); }}
+                        onDeepDive={() => { closeOptions(); openAnalysis(moreOptionsVideo); }}
                     />
                 )}
             </GestureHandlerRootView>
@@ -423,7 +436,9 @@ const styles = StyleSheet.create({
         position: 'absolute', left: 10, right: 10, zIndex: 200,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     },
-    tabs: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    tabs: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 8 },
+    headerActions: { flexDirection: 'row', alignItems: 'center' },
+    balancedLeading: { width: 88 },
     tab: { minHeight: 38, justifyContent: 'center', paddingHorizontal: 2, borderBottomWidth: 2, borderBottomColor: 'transparent' },
     activeTab: { borderBottomColor: '#FFF' },
     tabLabel: { color: '#C1C2C7', fontSize: 12, fontWeight: '700', letterSpacing: 1.7 },

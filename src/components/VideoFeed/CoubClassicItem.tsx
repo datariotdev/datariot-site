@@ -1,12 +1,12 @@
 /** @jsxImportSource react */
-import React, { useRef, useState, memo } from 'react';
+import React, { useState, memo } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useIsFocused } from 'expo-router';
 import { usePalette } from '../../design-system/palette';
 import { Avatar } from '../UI/Avatar';
-import { LiveAnalysisStrip } from './LiveAnalysisStrip';
+import { LiveAnalysisButton } from './LiveAnalysisButton';
 import { DeepDiveModal } from './DeepDiveModal';
 import { PosterArt } from '../UI/PosterArt';
 import { FeedVideo, realThumb, formatNumber, formatClock, ago } from './feedMedia';
@@ -26,7 +26,7 @@ function FeedAction({ icon, count, label, selected, onPress, scale, like }: {
     onPress: () => void; scale?: Animated.Value;
 }) {
     const p = usePalette();
-    const pressScale = useRef(new Animated.Value(1)).current;
+    const [pressScale] = useState(() => new Animated.Value(1));
     const blue = p.isDark ? '#AFC2FF' : '#4767E8';
     const highlighted = like || selected;
     const filled = like && selected;
@@ -58,9 +58,9 @@ export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, o
     const [muted, setMuted] = useState(true);
     const [progress, setProgress] = useState(0);
     const [durationMs, setDurationMs] = useState(Number(item.duration) * 1000 || 0);
-    const [paused, setPaused] = useState(false);
     const [analysisOpen, setAnalysisOpen] = useState(false);
-    const likeScale = useRef(new Animated.Value(1)).current;
+    const paused = analysisOpen;
+    const [likeScale] = useState(() => new Animated.Value(1));
     const cardWidth = Math.min((containerWidth || windowWidth) - 36, 680);
     const mediaHeight = Math.round(cardWidth * 9 / 16);
     const router = useRouter();
@@ -125,7 +125,11 @@ export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, o
                             {!!metadata && <Text numberOfLines={1} style={[s.metadata, { color: p.faint, fontFamily: p.fonts.regular }]}>{metadata}</Text>}
                         </View>
                     </Pressable>
-                    <Pressable onPress={onMore} accessibilityRole="button" accessibilityLabel="More video options" style={s.more} hitSlop={4}><Ionicons name="ellipsis-horizontal" size={20} color={p.sub} /></Pressable>
+                    <View style={s.authorActions}>
+                        <LiveAnalysisButton dark={p.isDark} active={isActive && focused && !analysisOpen}
+                            onOpen={() => setAnalysisOpen(true)} />
+                        <Pressable onPress={onMore} accessibilityRole="button" accessibilityLabel="More video options" style={s.more} hitSlop={4}><Ionicons name="ellipsis-horizontal" size={20} color={p.sub} /></Pressable>
+                    </View>
                 </View>
                 {hasVotes && <View style={s.balance}>
                     <View style={s.balanceLabels}><Text style={[s.balanceText, { color: p.sub }]}>{forPercent}% for</Text><Text style={[s.balanceText, { color: p.faint }]}>{100 - forPercent}% against</Text></View>
@@ -135,10 +139,6 @@ export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, o
                     <FeedAction like count={item.likes} selected={item.isLiked} label="Like" onPress={like} scale={likeScale} />
                     <FeedAction icon="chatbubble-ellipses-outline" count={item.comments} label="Comment" onPress={onComment} />
                     <FeedAction icon={item.isSaved ? 'bookmark' : 'bookmark-outline'} selected={item.isSaved} label={item.isSaved ? 'Saved' : 'Save'} onPress={onSave} />
-                </View>
-                <View style={{ paddingTop: 12 }}>
-                    <LiveAnalysisStrip videoId={item.id} active={isActive && focused && !analysisOpen} seconds={Math.floor(progress * durationMs / 1000)}
-                        onOpen={() => { setPaused(true); setAnalysisOpen(true); }} />
                 </View>
             </View>
         </View>
@@ -169,6 +169,7 @@ const s = StyleSheet.create({
     author: { flexDirection: 'row', alignItems: 'center', gap: 7, flex: 1, minHeight: 40 },
     name: { fontSize: 12 },
     metadata: { fontSize: 10, marginTop: 1 },
+    authorActions: { flexDirection: 'row', alignItems: 'center' },
     more: { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },
     actions: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3 },
     actionShell: { height: 44, justifyContent: 'center', flexShrink: 1, minWidth: 0 },
