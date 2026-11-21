@@ -1,6 +1,7 @@
 /** @jsxImportSource react */
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Animated, Easing, FlatList, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -37,6 +38,9 @@ export function DeepDiveModal({ visible, video, onClose, seconds = 0, onSeek }: 
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { width } = useWindowDimensions();
+    const reducedMotion = useReducedMotion();
+    const [reveal] = useState(() => new Animated.Value(0));
+    const [presented, setPresented] = useState(visible);
     const [tab, setTab] = useState<Tab>('understand');
     const [analysis, setAnalysis] = useState<ClipAnalysis | null>(null);
     const [loading, setLoading] = useState(false);
@@ -52,6 +56,17 @@ export function DeepDiveModal({ visible, video, onClose, seconds = 0, onSeek }: 
     const generation = useRef(0);
     const list = useRef<FlatList>(null);
     const busy = useRef(false);
+
+    useEffect(() => {
+        // Keep the native modal mounted until its exit animation finishes.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (visible) setPresented(true);
+        const animation = visible && !reducedMotion
+            ? Animated.spring(reveal, { toValue: 1, damping: 26, stiffness: 230, mass: 0.9, overshootClamping: true, useNativeDriver: true })
+            : Animated.timing(reveal, { toValue: visible ? 1 : 0, duration: reducedMotion ? 0 : 180, easing: Easing.out(Easing.cubic), useNativeDriver: true });
+        animation.start(({ finished }) => { if (finished && !visible) setPresented(false); });
+        return () => animation.stop();
+    }, [visible, reducedMotion, reveal]);
 
     useEffect(() => {
         const current = ++generation.current;
@@ -89,11 +104,20 @@ export function DeepDiveModal({ visible, video, onClose, seconds = 0, onSeek }: 
         </Pressable>
     );
     return (
-        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+        <Modal visible={presented} transparent animationType="none" onRequestClose={onClose}>
             <View style={styles.backdrop}>
-                <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close Orvelis" />
+                <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.dimmer, { opacity: reveal }]} />
+                <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close Orvelis" />
+                <Animated.View accessibilityViewIsModal pointerEvents={visible ? 'auto' : 'none'} style={[styles.sheet, {
+                    width: Math.min(width, 680), marginTop: Math.max(insets.top, 28), opacity: reveal,
+                    transform: reducedMotion ? [] : [
+                        { translateY: reveal.interpolate({ inputRange: [0, 1], outputRange: [48, 0] }) },
+                        { scale: reveal.interpolate({ inputRange: [0, 1], outputRange: [0.985, 1] }) },
+                    ],
+                }]}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                    style={[styles.sheet, { width: Math.min(width, 680), paddingBottom: insets.bottom, marginTop: Math.max(insets.top, 28) }]}>
+                    style={{ flex: 1, paddingBottom: insets.bottom }}>
+                    <View style={styles.handle} />
                     <View style={styles.header}>
                         <View style={styles.mark}><OrvelisMark size={25} color="#587EB5" /></View>
                         <View style={{ flex: 1, gap: 3 }}><Text style={styles.brand}>Orvelis</Text><Text style={styles.caption} numberOfLines={1}>{video?.title || 'Explore this video'}</Text></View>
@@ -167,12 +191,15 @@ export function DeepDiveModal({ visible, video, onClose, seconds = 0, onSeek }: 
                         </>}
                     </ScrollView>}
                 </KeyboardAvoidingView>
+                </Animated.View>
             </View>
         </Modal>
     );
 }
 const styles = StyleSheet.create({
-    backdrop: { flex: 1, backgroundColor: 'rgba(14,24,40,0.42)', justifyContent: 'flex-end', alignItems: 'center' },
+    backdrop: { flex: 1, justifyContent: 'flex-end', alignItems: 'center' },
+    dimmer: { backgroundColor: 'rgba(14,24,40,0.48)' },
+    handle: { width: 32, height: 3, borderRadius: 2, backgroundColor: '#D4DFEE', alignSelf: 'center', marginTop: 10 },
     sheet: { height: '90%', maxHeight: 900, backgroundColor: '#FCFDFF', borderTopLeftRadius: 26, borderTopRightRadius: 26, overflow: 'hidden' },
     header: { flexDirection: 'row', alignItems: 'center', padding: 20, gap: 12 }, mark: { padding: 9, borderRadius: 16, backgroundColor: '#EAF0FC' },
     brand: { fontSize: 22, color: '#18283F', fontWeight: '700', letterSpacing: -0.6 }, caption: { fontSize: 11, lineHeight: 16, color: '#67788F' },

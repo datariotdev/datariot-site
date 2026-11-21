@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useIsFocused } from 'expo-router';
 import { usePalette } from '../../design-system/palette';
 import { Avatar } from '../UI/Avatar';
-import { LiveAnalysisStrip } from './LiveAnalysisStrip';
+import { LiveNotesButton } from './LiveNotesButton';
 import { DeepDiveModal } from './DeepDiveModal';
 import { PosterArt } from '../UI/PosterArt';
 import { FeedVideo, realThumb, formatNumber, formatClock, ago } from './feedMedia';
@@ -125,6 +125,7 @@ export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, o
                             {!!metadata && <Text numberOfLines={1} style={[s.metadata, { color: p.faint, fontFamily: p.fonts.regular }]}>{metadata}</Text>}
                         </View>
                     </Pressable>
+                    <LiveNotesButton dark={p.isDark} onPress={() => { setPaused(true); setAnalysisOpen(true); }} />
                     <Pressable onPress={onMore} accessibilityRole="button" accessibilityLabel="More video options" style={s.more} hitSlop={4}><Ionicons name="ellipsis-horizontal" size={20} color={p.sub} /></Pressable>
                 </View>
                 {hasVotes && <View style={s.balance}>
@@ -136,13 +137,9 @@ export const CoubClassicItem = memo(function CoubClassicItem({ item, isActive, o
                     <FeedAction icon="chatbubble-ellipses-outline" count={item.comments} label="Comment" onPress={onComment} />
                     <FeedAction icon={item.isSaved ? 'bookmark' : 'bookmark-outline'} selected={item.isSaved} label={item.isSaved ? 'Saved' : 'Save'} onPress={onSave} />
                 </View>
-                <View style={{ paddingTop: 12 }}>
-                    <LiveAnalysisStrip videoId={item.id} active={isActive && focused && !analysisOpen} seconds={Math.floor(progress * durationMs / 1000)}
-                        onOpen={() => { setPaused(true); setAnalysisOpen(true); }} />
-                </View>
             </View>
         </View>
-        <DeepDiveModal visible={analysisOpen} video={item} seconds={Math.floor(progress * durationMs / 1000)} onClose={() => setAnalysisOpen(false)} />
+        <DeepDiveModal visible={analysisOpen} video={item} seconds={Math.floor(progress * durationMs / 1000)} onClose={() => { setAnalysisOpen(false); setPaused(false); }} />
     </View>;
 });
 

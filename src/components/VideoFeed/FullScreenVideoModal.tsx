@@ -22,7 +22,7 @@ import { encodeVideoUrl } from '../../lib/utils/url';
 import { VideoControls } from '../VideoPlayer/VideoControls';
 import { CommentsModal } from './CommentsModal';
 import { DeepDiveModal } from './DeepDiveModal';
-import { LiveAnalysisStrip } from './LiveAnalysisStrip';
+import { LiveNotesButton } from './LiveNotesButton';
 import { MoreOptionsModal } from './MoreOptionsModal';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import type { FeedType, Video as FeedVideo } from '../../lib/supabase/hooks/useVideos';
@@ -193,8 +193,7 @@ function FullScreenVideoItem({
             </View>
 
             {!clearDisplay && <VideoControls
-                companion={<LiveAnalysisStrip videoId={item.id} active={isActive} seconds={Math.floor(currentTime / 1000)} compact
-                    onOpen={() => onOrvelis(Math.floor(currentTime / 1000))} />}
+                orvelisAction={<LiveNotesButton overlay onPress={() => onOrvelis(Math.floor(currentTime / 1000))} />}
                 attribution={(
                     <Pressable
                         accessibilityRole="button"
