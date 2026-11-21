@@ -56,7 +56,7 @@ export function AppNavigationIcon({
                 />
             );
         case 'ai':
-            return <OrvelisMark size={size} color={ink} />;
+            return <OrvelisMark size={size} color={ink} coreColor={mode === 'dark' ? '#A5CBF7' : '#487BAE'} />;
         case 'inbox':
             return (
                 <Ionicons

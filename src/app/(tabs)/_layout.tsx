@@ -172,7 +172,7 @@ const TabLayout = () => {
                                 onPress={(event) => {
                                     orvelisPress.value = 0;
                                     orvelisPress.value = withTiming(1, {
-                                        duration: 440,
+                                        duration: 760,
                                         easing: Easing.linear,
                                         reduceMotion: ReduceMotion.System,
                                     });

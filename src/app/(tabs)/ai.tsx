@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, StyleSheet, ActivityIndicator, Keyboard, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
+import Animated, { cancelAnimation, Easing, interpolate, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { OrvelisMark } from '../../components/UI/OrvelisMark';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { chatWithAI } from '../../lib/ai/client';
 
@@ -18,10 +21,11 @@ const STARTERS = [
 export default function AIScreen() {
   const { mode } = useTheme();
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const input = useRef<React.ElementRef<typeof TextInput>>(null);
   const [inputFocused, setInputFocused] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const compactWelcome = keyboardOpen || height < 650;
   const dark = mode === 'dark';
   const bg = dark ? '#101318' : '#FAFBFD';
   const ink = dark ? '#F2F5FA' : '#17202B';
@@ -37,6 +41,22 @@ export default function AIScreen() {
   const isWelcome = !showHistory && messages.length === 0;
   const list = useRef<FlatList<Message>>(null);
   const busy = useRef(false);
+  const arrival = useSharedValue(1);
+
+  useFocusEffect(useCallback(() => {
+    arrival.set(0);
+    arrival.set(withTiming(1, { duration: 720, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System }));
+    return () => cancelAnimation(arrival);
+  }, [arrival]));
+
+  const welcomeMotion = useAnimatedStyle(() => ({
+    opacity: interpolate(arrival.value, [0, .45, 1], [0, 1, 1]),
+    transform: [{ translateY: interpolate(arrival.value, [0, 1], [18, 0]) }],
+  }));
+  const composerMotion = useAnimatedStyle(() => ({
+    opacity: interpolate(arrival.value, [0, .2, 1], [.4, .65, 1]),
+    transform: [{ translateY: interpolate(arrival.value, [0, 1], [24, 0]) }],
+  }));
 
   useEffect(() => {
     const showSub = Keyboard.addListener(
@@ -92,16 +112,17 @@ export default function AIScreen() {
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <View style={styles.header}>
           <View style={styles.brand}>
-            <View style={[styles.brandIcon, { backgroundColor: dark ? '#D9E4FF' : '#141D2A' }]}>
-              <Ionicons name="sparkles" size={17} color={dark ? '#142033' : '#E7F0FF'} />
+            <OrvelisMark size={29} color={ink} coreColor={ICE} />
+            <View>
+              <Text style={[styles.brandName, { color: ink }]}>orvelis</Text>
+              <Text style={[styles.brandCaption, { color: muted }]}>A curious anomaly.</Text>
             </View>
-            <Text style={[styles.brandName, { color: ink }]}>orvelis</Text>
           </View>
           <View style={styles.actions}>
-            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Chat history" onPress={() => setShowHistory(v => !v)} style={[styles.roundButton, { backgroundColor: surface, borderColor: border }]}>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Chat history" accessibilityState={{ disabled: loading, selected: showHistory }} disabled={loading} onPress={() => setShowHistory(v => !v)} style={[styles.roundButton, { backgroundColor: showHistory ? (dark ? '#263447' : '#EDF3FA') : surface, borderColor: border, opacity: loading ? .45 : 1 }]}>
               <Feather name="clock" size={19} color={ink} />
             </TouchableOpacity>
-            <TouchableOpacity accessibilityRole="button" accessibilityLabel="New chat" onPress={newChat} style={[styles.roundButton, { backgroundColor: surface, borderColor: border }]}>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel="New chat" accessibilityState={{ disabled: loading }} disabled={loading} onPress={newChat} style={[styles.roundButton, { backgroundColor: surface, borderColor: border, opacity: loading ? .45 : 1 }]}>
               <Feather name="edit" size={19} color={ink} />
             </TouchableOpacity>
           </View>
@@ -126,23 +147,30 @@ export default function AIScreen() {
               )}
             />
           ) : isWelcome ? (
-            <View style={[styles.welcomeHead, keyboardOpen && styles.welcomeHeadCompact]}>
-              <Text accessibilityRole="header" style={[styles.welcomeTitle, { color: ink }]}>Ask Orvelis</Text>
-            </View>
+            <Animated.View style={[styles.welcomeHead, compactWelcome && styles.welcomeHeadCompact, welcomeMotion]}>
+              {!compactWelcome && <View accessible={false} style={styles.heroArt}>
+                <View style={[styles.heroTrace, { borderColor: dark ? '#354253' : '#E0E6EF' }]} />
+                <View style={[styles.heroCoordinate, { backgroundColor: ICE }]} />
+                <OrvelisMark size={94} color={ink} coreColor={ICE} pressProgress={arrival} />
+              </View>}
+              <Text style={[styles.eyebrow, { color: muted }]}>ORVELIS / FOLLOW THE ANOMALY</Text>
+              <Text accessibilityRole="header" style={[styles.welcomeTitle, { color: ink, fontSize: width < 360 ? 32 : 38 }]}>A thought got loose.</Text>
+              {!keyboardOpen && <Text style={[styles.welcomeSubtitle, { color: muted }]}>Let’s see where it goes.</Text>}
+            </Animated.View>
           ) : (
             <FlatList ref={list} style={styles.body} data={messages} keyExtractor={m => m.id} contentContainerStyle={styles.chatList}
               onContentSizeChange={() => list.current?.scrollToEnd({ animated: true })}
               renderItem={({ item }) => (
                 <View style={[styles.message, item.role === 'user' ? { alignSelf: 'flex-end', backgroundColor: dark ? '#263447' : '#EDF3FA', borderRadius: 18, padding: 13, maxWidth: '87%' } : { alignSelf: 'stretch' }]}>
-                  {item.role === 'assistant' && <Text style={{ color: ICE, fontSize: 11, fontWeight: '700', marginBottom: 7 }}>ORVELIS</Text>}
+                  {item.role === 'assistant' && <View style={styles.assistantLabel}><OrvelisMark size={18} color={ICE} /><Text style={{ color: muted, fontSize: 11, fontWeight: '600', letterSpacing: 1 }}>ORVELIS</Text></View>}
                   <Text selectable style={{ color: ink, fontSize: 14, lineHeight: 22 }}>{item.content}</Text>
                 </View>
               )}
-              ListFooterComponent={loading ? <ActivityIndicator color={ICE} style={{ alignSelf: 'flex-start', margin: 20 }} /> : undefined}
+              ListFooterComponent={loading ? <View accessibilityRole="progressbar" accessibilityLabel="Orvelis is thinking" style={styles.thinking}><ActivityIndicator size="small" color={ICE} /><Text style={{ color: muted, fontSize: 12 }}>{deepThink ? 'Looking a little deeper…' : 'Thinking it through…'}</Text></View> : undefined}
             />
           )}
 
-          <View style={[styles.composer, { backgroundColor: surface, borderColor: inputFocused ? ICE : border, shadowOpacity: inputFocused ? 0.14 : 0.06 }]}>
+          <Animated.View style={[styles.composer, { backgroundColor: surface, borderColor: inputFocused ? ICE : border, shadowOpacity: inputFocused ? 0.14 : 0.06 }, composerMotion]}>
             <TextInput ref={input} accessibilityLabel="Message Orvelis" onFocus={() => setInputFocused(true)} onBlur={() => setInputFocused(false)} multiline value={draft} onChangeText={setDraft} placeholder="Ask Orvelis anything..." placeholderTextColor={muted}
               style={[styles.input, { color: ink }]} textAlignVertical="top" />
             <View style={styles.composerActions}>
@@ -154,7 +182,7 @@ export default function AIScreen() {
                 <Feather name="arrow-up" size={19} color={draft.trim() ? '#FFFFFF' : muted} />
               </TouchableOpacity>
             </View>
-          </View>
+          </Animated.View>
           {isWelcome && (
             <View style={styles.welcomeFoot}>
               {!keyboardOpen && (
@@ -178,15 +206,22 @@ export default function AIScreen() {
 const styles = StyleSheet.create({
   header: { height: 76, paddingHorizontal: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 11 },
-  brandIcon: { width: 43, height: 43, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
-  brandName: { fontSize: 23, fontWeight: '700', letterSpacing: -1 },
+  brandName: { fontSize: 23, fontFamily: 'Outfit_500Medium', letterSpacing: -.8 },
+  brandCaption: { fontSize: 10, letterSpacing: .2, marginTop: 1 },
   actions: { flexDirection: 'row', gap: 9 },
   roundButton: { width: 41, height: 41, borderRadius: 21, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1, minHeight: 0 },
-  welcomeHead: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 19, paddingHorizontal: 16 },
-  welcomeHeadCompact: { paddingBottom: 10 },
-  welcomeTitle: { textAlign: 'center', fontFamily: 'Outfit_500Medium', fontSize: 44, letterSpacing: -2.2 },
-  welcomeFoot: { flex: 1.15 },
+  welcomeHead: { flex: 1.35, minHeight: 260, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 27, paddingHorizontal: 16 },
+  welcomeHeadCompact: { minHeight: 100, paddingBottom: 16 },
+  heroArt: { width: 156, height: 140, alignItems: 'center', justifyContent: 'center', marginBottom: 13 },
+  heroTrace: { position: 'absolute', width: 134, height: 113, borderWidth: 1, borderRadius: 46, transform: [{ rotate: '23deg' }] },
+  heroCoordinate: { position: 'absolute', width: 3, height: 3, borderRadius: 1.5, left: 12, bottom: 17 },
+  eyebrow: { fontSize: 9, fontFamily: 'Inter_500Medium', letterSpacing: 2, marginBottom: 10 },
+  welcomeTitle: { textAlign: 'center', fontFamily: 'Outfit_500Medium', letterSpacing: -1.8 },
+  welcomeSubtitle: { fontSize: 12, lineHeight: 19, textAlign: 'center', marginTop: 10, paddingHorizontal: 8 },
+  welcomeFoot: { flex: 1 },
+  assistantLabel: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 10 },
+  thinking: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 16 },
   starters: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 8, paddingTop: 13, paddingHorizontal: 14 },
   starter: { minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 7, borderWidth: 1, borderRadius: 20, paddingHorizontal: 12 },
   starterLabel: { fontSize: 12, fontFamily: 'Inter_500Medium' },
