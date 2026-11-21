@@ -1,0 +1,64 @@
+name: Build Datariot Android APK
+
+on:
+  push:
+    branches: [build/android-navigation-apk]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      APK_NAME: Datariot-Android-1.0.0-2.apk
+      RELEASE_TAG: android-v1.0.0-2
+      APP_COMMIT: c9d79e741f6b355350379695793301c1cbe30906
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: c9d79e741f6b355350379695793301c1cbe30906
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Generate the native project
+        env:
+          EXPO_NO_TELEMETRY: '1'
+        run: |
+          cp android/app/debug.keystore "$RUNNER_TEMP/datariot-debug.keystore"
+          node <<'NODE'
+          const fs = require('node:fs');
+          const config = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+          config.expo.android.package = 'com.orvelis.app';
+          config.expo.android.versionCode = 2;
+          fs.writeFileSync('app.json', JSON.stringify(config));
+          NODE
+          npx --no-install expo prebuild --platform android --clean --no-install
+          cp "$RUNNER_TEMP/datariot-debug.keystore" android/app/debug.keystore
+      - name: Install Android SDK components
+        run: |
+          sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          (set +o pipefail; yes | "$sdkmanager" --licenses >/dev/null)
+          "$sdkmanager" "platforms;android-37.0" "build-tools;37.0.0" "ndk;27.1.12297006" "cmake;3.22.1"
+      - name: Build and verify the APK
+        run: |
+          (cd android && ./gradlew --no-daemon --max-workers=2 -PreactNativeArchitectures=arm64-v8a :app:assembleRelease)
+          cp android/app/build/outputs/apk/release/app-release.apk "$APK_NAME"
+          "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs "$APK_NAME"
+          "$ANDROID_HOME/build-tools/37.0.0/aapt2" dump packagename "$APK_NAME" | grep -Fx com.orvelis.app
+          unzip -Z1 "$APK_NAME" | grep -Fx assets/index.android.bundle
+      - name: Publish the Android preview release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$RELEASE_TAG" "$APK_NAME" --target "$APP_COMMIT" --prerelease \
+            --title "Datariot Android preview 1.0.0 (2)" \
+            --notes "Restores the previous five navigation icons and includes the mobile Feed dark-theme fix. ARM64 Android preview signed with the repository's existing preview key."
