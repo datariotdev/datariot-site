@@ -7,7 +7,7 @@ import { theme } from '@design-system/theme';
 
 interface VideoControlsProps {
     attribution: ReactNode;
-    companion?: ReactNode;
+    orvelisAction?: ReactNode;
     bottomPadding: number;
     title: string;
     hashtag?: string;
@@ -34,7 +34,7 @@ function formatTime(millis: number) {
 const countFormat = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
 
 export function VideoControls({
-    attribution, companion, bottomPadding, title, hashtag, currentTime, duration, onSeek, likes, comments, saved,
+    attribution, orvelisAction, bottomPadding, title, hashtag, currentTime, duration, onSeek, likes, comments, saved,
     isLiked, isSaved, onLike, onComment, onSave, onComposeComment, onMore,
 }: VideoControlsProps) {
     const [expanded, setExpanded] = useState(false);
@@ -54,7 +54,6 @@ export function VideoControls({
                     pointerEvents="none"
                 />
                 <View pointerEvents="box-none" style={styles.details}>
-                    {companion}
                     {attribution}
                     <Pressable
                         accessibilityRole={hasLongCaption ? 'button' : undefined}
@@ -93,6 +92,7 @@ export function VideoControls({
                             <Ionicons name="ellipsis-horizontal" size={23} color="#FFF" />
                             <Text style={styles.actionLabel}>More</Text>
                         </Pressable>
+                        {orvelisAction}
                         <Pressable accessibilityRole="button" accessibilityLabel="Add a comment" onPress={onComposeComment} style={styles.commentBar}>
                             <Text numberOfLines={1} style={styles.placeholder}>Add a comment…</Text>
                             <View style={styles.sendIcon}>
