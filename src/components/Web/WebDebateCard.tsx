@@ -20,11 +20,10 @@ export function WebDebateCard({ item }: { item: Post }) {
     return (
         <Link href={{ pathname: '/debate/[id]', params: { id: item.id } }} asChild>
             <Pressable accessibilityRole="link" onHoverIn={() => setHovered(true)} onHoverOut={() => setHovered(false)}
-                style={({ pressed }) => [styles.card, {
+                style={StyleSheet.flatten([styles.card, {
                     backgroundColor: p.card,
                     borderColor: hovered ? emphasis : p.border,
-                    opacity: pressed ? 0.82 : 1,
-                }]}>
+                }])}>
                 <View style={styles.content}>
                     <View style={styles.titleRow}>
                         {item.imageUrl && (
@@ -43,24 +42,24 @@ export function WebDebateCard({ item }: { item: Post }) {
 
                     <View style={styles.metadata}>
                         <View style={styles.detail}>
-                            <Feather name="message-circle" size={14} color={accent} />
+                            <Feather aria-hidden name="message-circle" size={14} color={accent} />
                             <Text style={[styles.meta, { color: p.sub }]}>
                                 {item.comments} {item.comments === 1 ? 'argument' : 'arguments'}
                             </Text>
                         </View>
                         <View style={styles.detail}>
-                            <Feather name="thumbs-up" size={14} color={accent} />
+                            <Feather aria-hidden name="thumbs-up" size={14} color={accent} />
                             <Text style={[styles.meta, { color: p.sub }]}>{item.likes} reputation</Text>
                         </View>
                         {item.videoUrl && (
                             <View style={styles.detail}>
-                                <Feather name="video" size={14} color={accent} />
+                                <Feather aria-hidden name="video" size={14} color={accent} />
                                 <Text style={[styles.meta, { color: p.sub }]}>Video attached</Text>
                             </View>
                         )}
                         {item.isAiAssisted && (
                             <View style={styles.detail}>
-                                <Feather name="zap" size={14} color={accent} />
+                                <Feather aria-hidden name="zap" size={14} color={accent} />
                                 <Text style={[styles.meta, { color: p.sub }]}>AI-assisted</Text>
                             </View>
                         )}
@@ -86,14 +85,14 @@ export function WebDebateCard({ item }: { item: Post }) {
                         </>
                     ) : (
                         <View style={styles.emptyVotes}>
-                            <Feather name="bar-chart-2" size={16} color={accent} />
+                            <Feather aria-hidden name="bar-chart-2" size={16} color={accent} />
                             <Text style={[styles.meta, { color: p.sub }]}>No votes yet</Text>
                         </View>
                     )}
                 </View>
 
                 <View style={[styles.arrow, { backgroundColor: hovered ? highlight : panel }]}>
-                    <Feather name="arrow-up-right" size={19} color={accent} />
+                    <Feather aria-hidden name="arrow-up-right" size={19} color={accent} />
                 </View>
             </Pressable>
         </Link>
