@@ -113,7 +113,8 @@ function FeedCard({ entry, onPress, grid, columns, desktop }: {
 }
 
 export function CuratedFeedIntro({ desktop = false }: { desktop?: boolean }) {
-    const { theme } = useTheme();
+    const { theme, mode } = useTheme();
+    const dark = mode === 'dark';
 
     return (
         <View style={[styles.heading, desktop ? styles.webIntro : styles.mobileIntro]}>
@@ -125,7 +126,18 @@ export function CuratedFeedIntro({ desktop = false }: { desktop?: boolean }) {
                 How things work. Why people disagree.
             </Text>
             <View style={[styles.editorialNote, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.surface.border }]}>
-                <Ionicons name="bulb-outline" size={18} color={theme.colors.text.primary} />
+                {desktop ? (
+                    <Ionicons name="bulb-outline" size={18} color={theme.colors.text.primary} />
+                ) : (
+                    <LinearGradient
+                        colors={dark ? ['#263F5D', '#152437'] : ['#F5FAFF', '#DDEAF9']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.noteMark, { borderColor: dark ? '#3A5575' : '#BDCFE6' }]}
+                    >
+                        <OrvelisMark size={20} color={dark ? '#D4E6FF' : '#304E75'} coreColor={dark ? '#8DBDF4' : '#487BAE'} />
+                    </LinearGradient>
+                )}
                 <View style={desktop ? styles.webNoteCopy : styles.mobileNoteCopy}>
                     <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>What did the clip leave out?</Text>
                     <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Ask Orvelis AI for context or a second take.</Text>
@@ -296,6 +308,7 @@ const styles = StyleSheet.create({
     webIntroTitle: { fontSize: 17, lineHeight: 21, letterSpacing: -0.25 },
     headingSubtitle: { fontSize: 12, lineHeight: 16 },
     editorialNote: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 8, marginTop: 2 },
+    noteMark: { width: 28, height: 28, borderRadius: 9, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
     webNoteCopy: { flexShrink: 1 },
     mobileNoteCopy: { flex: 1 },
     noteTitle: { fontSize: 12, lineHeight: 16, fontWeight: '700' },
