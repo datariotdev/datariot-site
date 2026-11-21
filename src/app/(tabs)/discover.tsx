@@ -12,6 +12,7 @@ import { DebateSwitcher } from '@components/Discovery/DebateSwitcher';
 import type { DebateTab } from '@components/Discovery/DebateSwitcher';
 import { UserSearchResults } from '@components/Discovery/UserSearchResults';
 import { SafeAreaView } from '@components/UI/SafeAreaView';
+import { WebDebateCard } from '@components/Web/WebDebateCard';
 import { usePalette } from '@design-system/palette';
 import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { usePosts } from '@lib/supabase/hooks/usePosts';
@@ -244,7 +245,8 @@ export default function DiscoverScreen() {
             {!!query && <UserSearchResults {...userSearch} onRetry={userSearch.retry} />}
 
             {!isTagSearch && (
-                <View onLayout={event => { debateOffset.current = event.nativeEvent.layout.y; }} style={styles.debateHeader}>
+                <View onLayout={event => { debateOffset.current = event.nativeEvent.layout.y; }}
+                    style={[styles.debateHeader, desktop && styles.debateHeaderDesktop]}>
                     {topic && (
                         <Pressable accessibilityRole="button" onPress={() => setTopic(null)}
                             style={({ pressed }) => [styles.back, pressed && styles.pressed]}>
@@ -252,10 +254,13 @@ export default function DiscoverScreen() {
                             <Text style={[styles.rowTitle, { color: accent }]}>All topics</Text>
                         </Pressable>
                     )}
-                    <Text accessibilityRole="header" style={[styles.sectionTitle, { color: p.text }]}>
-                        {topic?.title ?? (query ? 'Debate results' : 'Active debates')}
-                    </Text>
-                    {browsing && <DebateSwitcher activeTab={activeTab} onTabChange={setActiveTab} />}
+                    <View style={desktop ? [styles.debateToolbar, { borderColor: line }] : styles.debateToolbarMobile}>
+                        <Text accessibilityRole="header" aria-level={desktop ? 2 : undefined}
+                            style={[styles.sectionTitle, desktop && styles.debateTitleDesktop, { color: p.text }]}>
+                            {topic?.title ?? (query ? 'Debate results' : desktop ? 'Debates' : 'Active debates')}
+                        </Text>
+                        {browsing && <DebateSwitcher activeTab={activeTab} onTabChange={setActiveTab} desktop={desktop} />}
+                    </View>
                 </View>
             )}
         </View>
@@ -300,7 +305,7 @@ export default function DiscoverScreen() {
                 ref={list}
                 data={visiblePosts}
                 keyExtractor={item => item.id}
-                renderItem={({ item }) => (
+                renderItem={({ item }) => desktop ? <WebDebateCard item={item} /> : (
                     <DebateCard item={item}
                         onPress={() => router.push({ pathname: '/debate/[id]', params: { id: item.id } })} />
                 )}
@@ -377,6 +382,11 @@ const styles = StyleSheet.create({
     avatarInitial: { fontFamily: 'Outfit_600SemiBold', fontSize: 18 },
     follow: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 13 },
     debateHeader: { marginHorizontal: 16, paddingTop: 24, paddingBottom: 14, gap: 10 },
+    debateHeaderDesktop: { paddingTop: 28, paddingBottom: 12 },
+    debateToolbarMobile: { gap: 10 },
+    debateToolbar: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between',
+        gap: 12, borderTopWidth: 1, paddingTop: 13 },
+    debateTitleDesktop: { fontSize: 30, lineHeight: 36, letterSpacing: -0.9 },
     back: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, minHeight: 40 },
     empty: { alignItems: 'center', marginHorizontal: 16, paddingVertical: 26, paddingHorizontal: 12, borderWidth: 1, borderRadius: 17 },
     pressed: { opacity: 0.75 },
