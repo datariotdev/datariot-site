@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, StyleSheet, ActivityIndicator, Keyboard, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import Animated, { cancelAnimation, Easing, interpolate, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { OrvelisMark } from '../../components/UI/OrvelisMark';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { chatWithAI } from '../../lib/ai/client';
+import { FEATURED_PROMPT } from '../../lib/ai/featuredPrompt';
 
 type Message = { id: string; role: 'user' | 'assistant'; content: string };
 let counter = 0;
@@ -19,6 +20,8 @@ const STARTERS = [
 ] as const;
 
 export default function AIScreen() {
+  const router = useRouter();
+  const { starter } = useLocalSearchParams<{ starter?: string }>();
   const { mode } = useTheme();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
@@ -48,6 +51,14 @@ export default function AIScreen() {
     arrival.set(withTiming(1, { duration: 720, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System }));
     return () => cancelAnimation(arrival);
   }, [arrival]));
+
+  useFocusEffect(useCallback(() => {
+    if (starter !== FEATURED_PROMPT.id) return;
+    setDraft(FEATURED_PROMPT.question);
+    setShowHistory(false);
+    router.setParams({ starter: undefined });
+    input.current?.focus();
+  }, [router, starter]));
 
   const welcomeMotion = useAnimatedStyle(() => ({
     opacity: interpolate(arrival.value, [0, .45, 1], [0, 1, 1]),

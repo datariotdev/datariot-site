@@ -5,7 +5,6 @@ import {
     StyleSheet, Text, TextInput, View, useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
 import { DebateCard } from '@components/Debate/DebateCard';
 import { DebateSwitcher } from '@components/Discovery/DebateSwitcher';
@@ -71,6 +70,17 @@ export default function DiscoverScreen() {
     const { user } = useAuth();
     const { posts, loading: loadingPosts, refresh: refreshPosts } = usePosts();
     const { users: creators, toggleFollowUser } = useRecommendedUsers();
+    let featured: Post | undefined;
+    let featuredScore = -1;
+    for (const post of posts) {
+        const stats = post.logicStats;
+        const score = stats ? stats.forScore + stats.againstScore : 0;
+        const length = post.content.trim().length;
+        if (length >= 24 && length <= 155 && score > featuredScore) {
+            featured = post;
+            featuredScore = score;
+        }
+    }
 
     const query = searchQuery.trim();
     const isTagSearch = query.startsWith('@');
@@ -138,27 +148,43 @@ export default function DiscoverScreen() {
                     </Pressable>
                     <View style={[styles.spotlight, wide && styles.spotlightWide]}>
                         <View style={[styles.hero, wide && styles.heroWide]}>
-                            <Image accessible={false} source={require('../../../assets/discover-orbit.jpg')}
-                                style={styles.coverImage} resizeMode="cover" />
-                            <LinearGradient
-                                colors={['rgba(5, 13, 28, 0.99)', 'rgba(5, 13, 28, 0.80)', 'rgba(5, 13, 28, 0.04)']}
-                                locations={wide ? [0, 0.36, 0.86] : [0, 0.38, 1]}
-                                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                                style={StyleSheet.absoluteFill}
-                            />
-                            <View style={[styles.heroCopy, wide && styles.heroCopyWide]}>
-                                <Text accessibilityRole="header"
-                                    style={[styles.heroTitle, wide && styles.heroTitleWide]}>
-                                    Find your next{'\n'}<Text style={styles.heroAccent}>rabbit hole.</Text>
-                                </Text>
-                                <Text style={styles.heroNote}>Big questions worth debating.</Text>
-                                <Pressable accessibilityRole="button"
+                            <View style={styles.heroTop}>
+                                {featured && <Text style={styles.heroLabel}>Featured debate</Text>}
+                                <Pressable accessibilityRole="button" style={styles.heroBrowse}
                                     onPress={() => list.current?.scrollToOffset({ offset: debateOffset.current, animated: true })}
-                                    style={({ pressed }) => [styles.heroAction, pressed && styles.pressed]}>
-                                    <Text style={styles.heroActionLabel}>Browse debates</Text>
-                                    <Ionicons name="arrow-down" size={15} color="#132A43" />
+                                >
+                                    <Text style={styles.heroBrowseLabel}>Browse debates</Text>
+                                    <Ionicons name="arrow-down" size={14} color="#BFD9F4" />
                                 </Pressable>
                             </View>
+                            <Text accessibilityRole="header" aria-level={2} numberOfLines={4}
+                                style={[styles.heroTitle, wide && styles.heroTitleWide]}>
+                                {featured?.content.trim() || 'What are people debating?'}
+                            </Text>
+                            {featured && (
+                                <View style={styles.heroFooter}>
+                                    <View style={styles.heroStats}>
+                                        {featuredScore > 0 && featured.logicStats ? (
+                                            <>
+                                                <View style={styles.heroSide}>
+                                                    <Text style={styles.heroFor}>{featured.logicStats.forScore}</Text>
+                                                    <Text style={styles.heroMeta}>For</Text>
+                                                </View>
+                                                <View style={styles.heroSide}>
+                                                    <Text style={styles.heroAgainst}>{featured.logicStats.againstScore}</Text>
+                                                    <Text style={styles.heroMeta}>Against</Text>
+                                                </View>
+                                            </>
+                                        ) : <Text style={styles.heroMeta}>No votes yet</Text>}
+                                    </View>
+                                    <Pressable accessibilityRole="button"
+                                        onPress={() => router.push({ pathname: '/debate/[id]', params: { id: featured.id } })}
+                                        style={({ pressed }) => [styles.heroAction, pressed && styles.pressed]}>
+                                        <Text style={styles.heroActionLabel}>Open debate</Text>
+                                        <Ionicons name="arrow-forward" size={15} color="#132A43" />
+                                    </Pressable>
+                                </View>
+                            )}
                         </View>
 
                         <View style={[styles.focus, wide && styles.focusWide, { backgroundColor: p.card, borderColor: line }]}>
@@ -340,16 +366,22 @@ const styles = StyleSheet.create({
     dashboard: { marginHorizontal: 16, gap: 26 },
     spotlight: { gap: 12 },
     spotlightWide: { flexDirection: 'row', alignItems: 'stretch', gap: 14 },
-    hero: { justifyContent: 'center', minHeight: 243, borderRadius: 24, overflow: 'hidden', backgroundColor: '#071120' },
-    heroWide: { flex: 2.2, minHeight: 280 },
+    hero: { minHeight: 216, justifyContent: 'space-between', gap: 16, padding: 18, borderRadius: 20, backgroundColor: '#111B29' },
+    heroWide: { flex: 2.2, minWidth: 0, minHeight: 258, paddingHorizontal: 24, paddingVertical: 19 },
     coverImage: { ...StyleSheet.absoluteFill, width: '100%', height: '100%' },
-    heroCopy: { alignItems: 'flex-start', paddingVertical: 26, paddingHorizontal: 22 },
-    heroCopyWide: { paddingHorizontal: 34, paddingVertical: 35 },
-    heroTitle: { fontFamily: 'Outfit_700Bold', fontSize: 36, lineHeight: 37, letterSpacing: -1.35, color: '#FFFFFF' },
-    heroTitleWide: { fontSize: 54, lineHeight: 52, letterSpacing: -2.2 },
-    heroAccent: { color: '#BFDAFA' },
-    heroNote: { color: '#D5E2F0', fontFamily: 'Inter_400Regular', fontSize: 13, lineHeight: 20, marginTop: 12 },
-    heroAction: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 13, paddingHorizontal: 14, minHeight: 44, marginTop: 20, backgroundColor: '#D8EAFE' },
+    heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+    heroLabel: { color: '#BFD9F4', fontFamily: 'Inter_600SemiBold', fontSize: 12, lineHeight: 17 },
+    heroBrowse: { marginLeft: 'auto', minHeight: 36, flexDirection: 'row', alignItems: 'center', gap: 7 },
+    heroBrowseLabel: { color: '#D7E4F2', fontFamily: 'Inter_500Medium', fontSize: 12 },
+    heroTitle: { fontFamily: 'Outfit_600SemiBold', fontSize: 29, lineHeight: 32, letterSpacing: -0.9, color: '#F5F8FC' },
+    heroTitleWide: { fontSize: 37, lineHeight: 39, letterSpacing: -1.35 },
+    heroFooter: { borderTopWidth: 1, borderTopColor: '#394959', paddingTop: 11, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+    heroStats: { flexDirection: 'row', alignItems: 'center', gap: 17 },
+    heroSide: { flexDirection: 'row', alignItems: 'baseline', gap: 5 },
+    heroFor: { color: '#AFD4FB', fontFamily: 'Outfit_600SemiBold', fontSize: 22 },
+    heroAgainst: { color: '#EDF3FF', fontFamily: 'Outfit_600SemiBold', fontSize: 22 },
+    heroMeta: { color: '#B7C6D7', fontFamily: 'Inter_500Medium', fontSize: 12 },
+    heroAction: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 10, paddingHorizontal: 12, minHeight: 40, backgroundColor: '#D5E6FA' },
     heroActionLabel: { color: '#132A43', fontFamily: 'Inter_600SemiBold', fontSize: 13 },
     focus: { borderRadius: 23, borderWidth: 1, paddingHorizontal: 16, paddingVertical: 13 },
     focusWide: { flex: 1, justifyContent: 'center', paddingHorizontal: 17, paddingVertical: 16 },
