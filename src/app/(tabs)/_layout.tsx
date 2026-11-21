@@ -2,14 +2,16 @@
 import React, { useEffect } from 'react';
 import { Tabs, usePathname } from 'expo-router';
 import { BottomTabBar } from 'expo-router/build/layouts/Tabs';
+import { PlatformPressable } from 'expo-router/react-navigation';
 import { setAudioModeAsync } from 'expo-audio';
+import { OrvelisMark } from '../../components/AI/OrvelisMark';
 import { AppNavigationIcon } from '../../components/Navigation/AppNavigationIcon';
 import { Platform, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ResponsiveLayout } from '../../components/Layout/ResponsiveLayout';
 import { useTheme } from '../../components/Theme/ThemeProvider';
 import { NavVisibilityProvider, useNavVisibility } from '../../context/NavVisibilityContext';
-import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing, ReduceMotion } from 'react-native-reanimated';
 import * as SystemUI from 'expo-system-ui';
 
 function AnimatedTabBar(props: any) {
@@ -66,6 +68,7 @@ const TabLayout = () => {
     const isDark = mode === 'dark';
     const background = theme.colors.background.primary;
     const isDesktopWeb = Platform.OS === 'web' && width > 768;
+    const orvelisPress = useSharedValue(1);
 
     useEffect(() => {
         if (Platform.OS === 'android') {
@@ -162,9 +165,27 @@ const TabLayout = () => {
                     options={{
                         title: 'Orvelis AI',
                         tabBarAccessibilityLabel: 'Orvelis AI',
+                        tabBarButton: (props) => (
+                            <PlatformPressable
+                                {...props}
+                                pressColor="transparent"
+                                onPress={(event) => {
+                                    orvelisPress.value = 0;
+                                    orvelisPress.value = withTiming(1, {
+                                        duration: 440,
+                                        easing: Easing.linear,
+                                        reduceMotion: ReduceMotion.System,
+                                    });
+                                    props.onPress?.(event);
+                                }}
+                            />
+                        ),
                         tabBarIcon: ({ focused }) => (
-                            <AppNavigationIcon name="ai" selected={focused}
-                                color={focused ? activeTabColor : inactiveTabColor} />
+                            <OrvelisMark
+                                color={focused ? activeTabColor : inactiveTabColor}
+                                coreColor={isDark ? '#A5CBF7' : '#487BAE'}
+                                pressProgress={orvelisPress}
+                            />
                         ),
                     }}
                 />
