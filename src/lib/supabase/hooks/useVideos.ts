@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../client';
 import { useAuth } from './useAuth';
 import { encodeVideoUrl } from '../../utils/url';
@@ -44,7 +44,7 @@ interface UseVideosProps {
     searchQuery?: string;
     hashtag?: string;
     category?: string;
-    sort?: 'recent' | 'popular';
+    sort?: 'recent' | 'popular' | 'ranked';
 }
 
 // This retired S3 bucket returns NoSuchBucket for both videos and thumbnails.
@@ -63,6 +63,10 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const ranking = useRef<{ category?: string; viewer?: string; ids: string[] | null } | undefined>(undefined);
+    const requestVersion = useRef(0);
+    const fetching = useRef(false);
+    const viewerId = user?.id;
 
     const formatVideo = useCallback((video: any, profile?: any, isLiked: boolean = false): Video => {
         const authorName = profile?.display_name || profile?.username || profile?.nickname || 'Unknown';
@@ -111,10 +115,12 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
             setRefreshing(false);
             return;
         }
+        const version = ++requestVersion.current;
+        fetching.current = true;
         try {
             setFetchError(null);
+            setError(null);
             if (!isRefresh) setLoading(true);
-            setFetchError(null);
 
             // 1. Fetch videos - Increased range to fetch more in case many are filtered out
             let query = supabase
@@ -148,8 +154,30 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
                 query = query.or(`category.is.null,category.neq.${ANIMATED_SHORTS_CATEGORY}`);
             }
 
-            const { data: videoData, error: videoError } = await query
-                .range(pageNum * 12, (pageNum + 1) * 12 - 1); // Load 12 at a time (optimized)
+            const ranked = sort === 'ranked' && type === 'trending' && !userId && !videoId && !searchQuery && !hashtag;
+            if (ranked && (isRefresh || !ranking.current || ranking.current.category !== category || ranking.current.viewer !== viewerId)) {
+                const { data, error: rankError } = await supabase.rpc('ranked_video_feed', { p_category: category ?? null });
+                if (version !== requestVersion.current) return;
+                const ids = !rankError && Array.isArray(data) && data.length > 0
+                    ? data.sort((a, b) => a.rank_index - b.rank_index).map(row => row.video_id as string)
+                    : null;
+                ranking.current = { category, viewer: viewerId, ids };
+            }
+
+            const rankedIds = ranked ? ranking.current?.ids : null;
+            const pageIds = rankedIds?.slice(pageNum * 12, (pageNum + 1) * 12);
+            if (pageIds && !pageIds.length) {
+                setHasMore(false);
+                if (isRefresh) setVideos([]);
+                return;
+            }
+            const { data: rows, error: videoError } = await (pageIds
+                ? query.in('id', pageIds)
+                : query.range(pageNum * 12, (pageNum + 1) * 12 - 1));
+            if (version !== requestVersion.current) return;
+            const videoData = pageIds && rows
+                ? pageIds.map(id => rows.find((row: { id: string }) => row.id === id)).filter(Boolean)
+                : rows;
 
             if (videoError) throw videoError;
             if (!videoData) {
@@ -197,6 +225,11 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
                 }
                 return new Set<string>();
             })();
+
+            const fetchSavesPromise = user && videoIds.length
+                ? supabase.from('save_actions').select('video_id').eq('user_id', user.id).in('video_id', videoIds)
+                    .then(({ data }: { data: { video_id: string }[] | null }) => new Set((data ?? []).map(row => row.video_id)))
+                : Promise.resolve(new Set<string>());
 
             // Fetch Logic Stats (Who's Winning) for these videos
             const fetchLogicStatsPromise = (async () => {
@@ -247,10 +280,11 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
                 return finalMap;
             })();
 
-            const [profilesMap, likedVideoIds, videoLogicMap] = await Promise.all([
+            const [profilesMap, likedVideoIds, videoLogicMap, savedVideoIds] = await Promise.all([
                 fetchProfilesPromise,
                 fetchLikesPromise,
-                fetchLogicStatsPromise
+                fetchLogicStatsPromise,
+                fetchSavesPromise
             ]);
 
             // 4. Format videos - filter for "real" user-uploaded content
@@ -266,6 +300,7 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
             const formattedVideos = videoData
                 .map((v: any) => {
                     const formatted = formatVideo(v, profilesMap[v.user_id], likedVideoIds.has(v.id));
+                    formatted.isSaved = savedVideoIds.has(v.id);
                     const videoUrl = getPlaybackUrl(v);
                     if (videoUrl && videoLogicMap[videoUrl]) {
                         formatted.logicStats = videoLogicMap[videoUrl];
@@ -301,32 +336,40 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
                 console.log('[useVideos] Fetched URLs:', formattedVideos.map((v: Video) => v.videoUrl));
             }
 
+            if (version !== requestVersion.current) return;
             if (isRefresh) {
                 setVideos(formattedVideos);
             } else {
-                setVideos(prev => [...prev, ...formattedVideos]);
+                setVideos(prev => [...prev, ...formattedVideos.filter((video: Video) => !prev.some(existing => existing.id === video.id))]);
             }
 
-            setHasMore(videoData.length === 12);
+            setHasMore(rankedIds ? rankedIds.length > (pageNum + 1) * 12 : videoData.length === 12);
         } catch (err: any) {
+            if (version !== requestVersion.current) return;
             console.error('Error fetching videos:', err);
             const msg = err instanceof Error ? err.message : (err?.message || 'Failed to load videos');
             setError(msg);
             setFetchError(msg);
         } finally {
-            setLoading(false);
-            setRefreshing(false);
+            if (version === requestVersion.current) {
+                fetching.current = false;
+                setLoading(false);
+                setRefreshing(false);
+            }
         }
-    }, [type, userId, videoId, searchQuery, hashtag, category, user, formatVideo, sort]);
+    }, [type, userId, videoId, searchQuery, hashtag, category, user, viewerId, formatVideo, sort]);
 
     useEffect(() => {
         // console.log('useVideos component mounted or dependencies changed.');
         setPage(0);
+        setVideos([]);
+        setLoading(true);
         fetchVideos(0, true);
+        return () => { requestVersion.current++; };
     }, [type, userId, videoId, searchQuery, hashtag, category, user, fetchVideos]);
 
     const loadMore = () => {
-        if (!loading && !refreshing && !fetchError && hasMore) {
+        if (!fetching.current && !loading && !refreshing && !fetchError && hasMore) {
             const nextPage = page + 1;
             setPage(nextPage);
             fetchVideos(nextPage);
@@ -416,9 +459,11 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
             : v));
         try {
             if (wasSaved) {
-                await supabase.from('save_actions').delete().eq('user_id', user.id).eq('video_id', videoId);
+                const { error: saveError } = await supabase.from('save_actions').delete().eq('user_id', user.id).eq('video_id', videoId);
+                if (saveError) throw saveError;
             } else {
-                await supabase.from('save_actions').insert({ user_id: user.id, video_id: videoId });
+                const { error: saveError } = await supabase.from('save_actions').upsert({ user_id: user.id, video_id: videoId }, { onConflict: 'video_id,user_id', ignoreDuplicates: true });
+                if (saveError) throw saveError;
             }
         } catch (err) {
             console.error('Error toggling save:', err);

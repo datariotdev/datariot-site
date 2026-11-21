@@ -274,7 +274,9 @@ export default function PublishScreen() {
             // Wait a sec for propagation
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            showAlert('Success', 'Published!');
+            showAlert('Published', videoUri
+                ? 'Track reach and audience retention in Creator Studio on your profile.'
+                : 'Your post is live.');
             router.replace('/profile'); // Or back to feed
         } catch (error: any) {
             console.error(error);

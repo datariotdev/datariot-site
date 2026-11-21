@@ -3,6 +3,7 @@ import { View, StyleSheet, ActivityIndicator, Text, Pressable, StatusBar, useWin
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
+import { useAuth } from '@lib/supabase/hooks/useAuth';
 import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
 import { useRouter, useIsFocused } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -18,7 +19,7 @@ import { FullScreenVideoModal } from '../../components/VideoFeed/FullScreenVideo
 import { DeepDiveModal } from '../../components/VideoFeed/DeepDiveModal';
 import { WebFeedHeader, WebFeedViewSwitch } from '../../components/Web/WebFeedHeader';
 import { WebRightPanel } from '../../components/Web/WebRightPanel';
-import { CuratedFeed } from '../../components/VideoFeed/CuratedFeed';
+import { CuratedFeed, FeedOrderSwitch } from '../../components/VideoFeed/CuratedFeed';
 import { useCuratedReels } from '../../lib/curated/useCuratedReels';
 import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import { useNavVisibility } from '../../context/NavVisibilityContext';
@@ -36,6 +37,9 @@ const MIN_THREE_COLUMN_WIDTH = 744;
 const HomeScreen = () => {
     const router = useRouter();
     const isFocused = useIsFocused();
+    const { user } = useAuth();
+    const viewerId = user?.is_anonymous ? undefined : user?.id;
+    const [feedOrder, setFeedOrder] = useState<'ranked' | 'recent'>('ranked');
     const insets = useSafeAreaInsets();
     const [activeTab, setActiveTab] = useState<FeedType>('trending');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -71,9 +75,11 @@ const HomeScreen = () => {
         refresh,
         loadMore,
         toggleLike,
+        toggleSave,
         toggleFollow,
     } = useVideos({
         type: activeTab,
+        sort: isLatest ? feedOrder : 'recent',
         category: (!isWeb || activeTab === 'trending') ? activeCategory || undefined : undefined,
     });
 
@@ -88,7 +94,7 @@ const HomeScreen = () => {
         setSelectedVideoId(videoId);
     };
     const handleComment = (videoId: string) => setCommentsVideoId(videoId);
-    const handleSave = (videoId: string) => console.log('Save:', videoId);
+    const handleSave = toggleSave;
 
     const handleMore = (videoId: string) => {
         setOpenOptionsOnMount(true);
@@ -114,7 +120,8 @@ const HomeScreen = () => {
     const feed = isLatest ? (
         <CuratedFeed key={isWeb ? activeCategory || 'all' : 'mobile'} videos={videos} reels={curatedReels} fetchError={fetchError} loading={loading} grid={isWeb ? latestGrid : viewMode === 'mosaic'} desktop={isWeb} onRetry={refresh}
             isFocused={isFeedActive} paddingTop={feedPaddingTop} onEndReached={loadMore}
-            onSelectNative={handleSelectVideo} onOpenOrvelis={setDeepDiveVideo} />
+            onSelectNative={handleSelectVideo} onOpenOrvelis={setDeepDiveVideo} viewerId={viewerId}
+            feedOrder={feedOrder} onFeedOrder={setFeedOrder} />
     ) : videos.length > 0 ? (
         viewMode === 'mosaic' ? (
             <MosaicFeed
@@ -144,6 +151,8 @@ const HomeScreen = () => {
                 onSave={handleSave}
                 onMore={handleMore}
                 onFollow={toggleFollow}
+                viewerId={viewerId}
+                analyticsSurface="feed"
                 onSelect={handleSelectVideo}
                 paddingTop={feedPaddingTop}
             />
@@ -211,6 +220,9 @@ const HomeScreen = () => {
                 onLike={toggleLike}
                 onSave={handleSave}
                 openOptionsOnMount={openOptionsOnMount}
+                analyticsSurface="feed"
+                viewerId={viewerId}
+                onEndReached={loadMore}
             />
 
         </>
@@ -219,7 +231,7 @@ const HomeScreen = () => {
     if (isWeb) {
         const showCompanion = isLatest && width >= 1330;
         const selectedTopic = activeCategory || 'All';
-        const title = activeTab === 'ai' ? 'Arena' : activeTab === 'following' ? 'Circle' : activeCategory || 'Latest videos';
+        const title = activeTab === 'ai' ? 'Arena' : activeTab === 'following' ? 'Circle' : activeCategory || (feedOrder === 'ranked' ? 'Feed' : 'Latest videos');
 
         return (
             <View style={[styles.container, styles.webPage, { paddingHorizontal: width >= 1190 ? 36 : 24 }]}>
@@ -236,7 +248,8 @@ const HomeScreen = () => {
                             )}
                         </View>
                         {isLatest && (
-                            <View style={styles.webFilters}>
+                            <View style={[styles.webFilters, { gap: 10 }]}>
+                                <FeedOrderSwitch value={feedOrder} onChange={setFeedOrder} />
                                 <CategoryPills
                                     desktop
                                     categories={['All', ...VIDEO_CATEGORIES]}

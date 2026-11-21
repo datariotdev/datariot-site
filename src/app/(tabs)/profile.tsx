@@ -661,6 +661,16 @@ export default function ProfileScreen() {
                             onSettings={() => router.push('/settings')}
                             onActivity={() => setShowAchievements(true)}
                         />
+                        <Pressable accessibilityRole="button" accessibilityLabel="Open Creator Studio"
+                            onPress={() => router.push('/creator-studio')}
+                            style={[styles.creatorStudio, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.surface.border }]}>
+                            <Ionicons name="stats-chart-outline" size={21} color={theme.colors.text.primary} />
+                            <View style={{ flex: 1, gap: 3 }}>
+                                <Text style={{ color: theme.colors.text.primary, fontSize: 15, fontWeight: '700' }}>Creator Studio</Text>
+                                <Text style={{ color: theme.colors.text.secondary, fontSize: 12 }}>Reach, retention and video performance</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={17} color={theme.colors.text.secondary} />
+                        </Pressable>
                         {renderContent()}
                     </>
                 )}
@@ -750,6 +760,10 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+    creatorStudio: {
+        marginHorizontal: 16, marginVertical: 12, minHeight: 63, borderWidth: 1, borderRadius: 15,
+        paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 12,
+    },
     container: {
         flex: 1,
     },
