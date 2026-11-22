@@ -19,6 +19,8 @@ import { useEventListener } from 'expo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useIsFocused } from 'expo-router';
 import { encodeVideoUrl } from '../../lib/utils/url';
+import { youtubeVideoId } from '../../lib/utils/youtube';
+import { InlineVideo, type InlineVideoHandle } from '../VideoPlayer/InlineVideo';
 import { VideoControls } from '../VideoPlayer/VideoControls';
 import { DesktopVideoViewer } from './DesktopVideoViewer';
 import { CommentsModal } from './CommentsModal';
@@ -90,40 +92,48 @@ function FullScreenVideoItem({
     const [avatarFailed, setAvatarFailed] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const embedded = Platform.OS === 'web' && !!youtubeVideoId(item.videoUrl);
+    const embedPlayer = useRef<InlineVideoHandle>(null);
 
-    const player = useVideoPlayer(encodeVideoUrl(item.videoUrl) || '', (p) => {
+    const player = useVideoPlayer(embedded ? null : encodeVideoUrl(item.videoUrl) || '', (p) => {
         p.loop = true;
         p.muted = muted;
         p.playbackRate = rate;
         p.timeUpdateEventInterval = 0.2;
-        if (isActive && !isPaused) {
+        if (!embedded && isActive && !isPaused) {
             p.play();
         }
     });
 
     useEffect(() => {
+        if (embedded) return;
         if (isActive && !isPaused) {
             player.play();
         } else {
             player.pause();
         }
-    }, [isActive, isPaused, player]);
+    }, [isActive, isPaused, player, embedded]);
 
     useEffect(() => {
+        if (embedded) return;
         // eslint-disable-next-line react-hooks/immutability -- Expo VideoPlayer is an imperative SharedObject.
         player.muted = muted;
         player.playbackRate = rate;
-    }, [muted, player, rate]);
+    }, [muted, player, rate, embedded]);
 
     useEffect(() => {
         if (!restart) return;
-        player.currentTime = 0;
+        if (embedded) embedPlayer.current?.seekTo(0); else player.currentTime = 0;
         setIsPaused(false);
-    }, [player, restart]);
+    }, [player, restart, embedded]);
 
-    useEffect(() => { if (seekTo) { player.currentTime = seekTo.seconds; setIsPaused(false); } }, [player, seekTo]);
+    useEffect(() => { if (seekTo) {
+        if (embedded) embedPlayer.current?.seekTo(seekTo.seconds * 1000); else player.currentTime = seekTo.seconds;
+        setIsPaused(false);
+    } }, [player, seekTo, embedded]);
 
     useEventListener(player, 'timeUpdate', (event: any) => {
+        if (embedded) return;
         const current = Number(event?.currentTime ?? player.currentTime ?? 0);
         const total = Number(player.duration ?? 0);
         setCurrentTime(Number.isFinite(current) && current >= 0 ? current * 1000 : 0);
@@ -136,6 +146,7 @@ function FullScreenVideoItem({
     };
 
     const handleSeek = (value: number) => {
+        if (embedded) { embedPlayer.current?.seekTo(value); return; }
         try {
             // eslint-disable-next-line react-hooks/immutability -- Seeking is part of Expo's imperative player API.
             player.currentTime = value / 1000;
@@ -163,7 +174,7 @@ function FullScreenVideoItem({
                 pointerEvents="none"
             />
 
-            <View style={styles.stage}>
+            <View style={[styles.stage, embedded && { top: topPadding + 48, bottom: bottomPadding + 180 }]}>
                 <GestureDetector gesture={doubleTap}>
                     <Pressable
                         accessibilityRole="button"
@@ -171,14 +182,20 @@ function FullScreenVideoItem({
                         style={StyleSheet.absoluteFill}
                         onPress={togglePlayback}
                     >
-                        <VideoView
+                        {embedded ? <InlineVideo url={item.videoUrl} playbackRef={embedPlayer}
+                            active={isActive} playing={isActive && !isPaused} muted={muted} playbackRate={rate} contentFit="contain"
+                            onTimeUpdate={(current, total) => {
+                                setCurrentTime(current); setDuration(total);
+                                if (isActive) onPlaybackTime(item.id, Math.floor(current / 1000));
+                            }}
+                            onPlayingChange={playing => { if (isActive) setIsPaused(!playing); }} /> : <VideoView
                             player={player}
                             style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
                             contentFit="contain"
                             nativeControls={false}
                             surfaceType="textureView"
-                        />
-                        {isPaused && !clearDisplay && (
+                        />}
+                        {isPaused && !clearDisplay && !embedded && (
                             <View style={styles.pauseOverlay}>
                                 <Ionicons name="play" size={54} color="#FFF" />
                             </View>
@@ -186,7 +203,7 @@ function FullScreenVideoItem({
                     </Pressable>
                 </GestureDetector>
 
-                {!clearDisplay && (
+                {!clearDisplay && !embedded && (
                     <Pressable accessibilityRole="button" accessibilityLabel={muted ? 'Unmute video' : 'Mute video'}
                         style={[styles.iconButton, styles.muteButton]} onPress={onToggleMute}>
                         <Ionicons name={muted ? 'volume-mute' : 'volume-medium'} size={19} color="#FFF" />

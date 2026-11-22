@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-url-polyfill/auto';
+import { Platform } from 'react-native';
 
 const DEFAULT_SUPABASE_URL = 'https://uycrtobdewnscwazshcu.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5Y3J0b2JkZXduc2N3YXpzaGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NzU1NjYsImV4cCI6MjA3NTI1MTU2Nn0.EsZQOIE879QwU_FKk0Agh-yJBdRJcLTmYi-DCMjYaxU';
@@ -17,6 +18,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Only create the real client if variables exist, otherwise create a dummy
 export const supabase = (supabaseUrl && supabaseAnonKey)
     ? createClient(supabaseUrl, supabaseAnonKey, {
+        // Older APKs only understand file uploads; opt in once the web player is available.
+        global: { headers: { 'x-datariot-youtube': Platform.OS === 'web' ? '1' : '0' } },
         auth: {
             storage: AsyncStorage,
             autoRefreshToken: true,

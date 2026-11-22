@@ -1,11 +1,14 @@
 import React, { useEffect, useImperativeHandle, useRef, type Ref } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { encodeVideoUrl } from '../../lib/utils/url';
+import { youtubeVideoId } from '../../lib/utils/youtube';
+import { YouTubePlayer } from './YouTubePlayer.web';
 
 export interface InlineVideoHandle { seekTo: (positionMs: number) => void }
 interface Props {
     url: string;
     playing: boolean;
+    active?: boolean;
     muted?: boolean;
     contentFit?: 'cover' | 'contain';
     style?: StyleProp<ViewStyle>;
@@ -13,10 +16,17 @@ interface Props {
     onTimeUpdate?: (currentMs: number, durationMs: number) => void;
     onFirstFrame?: () => void;
     onError?: () => void;
+    playbackRate?: number;
+    onPlayingChange?: (playing: boolean) => void;
 }
 
 /** Catch the actual HTML play promise, including cancellation when a card unmounts. */
-export function InlineVideo({ url, playing, muted = true, contentFit = 'cover', style, playbackRef, onTimeUpdate, onFirstFrame, onError }: Props) {
+export function InlineVideo(props: Props) {
+    const id = youtubeVideoId(props.url);
+    return id ? <YouTubePlayer {...props} videoId={id} /> : <FileInlineVideo {...props} />;
+}
+
+function FileInlineVideo({ url, playing, muted = true, contentFit = 'cover', style, playbackRef, onTimeUpdate, onFirstFrame, onError }: Props) {
     const videoRef = useRef<HTMLVideoElement>(null);
     useEffect(() => {
         const element = videoRef.current;

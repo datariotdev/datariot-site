@@ -5,6 +5,7 @@ import { useEvent, useEventListener } from 'expo';
 import { PosterArt } from '../UI/PosterArt';
 import { encodeVideoUrl } from '../../lib/utils/url';
 import { InlineVideo } from '../VideoPlayer/InlineVideo';
+import { youtubeVideoId } from '../../lib/utils/youtube';
 
 /** Pieces of a video card that the deck, the arena pager and the originals strip all share */
 
@@ -57,9 +58,11 @@ export const FeedVideo = (props: FeedVideoProps) => Platform.OS === 'web' ? <Web
 function WebFeedVideo({ url, seed, thumb, active, paused, muted, onTime }: FeedVideoProps) {
     const [ready, setReady] = useState(false);
     const [failed, setFailed] = useState(false);
-    return <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <InlineVideo url={url} playing={active && !paused} muted={muted} onTimeUpdate={onTime} onFirstFrame={() => setReady(true)} onError={() => { setReady(false); setFailed(true); }} />
-        {!ready && <View style={StyleSheet.absoluteFill}>
+    const embedded = !!youtubeVideoId(url);
+    useEffect(() => { setReady(false); setFailed(false); }, [url]);
+    return <View style={StyleSheet.absoluteFill} pointerEvents={embedded ? 'auto' : 'none'}>
+        <InlineVideo url={url} active={active} playing={active && !paused} muted={muted} onTimeUpdate={onTime} onFirstFrame={() => setReady(true)} onError={() => { setReady(false); setFailed(true); }} />
+        {!ready && (!embedded || !failed) && <View style={StyleSheet.absoluteFill}>
             {thumb ? <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : <PosterArt seed={seed} isDark glyph={false} />}
             {active && !failed && <View style={styles.loading}><ActivityIndicator color="white" /></View>}
         </View>}

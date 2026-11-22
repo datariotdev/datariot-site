@@ -9,6 +9,8 @@ import { CommentsModal } from './CommentsModal';
 import { DeepDiveModal } from './DeepDiveModal';
 import { MoreOptionsModal } from './MoreOptionsModal';
 import { encodeVideoUrl } from '../../lib/utils/url';
+import { youtubeVideoId } from '../../lib/utils/youtube';
+import { YouTubePlayer } from '../VideoPlayer/YouTubePlayer.web';
 import { adjacentDesktopVideoId, createDesktopWheelGesture } from '../../lib/utils/desktopVideoNavigation';
 import type { Video } from '../../lib/supabase/hooks/useVideos';
 import type { FullScreenVideoModalProps } from './FullScreenVideoModal';
@@ -31,19 +33,27 @@ const DesktopPlayer = forwardRef<PlayerHandle, PlayerProps>(function DesktopPlay
     video, active, muted, rate, clear, onToggleMute, onTime,
 }, ref) {
     const media = useRef<HTMLVideoElement>(null);
+    const youtubeId = youtubeVideoId(video.videoUrl);
+    const embed = useRef<{ seekTo: (positionMs: number) => void }>(null);
+    const [retry, setRetry] = useState(0);
     const [paused, setPaused] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [buffering, setBuffering] = useState(false);
     const [failed, setFailed] = useState(false);
     const [position, setPosition] = useState(0);
     const [duration, setDuration] = useState(0);
-    const play = () => { void media.current?.play().catch(() => setPaused(true)); };
+    const play = () => {
+        if (youtubeId) { setPaused(false); return; }
+        void media.current?.play().catch(() => setPaused(true));
+    };
     const toggle = () => {
+        if (youtubeId) { setPaused(value => !value); return; }
         const element = media.current;
         if (!element) return;
         if (element.paused) play(); else element.pause();
     };
     const seek = (seconds: number) => {
+        if (youtubeId) { embed.current?.seekTo(seconds * 1000); setPosition(seconds); onTime(seconds); return; }
         const element = media.current;
         if (!element || !Number.isFinite(element.duration)) return;
         element.currentTime = Math.min(Math.max(0, seconds), element.duration);
@@ -55,13 +65,14 @@ const DesktopPlayer = forwardRef<PlayerHandle, PlayerProps>(function DesktopPlay
         restart: () => { seek(0); play(); },
     }));
     useEffect(() => {
+        if (youtubeId) { if (active) setPaused(false); return; }
         const element = media.current;
         if (!element) return;
         let cancelled = false;
         if (active) { void element.play().catch(() => { if (!cancelled) setPaused(true); }); }
         else element.pause();
         return () => { cancelled = true; };
-    }, [active]);
+    }, [active, youtubeId]);
     useEffect(() => { if (media.current) media.current.playbackRate = rate; }, [rate]);
     useEffect(() => {
         const element = media.current;
@@ -76,7 +87,12 @@ const DesktopPlayer = forwardRef<PlayerHandle, PlayerProps>(function DesktopPlay
     };
     return <div className="dv-player">
         <div className="dv-canvas" aria-busy={!failed && (!loaded || buffering)}>
-            <video ref={media} src={encodeVideoUrl(video.videoUrl) || undefined}
+            {youtubeId ? <YouTubePlayer key={video.id + ':' + retry} videoId={youtubeId}
+                playbackRef={embed} active={active} playing={active && !paused} muted={muted} playbackRate={rate}
+                onFirstFrame={() => { setLoaded(true); setBuffering(false); }}
+                onTimeUpdate={(current, total) => { setPosition(current / 1000); setDuration(total / 1000); onTime(current / 1000); }}
+                onPlayingChange={playing => { if (active) setPaused(!playing); }}
+                onError={() => { setFailed(true); setBuffering(false); }} /> : <video ref={media} src={encodeVideoUrl(video.videoUrl) || undefined}
                 poster={video.thumbnailUrl || undefined} autoPlay={active} muted={muted} loop playsInline preload="auto"
                 aria-label={video.title} onClick={toggle}
                 onLoadedMetadata={readDuration} onDurationChange={readDuration}
@@ -84,13 +100,13 @@ const DesktopPlayer = forwardRef<PlayerHandle, PlayerProps>(function DesktopPlay
                 onPlaying={() => { setLoaded(true); setBuffering(false); setPaused(false); }}
                 onWaiting={() => setBuffering(true)} onPlay={() => setPaused(false)} onPause={() => setPaused(true)}
                 onTimeUpdate={() => { const seconds = media.current?.currentTime ?? 0; setPosition(seconds); onTime(seconds); }}
-                onError={() => { setFailed(true); setBuffering(false); }} />
+                onError={() => { setFailed(true); setBuffering(false); }} />}
             {failed ? <div className="dv-message" role="status">
                 <Icon name="alert-circle" size={25} /><strong>This clip couldn’t load.</strong>
                 <span>Try again, or switch to the next video.</span>
-                <button className="dv-retry" onClick={() => { setFailed(false); setLoaded(false); media.current?.load(); play(); }}>Try again</button>
+                <button className="dv-retry" onClick={() => { setFailed(false); setLoaded(false); if (youtubeId) setRetry(value => value + 1); else media.current?.load(); play(); }}>Try again</button>
             </div> : !loaded || buffering ? <div className="dv-loading" role="status"><span className="dv-spinner" />Loading clip…</div>
-                : paused && <button className="dv-play-overlay" aria-label="Play video" onClick={play}><Icon name="play" size={32} /></button>}
+                : paused && !youtubeId && <button className="dv-play-overlay" aria-label="Play video" onClick={play}><Icon name="play" size={32} /></button>}
         </div>
         {!clear && <div className="dv-player-controls">
             <button className="dv-control" aria-label={paused ? 'Play video' : 'Pause video'} onClick={toggle}>

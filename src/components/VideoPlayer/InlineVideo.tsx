@@ -11,6 +11,7 @@ export interface InlineVideoHandle {
 interface InlineVideoProps {
     url: string;
     playing: boolean;
+    active?: boolean;
     muted?: boolean;
     contentFit?: 'cover' | 'contain';
     style?: StyleProp<ViewStyle>;
@@ -18,6 +19,8 @@ interface InlineVideoProps {
     onTimeUpdate?: (currentMs: number, durationMs: number) => void;
     onFirstFrame?: () => void;
     onError?: () => void;
+    playbackRate?: number;
+    onPlayingChange?: (playing: boolean) => void;
 }
 
 /** Managed expo-video lifecycle shared by previews and the full-screen feed. */
