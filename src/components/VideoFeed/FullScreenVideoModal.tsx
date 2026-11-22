@@ -174,7 +174,7 @@ function FullScreenVideoItem({
                         <VideoView
                             player={player}
                             style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
-                            contentFit="cover"
+                            contentFit="contain"
                             nativeControls={false}
                             surfaceType="textureView"
                         />
