@@ -157,22 +157,9 @@ export function CuratedFeedIntro({ desktop = false }: { desktop?: boolean }) {
                 onPress={() => router.push('/(tabs)/ai')}
                 onHoverIn={animateMark}
                 onPressIn={animateMark}
-                style={({ pressed }) => [styles.editorialNote, {
-                    borderColor: dark ? '#2E435E' : '#D4E2F3',
-                    backgroundColor: dark ? '#152132' : '#F2F7FD',
-                    opacity: pressed ? 0.8 : 1,
-                }]}
+                style={({ pressed }) => [styles.editorialNote, { opacity: pressed ? 0.65 : 1 }]}
             >
-                <LinearGradient
-                    pointerEvents="none"
-                    colors={dark ? ['#1D3049', '#152132'] : ['#E7F0FC', '#F8FAFE']}
-                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                    style={StyleSheet.absoluteFill}
-                />
-                <View pointerEvents="none" style={[styles.noteMark, {
-                    backgroundColor: dark ? '#263F5D' : '#DCE9FA',
-                    borderColor: dark ? '#456080' : '#BFD3EC',
-                }]}>
+                <View pointerEvents="none" style={styles.noteMark}>
                     <OrvelisMark size={27} color={ink} coreColor={dark ? '#A9D0FF' : '#6F9CD3'} pressProgress={motion} />
                 </View>
                 <View style={styles.noteCopy}>
@@ -348,8 +335,8 @@ const styles = StyleSheet.create({
     webIntro: { flex: 1, minWidth: 0 },
     webIntroTitle: { fontSize: 19, lineHeight: 24, letterSpacing: -0.45 },
     headingSubtitle: { fontFamily: 'Inter_400Regular', fontSize: 11, lineHeight: 16 },
-    editorialNote: { width: '100%', flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderRadius: 16, padding: 11, overflow: 'hidden', minHeight: 66 },
-    noteMark: { width: 40, height: 40, flexShrink: 0, borderRadius: 14, borderTopRightRadius: 7, borderWidth: 1, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-7deg' }] },
+    editorialNote: { width: '100%', flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4, minHeight: 48 },
+    noteMark: { width: 34, height: 34, flexShrink: 0, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-7deg' }] },
     noteCopy: { flex: 1, minWidth: 0, gap: 3 },
     noteArrow: { width: 24, height: 28, flexShrink: 0, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-45deg' }] },
     noteTitle: { fontFamily: 'Outfit_600SemiBold', fontSize: 13, lineHeight: 17, letterSpacing: -0.1 },
