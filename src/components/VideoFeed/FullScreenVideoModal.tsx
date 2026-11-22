@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { useEventListener } from 'expo';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../Theme/ThemeProvider';
 import { useRouter, useIsFocused } from 'expo-router';
 import { encodeVideoUrl } from '../../lib/utils/url';
 import { VideoControls } from '../VideoPlayer/VideoControls';
@@ -50,7 +50,6 @@ function FullScreenVideoItem({
     item,
     isActive,
     height,
-    topPadding,
     bottomPadding,
     clearDisplay,
     muted,
@@ -68,7 +67,6 @@ function FullScreenVideoItem({
     item: FeedVideo;
     isActive: boolean;
     height: number;
-    topPadding: number;
     bottomPadding: number;
     clearDisplay: boolean;
     muted: boolean;
@@ -84,6 +82,8 @@ function FullScreenVideoItem({
     seekTo?: { seconds: number; nonce: number };
 }) {
     const router = useRouter();
+    const { theme, mode } = useTheme();
+    const dark = mode === 'dark';
     const author = item.author.split(' | ')[0];
     const [isPaused, setIsPaused] = useState(false);
     const [avatarFailed, setAvatarFailed] = useState(false);
@@ -151,17 +151,7 @@ function FullScreenVideoItem({
         .onEnd(() => { onLike(); });
 
     return (
-        <View style={[styles.page, { height, paddingTop: topPadding, paddingBottom: bottomPadding }]}>
-            {item.thumbnailUrl && (
-                <Image source={{ uri: item.thumbnailUrl }} blurRadius={32} style={styles.ambientPoster} />
-            )}
-            <LinearGradient
-                colors={['rgba(11,13,20,0.25)', 'rgba(8,10,16,0.72)', '#08090D']}
-                locations={[0, 0.67, 1]}
-                style={StyleSheet.absoluteFill}
-                pointerEvents="none"
-            />
-
+        <View style={[styles.page, { height, backgroundColor: theme.colors.background.primary }]}>
             <View style={styles.stage}>
                 <GestureDetector gesture={doubleTap}>
                     <Pressable
@@ -172,7 +162,7 @@ function FullScreenVideoItem({
                     >
                         <VideoView
                             player={player}
-                            style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
+                            style={[StyleSheet.absoluteFill, { width: '100%', height: '100%', backgroundColor: theme.colors.background.primary }]}
                             contentFit="contain"
                             nativeControls={false}
                             surfaceType="textureView"
@@ -187,13 +177,15 @@ function FullScreenVideoItem({
 
                 {!clearDisplay && (
                     <Pressable accessibilityRole="button" accessibilityLabel={muted ? 'Unmute video' : 'Mute video'}
-                        style={[styles.iconButton, styles.muteButton]} onPress={onToggleMute}>
-                        <Ionicons name={muted ? 'volume-mute' : 'volume-medium'} size={19} color="#FFF" />
+                        style={[styles.iconButton, styles.muteButton, { backgroundColor: dark ? 'rgba(18,24,35,0.85)' : 'rgba(250,251,254,0.92)' }]} onPress={onToggleMute}>
+                        <Ionicons name={muted ? 'volume-mute' : 'volume-medium'} size={19} color={theme.colors.text.primary} />
                     </Pressable>
                 )}
             </View>
 
             {!clearDisplay && <VideoControls
+                docked
+                dark={dark}
                 attribution={(
                     <Pressable
                         accessibilityRole="button"
@@ -208,7 +200,7 @@ function FullScreenVideoItem({
                                 <Image source={{ uri: item.avatarUrl }} onError={() => setAvatarFailed(true)} style={StyleSheet.absoluteFill} />
                             )}
                         </View>
-                        <Text style={styles.author} numberOfLines={1}>@{author}</Text>
+                        <Text style={[styles.author, { color: theme.colors.text.primary }]} numberOfLines={1}>@{author}</Text>
                     </Pressable>
                 )}
                 bottomPadding={bottomPadding}
@@ -250,14 +242,27 @@ function FullScreenVideoSession({
 }: FullScreenVideoModalProps) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
+    const { theme, mode } = useTheme();
+    const dark = mode === 'dark';
+    const ink = theme.colors.text.primary;
     const { width, height: windowHeight } = useWindowDimensions();
     const desktop = Platform.OS === 'web' && width > 768;
-    const frameWidth = Math.max(1, Math.min(480, (windowHeight - 32) * 9 / 16, width - 32));
-    const frameHeight = frameWidth * 16 / 9;
+    const frameWidth = Math.max(1, Math.min(1280, width - 48));
+    const frameHeight = Math.max(1, windowHeight - 24);
+    const listRef = useRef<FlatList<FeedVideo>>(null);
+    const currentIndexRef = useRef(0);
     const [viewportHeight, setViewportHeight] = useState(0);
     const initialIndex = Math.max(0, videos.findIndex((video) => video.id === initialVideoId));
     const [viewableIndex, setViewableIndex] = useState<number | null>(null);
     const activeIndex = viewableIndex ?? initialIndex;
+    currentIndexRef.current = activeIndex;
+    useEffect(() => {
+        if (viewportHeight <= 0) return;
+        const frame = requestAnimationFrame(() => {
+            listRef.current?.scrollToOffset({ offset: currentIndexRef.current * viewportHeight, animated: false });
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [viewportHeight]);
     const [commentSheet, setCommentSheet] = useState<{ videoId: string; compose: boolean } | null>(null);
     const [deepDiveVideo, setDeepDiveVideo] = useState<FeedVideo | null>(null);
     const [analysisSeconds, setAnalysisSeconds] = useState(0);
@@ -295,27 +300,42 @@ function FullScreenVideoSession({
         else onClose();
     };
 
+    useEffect(() => {
+        if (!desktop || !isFocused || commentSheet || deepDiveVideo) return;
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return;
+            event.preventDefault();
+            if (moreOptionsVideo) setMoreOptionsId(null);
+            else if (clearDisplay) setClearDisplay(false);
+            else onClose();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [desktop, isFocused, commentSheet, deepDiveVideo, moreOptionsVideo, clearDisplay, onClose]);
+
     return (
         <Modal
             visible={isFocused}
             transparent={false}
-            animationType="slide"
+            animationType="fade"
             onRequestClose={handleBack}
         >
-            <StatusBar barStyle="light-content" />
-            <GestureHandlerRootView style={[styles.container, desktop && styles.desktopContainer]}>
-                <View style={[styles.frame, desktop ? { width: frameWidth, height: frameHeight, flexShrink: 0, borderRadius: 20 } : styles.mobileFrame]}
+            <StatusBar barStyle={dark ? "light-content" : "dark-content"} />
+            <GestureHandlerRootView style={[styles.container, { backgroundColor: theme.colors.background.primary }, desktop && styles.desktopContainer]}>
+                {desktop && <Pressable style={StyleSheet.absoluteFill} onPress={onClose}
+                    accessibilityRole="button" accessibilityLabel="Close video" />}
+                <View style={[styles.frame, desktop ? { width: frameWidth, height: frameHeight, flexShrink: 0 } : styles.mobileFrame]}
                     accessibilityElementsHidden={!!moreOptionsVideo} importantForAccessibility={moreOptionsVideo ? 'no-hide-descendants' : 'auto'}
-                    aria-hidden={!!moreOptionsVideo} onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}>
+                    aria-hidden={!!moreOptionsVideo}>
                 {clearDisplay ? (
                     <Pressable accessibilityRole="button" accessibilityLabel="Restore video controls" onPress={() => setClearDisplay(false)}
                         style={[styles.iconButton, styles.restoreButton, { top: Math.max(insets.top, 8) }]}>
-                        <Ionicons name="scan-outline" size={20} color="#FFF" />
+                        <Ionicons name="scan-outline" size={20} color={ink} />
                     </Pressable>
-                ) : <View style={[styles.header, { top: Math.max(insets.top, 8) }]}>
+                ) : <View style={[styles.header, { paddingTop: desktop ? 4 : Math.max(insets.top, 8) }]}>
                     <View style={!onSelectTab && styles.balancedLeading}>
                         <Pressable accessibilityRole="button" accessibilityLabel="Close full-screen feed" style={styles.iconButton} onPress={onClose}>
-                            <Ionicons name="close" size={24} color="#FFF" />
+                            <Ionicons name="close" size={24} color={ink} />
                         </Pressable>
                     </View>
                     <View style={styles.tabs}>
@@ -324,26 +344,29 @@ function FullScreenVideoSession({
                                 key={tab.key}
                                 accessibilityRole="tab"
                                 accessibilityState={{ selected: activeTab === tab.key }}
-                                style={[styles.tab, activeTab === tab.key && styles.activeTab]}
+                                style={styles.tab}
                                 onPress={onSelectTab ? () => {
                                     if (tab.key !== activeTab) onSelectTab(tab.key);
                                 } : undefined}
                             >
-                                <Text style={[styles.tabLabel, activeTab === tab.key && styles.activeTabLabel]}>{tab.label}</Text>
+                                <Text style={[styles.tabLabel, { color: activeTab === tab.key ? ink : theme.colors.text.secondary }]}>{tab.label}</Text>
                             </Pressable>
                         ))}
                     </View>
                     <View style={styles.headerActions}>
-                        <LiveAnalysisButton dark active={isFocused && playerIsVisible} disabled={!videos[activeIndex]}
+                        <LiveAnalysisButton dark={dark} active={isFocused && playerIsVisible} disabled={!videos[activeIndex]}
                             onOpen={() => { if (videos[activeIndex]) openAnalysis(videos[activeIndex]); }} />
                         <Pressable accessibilityRole="button" accessibilityLabel="More options" style={styles.iconButton}
                             disabled={!videos[activeIndex]} onPress={() => setMoreOptionsId(videos[activeIndex]?.id ?? null)}>
-                            <Ionicons name="ellipsis-horizontal" size={23} color="#FFF" />
+                            <Ionicons name="ellipsis-horizontal" size={23} color={ink} />
                         </Pressable>
                     </View>
                 </View>}
 
+                <View style={styles.feedViewport} onLayout={event => setViewportHeight(event.nativeEvent.layout.height)}>
                 {viewportHeight > 0 && <FlatList
+                    ref={listRef}
+                    style={styles.feedList}
                     initialScrollIndex={initialIndex}
                     data={videos}
                     keyExtractor={item => item.id}
@@ -366,7 +389,6 @@ function FullScreenVideoSession({
                             item={item}
                             isActive={index === activeIndex && isFocused && playerIsVisible}
                             height={viewportHeight}
-                            topPadding={clearDisplay ? 0 : Math.max(insets.top, 8) + 52}
                             bottomPadding={clearDisplay ? 0 : Math.max(insets.bottom, 8)}
                             clearDisplay={clearDisplay}
                             muted={muted}
@@ -383,6 +405,7 @@ function FullScreenVideoSession({
                         />
                     )}
                 />}
+                </View>
                 </View>
                 {moreOptionsVideo && (
                     <MoreOptionsModal
@@ -426,26 +449,24 @@ function FullScreenVideoSession({
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#08090D' },
+    container: { flex: 1 },
     desktopContainer: { alignItems: 'center', justifyContent: 'center' },
-    frame: { minHeight: 0, position: 'relative', overflow: 'hidden', backgroundColor: '#08090D' },
+    frame: { minHeight: 0, position: 'relative', overflow: 'hidden' },
+    feedViewport: { flex: 1, minHeight: 0 },
+    feedList: { flex: 1 },
     mobileFrame: { flex: 1, width: '100%' },
-    page: { width: '100%', backgroundColor: '#08090D', overflow: 'hidden' },
-    ambientPoster: { ...StyleSheet.absoluteFill, opacity: 0.54 },
+    page: { width: '100%', overflow: 'hidden' },
     header: {
-        position: 'absolute', left: 10, right: 10, zIndex: 200,
+        minHeight: 56, paddingHorizontal: 12, paddingBottom: 8, flexShrink: 0,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     },
     tabs: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 8 },
     headerActions: { flexDirection: 'row', alignItems: 'center' },
     balancedLeading: { width: 88 },
-    tab: { minHeight: 38, justifyContent: 'center', paddingHorizontal: 2, borderBottomWidth: 2, borderBottomColor: 'transparent' },
-    activeTab: { borderBottomColor: '#FFF' },
+    tab: { minHeight: 40, justifyContent: 'center', paddingHorizontal: 10 },
     tabLabel: { color: '#C1C2C7', fontSize: 12, fontWeight: '700', letterSpacing: 1.7 },
-    activeTabLabel: { color: '#FFF' },
     iconButton: {
         width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center',
-        backgroundColor: 'rgba(8,9,13,0.45)',
     },
     restoreButton: { position: 'absolute', right: 10, zIndex: 200 },
     muteButton: {
@@ -454,20 +475,19 @@ const styles = StyleSheet.create({
         bottom: 12,
         zIndex: 20,
     },
-    stage: { flex: 1, minHeight: 0 },
+    stage: { flex: 1, minHeight: 0, width: '100%' },
     stageFooter: {
         position: 'absolute', left: 14, right: 14, bottom: 9,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10,
     },
     attribution: { flexDirection: 'row', flexShrink: 1, alignItems: 'center', gap: 8, minHeight: 44 },
     avatar: {
-        width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: '#FFF', overflow: 'hidden',
+        width: 32, height: 32, borderRadius: 16, overflow: 'hidden',
         backgroundColor: '#D9E4FF', alignItems: 'center', justifyContent: 'center',
     },
     avatarText: { color: '#101521', fontSize: 15, fontWeight: '700' },
     author: {
-        flexShrink: 1, color: '#FFF', fontSize: 17, fontWeight: '700',
-        textShadowColor: 'rgba(0,0,0,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
+        flexShrink: 1, fontSize: 14, fontFamily: 'Outfit_600SemiBold',
     },
     pauseOverlay: { ...StyleSheet.absoluteFill, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' },
 });

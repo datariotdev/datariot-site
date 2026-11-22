@@ -6,6 +6,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '@design-system/theme';
 
 interface VideoControlsProps {
+    docked?: boolean;
+    dark?: boolean;
     attribution: ReactNode;
     companion?: ReactNode;
     bottomPadding: number;
@@ -34,9 +36,14 @@ function formatTime(millis: number) {
 const countFormat = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
 
 export function VideoControls({
-    attribution, companion, bottomPadding, title, hashtag, currentTime, duration, onSeek, likes, comments, saved,
+    docked = false, dark = true, attribution, companion, bottomPadding, title, hashtag, currentTime, duration, onSeek, likes, comments, saved,
     isLiked, isSaved, onLike, onComment, onSave, onComposeComment, onMore,
 }: VideoControlsProps) {
+    const ink = docked ? dark ? '#E4ECF9' : '#182334' : '#FFFFFF';
+    const secondaryInk = docked ? dark ? '#A2AEC1' : '#64748A' : '#D2D4DB';
+    const accent = dark ? '#B5D3FA' : '#4A73A7';
+    const textColor = { color: ink };
+    const secondaryColor = { color: secondaryInk };
     const [expanded, setExpanded] = useState(false);
     const [hasLongCaption, setHasLongCaption] = useState(false);
     const [seekTime, setSeekTime] = useState<number | null>(null);
@@ -45,15 +52,15 @@ export function VideoControls({
     const progress = duration > 0 ? displayTime / duration : 0;
 
     return (
-        <View pointerEvents="box-none" style={styles.container}>
+        <View pointerEvents="box-none" style={[styles.container, docked && styles.dockedContainer]}>
             <View pointerEvents="box-none">
-                <LinearGradient
+                {!docked && <LinearGradient
                     colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.42)', 'rgba(0,0,0,0.82)']}
                     locations={[0, 0.55, 1]}
                     style={styles.scrim}
                     pointerEvents="none"
-                />
-                <View pointerEvents="box-none" style={styles.details}>
+                />}
+                <View pointerEvents="box-none" style={[styles.details, docked && styles.dockedDetails]}>
                     {companion}
                     {attribution}
                     <Pressable
@@ -65,36 +72,36 @@ export function VideoControls({
                             accessibilityElementsHidden
                             importantForAccessibility="no-hide-descendants"
                             onTextLayout={({ nativeEvent }) => setHasLongCaption(nativeEvent.lines.length > 2)}
-                            style={[styles.caption, styles.measureCaption]}
+                            style={[styles.caption, textColor, styles.measureCaption]}
                         >{caption}</Text>
-                        <Text numberOfLines={expanded ? 5 : 2} style={styles.caption}>{caption}</Text>
-                        {hasLongCaption && <Text style={styles.captionToggle}>{expanded ? 'less' : 'more'}</Text>}
+                        <Text numberOfLines={expanded ? 5 : 2} style={[styles.caption, textColor]}>{caption}</Text>
+                        {hasLongCaption && <Text style={[styles.captionToggle, secondaryColor]}>{expanded ? 'less' : 'more'}</Text>}
                     </Pressable>
 
                     <View style={styles.actions}>
                         <Pressable accessibilityRole="button" accessibilityLabel={isLiked ? 'Unlike' : 'Like'}
                             accessibilityState={{ selected: isLiked }} style={styles.action} onPress={onLike}>
-                            <Text style={[styles.star, isLiked && styles.selected]}>✦</Text>
-                            <Text style={styles.actionLabel}>Like</Text>
-                            <Text style={styles.count}>{countFormat.format(likes)}</Text>
+                            <Text style={[styles.star, textColor, isLiked && { color: accent }]}>✦</Text>
+                            <Text style={[styles.actionLabel, secondaryColor]}>Like</Text>
+                            <Text style={[styles.count, textColor]}>{countFormat.format(likes)}</Text>
                         </Pressable>
                         <Pressable accessibilityRole="button" accessibilityLabel="Comments" style={styles.action} onPress={onComment}>
-                            <Ionicons name="chatbubble" size={23} color="#FFF" />
-                            <Text style={styles.actionLabel}>Comment</Text>
-                            <Text style={styles.count}>{countFormat.format(comments)}</Text>
+                            <Ionicons name="chatbubble" size={23} color={ink} />
+                            <Text style={[styles.actionLabel, secondaryColor]}>Comment</Text>
+                            <Text style={[styles.count, textColor]}>{countFormat.format(comments)}</Text>
                         </Pressable>
                         <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? 'Unsave' : 'Save'}
                             accessibilityState={{ selected: isSaved }} style={styles.action} onPress={onSave}>
-                            <Ionicons name="bookmark" size={23} color={isSaved ? '#D9E4FF' : '#FFF'} />
-                            <Text style={styles.actionLabel}>Save</Text>
-                            <Text style={styles.count}>{countFormat.format(saved)}</Text>
+                            <Ionicons name="bookmark" size={23} color={isSaved ? accent : ink} />
+                            <Text style={[styles.actionLabel, secondaryColor]}>Save</Text>
+                            <Text style={[styles.count, textColor]}>{countFormat.format(saved)}</Text>
                         </Pressable>
                         <Pressable accessibilityRole="button" accessibilityLabel="More options" style={styles.action} onPress={onMore}>
-                            <Ionicons name="ellipsis-horizontal" size={23} color="#FFF" />
-                            <Text style={styles.actionLabel}>More</Text>
+                            <Ionicons name="ellipsis-horizontal" size={23} color={ink} />
+                            <Text style={[styles.actionLabel, secondaryColor]}>More</Text>
                         </Pressable>
-                        <Pressable accessibilityRole="button" accessibilityLabel="Add a comment" onPress={onComposeComment} style={styles.commentBar}>
-                            <Text numberOfLines={1} style={styles.placeholder}>Add a comment…</Text>
+                        <Pressable accessibilityRole="button" accessibilityLabel="Add a comment" onPress={onComposeComment} style={[styles.commentBar, docked && { borderWidth: 0, backgroundColor: dark ? "#202C3E" : "#EDF2F8" }]}>
+                            <Text numberOfLines={1} style={[styles.placeholder, secondaryColor]}>Add a comment…</Text>
                             <View style={styles.sendIcon}>
                                 <Ionicons name="arrow-up" size={15} color="#101521" />
                             </View>
@@ -103,11 +110,11 @@ export function VideoControls({
                 </View>
             </View>
 
-            <View style={[styles.progressBar, { paddingBottom: bottomPadding }]}>
-                <View style={styles.scrubber}>
+            <View style={[styles.progressBar, { paddingBottom: bottomPadding }, docked && { backgroundColor: "transparent" }]}>
+                <View style={[styles.scrubber, docked && styles.dockedScrubber]}>
                     <View style={styles.sliderArea}>
-                        <View pointerEvents="none" style={styles.track}>
-                            <View style={[styles.trackFill, { width: `${progress * 100}%` }]} />
+                        <View pointerEvents="none" style={[styles.track, docked && { backgroundColor: dark ? "#2F3C50" : "#DFE7F1" }]}>
+                            <View style={[styles.trackFill, { width: `${progress * 100}%` }, docked && { backgroundColor: accent }]} />
                         </View>
                         <Slider
                             accessibilityLabel="Video position"
@@ -118,7 +125,7 @@ export function VideoControls({
                             value={Math.min(currentTime, duration)}
                             minimumTrackTintColor="transparent"
                             maximumTrackTintColor="transparent"
-                            thumbTintColor="transparent"
+                            thumbTintColor={docked ? accent : "transparent"}
                             tapToSeek
                             onSlidingStart={setSeekTime}
                             onValueChange={setSeekTime}
@@ -128,7 +135,7 @@ export function VideoControls({
                             }}
                         />
                     </View>
-                    <Text style={styles.time}>{formatTime(displayTime)}</Text>
+                    <Text style={[styles.time, docked && styles.dockedTime, textColor]}>{formatTime(displayTime)}{docked ? ` / ${formatTime(duration)}` : ""}</Text>
                 </View>
             </View>
         </View>
@@ -137,6 +144,10 @@ export function VideoControls({
 
 const styles = StyleSheet.create({
     container: { position: 'absolute', left: 0, right: 0, bottom: 0 },
+    dockedContainer: { position: 'relative', flexShrink: 0, paddingTop: 8 },
+    dockedDetails: { maxWidth: 720 },
+    dockedScrubber: { maxWidth: 720 },
+    dockedTime: { fontFamily: 'Inter_500Medium', fontSize: 11 },
     scrim: { position: 'absolute', top: -52, left: 0, right: 0, bottom: 0 },
     details: { paddingHorizontal: 14, paddingBottom: 4, gap: 9, width: '100%', maxWidth: 560, alignSelf: 'center' },
     caption: { color: '#FFF', fontSize: 15, lineHeight: 20, fontFamily: theme.typography.fontFamilies.medium },
