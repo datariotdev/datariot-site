@@ -211,6 +211,7 @@ const HomeScreen = () => {
                 onLike={toggleLike}
                 onSave={handleSave}
                 openOptionsOnMount={openOptionsOnMount}
+                onEndReached={isWeb ? loadMore : undefined}
             />
 
         </>

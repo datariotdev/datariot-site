@@ -20,6 +20,7 @@ import { useTheme } from '../Theme/ThemeProvider';
 import { useRouter, useIsFocused } from 'expo-router';
 import { encodeVideoUrl } from '../../lib/utils/url';
 import { VideoControls } from '../VideoPlayer/VideoControls';
+import { DesktopVideoViewer } from './DesktopVideoViewer';
 import { CommentsModal } from './CommentsModal';
 import { DeepDiveModal } from './DeepDiveModal';
 import { LiveAnalysisButton } from './LiveAnalysisButton';
@@ -225,7 +226,11 @@ function FullScreenVideoItem({
 }
 
 export function FullScreenVideoModal(props: FullScreenVideoModalProps) {
+    const { width } = useWindowDimensions();
     if (!props.visible) return null;
+    if (Platform.OS === 'web' && width > 768) {
+        return <DesktopVideoViewer key={props.initialVideoId ?? 'feed'} {...props} />;
+    }
     return <FullScreenVideoSession key={props.initialVideoId ?? 'feed'} {...props} />;
 }
 
