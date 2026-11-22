@@ -7,7 +7,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { useAudioRecorder, useAudioPlayer, requestRecordingPermissionsAsync, RecordingPresets, useAudioPlayerStatus } from 'expo-audio';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../lib/supabase/hooks/useAuth';
-import { ANIMATED_SHORTS_CATEGORY, PUBLISH_VIDEO_CATEGORIES, CATEGORY_DISPLAY_NAMES, VideoCategory } from '../lib/constants/categories';
+import { ANIMATED_SHORTS_CATEGORY, ANIMATED_SHORTS_ENABLED, PUBLISH_VIDEO_CATEGORIES, CATEGORY_DISPLAY_NAMES, VideoCategory } from '../lib/constants/categories';
 import { supabase } from '../lib/supabase/client';
 import { generateDebateSeed, generateVideoAnalysis, DebateSeed } from '../lib/ai/client';
 import { useTheme } from '../components/Theme/ThemeProvider';
@@ -32,7 +32,7 @@ export default function PublishScreen() {
 
     // A thesis can arrive prefilled, e.g. from Orvelis
     const [caption, setCaption] = useState(typeof thesis === 'string' ? thesis : '');
-    const [selectedCategory, setSelectedCategory] = useState<VideoCategory | null>(videoUri && !debateId && params.category === ANIMATED_SHORTS_CATEGORY ? ANIMATED_SHORTS_CATEGORY : null);
+    const [selectedCategory, setSelectedCategory] = useState<VideoCategory | null>(ANIMATED_SHORTS_ENABLED && videoUri && !debateId && params.category === ANIMATED_SHORTS_CATEGORY ? ANIMATED_SHORTS_CATEGORY : null);
     const [uploading, setUploading] = useState(false);
     const isAnimatedShort = !!videoUri && !debateId && selectedCategory === ANIMATED_SHORTS_CATEGORY;
 

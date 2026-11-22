@@ -3,8 +3,7 @@ import React, { useRef, useState } from 'react';
 import { View, ActivityIndicator, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../lib/supabase/hooks/useAuth';
-import { router, useLocalSearchParams } from 'expo-router';
-import { ANIMATED_SHORTS_CATEGORY } from '../../lib/constants/categories';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from '../../components/UI/SafeAreaView';
@@ -12,7 +11,6 @@ import { usePalette } from '../../design-system/palette';
 import { CreateStudio } from '../../components/Create/CreateStudio';
 
 export default function CreateScreen() {
-    const { category } = useLocalSearchParams<{ category?: string }>();
     const { user, loading } = useAuth();
     const p = usePalette();
     const insets = useSafeAreaInsets();
@@ -35,7 +33,7 @@ export default function CreateScreen() {
             }
             const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['videos'], allowsEditing: true, quality: 1 });
             if (!result.canceled && result.assets?.[0]) {
-                router.push({ pathname: '/editor', params: { videoUri: result.assets[0].uri, ...(category === ANIMATED_SHORTS_CATEGORY ? { category } : {}) } });
+                router.push({ pathname: '/editor', params: { videoUri: result.assets[0].uri } });
             }
         } catch {
             Alert.alert('Couldn’t open your videos', 'Please try again.');

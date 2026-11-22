@@ -139,13 +139,6 @@ export default function DiscoverScreen() {
         <View>
             {browsing && (
                 <View style={styles.dashboard}>
-                    <Pressable accessibilityRole="link" onPress={() => router.push('/animated-shorts')}
-                        style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, borderRadius: 17, borderWidth: 1, borderColor: line, backgroundColor: iconFill }}>
-                        <Ionicons name="film-outline" size={24} color={accent} />
-                        <View style={{ flex: 1 }}><Text style={[styles.rowTitle, { color: p.text }]}>Animated Shorts</Text>
-                            <Text style={[styles.rowDetail, { color: muted }]}>Short cartoons that explain how things work.</Text></View>
-                        <Ionicons name="arrow-forward" size={18} color={accent} />
-                    </Pressable>
                     <View style={[styles.spotlight, wide && styles.spotlightWide]}>
                         <View style={[styles.hero, wide && styles.heroWide]}>
                             <View style={styles.heroTop}>

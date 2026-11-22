@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../client';
 import { useAuth } from './useAuth';
 import { encodeVideoUrl } from '../../utils/url';
-import { ANIMATED_SHORTS_CATEGORY } from '../../constants/categories';
+import { ANIMATED_SHORTS_CATEGORY, ANIMATED_SHORTS_ENABLED } from '../../constants/categories';
 
 export interface Video {
     id: string;
@@ -144,7 +144,8 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
 
             if (category) {
                 query = query.eq('category', category);
-            } else if (type !== 'user') {
+            }
+            if (!ANIMATED_SHORTS_ENABLED || (!category && type !== 'user')) {
                 query = query.or(`category.is.null,category.neq.${ANIMATED_SHORTS_CATEGORY}`);
             }
 

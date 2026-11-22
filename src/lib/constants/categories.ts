@@ -14,7 +14,11 @@ export const VIDEO_CATEGORIES = [
 ] as const;
 
 export const ANIMATED_SHORTS_CATEGORY = 'animated-shorts';
-export const PUBLISH_VIDEO_CATEGORIES = [ANIMATED_SHORTS_CATEGORY, ...VIDEO_CATEGORIES] as const;
+// Animated Shorts is paused; keep the identifier for existing records.
+export const ANIMATED_SHORTS_ENABLED = false;
+export const PUBLISH_VIDEO_CATEGORIES = ANIMATED_SHORTS_ENABLED
+    ? [ANIMATED_SHORTS_CATEGORY, ...VIDEO_CATEGORIES] as const
+    : VIDEO_CATEGORIES;
 
 export type VideoCategory = typeof PUBLISH_VIDEO_CATEGORIES[number];
 
