@@ -12,7 +12,7 @@ export const ResponsiveLayout = ({ children }: { children: React.ReactNode }) =>
     const isDesktop = Platform.OS === 'web' && width > 768;
     const cleanPath = (pathname || '').replace(/^\/+|\/+$/g, '').replace(/^\(tabs\)\/?/, '');
     const isFeed = !cleanPath || cleanPath === 'index';
-    const maxWidth = isFeed ? 1350 : cleanPath === 'inbox' ? 1216 : cleanPath === 'discover' || cleanPath === 'notifications' ? 960 : 640;
+    const maxWidth = isFeed ? 1350 : cleanPath === 'inbox' ? 1216 : cleanPath === 'discover' || cleanPath === 'notifications' || cleanPath === 'ai' ? 960 : 640;
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>

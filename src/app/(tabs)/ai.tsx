@@ -1,22 +1,23 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, StyleSheet, ActivityIndicator, Keyboard, useWindowDimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Modal, Pressable, ScrollView, KeyboardAvoidingView, Platform, StyleSheet, ActivityIndicator, Keyboard, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import Animated, { cancelAnimation, Easing, interpolate, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { OrvelisGuide, OrvelisWelcome } from '../../components/AI/OrvelisWelcome';
 import { OrvelisMark } from '../../components/UI/OrvelisMark';
 import { useTheme } from '../../components/Theme/ThemeProvider';
-import { chatWithAI } from '../../lib/ai/client';
+import { chatWithAI, orvelisErrorMessage } from '../../lib/ai/client';
 import { FEATURED_PROMPT } from '../../lib/ai/featuredPrompt';
 
-type Message = { id: string; role: 'user' | 'assistant'; content: string };
+type Message = { id: string; role: 'user' | 'assistant'; content: string; error?: boolean };
 let counter = 0;
 const makeId = () => String(Date.now()) + '-' + ++counter;
 const ICE = '#7DA5D9';
-const STARTERS = [
-  { label: 'Analyze a video', icon: 'play-circle', prompt: 'Analyze this video: ' },
-  { label: 'Check a claim', icon: 'shield', prompt: 'Fact-check this claim: ' },
-  { label: 'Explain an idea', icon: 'layers', prompt: 'Explain this idea: ' },
+const FOLLOW_UPS = [
+  { label: 'Make it simpler', prompt: 'Explain your last answer more simply, without losing the important details.' },
+  { label: 'Give me an example', prompt: 'Give me a concrete, everyday example of the idea in your last answer.' },
+  { label: 'Quiz me', prompt: 'Check my understanding of what we just discussed. Ask one question at a time and wait for my answer before explaining.' },
 ] as const;
 
 export default function AIScreen() {
@@ -24,11 +25,10 @@ export default function AIScreen() {
   const { starter } = useLocalSearchParams<{ starter?: string }>();
   const { mode } = useTheme();
   const insets = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const input = useRef<React.ElementRef<typeof TextInput>>(null);
   const [inputFocused, setInputFocused] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
-  const compactWelcome = keyboardOpen || height < 650;
   const dark = mode === 'dark';
   const bg = dark ? '#101318' : '#FAFBFD';
   const ink = dark ? '#F2F5FA' : '#17202B';
@@ -41,6 +41,8 @@ export default function AIScreen() {
   const [deepThink, setDeepThink] = useState(false);
   const [history, setHistory] = useState<Message[][]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
+  const welcomeScroll = useRef<React.ElementRef<typeof ScrollView>>(null);
   const isWelcome = !showHistory && messages.length === 0;
   const list = useRef<FlatList<Message>>(null);
   const busy = useRef(false);
@@ -105,8 +107,9 @@ export default function AIScreen() {
     try {
       const answer = await chatWithAI(deepThink ? 'Think carefully and examine the reasoning. ' + question : question, previous);
       setMessages(prev => [...prev, { id: makeId(), role: 'assistant', content: answer }]);
-    } catch {
-      setMessages(prev => [...prev, { id: makeId(), role: 'assistant', content: 'Unable to connect right now. Please try again.' }]);
+    } catch (error) {
+      setDraft(question);
+      setMessages(prev => [...prev, { id: makeId(), role: 'assistant', content: orvelisErrorMessage(error), error: true }]);
     } finally {
       busy.current = false;
       setLoading(false);
@@ -117,19 +120,39 @@ export default function AIScreen() {
   const choosePrompt = (prompt: string) => {
     setDraft(prompt);
     input.current?.focus();
+    welcomeScroll.current?.scrollTo({ y: 0, animated: true });
   };
+  const composer = (
+    <Animated.View style={[styles.composer, { backgroundColor: surface, borderColor: inputFocused ? ICE : border, shadowOpacity: inputFocused ? 0.14 : 0.06, marginHorizontal: isWelcome ? 0 : 18 }, composerMotion]}>
+      <TextInput ref={input} accessibilityLabel="Message Orvelis" onFocus={() => setInputFocused(true)} onBlur={() => setInputFocused(false)} multiline value={draft} onChangeText={setDraft} placeholder="What made you curious?" placeholderTextColor={muted}
+        style={[styles.input, { color: ink }]} textAlignVertical="top" />
+      <View style={styles.composerActions}>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Deep Think" accessibilityHint="Ask Orvelis to examine reasoning and trade-offs more carefully" accessibilityState={{ selected: deepThink }} onPress={() => setDeepThink(v => !v)} style={[styles.deepThink, { backgroundColor: deepThink ? (dark ? '#263B55' : '#E7F0FC') : (dark ? '#262B33' : '#F4F6F9') }]}>
+          <Feather name="sliders" size={15} color={deepThink ? ICE : ink} />
+          <Text style={{ fontSize: 12, color: deepThink ? ICE : ink, fontWeight: '600' }}>Deep Think</Text>
+        </TouchableOpacity>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Send message" accessibilityState={{ disabled: !draft.trim() || loading }} disabled={!draft.trim() || loading} onPress={() => send()} style={[styles.send, { backgroundColor: draft.trim() ? ICE : (dark ? '#303946' : '#EFF2F6') }]}>
+          <Feather name="arrow-up" size={19} color={draft.trim() ? '#FFFFFF' : muted} />
+        </TouchableOpacity>
+      </View>
+      {deepThink && <Text style={[styles.composerHint, { color: muted }]}>A closer look at the reasoning and trade-offs.</Text>}
+    </Animated.View>
+  );
   return (
     <View style={{ flex: 1, backgroundColor: bg }}>
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <View style={styles.header}>
           <View style={styles.brand}>
             <OrvelisMark size={29} color={ink} coreColor={ICE} />
-            <View>
+            <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={[styles.brandName, { color: ink }]}>orvelis</Text>
-              <Text style={[styles.brandCaption, { color: muted }]}>A curious anomaly.</Text>
+              <Text numberOfLines={1} style={[styles.brandCaption, { color: muted }]}>Ideas, with a little more context.</Text>
             </View>
           </View>
           <View style={styles.actions}>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel="How to use Orvelis" onPress={() => setShowGuide(true)} style={[styles.roundButton, { backgroundColor: surface, borderColor: border }]}>
+              <Feather name="book-open" size={18} color={ink} />
+            </TouchableOpacity>
             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Chat history" accessibilityState={{ disabled: loading, selected: showHistory }} disabled={loading} onPress={() => setShowHistory(v => !v)} style={[styles.roundButton, { backgroundColor: showHistory ? (dark ? '#263447' : '#EDF3FA') : surface, borderColor: border, opacity: loading ? .45 : 1 }]}>
               <Feather name="clock" size={19} color={ink} />
             </TouchableOpacity>
@@ -140,7 +163,7 @@ export default function AIScreen() {
         </View>
 
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={[styles.body, { paddingBottom: bottomComposerMargin }]}>
+          style={[styles.body, { paddingBottom: isWelcome ? 0 : bottomComposerMargin }]}>
           {showHistory ? (
             <FlatList
               style={styles.body}
@@ -158,16 +181,13 @@ export default function AIScreen() {
               )}
             />
           ) : isWelcome ? (
-            <Animated.View style={[styles.welcomeHead, compactWelcome && styles.welcomeHeadCompact, welcomeMotion]}>
-              {!compactWelcome && <View accessible={false} style={styles.heroArt}>
-                <View style={[styles.heroTrace, { borderColor: dark ? '#354253' : '#E0E6EF' }]} />
-                <View style={[styles.heroCoordinate, { backgroundColor: ICE }]} />
-                <OrvelisMark size={94} color={ink} coreColor={ICE} pressProgress={arrival} />
-              </View>}
-              <Text style={[styles.eyebrow, { color: muted }]}>ORVELIS / FOLLOW THE ANOMALY</Text>
-              <Text accessibilityRole="header" style={[styles.welcomeTitle, { color: ink, fontSize: width < 360 ? 32 : 38 }]}>A thought got loose.</Text>
-              {!keyboardOpen && <Text style={[styles.welcomeSubtitle, { color: muted }]}>Let’s see where it goes.</Text>}
-            </Animated.View>
+            <ScrollView ref={welcomeScroll} style={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
+              contentContainerStyle={[styles.welcomeContent, { paddingBottom: bottomComposerMargin + 18 }]}>
+              <Animated.View style={welcomeMotion}>
+                <OrvelisWelcome dark={dark} compact={keyboardOpen} composer={composer} arrival={arrival}
+                  onChoosePrompt={choosePrompt} onExploreFeed={() => router.push('/')} />
+              </Animated.View>
+            </ScrollView>
           ) : (
             <FlatList ref={list} style={styles.body} data={messages} keyExtractor={m => m.id} contentContainerStyle={styles.chatList}
               onContentSizeChange={() => list.current?.scrollToEnd({ animated: true })}
@@ -181,61 +201,52 @@ export default function AIScreen() {
             />
           )}
 
-          <Animated.View style={[styles.composer, { backgroundColor: surface, borderColor: inputFocused ? ICE : border, shadowOpacity: inputFocused ? 0.14 : 0.06 }, composerMotion]}>
-            <TextInput ref={input} accessibilityLabel="Message Orvelis" onFocus={() => setInputFocused(true)} onBlur={() => setInputFocused(false)} multiline value={draft} onChangeText={setDraft} placeholder="Ask Orvelis anything..." placeholderTextColor={muted}
-              style={[styles.input, { color: ink }]} textAlignVertical="top" />
-            <View style={styles.composerActions}>
-              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Deep Think" accessibilityState={{ selected: deepThink }} onPress={() => setDeepThink(v => !v)} style={[styles.deepThink, { backgroundColor: deepThink ? (dark ? '#263B55' : '#E7F0FC') : (dark ? '#262B33' : '#F4F6F9') }]}>
-                <Feather name="sliders" size={15} color={deepThink ? ICE : ink} />
-                <Text style={{ fontSize: 12, color: deepThink ? ICE : ink, fontWeight: '600' }}>Deep Think</Text>
-              </TouchableOpacity>
-              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Send message" accessibilityState={{ disabled: !draft.trim() || loading }} disabled={!draft.trim() || loading} onPress={() => send()} style={[styles.send, { backgroundColor: draft.trim() ? ICE : (dark ? '#303946' : '#EFF2F6') }]}>
-                <Feather name="arrow-up" size={19} color={draft.trim() ? '#FFFFFF' : muted} />
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-          {isWelcome && (
-            <View style={styles.welcomeFoot}>
-              {!keyboardOpen && (
-                <View style={styles.starters}>
-                  {STARTERS.map(({ label, icon, prompt }) => (
-                    <TouchableOpacity key={label} accessibilityRole="button"
-                      onPress={() => choosePrompt(prompt)} style={[styles.starter, { borderColor: border }]}>
-                      <Feather name={icon} size={15} color={ink} />
-                      <Text style={[styles.starterLabel, { color: ink }]}>{label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
-          )}
+          {!isWelcome && !showHistory && <>
+            {!loading && messages[messages.length - 1]?.role === 'assistant' && !messages[messages.length - 1]?.error && <View style={styles.followUps}>
+              {FOLLOW_UPS.map(item => <TouchableOpacity key={item.label} accessibilityRole="button" onPress={() => choosePrompt(item.prompt)} style={[styles.followUp, { borderColor: border, backgroundColor: surface }]}>
+                <Text style={{ color: ink, fontSize: 11 }}>{item.label}</Text><Feather name="arrow-up-right" size={13} color={ICE} />
+              </TouchableOpacity>)}
+            </View>}
+            {composer}
+          </>}
         </KeyboardAvoidingView>
       </SafeAreaView>
+      <Modal visible={showGuide} transparent animationType="fade" onRequestClose={() => setShowGuide(false)}>
+        <View style={[styles.guideBackdrop, { paddingTop: Math.max(insets.top, 24), paddingBottom: Math.max(insets.bottom, 24) }]}>
+          <Pressable style={StyleSheet.absoluteFill} accessibilityRole="button" accessibilityLabel="Close guide" onPress={() => setShowGuide(false)} />
+          <View accessibilityViewIsModal style={[styles.guideSheet, { backgroundColor: surface, borderColor: border }]}>
+            <View style={styles.guideHeader}>
+              <Text accessibilityRole="header" style={[styles.guideTitle, { color: ink }]}>A good place to start.</Text>
+              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close guide" onPress={() => setShowGuide(false)} style={styles.roundButton}>
+                <Feather name="x" size={22} color={ink} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={styles.guideScroll}><OrvelisGuide dark={dark} /></ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 const styles = StyleSheet.create({
   header: { height: 76, paddingHorizontal: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: 11 },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 11, flex: 1, minWidth: 0, marginRight: 12 },
   brandName: { fontSize: 23, fontFamily: 'Outfit_500Medium', letterSpacing: -.8 },
   brandCaption: { fontSize: 10, letterSpacing: .2, marginTop: 1 },
-  actions: { flexDirection: 'row', gap: 9 },
+  actions: { flexDirection: 'row', gap: 9, flexShrink: 0 },
   roundButton: { width: 41, height: 41, borderRadius: 21, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1, minHeight: 0 },
-  welcomeHead: { flex: 1.35, minHeight: 260, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 27, paddingHorizontal: 16 },
-  welcomeHeadCompact: { minHeight: 100, paddingBottom: 16 },
-  heroArt: { width: 156, height: 140, alignItems: 'center', justifyContent: 'center', marginBottom: 13 },
-  heroTrace: { position: 'absolute', width: 134, height: 113, borderWidth: 1, borderRadius: 46, transform: [{ rotate: '23deg' }] },
-  heroCoordinate: { position: 'absolute', width: 3, height: 3, borderRadius: 1.5, left: 12, bottom: 17 },
-  eyebrow: { fontSize: 9, fontFamily: 'Inter_500Medium', letterSpacing: 2, marginBottom: 10 },
-  welcomeTitle: { textAlign: 'center', fontFamily: 'Outfit_500Medium', letterSpacing: -1.8 },
-  welcomeSubtitle: { fontSize: 12, lineHeight: 19, textAlign: 'center', marginTop: 10, paddingHorizontal: 8 },
-  welcomeFoot: { flex: 1 },
+  welcomeContent: { paddingHorizontal: 22, paddingTop: 10 },
+  composerHint: { fontSize: 11, lineHeight: 17, marginTop: 10 },
+  followUps: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, paddingHorizontal: 18, paddingBottom: 10 },
+  followUp: { minHeight: 36, borderRadius: 18, borderWidth: 1, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', gap: 7 },
+  guideBackdrop: { flex: 1, backgroundColor: 'rgba(15, 25, 40, .28)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 18 },
+  guideSheet: { width: '100%', maxWidth: 520, maxHeight: '90%', borderRadius: 24, borderWidth: 1, overflow: 'hidden' },
+  guideHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 22, paddingRight: 14, paddingTop: 14, paddingBottom: 8 },
+  guideTitle: { fontFamily: 'Outfit_500Medium', fontSize: 23, letterSpacing: -.6, flexShrink: 1 },
+  guideScroll: { paddingHorizontal: 22, paddingBottom: 22 },
   assistantLabel: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 10 },
   thinking: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 16 },
-  starters: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 8, paddingTop: 13, paddingHorizontal: 14 },
-  starter: { minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 7, borderWidth: 1, borderRadius: 20, paddingHorizontal: 12 },
-  starterLabel: { fontSize: 12, fontFamily: 'Inter_500Medium' },
   sectionTitle: { fontSize: 10, letterSpacing: 2, fontWeight: '700', marginBottom: 11 },
 
   historyRow: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: 14, borderBottomWidth: 1 },
