@@ -5,6 +5,8 @@ import {
     Text, useWindowDimensions, View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useIsFocused, useRouter } from 'expo-router';
+import { cancelAnimation, Easing, ReduceMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../Theme/ThemeProvider';
@@ -114,35 +116,73 @@ function FeedCard({ entry, onPress, grid, columns, desktop }: {
 
 export function CuratedFeedIntro({ desktop = false }: { desktop?: boolean }) {
     const { theme, mode } = useTheme();
+    const router = useRouter();
+    const isFocused = useIsFocused();
     const dark = mode === 'dark';
+    const motion = useSharedValue(1);
+    const ink = dark ? '#D9E8FF' : '#365C8A';
+
+    useEffect(() => {
+        if (isFocused) {
+            motion.set(0);
+            motion.set(withTiming(1, {
+                duration: 1600, easing: Easing.inOut(Easing.cubic), reduceMotion: ReduceMotion.System,
+            }));
+        }
+        return () => cancelAnimation(motion);
+    }, [isFocused, motion]);
+
+    const animateMark = () => {
+        motion.set(0);
+        motion.set(withTiming(1, {
+            duration: 1200, easing: Easing.inOut(Easing.cubic), reduceMotion: ReduceMotion.System,
+        }));
+    };
 
     return (
         <View style={[styles.heading, desktop ? styles.webIntro : styles.mobileIntro]}>
-            <Text accessibilityRole="header" aria-level={desktop ? 1 : undefined}
-                style={[styles.headingTitle, desktop && styles.webIntroTitle, { color: theme.colors.text.primary }]}>
-                Things you’ll bring up later
-            </Text>
-            <Text style={[styles.headingSubtitle, { color: theme.colors.text.secondary }]}>
-                How things work. Why people disagree.
-            </Text>
-            <View style={[styles.editorialNote, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.surface.border }]}>
-                {desktop ? (
-                    <Ionicons name="bulb-outline" size={18} color={theme.colors.text.primary} />
-                ) : (
-                    <LinearGradient
-                        colors={dark ? ['#263F5D', '#152437'] : ['#F5FAFF', '#DDEAF9']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={[styles.noteMark, { borderColor: dark ? '#3A5575' : '#BDCFE6' }]}
-                    >
-                        <OrvelisMark size={20} color={dark ? '#D4E6FF' : '#304E75'} coreColor={dark ? '#8DBDF4' : '#487BAE'} />
-                    </LinearGradient>
-                )}
-                <View style={desktop ? styles.webNoteCopy : styles.mobileNoteCopy}>
-                    <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>What did the clip leave out?</Text>
-                    <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>Ask Orvelis AI for context or a second take.</Text>
-                </View>
+            <View style={styles.introCopy}>
+                <Text accessibilityRole="header" aria-level={desktop ? 1 : undefined}
+                    style={[styles.headingTitle, desktop && styles.webIntroTitle, { color: theme.colors.text.primary }]}>
+                    Follow your curiosity.
+                </Text>
+                <Text style={[styles.headingSubtitle, { color: theme.colors.text.secondary }]}>
+                    Ideas worth a closer look.
+                </Text>
             </View>
+            <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Unpack it with Orvelis AI"
+                accessibilityHint="Open Orvelis to explore ideas, explanations and other perspectives"
+                onPress={() => router.push('/(tabs)/ai')}
+                onHoverIn={animateMark}
+                onPressIn={animateMark}
+                style={({ pressed }) => [styles.editorialNote, {
+                    borderColor: dark ? '#2E435E' : '#D4E2F3',
+                    backgroundColor: dark ? '#152132' : '#F2F7FD',
+                    opacity: pressed ? 0.8 : 1,
+                }]}
+            >
+                <LinearGradient
+                    pointerEvents="none"
+                    colors={dark ? ['#1D3049', '#152132'] : ['#E7F0FC', '#F8FAFE']}
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                    style={StyleSheet.absoluteFill}
+                />
+                <View pointerEvents="none" style={[styles.noteMark, {
+                    backgroundColor: dark ? '#263F5D' : '#DCE9FA',
+                    borderColor: dark ? '#456080' : '#BFD3EC',
+                }]}>
+                    <OrvelisMark size={27} color={ink} coreColor={dark ? '#A9D0FF' : '#6F9CD3'} pressProgress={motion} />
+                </View>
+                <View style={styles.noteCopy}>
+                    <Text style={[styles.noteTitle, { color: theme.colors.text.primary }]}>Unpack it with Orvelis</Text>
+                    <Text style={[styles.noteSubtitle, { color: theme.colors.text.secondary }]}>The context. The why. Another perspective.</Text>
+                </View>
+                <View pointerEvents="none" style={styles.noteArrow}>
+                    <Ionicons name="arrow-forward" size={16} color={ink} />
+                </View>
+            </Pressable>
         </View>
     );
 }
@@ -302,18 +342,19 @@ const styles = StyleSheet.create({
     creatorName: { color: '#FFFFFF', fontSize: 11, fontWeight: '600', flexShrink: 1 },
     likes: { flexDirection: 'row', alignItems: 'center', gap: 3 },
     likesText: { color: '#FFFFFF', fontSize: 11, fontWeight: '600' },
-    heading: { gap: 5 },
-    mobileIntro: { paddingHorizontal: 8, paddingBottom: 8 },
-    webIntro: { flexShrink: 1, alignItems: 'flex-start' },
-    webIntroTitle: { fontSize: 17, lineHeight: 21, letterSpacing: -0.25 },
-    headingSubtitle: { fontSize: 12, lineHeight: 16 },
-    editorialNote: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 8, marginTop: 2 },
-    noteMark: { width: 28, height: 28, borderRadius: 9, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-    webNoteCopy: { flexShrink: 1 },
-    mobileNoteCopy: { flex: 1 },
-    noteTitle: { fontSize: 12, lineHeight: 16, fontWeight: '700' },
-    noteSubtitle: { fontSize: 10.5, lineHeight: 14, marginTop: 1 },
-    headingTitle: { fontSize: 22, lineHeight: 26, fontWeight: '800', letterSpacing: -0.5 },
+    heading: { gap: 12, minWidth: 0 },
+    introCopy: { gap: 3 },
+    mobileIntro: { paddingHorizontal: 8, paddingTop: 4, paddingBottom: 14 },
+    webIntro: { flex: 1, minWidth: 0 },
+    webIntroTitle: { fontSize: 19, lineHeight: 24, letterSpacing: -0.45 },
+    headingSubtitle: { fontFamily: 'Inter_400Regular', fontSize: 11, lineHeight: 16 },
+    editorialNote: { width: '100%', flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderRadius: 16, padding: 11, overflow: 'hidden', minHeight: 66 },
+    noteMark: { width: 40, height: 40, flexShrink: 0, borderRadius: 14, borderTopRightRadius: 7, borderWidth: 1, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-7deg' }] },
+    noteCopy: { flex: 1, minWidth: 0, gap: 3 },
+    noteArrow: { width: 24, height: 28, flexShrink: 0, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-45deg' }] },
+    noteTitle: { fontFamily: 'Outfit_600SemiBold', fontSize: 13, lineHeight: 17, letterSpacing: -0.1 },
+    noteSubtitle: { fontFamily: 'Inter_400Regular', fontSize: 10.5, lineHeight: 15 },
+    headingTitle: { fontFamily: 'Outfit_600SemiBold', fontSize: 21, lineHeight: 26, letterSpacing: -0.5 },
     card: { borderRadius: 14, overflow: 'hidden', backgroundColor: '#202A39' },
     source: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
     modal: { flex: 1 },
