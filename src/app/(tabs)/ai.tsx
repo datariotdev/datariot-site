@@ -181,11 +181,11 @@ export default function AIScreen() {
               )}
             />
           ) : isWelcome ? (
-            <ScrollView ref={welcomeScroll} style={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
+            <ScrollView ref={welcomeScroll} style={styles.body} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
               contentContainerStyle={[styles.welcomeContent, { paddingBottom: bottomComposerMargin + 18 }]}>
               <Animated.View style={welcomeMotion}>
                 <OrvelisWelcome dark={dark} compact={keyboardOpen} composer={composer} arrival={arrival}
-                  onChoosePrompt={choosePrompt} onExploreFeed={() => router.push('/')} />
+                  onChoosePrompt={choosePrompt} onExploreFeed={() => router.push('/')} onShowGuide={() => setShowGuide(true)} />
               </Animated.View>
             </ScrollView>
           ) : (

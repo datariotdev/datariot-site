@@ -57,11 +57,11 @@ export function OrvelisGuide({ dark }: { dark: boolean }) {
 
 type Props = {
   dark: boolean; compact: boolean; composer: ReactNode; arrival: SharedValue<number>;
-  onChoosePrompt: (prompt: string) => void; onExploreFeed: () => void;
+  onChoosePrompt: (prompt: string) => void; onExploreFeed: () => void; onShowGuide: () => void;
 };
 
 /** Examples fill an editable draft. Only Send starts a request. */
-export function OrvelisWelcome({ dark, compact, composer, arrival, onChoosePrompt, onExploreFeed }: Props) {
+export function OrvelisWelcome({ dark, compact, composer, arrival, onChoosePrompt, onExploreFeed, onShowGuide }: Props) {
   const [width, setWidth] = useState(0);
   const [hovered, setHovered] = useState<string | null>(null);
   const [guideOpen, setGuideOpen] = useState(true);
@@ -90,7 +90,10 @@ export function OrvelisWelcome({ dark, compact, composer, arrival, onChoosePromp
       {!compact && <>
         <View style={styles.sectionHeading}>
           <Text style={[styles.sectionTitle, { color: c.ink }]}>Follow a thought</Text>
-          <Text style={[styles.sectionCaption, { color: c.muted }]}>Pick one. Make it yours.</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Open the 30-second guide" onPress={onShowGuide}
+            style={({ pressed }) => [styles.guideLink, { opacity: pressed ? .6 : 1 }]}>
+            <Feather name="book-open" size={13} color={c.accent} /><Text style={[styles.sectionCaption, { color: c.accent }]}>30-second guide</Text><Feather name="arrow-up-right" size={13} color={c.accent} />
+          </Pressable>
         </View>
         <View style={styles.tools}>
           {TOOLS.map(tool => (
@@ -149,7 +152,8 @@ const styles = StyleSheet.create({
   orbit: { position: 'absolute', width: '89%', height: '71%', borderRadius: 54, borderWidth: 1, transform: [{ rotate: '28deg' }] },
   orbitOuter: { position: 'absolute', width: '100%', height: '90%', borderRadius: 62, borderWidth: 1, transform: [{ rotate: '-22deg' }] },
   orbitNode: { position: 'absolute', width: 6, height: 6, borderRadius: 3, backgroundColor: ICE, right: 6, top: 30 },
-  sectionHeading: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6, marginTop: 27, marginBottom: 13 },
+  sectionHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6, marginTop: 23, marginBottom: 9 },
+  guideLink: { minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 6 },
   sectionTitle: { fontFamily: 'Outfit_500Medium', fontSize: 20, letterSpacing: -.4 }, sectionCaption: { fontSize: 11 },
   tools: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   tool: { borderRadius: 19, borderWidth: 1, padding: 18, minHeight: 159 },
