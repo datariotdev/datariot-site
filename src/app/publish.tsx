@@ -9,10 +9,11 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../lib/supabase/hooks/useAuth';
 import { ANIMATED_SHORTS_CATEGORY, ANIMATED_SHORTS_ENABLED, PUBLISH_VIDEO_CATEGORIES, CATEGORY_DISPLAY_NAMES, VideoCategory } from '../lib/constants/categories';
 import { supabase } from '../lib/supabase/client';
-import { generateDebateSeed, generateVideoAnalysis, DebateSeed } from '../lib/ai/client';
+import { generateDebateSeed, DebateSeed } from '../lib/ai/client';
 import { useTheme } from '../components/Theme/ThemeProvider';
 import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
+import { VideoPublisher } from '../components/Publish/VideoPublisher';
 
 const showAlert = (title: string, message: string) => {
     if (Platform.OS === 'web') {
@@ -23,6 +24,12 @@ const showAlert = (title: string, message: string) => {
 };
 
 export default function PublishScreen() {
+    const params = useLocalSearchParams();
+    if (typeof params.videoUri === 'string' && params.videoUri) return <VideoPublisher reviewRequired={false} />;
+    return <TextPublisher />;
+}
+
+function TextPublisher() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const { videoUri, trimStart, trimEnd, debateId, side, thesis } = params;
@@ -284,38 +291,6 @@ export default function PublishScreen() {
         }
     };
 
-    // Verification State
-    const [isVerifying, setIsVerifying] = useState(false);
-    const [verificationStatus, setVerificationStatus] = useState<'idle' | 'verified' | 'rejected'>('idle');
-
-    useEffect(() => {
-        if (videoUri && !isAnimatedShort) {
-            verifyVideoContent();
-        } else {
-            setVerificationStatus('idle');
-        }
-    }, [videoUri, isAnimatedShort]);
-
-    const verifyVideoContent = async () => {
-        setIsVerifying(true);
-        setVerificationStatus('idle');
-
-        try {
-            // Real AI Analysis
-            const analysis = await generateVideoAnalysis();
-            if (analysis) {
-                setVerificationStatus('verified');
-            } else {
-                setVerificationStatus('rejected');
-            }
-        } catch (error) {
-            console.error("AI Verification error:", error);
-            setVerificationStatus('idle');
-        } finally {
-            setIsVerifying(false);
-        }
-    };
-
     const handleAISuggest = async () => {
         setSuggesting(true);
         try {
@@ -323,7 +298,6 @@ export default function PublishScreen() {
             if (seed) {
                 setCaption(seed.thesis);
                 setAiSeed(seed);
-                setVerificationStatus('verified');
             }
         } catch (error) {
             console.error("AI Suggestion error:", error);
@@ -334,7 +308,7 @@ export default function PublishScreen() {
     };
 
     const isVideoSelection = !!videoUri;
-    const canPost = !uploading && (isAnimatedShort || (!isVerifying && (!isVideoSelection || verificationStatus === 'verified')));
+    const canPost = !uploading;
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background.primary }]} edges={['top']}>
@@ -455,32 +429,6 @@ export default function PublishScreen() {
                                 nativeControls={false}
                             />
 
-                            {/* Verification Overlay */}
-                            {!isAnimatedShort && isVerifying && (
-                                <View style={styles.verificationOverlay}>
-                                    <ActivityIndicator size="large" color={isDark ? '#D9E4FF' : '#4C6EF5'} />
-                                    <Text style={[styles.verificationText, { fontFamily: theme.typography.fontFamilies.medium }]}>Verifying AI Content...</Text>
-                                </View>
-                            )}
-
-                            {/* Verification Badges */}
-                            {!isAnimatedShort && !isVerifying && verificationStatus === 'verified' && (
-                                <View style={[styles.videoBadge, { backgroundColor: 'rgba(34, 197, 94, 0.9)' }]}>
-                                    <Ionicons name="checkmark-circle" size={14} color="white" />
-                                    <Text style={[styles.videoBadgeText, { fontFamily: theme.typography.fontFamilies.bold }]}>AI Verified</Text>
-                                </View>
-                            )}
-
-                            {!isAnimatedShort && !isVerifying && verificationStatus === 'rejected' && (
-                                <View style={styles.errorOverlay}>
-                                    <Ionicons name="alert-circle" size={48} color="#ef4444" />
-                                    <Text style={[styles.errorTitle, { fontFamily: theme.typography.fontFamilies.bold }]}>Verification Failed</Text>
-                                    <Text style={[styles.errorText, { fontFamily: theme.typography.fontFamilies.regular }]}>
-                                        This video does not appear to be high-quality content.
-                                        Please upload engaging short videos only.
-                                    </Text>
-                                </View>
-                            )}
                         </View>
                     )}
 
