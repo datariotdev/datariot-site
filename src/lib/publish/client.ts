@@ -12,7 +12,7 @@ export interface UploadReview {
     summary: string; suggestedTitle: string; suggestedCaption: string; duration: number;
 }
 export const MAX_UPLOAD_BYTES = 140_000_000;
-export async function stageVideo(uri: string, userId: string): Promise<string> {
+export async function readVideoFile(uri: string): Promise<{ body: Blob | ArrayBuffer; mime: string; ext: string }> {
     let body: Blob | ArrayBuffer;
     let mime = 'video/mp4';
     if (Platform.OS === 'web') {
@@ -30,6 +30,10 @@ export async function stageVideo(uri: string, userId: string): Promise<string> {
     }
     if (!['video/mp4', 'video/webm', 'video/quicktime'].includes(mime)) throw new Error('Use an MP4, MOV or WebM video.');
     const ext = mime === 'video/webm' ? 'webm' : mime === 'video/quicktime' ? 'mov' : 'mp4';
+    return { body, mime, ext };
+}
+export async function stageVideo(uri: string, userId: string): Promise<string> {
+    const { body, mime, ext } = await readVideoFile(uri);
     const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage.from('upload-review').upload(path, body, { contentType: mime, upsert: false });
     if (error) throw new Error('Video upload failed. Please try again.');

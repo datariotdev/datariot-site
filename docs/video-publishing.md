@@ -16,7 +16,7 @@ Approved files are copied into a public bucket clients cannot write. A service-o
 - `supabase/schema/upload_moderation_enforcement.sql`: **not applied**. Requires approval because it blocks direct video inserts, protects published media/content fields, prevents unreviewed post video URLs and revokes two legacy upload RPCs. Old clients must update before uploading.
 - `moderate-upload`: deployment **blocked pending approval** to send unpublished video and audio to Google Gemini. Source code and mocked-provider tests are ready.
 - Existing `orvelis-ai` must be redeployed with the new `clip.ts` so it recognizes the approved-videos bucket. Preserve its existing index/config.
-- Frontend changes are prepared for review; do not roll out the new uploader until the moderation function is deployed.
+- The redesigned studio is now in main using the existing publishing path and an explicit not-checked status. This PR switches the route to reviewRequired=true. Do not merge that switch until the moderation function is deployed. The existing path never sends video to Gemini or assigns AI approval.
 
 Apply enforcement only after the function is live and the new frontend is available. Until enforcement is approved and applied, old clients/direct database writes can bypass the new flow. Existing feed videos are not retroactively moderated by this change.
 

@@ -67,4 +67,3 @@ end;
 $$;
 revoke all on function public.publish_reviewed_upload(uuid,uuid,text) from public,anon,authenticated;
 grant execute on function public.publish_reviewed_upload(uuid,uuid,text) to service_role;
-
