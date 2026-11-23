@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../client';
 import { useAuth } from './useAuth';
 import { encodeVideoUrl } from '../../utils/url';
+import { uniqueById } from '../../utils/feed';
 import { ANIMATED_SHORTS_CATEGORY, ANIMATED_SHORTS_ENABLED } from '../../constants/categories';
 
 export interface Video {
@@ -303,9 +304,9 @@ export function useVideos({ type, userId, videoId, searchQuery, hashtag, categor
             }
 
             if (isRefresh) {
-                setVideos(formattedVideos);
+                setVideos(uniqueById(formattedVideos));
             } else {
-                setVideos(prev => [...prev, ...formattedVideos]);
+                setVideos(prev => uniqueById([...prev, ...formattedVideos]));
             }
 
             setHasMore(videoData.length === 12);

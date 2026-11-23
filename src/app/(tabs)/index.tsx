@@ -23,6 +23,7 @@ import { useCuratedReels } from '../../lib/curated/useCuratedReels';
 import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import { useNavVisibility } from '../../context/NavVisibilityContext';
 import { CircleFeed } from '../../components/Circle/CircleFeed';
+import { ArenaFeed } from '../../components/Arena/ArenaFeed';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -39,8 +40,8 @@ const HomeScreen = () => {
     const isFocused = useIsFocused();
     const { section } = useLocalSearchParams<{ section?: string }>();
     const insets = useSafeAreaInsets();
-    const [activeTab, setActiveTab] = useState<FeedType>(section === 'circle' ? 'following' : 'trending');
-    useEffect(() => { if (section === 'circle') setActiveTab('following'); }, [section]);
+    const [activeTab, setActiveTab] = useState<FeedType>(section === 'circle' ? 'following' : section === 'arena' ? 'ai' : 'trending');
+    useEffect(() => { if (section === 'circle') setActiveTab('following'); else if (section === 'arena') setActiveTab('ai'); }, [section]);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [viewMode, setViewMode] = useState<ViewMode>(Platform.OS === 'web' ? 'classic' : 'mosaic');
@@ -98,14 +99,6 @@ const HomeScreen = () => {
         setSelectedVideoId(videoId);
     };
 
-    if (!isWeb && activeTab === 'ai' && loading && videos.length === 0) {
-        return (
-            <View style={[styles.loadingContainer, { backgroundColor: 'transparent' }]}>
-                <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
-            </View>
-        );
-    }
-
     const isFeedActive =
         isFocused &&
         selectedVideoId === null &&
@@ -114,7 +107,10 @@ const HomeScreen = () => {
 
     const feedPaddingTop = isWeb ? 0 : (activeTab === 'trending' ? insets.top + 104 : insets.top + 58);
 
-    const feed = activeTab === 'following' ? (
+    const webTitle = activeTab === 'ai' ? 'Arena' : 'Circle';
+    const feed = activeTab === 'ai' ? (
+        <ArenaFeed paddingTop={feedPaddingTop} />
+    ) : activeTab === 'following' ? (
         <CircleFeed paddingTop={feedPaddingTop} />
     ) : isLatest ? (
         <CuratedFeed key={isWeb ? activeCategory || 'all' : 'mobile'} videos={videos} reels={curatedReels} fetchError={fetchError} loading={loading} grid={isWeb ? latestGrid : viewMode === 'mosaic'} desktop={isWeb} onRetry={refresh}
@@ -222,12 +218,12 @@ const HomeScreen = () => {
         </>
     );
 
-    if (isWeb && activeTab === 'following') {
+    if (isWeb && (activeTab === 'following' || activeTab === 'ai')) {
         return (
             <View style={[styles.container, styles.webPage, { paddingHorizontal: width >= 1190 ? 36 : 24 }]}>
                 <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
                 <WebFeedHeader tabs={TABS} activeTab={activeTab} onTabPress={setActiveTab} isFocused={isFocused} hideSearch />
-                <CircleFeed desktop />
+                {activeTab === 'ai' ? <ArenaFeed desktop /> : <CircleFeed desktop />}
             </View>
         );
     }
@@ -246,7 +242,7 @@ const HomeScreen = () => {
                             {isLatest ? <CuratedFeedIntro desktop /> : (
                                 <Text accessibilityRole="header" aria-level={1}
                                     style={[styles.webTitle, { color: theme.colors.text.primary }]}>
-                                    {activeTab === 'ai' ? 'Arena' : 'Circle'}
+                                    {webTitle}
                                 </Text>
                             )}
                             {(!isLatest || latestGridFits) && (
@@ -340,7 +336,7 @@ const HomeScreen = () => {
                     </View>
 
                     <View style={styles.rightActionsContainer} pointerEvents="box-none">
-                        {activeTab !== 'following' && <Pressable
+                        {activeTab === 'trending' && <Pressable
                             style={[
                                 styles.roundButton,
                                 {
