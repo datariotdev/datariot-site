@@ -124,7 +124,7 @@ function ThemedAppContent() {
                     <SystemBarsSync />
                     <Stack
                         screenLayout={({ children, route }) => (
-                            <ScreenFrame fullWidth={route.name === '(tabs)' || route.name === 'profile' || route.name === 'business' || route.name === 'notifications' || route.name.startsWith('user/')}>
+                            <ScreenFrame fullWidth={route.name === '(tabs)' || route.name === 'profile' || route.name === 'publish' || route.name === 'business' || route.name === 'notifications' || route.name.startsWith('user/')}>
                                 {children}
                             </ScreenFrame>
                         )}

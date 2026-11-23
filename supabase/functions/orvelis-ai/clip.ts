@@ -59,7 +59,7 @@ export function trustedMedia(value: string, base: string): URL | undefined {
   try {
     const url = new URL(value);
     if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash || (url.port && url.port !== '443')) return;
-    if (url.origin === new URL(base).origin && url.pathname.startsWith('/storage/v1/object/public/videos/')) return url;
+    if (url.origin === new URL(base).origin && (/^\/storage\/v1\/object\/public\/(videos|approved-videos)\//).test(url.pathname)) return url;
     if (['clipto-videos.s3.eu-north-1.amazonaws.com', 'usgs-ocapsv2-public-input-media.s3.us-west-2.amazonaws.com'].includes(url.hostname)) return url;
     if (url.hostname === 'commondatastorage.googleapis.com' && url.pathname.startsWith('/gtv-videos-bucket/')) return url;
   } catch { /* Missing or unsupported clip URL. */ }
@@ -91,8 +91,8 @@ function playbackUrl(clip: Clip) {
 }
 
 // Upload larger clips as a stream, avoiding a full video allocation in the Edge runtime.
-async function mediaPart(clip: Clip): Promise<{ part: unknown; cleanup: () => Promise<void> }> {
-  const url = trustedMedia(playbackUrl(clip), Deno.env.get('SUPABASE_URL')!);
+export async function mediaPart(clip: Clip, stagedUrl?: URL): Promise<{ part: unknown; cleanup: () => Promise<void> }> {
+  const url = stagedUrl || trustedMedia(playbackUrl(clip), Deno.env.get('SUPABASE_URL')!);
   if (!url) throw new ClipError('MEDIA_UNSUPPORTED', 422);
   const key = Deno.env.get('GEMINI_API_KEY')!;
   const media = await fetch(url, { signal: AbortSignal.timeout(15000), redirect: 'error' });
@@ -103,7 +103,7 @@ async function mediaPart(clip: Clip): Promise<{ part: unknown; cleanup: () => Pr
     await media.body.cancel();
     throw new ClipError('MEDIA_UNSUPPORTED', 422);
   }
-  if (size < 15_000_000) {
+  if (size < 15_000_000 && !stagedUrl) {
     await media.body.cancel();
     return { part: { fileData: { mimeType: mime, fileUri: url.href } }, cleanup: async () => {} };
   }
