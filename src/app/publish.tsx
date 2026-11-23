@@ -25,7 +25,7 @@ const showAlert = (title: string, message: string) => {
 
 export default function PublishScreen() {
     const params = useLocalSearchParams();
-    if (typeof params.videoUri === 'string' && params.videoUri) return <VideoPublisher reviewRequired={false} />;
+    if (typeof params.videoUri === 'string' && params.videoUri) return <VideoPublisher reviewRequired={true} />;
     return <TextPublisher />;
 }
 
