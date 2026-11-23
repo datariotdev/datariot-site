@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, Pressable, StatusBar, useWindowDimensions, Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CoubClassicFeed } from '@components/VideoFeed/CoubClassicFeed';
 import { useVideos, FeedType } from '@lib/supabase/hooks/useVideos';
-import { useRouter, useIsFocused } from 'expo-router';
+import { useRouter, useIsFocused, useLocalSearchParams } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { SideMenu } from '../../components/Navigation/SideMenu';
 import { useTheme } from '../../components/Theme/ThemeProvider';
@@ -22,6 +22,7 @@ import { CuratedFeed, CuratedFeedIntro } from '../../components/VideoFeed/Curate
 import { useCuratedReels } from '../../lib/curated/useCuratedReels';
 import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import { useNavVisibility } from '../../context/NavVisibilityContext';
+import { CircleFeed } from '../../components/Circle/CircleFeed';
 
 type ViewMode = 'classic' | 'mosaic' | 'pulse';
 
@@ -36,8 +37,10 @@ const MIN_THREE_COLUMN_WIDTH = 744;
 const HomeScreen = () => {
     const router = useRouter();
     const isFocused = useIsFocused();
+    const { section } = useLocalSearchParams<{ section?: string }>();
     const insets = useSafeAreaInsets();
-    const [activeTab, setActiveTab] = useState<FeedType>('trending');
+    const [activeTab, setActiveTab] = useState<FeedType>(section === 'circle' ? 'following' : 'trending');
+    useEffect(() => { if (section === 'circle') setActiveTab('following'); }, [section]);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [viewMode, setViewMode] = useState<ViewMode>(Platform.OS === 'web' ? 'classic' : 'mosaic');
@@ -95,7 +98,7 @@ const HomeScreen = () => {
         setSelectedVideoId(videoId);
     };
 
-    if (!isWeb && activeTab !== 'trending' && loading && videos.length === 0) {
+    if (!isWeb && activeTab === 'ai' && loading && videos.length === 0) {
         return (
             <View style={[styles.loadingContainer, { backgroundColor: 'transparent' }]}>
                 <ActivityIndicator size="large" color={theme.colors.primary.DEFAULT} />
@@ -111,7 +114,9 @@ const HomeScreen = () => {
 
     const feedPaddingTop = isWeb ? 0 : (activeTab === 'trending' ? insets.top + 104 : insets.top + 58);
 
-    const feed = isLatest ? (
+    const feed = activeTab === 'following' ? (
+        <CircleFeed paddingTop={feedPaddingTop} />
+    ) : isLatest ? (
         <CuratedFeed key={isWeb ? activeCategory || 'all' : 'mobile'} videos={videos} reels={curatedReels} fetchError={fetchError} loading={loading} grid={isWeb ? latestGrid : viewMode === 'mosaic'} desktop={isWeb} onRetry={refresh}
             isFocused={isFeedActive} paddingTop={feedPaddingTop} onEndReached={loadMore}
             onSelectNative={handleSelectVideo} onOpenOrvelis={setDeepDiveVideo} />
@@ -154,7 +159,7 @@ const HomeScreen = () => {
                 <ActivityIndicator size="small" color={isDark ? '#D9E4FF' : '#46658B'} />
             ) : (
                 <Text style={[styles.webEmptyText, { color: theme.colors.text.secondary }]}>
-                    {fetchError ? 'Couldn’t load videos.' : activeTab === 'following' ? 'No videos from creators you follow yet.' : 'No videos in Arena yet.'}
+                    {fetchError ? 'Couldn’t load videos.' : 'No videos in Arena yet.'}
                 </Text>
             )}
             {!loading && fetchError && (
@@ -216,6 +221,16 @@ const HomeScreen = () => {
 
         </>
     );
+
+    if (isWeb && activeTab === 'following') {
+        return (
+            <View style={[styles.container, styles.webPage, { paddingHorizontal: width >= 1190 ? 36 : 24 }]}>
+                <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+                <WebFeedHeader tabs={TABS} activeTab={activeTab} onTabPress={setActiveTab} isFocused={isFocused} hideSearch />
+                <CircleFeed desktop />
+            </View>
+        );
+    }
 
     if (isWeb) {
         const showCompanion = isLatest && width >= 1330;
@@ -325,7 +340,7 @@ const HomeScreen = () => {
                     </View>
 
                     <View style={styles.rightActionsContainer} pointerEvents="box-none">
-                        <Pressable
+                        {activeTab !== 'following' && <Pressable
                             style={[
                                 styles.roundButton,
                                 {
@@ -343,7 +358,7 @@ const HomeScreen = () => {
                                 size={22}
                                 color={theme.colors.text.primary}
                             />
-                        </Pressable>
+                        </Pressable>}
 
                         <Pressable
                             style={[

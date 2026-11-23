@@ -11,9 +11,10 @@ interface Props {
     activeTab: FeedType;
     onTabPress: (tab: FeedType) => void;
     isFocused: boolean;
+    hideSearch?: boolean;
 }
 
-export function WebFeedHeader({ tabs, activeTab, onTabPress, isFocused }: Props) {
+export function WebFeedHeader({ tabs, activeTab, onTabPress, isFocused, hideSearch = false }: Props) {
     const p = usePalette();
     const selectedBackground = p.isDark ? '#253348' : '#E9F0FA';
     const router = useRouter();
@@ -23,7 +24,7 @@ export function WebFeedHeader({ tabs, activeTab, onTabPress, isFocused }: Props)
     const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
 
     useEffect(() => {
-        if (!isFocused || typeof document === 'undefined') return;
+        if (hideSearch || !isFocused || typeof document === 'undefined') return;
         const handleShortcut = (event: KeyboardEvent) => {
             if (event.key !== '/' || event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
             const active = document.activeElement;
@@ -34,7 +35,7 @@ export function WebFeedHeader({ tabs, activeTab, onTabPress, isFocused }: Props)
 
         document.addEventListener('keydown', handleShortcut);
         return () => document.removeEventListener('keydown', handleShortcut);
-    }, [isFocused]);
+    }, [isFocused, hideSearch]);
 
     const submit = () => {
         const q = query.trim();
@@ -58,7 +59,7 @@ export function WebFeedHeader({ tabs, activeTab, onTabPress, isFocused }: Props)
                 })}
             </View>
 
-            <View style={[styles.search, width < 1000 && styles.searchCompact, {
+            {!hideSearch && <View style={[styles.search, width < 1000 && styles.searchCompact, {
                 borderColor: searchFocused ? '#7797BF' : p.border, backgroundColor: p.card,
             }]}>
                 <Pressable accessibilityRole="button" accessibilityLabel="Submit debate search" onPress={submit} style={styles.searchIcon}>
@@ -71,7 +72,7 @@ export function WebFeedHeader({ tabs, activeTab, onTabPress, isFocused }: Props)
                 <View aria-hidden style={[styles.keycap, { borderColor: p.border }]}>
                     <Text style={[styles.keycapText, { color: p.sub }]}>/</Text>
                 </View>
-            </View>
+            </View>}
         </View>
     );
 }
