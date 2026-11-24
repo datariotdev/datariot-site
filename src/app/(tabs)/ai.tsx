@@ -22,7 +22,7 @@ const FOLLOW_UPS = [
 
 export default function AIScreen() {
   const router = useRouter();
-  const { starter } = useLocalSearchParams<{ starter?: string }>();
+  const { starter, question } = useLocalSearchParams<{ starter?: string; question?: string }>();
   const { mode } = useTheme();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -55,12 +55,13 @@ export default function AIScreen() {
   }, [arrival]));
 
   useFocusEffect(useCallback(() => {
-    if (starter !== FEATURED_PROMPT.id) return;
-    setDraft(FEATURED_PROMPT.question);
+    const arenaQuestion = typeof question === 'string' ? question.trim().slice(0, 2200) : '';
+    if (!arenaQuestion && starter !== FEATURED_PROMPT.id) return;
+    setDraft(arenaQuestion || FEATURED_PROMPT.question);
     setShowHistory(false);
-    router.setParams({ starter: undefined });
+    router.setParams({ starter: undefined, question: undefined });
     input.current?.focus();
-  }, [router, starter]));
+  }, [router, starter, question]));
 
   const welcomeMotion = useAnimatedStyle(() => ({
     opacity: interpolate(arrival.value, [0, .45, 1], [0, 1, 1]),
