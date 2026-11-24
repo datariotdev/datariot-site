@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark"> <!-- DEPLOY_VERSION_6000 -->
+<html lang="en" data-theme="light"> <!-- DEPLOY_VERSION_6000 -->
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#08090D">
+    <meta name="theme-color" content="#FAFBFE">
     <title>Datariot — short videos with a point</title>
     <meta name="description"
         content="Discover useful ideas in short videos. Explore the reasoning with Orvelis AI and join the conversation with a video reply." />
@@ -288,12 +288,11 @@
         }
     </style>
     <script>
-        // Always open in dark mode, including returning visitors.
-        // The light theme remains available as a manual switch for this visit.
+        // Light is the landing page default; the manual theme switch remains available.
         (function () {
-            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.setAttribute('data-theme', 'light');
             var themeColor = document.querySelector('meta[name="theme-color"]');
-            if (themeColor) themeColor.setAttribute('content', '#08090D');
+            if (themeColor) themeColor.setAttribute('content', '#FAFBFE');
         })();
         function toggleTheme() {
             var html = document.documentElement;
@@ -1350,6 +1349,7 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
             #navOverlay .navx__theme, #navOverlay .navx__cta { min-height: 44px; }
         }
     </style>
+    <link rel="stylesheet" href="craft.css?v=20261124-1">
 </head>
 
 <body>
@@ -2508,6 +2508,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
             update();
         });
     </script>
+    <script defer src="craft.js?v=20261124-1"></script>
 </body>
 
 </html>
