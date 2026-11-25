@@ -369,9 +369,6 @@
 #catch .cq-idea .catch__idea-foot {display:block;color:var(--cq-muted);font:11px/1.65 var(--font-sans,sans-serif);max-width:40ch}
 #catch .cq-sheet__foot {display:flex;justify-content:space-between;align-items:center;padding:20px 24px;color:var(--cq-muted);font:6px/1.6 var(--font-tech,monospace);letter-spacing:.07em}
 #catch .cq-code {display:block;width:46px;height:15px;background:repeating-linear-gradient(90deg,var(--cq-ink) 0 1px,transparent 1px 3px,var(--cq-ink) 3px 5px,transparent 5px 7px);opacity:.4}
-/* Keep the fixed brand legible while content passes beneath it. */
-.curiosity-topbar {position:fixed;inset:0 0 auto;height:86px;background:var(--bg-main,#f1f5fc);border-bottom:1px solid var(--border,#d7dfe9);z-index:29000;pointer-events:none}
-.brandmark {z-index:29001}html.navx-open .curiosity-topbar {visibility:hidden}
 @media(max-width:850px) {
  #catch .cq-layout {gap:35px}
  #catch .cq-title {font-size:53px}
@@ -414,7 +411,6 @@
  #catch .cq-idea p {font-size:25px;margin-top:15px}
  #catch .cq-idea .catch__idea-foot {font-size:10px;line-height:1.7}
  #catch .cq-sheet__foot {padding:18px 21px;font-size:5.5px}
- .curiosity-topbar {height:76px}
 }
 @media(max-width:360px) {#catch.curiosity-edit {padding-left:18px!important;padding-right:18px!important}#catch .cq-topic small{font-size:6px}#catch .cq-topic b{font-size:11px}#catch .cq-feature h3{font-size:26px}#catch .cq-idea p{font-size:23px}}
 @media(prefers-reduced-motion:reduce) {#catch .cq-topic__image img,#catch .cq-feature .catch__poster,#catch .cq-topic__selected{transition:none}#catch.is-changing .catch__poster,#catch.is-changing .catch__idea p{animation:none}}
@@ -1328,6 +1324,153 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
     }
 </style>
 
+
+    <style id="datariot-info-header">
+        .info-header {
+            --header-fill: rgb(244 248 255 / .88);
+            --header-edge: rgb(36 63 96 / .17);
+            --header-shine: rgb(255 255 255 / .82);
+            --header-button: rgb(36 63 96 / .08);
+            --header-button-hover: rgb(36 63 96 / .15);
+            --header-ink: #152338;
+            position: fixed;
+            z-index: 29001;
+            inset-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+            top: max(12px, env(safe-area-inset-top));
+            width: min(100% - 32px, 400px);
+            margin-inline: auto;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 4px 4px 4px 12px;
+            color: var(--header-ink);
+            background: var(--header-fill);
+            border: 1px solid var(--header-edge);
+            border-radius: 999px;
+            box-shadow: inset 0 1px var(--header-shine), 0 8px 24px rgb(4 9 17 / .18);
+            -webkit-backdrop-filter: blur(16px) saturate(125%);
+            backdrop-filter: blur(16px) saturate(125%);
+        }
+
+        [data-theme="dark"] .info-header {
+            --header-fill: rgb(14 18 25 / .88);
+            --header-edge: rgb(189 216 255 / .19);
+            --header-shine: rgb(197 222 255 / .11);
+            --header-button: rgb(181 214 255 / .11);
+            --header-button-hover: rgb(181 214 255 / .20);
+            --header-ink: #e2edfc;
+        }
+
+        html.navx-open .info-header { visibility: hidden; }
+
+        .info-header__brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+            padding-inline-end: 8px;
+            border-radius: 20px;
+            color: inherit;
+            font: 750 18px/1 Manrope, system-ui, sans-serif;
+            letter-spacing: -.045em;
+            text-decoration: none;
+        }
+
+        .info-header__brand img {
+            display: block;
+            flex: none;
+            object-fit: contain;
+            filter: invert(1);
+            mix-blend-mode: multiply;
+        }
+
+        [data-theme="dark"] .info-header__brand img {
+            filter: none;
+            mix-blend-mode: screen;
+        }
+
+        .info-header__button {
+            display: grid;
+            place-items: center;
+            flex: none;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            color: inherit;
+            background: var(--header-button);
+            cursor: pointer;
+            transition: background-color .18s ease;
+        }
+
+        .info-header__brand:focus-visible,
+        .info-header__button:focus-visible {
+            outline: 2px solid currentColor;
+            outline-offset: 2px;
+        }
+
+        @media (hover: hover) {
+            .info-header__button:hover { background: var(--header-button-hover); }
+        }
+
+        .info-header__button:active { background: var(--header-button-hover); }
+
+        .info-header__icon {
+            position: relative;
+            width: 17px;
+            height: 16px;
+        }
+
+        .info-header__icon::before,
+        .info-header__icon::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            width: 100%;
+            height: 1.5px;
+            border-radius: 2px;
+            background: currentColor;
+        }
+
+        .info-header__icon::before { top: 4px; }
+        .info-header__icon::after { top: 10px; width: 70%; }
+
+        .info-header__button--close {
+            --header-button: rgb(36 63 96 / .08);
+            --header-button-hover: rgb(36 63 96 / .15);
+            margin-inline-start: auto;
+        }
+
+        [data-theme="dark"] .info-header__button--close {
+            --header-button: rgb(181 214 255 / .11);
+            --header-button-hover: rgb(181 214 255 / .20);
+        }
+
+        .info-header__button--close .info-header__icon::before,
+        .info-header__button--close .info-header__icon::after {
+            top: 7px;
+            width: 100%;
+            transform: rotate(45deg);
+        }
+
+        .info-header__button--close .info-header__icon::after { transform: rotate(-45deg); }
+
+        #navOverlay .navx__status {
+            margin-inline: auto 0;
+        }
+
+        @media (min-width: 661px) {
+            .info-header { top: max(18px, env(safe-area-inset-top)); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .info-header__button { transition: none; }
+        }
+    </style>
+
     <style id="datariot-mobile-menu">
         #navOverlay { transition: visibility 0s linear .16s; }
         #navOverlay.is-open { transition-delay: 0s; }
@@ -1407,20 +1550,18 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
     </div>
 
 
-    <div class="curiosity-topbar" aria-hidden="true"></div>
-    <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
-        <img class="brandmark__logo" src="assets/datariot-mark.jpg?v=brand-20261021" alt="" aria-hidden="true" width="40" height="40" decoding="async">
-        <span class="brandmark__word">Datariot</span>
-    </a>
-
-    <!-- Menu trigger. One control at every width — the overlay below is the
-         same menu on a phone and on a desktop. -->
-    <button class="navx-trigger" id="navTrigger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navOverlay">
-        <span class="navx-trigger__bars" aria-hidden="true"><i></i><i></i></span>
-    </button>
+    <header class="info-header">
+        <a class="info-header__brand" href="#hero" aria-label="Datariot — back to top">
+            <img src="assets/datariot-mark.jpg?v=brand-20261021" alt="" width="30" height="30" decoding="async">
+            <span>Datariot</span>
+        </a>
+        <button class="info-header__button" id="navTrigger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navOverlay">
+            <span class="info-header__icon" aria-hidden="true"></span>
+        </button>
+    </header>
 
     <!-- Full-screen navigation -->
-    <div class="navx" id="navOverlay" role="dialog" aria-modal="true" aria-label="Site navigation">
+    <div class="navx" id="navOverlay" role="dialog" aria-modal="true" aria-label="Site navigation" inert>
         <div class="navx__scrim" data-navx-close></div>
 
         <div class="navx__panel">
@@ -1436,6 +1577,9 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
                     <i aria-hidden="true"></i>
                     NAVIGATION
                 </span>
+                <button class="info-header__button info-header__button--close" type="button" aria-label="Close menu" data-navx-close>
+                    <span class="info-header__icon" aria-hidden="true"></span>
+                </button>
             </div>
 
             <div class="navx__body">
@@ -1536,10 +1680,9 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
 
             function setState(open) {
                 overlay.classList.toggle('is-open', open);
-                trigger.classList.toggle('is-active', open);
+                overlay.inert = !open;
                 root.classList.toggle('navx-open', open);
                 trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
-                trigger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
                 document.body.style.overflow = open ? 'hidden' : '';
                 if (window.FXBudget) { open ? window.FXBudget.pause() : window.FXBudget.resume(); }
             }
@@ -1558,10 +1701,7 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
                 if (lastFocus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { } }
             }
 
-            trigger.addEventListener('click', function (e) {
-                e.preventDefault();
-                isOpen() ? close() : open();
-            });
+            trigger.addEventListener('click', open);
 
             var closers = overlay.querySelectorAll('[data-navx-close]');
             for (var i = 0; i < closers.length; i++) {
@@ -1597,7 +1737,7 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
                 if (!isOpen()) return;
                 if (e.key === 'Escape') { close(); return; }
                 if (e.key !== 'Tab') return;
-                var items = [trigger].concat([].slice.call(overlay.querySelectorAll('a[href], button:not([disabled])')));
+                var items = overlay.querySelectorAll('a[href], button:not([disabled])');
                 var first = items[0];
                 var last = items[items.length - 1];
                 if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
