@@ -1,6 +1,6 @@
 /* =========================================================================
-   SLIDE 05 — THE PIXEL FIELD
-   The backdrop of the cognitive-layer slide: a slow wave surface drawn one
+   THE FEED — THE PIXEL FIELD
+   The backdrop of The Feed: a slow wave surface drawn one
    pixel per 3px cell and quantised to seven brand-blue tones with an ordered
    (Bayer) dither — chunky pixels, no smoothing. Every pixel of the buffer
    is a whole cell, so a 1920x1080 screen is a 640x360 render.
@@ -10,16 +10,14 @@
    and holds time still under prefers-reduced-motion. Where WebGL runs in
    software (the browser says so through failIfMajorPerformanceCaveat:
    Firefox on Linux without a GPU driver, VMs, old laptops) the field drops
-   to 6px cells and 8 frames a second, and the quiet zone behind the
+   to 4px cells and 8 frames a second, and the quiet zone behind the
    headline becomes a CSS shade, so it never has to redraw to follow the
    scroll. Without WebGL the CSS fill stays and the slide still reads. The
    dithered dissolve at the slide's top and bottom edges is a CSS mask, so
    it moves with the page on the compositor.
    ========================================================================= */
 (() => {
-    const sections = ['hero','manifesto','features','ai-core','global','faq'];
-    sections.forEach((sectionId) => {
-    const section = document.getElementById(sectionId);
+    const section = document.getElementById('manifesto');
     const field = section && section.querySelector('.px-field');
     const canvas = field && field.querySelector('canvas');
     if (!canvas) return;
@@ -40,7 +38,7 @@
         if (lose) lose.loseContext();
     } catch (e) { lite = true; }
 
-    let CELL = lite ? 6 : 3;          // CSS px per field pixel
+    let CELL = lite ? 4 : 3;          // CSS px per field pixel
     let FRAME_MS = 1000 / (lite ? 8 : 30);
 
     let gl = null;
@@ -58,7 +56,7 @@
     if (!lite) {
         const info = gl.getExtension('WEBGL_debug_renderer_info');
         const name = info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
-        if (SOFT.test(String(name))) lite = true, CELL = 6, FRAME_MS = 1000 / 8;
+        if (SOFT.test(String(name))) lite = true, CELL = 4, FRAME_MS = 1000 / 8;
     }
 
     // One height function, shared by both stages: the vertex stage displaces
@@ -107,8 +105,7 @@
         float bayer2(vec2 a) { a = floor(a); return fract(a.x * 0.5 + a.y * a.y * 0.75); }
         float bayer4(vec2 a) { return bayer2(0.5 * a) * 0.25 + bayer2(a); }
 
-        // the brand blue: deep navy, through saturated cobalt, to azure
-        // where the light catches a fold
+        // Graphite and cool slate through to the logo's ice highlight
         vec3 tone(float i) {
             // the logo's two colours: black up to ice, through its greys
             vec3 c = vec3(0.027, 0.031, 0.047);                    // #07080C
@@ -132,9 +129,9 @@
             // wrapped, cubed diffuse: lit faces go steel blue, the far side
             // of each fold drops to the darkest tone, as in the reference
             float wrap = max((dot(n, l) + 0.25) / 1.25, 0.0);
-            float spec = pow(max(dot(reflect(-l, n), v), 0.0), 16.0);
+            float spec = pow(max(dot(reflect(-l, n), v), 0.0), 22.0);
             float rim = pow(1.0 - max(dot(n, v), 0.0), 4.0);
-            float lum = 0.02 + 1.05 * wrap * wrap * wrap + 0.55 * spec + 0.12 * rim;
+            float lum = 0.02 + 1.05 * wrap * wrap * wrap + 0.72 * spec + 0.15 * rim;
 
             // the mesh reads as a cloth of quads up close, like the reference
             float d = length(uEye - vWorld);
@@ -147,7 +144,7 @@
             // quiet the field behind the headline so the type stays clean
             vec2 px = vec2(gl_FragCoord.x, uRows - gl_FragCoord.y);
             vec2 o = max(max(uCalm.xy - px, px - uCalm.zw), 0.0);
-            lum *= 1.0 - 0.72 * (1.0 - smoothstep(0.0, 40.0, length(o)));
+            lum *= 1.0 - 0.48 * (1.0 - smoothstep(0.0, 32.0, length(o)));
 
             float level = floor(clamp(lum, 0.0, 1.0) * 6.0 + bayer4(gl_FragCoord.xy));
             gl_FragColor = vec4(tone(level), 1.0);
@@ -281,7 +278,7 @@
     }
 
     // ---- the quiet zone behind the headline --------------------------------
-    const intro = section.querySelector('.aic-intro');
+    const intro = section.querySelector('.feed-stage__intro');
     // in the light version, and when time stands still, the field does not
     // redraw as the page scrolls, so a CSS shade keeps the headline quiet
     let cssCalm = lite || reduced;
@@ -380,7 +377,7 @@
         gl.finish();
         if (!lite && performance.now() - t0 > 12) {
             lite = true;
-            CELL = 6;
+            CELL = 4;
             FRAME_MS = 1000 / 8;
             cols = rows = 0;            // force the buffer to the new cell size
             cssCalm = true;
@@ -389,5 +386,4 @@
         }
     }
     field.classList.add('is-live');
-    });
 })();

@@ -1228,80 +1228,106 @@ html[data-theme="dark"] .datariot-depth-field__ring{border-color:rgba(135,172,23
 }
 html[data-theme="light"] .datariot-depth-field{display:none!important}
 </style>
-<style id="datariot-real-wave-fields">
-/* Use the SAME moving, pixel-dithered 3D wave as the Orvelis section. */
-html[data-theme="dark"] .datariot-shared-wave{position:absolute!important;inset:0!important;z-index:1!important;pointer-events:none;overflow:hidden;opacity:.82;background:transparent!important}
-html[data-theme="dark"] .datariot-shared-wave .px-field__canvas{position:sticky;top:0;display:block;width:100%;height:100vh;visibility:hidden;image-rendering:pixelated}
-html[data-theme="dark"] .datariot-shared-wave.is-live .px-field__canvas{visibility:visible}
-html[data-theme="light"] .datariot-shared-wave{display:none!important}
-html[data-theme="dark"] #hero>.datariot-shared-wave,
-html[data-theme="dark"] #manifesto>.datariot-shared-wave,
-html[data-theme="dark"] #features>.datariot-shared-wave,
-html[data-theme="dark"] #global>.datariot-shared-wave,
-html[data-theme="dark"] #faq>.datariot-shared-wave{z-index:1!important}
-html[data-theme="dark"] #hero>.datariot-shared-wave~*:not(.datariot-depth-field):not(.hero__sky-scene),
-html[data-theme="dark"] #manifesto>.mini-feed__shell,
-html[data-theme="dark"] #features>.reply-network__shell,
-html[data-theme="dark"] #global>.section__container,
-html[data-theme="dark"] #faq>.faq__inner{position:relative;z-index:2}
-html[data-theme="dark"] #manifesto>.datariot-depth-field,
-html[data-theme="dark"] #features>.datariot-depth-field,
-html[data-theme="dark"] #global>.datariot-depth-field,
-html[data-theme="dark"] #faq>.datariot-depth-field{opacity:.35!important}
-@media(max-width:700px){html[data-theme="dark"] .datariot-shared-wave{opacity:.72}}
-@media(prefers-reduced-motion:reduce){html[data-theme="dark"] .datariot-shared-wave{opacity:.55}}
-</style>
-<style id="datariot-logo-palette-final">
-/* Logo palette only: graphite, cool slate and pale silver. No saturated blue. */
-html[data-theme="dark"] .page-fx__glow{
- background:radial-gradient(ellipse 45% 32% at 12% 32%,rgba(112,123,144,.09),transparent 78%),radial-gradient(ellipse 48% 35% at 90% 72%,rgba(119,132,153,.08),transparent 80%),linear-gradient(180deg,#090a0e,#08090d 55%,#0a0b10)!important
-}
-html[data-theme="dark"] .page-fx__ribbon--l,
-html[data-theme="dark"] .page-fx__ribbon--r{background:radial-gradient(closest-side,rgba(125,139,161,.065),transparent 73%)!important}
-html[data-theme="dark"] #hero .hero__ambient-glow{background:radial-gradient(ellipse 57% 53% at 75% 35%,rgba(134,147,168,.095),rgba(75,86,107,.04) 42%,transparent 82%)!important}
-html[data-theme="dark"] .datariot-depth-field{background:radial-gradient(ellipse 52% 55% at 1% 28%,rgba(103,116,140,.09),transparent 85%),radial-gradient(ellipse 48% 65% at 100% 80%,rgba(105,118,142,.085),transparent 85%)!important}
-html[data-theme="dark"] .datariot-depth-field__orb--one{background:radial-gradient(circle at 38% 35%,rgba(157,172,196,.19),rgba(91,106,132,.11) 38%,rgba(38,45,62,.025) 66%,transparent 78%)!important;box-shadow:inset -26px -28px 65px rgba(5,7,12,.5),0 0 95px rgba(112,127,151,.04)!important}
-html[data-theme="dark"] .datariot-depth-field__orb--two{background:radial-gradient(circle at 38% 35%,rgba(145,161,187,.17),rgba(84,101,130,.10) 40%,transparent 77%)!important;box-shadow:inset -30px -34px 75px rgba(5,7,12,.52),0 0 110px rgba(111,127,151,.04)!important}
-html[data-theme="dark"] .datariot-depth-field__ring{border-color:rgba(165,179,201,.13)!important;box-shadow:0 0 85px rgba(121,137,161,.05),inset 0 0 55px rgba(121,137,161,.04)!important}
-html[data-theme="dark"] .datariot-shared-wave{opacity:.52!important}
-@media(max-width:700px){html[data-theme="dark"] .datariot-shared-wave{opacity:.48!important}}
+<style id="datariot-site-background">
+    html[data-theme="dark"] body {
+        background: #0e1015 !important;
+    }
+
+    html[data-theme="dark"] .page-fx__glow {
+        background:
+            radial-gradient(ellipse 75% 520px at -10% 26%, #252b38 0%, transparent 90%),
+            radial-gradient(ellipse 75% 580px at 110% 58%, #222936 0%, transparent 90%),
+            radial-gradient(ellipse 65% 460px at -8% 88%, #202630 0%, transparent 85%),
+            radial-gradient(ellipse 90% 600px at -8% 3%, #20242d 0%, transparent 80%),
+            #0e1015 !important;
+    }
+
+    html[data-theme="dark"] .page-fx > :is(.page-fx__aurora, .page-fx__grain),
+    html[data-theme="dark"] .foot > .px-screen {
+        display: none;
+    }
+
+    html[data-theme="dark"] .main > :is(.section, .foot) {
+        background: transparent !important;
+        border-top: 0 !important;
+        border-bottom: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html[data-theme="dark"] #hero .hero__ambient-glow {
+        background: none !important;
+    }
+
+    html[data-theme="dark"] #manifesto > .datariot-depth-field,
+    #manifesto > .datariot-shared-wave {
+        -webkit-mask-image: linear-gradient(transparent, #000 19% 79%, transparent);
+        mask-image: linear-gradient(transparent, #000 19% 79%, transparent);
+    }
+
+    #manifesto > .datariot-shared-wave {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        overflow: clip;
+        pointer-events: none;
+        opacity: .78;
+    }
+
+    #manifesto > .datariot-shared-wave .px-field__canvas {
+        position: sticky;
+        top: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        visibility: hidden;
+        image-rendering: pixelated;
+    }
+
+    #manifesto > .datariot-shared-wave.is-live .px-field__canvas {
+        visibility: visible;
+    }
+
+    html[data-theme="dark"] #manifesto.is-field-lite .feed-stage__intro::before {
+        content: "";
+        position: absolute;
+        inset: -22px;
+        z-index: -1;
+        background: radial-gradient(ellipse, rgba(14, 16, 21, .42), transparent 72%);
+        pointer-events: none;
+    }
+
+    #manifesto .feed-stage__intro { position: relative; isolation: isolate; }
+
+    html[data-theme="light"] #manifesto > .datariot-shared-wave {
+        display: none;
+    }
+
+    @media (max-width: 700px) {
+        #manifesto > .datariot-shared-wave { opacity: .68; }
+    }
+
+    @keyframes datariot-hero-reveal {
+        from { opacity: 0; transform: translateY(.42em); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        #hero .hx-title__line {
+            display: inline-block;
+            animation: datariot-hero-reveal 640ms cubic-bezier(.2,.75,.25,1) both;
+        }
+
+        #hero .hx-title__line + .hx-title__line { animation-delay: 110ms; }
+        #hero .hx-title__line .hx-mark {
+            animation: datariot-hero-reveal 690ms 200ms cubic-bezier(.2,.75,.25,1) both;
+        }
+
+        #hero .hero__lede {
+            animation: datariot-hero-reveal 600ms 340ms cubic-bezier(.2,.75,.25,1) both;
+        }
+    }
 </style>
 
-<style id="seamless-section-transitions-20261109">
-/* Keep the ambient artwork, but remove hard horizontal section boundaries. */
-html[data-theme="dark"] body { background-color:#08090d !important; }
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq) {
-  background-color:transparent !important;
-  background-image:none !important;
-  border-top:0 !important;
-  border-bottom:0 !important;
-  box-shadow:none !important;
-}
-/* The dark strips came from separately painted section backgrounds and overlays. */
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq)::before,
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq)::after {
-  border-top:0 !important;
-  border-bottom:0 !important;
-}
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq) > .datariot-depth-field {
-  -webkit-mask-image:linear-gradient(to bottom,transparent,black 14%,black 86%,transparent) !important;
-  mask-image:linear-gradient(to bottom,transparent,black 14%,black 86%,transparent) !important;
-}
-</style>
-
-
-
-<style id="seamless-effects-preserved-20261109">
-/* Preserve animated birds, scene, blue 3D orbs and waves. Fade their rectangular edges instead. */
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq){
- background-color:transparent!important;background-image:none!important;
- border-top:0!important;border-bottom:0!important;
-}
-html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,#global,#beta,#faq) > :is(.datariot-depth-field,.px-field,.hero__sky-scene){
- -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 16%,black 84%,transparent 100%)!important;
- mask-image:linear-gradient(to bottom,transparent 0%,black 16%,black 84%,transparent 100%)!important;
-}
-</style>
     <style id="datariot-mobile-menu">
         #navOverlay { transition: visibility 0s linear .16s; }
         #navOverlay.is-open { transition-delay: 0s; }
@@ -1598,8 +1624,6 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
     <main class="main">
         <!-- HERO SECTION -->
         <section class="section section--hero hero--shimmer" id="hero" data-inview>
-<div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
-<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="hero__sky-scene" id="heroSkyScene" aria-hidden="true">
                 <div class="hero__ambient-glow"></div>
                 <div class="birds-container">
@@ -1650,7 +1674,7 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
                         <b><i aria-hidden="true">D</i>DATARIOT</b>
                         <span>SHORT-FORM VIDEO&nbsp;&nbsp;//&nbsp;&nbsp;V0.1 BETA</span>
                     </div>
-                    <h1 class="hx-title">Short videos<br>with <span class="hx-mark">a point.</span></h1>
+                    <h1 class="hx-title"><span class="hx-title__line">Short videos</span><br> <span class="hx-title__line">with <span class="hx-mark">a point.</span></span></h1>
                     <p class="hero__lede">
                         Discover a useful idea in every short video. <strong>Explore the reasoning
                         with Orvelis AI, then add your perspective with a video reply.</strong>
@@ -1786,7 +1810,7 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 <style>
 #manifesto.feed-stage { padding: clamp(58px, 9vw, 114px) clamp(18px, 5vw, 50px) !important; scroll-margin-top: 52px; }
 #manifesto .feed-stage__shell {
-    position: relative; z-index: 1; display: grid; align-items: center; gap: clamp(20px, 4vw, 64px);
+    position: relative; z-index: 2; display: grid; align-items: center; gap: clamp(20px, 4vw, 64px);
     grid-template-columns: minmax(0, 1fr) minmax(170px, .55fr); max-width: 960px; margin-inline: auto;
 }
 #manifesto .feed-stage__intro h2 {
@@ -1880,7 +1904,6 @@ html[data-theme="dark"] #manifesto .feed-stage__intro h2 span { color: #b5d7ff; 
 </section>
 
         <section class="section reply-network" id="features" data-inview aria-labelledby="replyNetworkTitle">
-<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
 #features.reply-network,#catch.dt-signal {
   --flow-ink: var(--text-primary,#151c29);
@@ -2044,6 +2067,7 @@ html[data-theme="dark"] #manifesto .feed-stage__intro h2 span { color: #b5d7ff; 
   }));
 
   const board = document.querySelector('#catch .dt-signal__board');
+  if (!board) return;
   const steps = board.querySelectorAll('[data-signal]');
   const stage = document.getElementById('dtSignalStage');
   const statement = document.getElementById('dtSignalStatement');
@@ -2068,7 +2092,6 @@ html[data-theme="dark"] #manifesto .feed-stage__intro h2 span { color: #b5d7ff; 
 
         <!-- The Arena: two perspectives, one question worth thinking about. -->
         <section class="section dt-dev" id="debates" data-inview aria-labelledby="dtDevTitle">
-<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
 <style>
 .dt-dev{padding:clamp(80px,10vw,150px) 24px!important;color:var(--text-primary,#111);background:transparent!important}
 .dt-dev *{box-sizing:border-box}
@@ -2135,92 +2158,2008 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 </script>
 </section>
 
-        <!-- ORVELIS AI CORE SECTION -->
-        <section class="section orvelis-reading" id="ai-core" aria-labelledby="orvelisReadingTitle" data-inview>
-    <style>
-        #ai-core.orvelis-reading {
-            --reading-accent: #24456a;
-            --reading-muted: #50627b;
-            --reading-rule: #cbd6e4;
-            padding: clamp(54px, 9vw, 116px) clamp(17px, 5vw, 48px) !important;
-            scroll-margin-top: 78px;
-        }
-        html[data-theme="dark"] #ai-core.orvelis-reading {
-            --reading-accent: #c1d9f5;
-            --reading-muted: #adbcd0;
-            --reading-rule: #354152;
-        }
-        #ai-core .orvelis-reading__wrap {
-            position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, .83fr) minmax(0, 1.17fr);
-            max-width: 1080px; margin-inline: auto; gap: clamp(25px, 6vw, 84px); align-items: center;
-        }
-        #ai-core .orvelis-reading__intro { border-top: 1px solid var(--reading-rule); padding-top: 19px; }
-        #ai-core .orvelis-reading__name { color: var(--reading-accent); font: 750 14px/1.35 'Manrope', sans-serif; }
-        #ai-core .orvelis-reading__intro h2 {
-            margin: 12px 0 13px; font: 700 clamp(46px, 7.2vw, 81px)/.96 'Syne', sans-serif; letter-spacing: -.066em;
-        }
-        #ai-core .orvelis-reading__intro p {
-            max-width: 32ch; margin: 0 0 19px; color: var(--reading-muted); font: 550 16px/1.65 'Manrope', sans-serif;
-        }
-        #ai-core .orvelis-reading__link {
-            display: inline-flex; align-items: center; gap: 7px; min-height: 40px;
-            color: var(--reading-accent); text-decoration: underline; text-underline-offset: 4px;
-            font: 750 14px/1.4 'Manrope', sans-serif;
-        }
-        #ai-core .orvelis-reading__link svg { width: 15px; height: 15px; }
-        #ai-core .orvelis-reading__link:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
-        #ai-core .orvelis-reading__note {
-            min-width: 0; padding: clamp(19px, 4vw, 46px); border-radius: 18px; border: 1px solid #cdd9e7;
-            color: #152438; background: #eef4fb; box-shadow: 0 20px 62px #0b172b39;
-            font: 550 15px/1.62 'Manrope', sans-serif;
-        }
-        #ai-core .orvelis-reading__label { margin: 0 0 8px; color: #465b74; font: 750 12px/1.4 'Manrope', sans-serif; }
-        #ai-core .orvelis-reading__question {
-            margin: 0; padding: 0; border: 0; color: inherit;
-            font: 500 clamp(33px, 4.2vw, 56px)/.99 'Instrument Serif', Georgia, serif;
-            letter-spacing: -.023em;
-        }
-        #ai-core .orvelis-reading__answer { border-top: 1px solid #bbcddd; margin-top: 20px; padding-top: 17px; }
-        #ai-core .orvelis-reading__answer p:last-child, #ai-core .orvelis-reading__check p { margin: 0; }
-        #ai-core .orvelis-reading__check { margin-top: 17px; padding: 11px 0 0 13px; border-left: 2px solid #7294b9; }
-        #ai-core .orvelis-reading__check h3 { margin: 0 0 3px; font: 800 13px/1.45 'Manrope', sans-serif; }
-        @media (max-width: 720px) {
-            #ai-core .orvelis-reading__wrap { grid-template-columns: minmax(0, 1fr); gap: 19px; }
-            #ai-core .orvelis-reading__intro { padding-top: 13px; }
-            #ai-core .orvelis-reading__intro h2 { font-size: clamp(44px, 11vw, 64px); margin-block: 8px 10px; }
-            #ai-core .orvelis-reading__intro p { margin-bottom: 6px; font-size: 14px; }
-            #ai-core .orvelis-reading__note { border-radius: 14px; font-size: 14px; }
-        }
-    </style>
-    <div class="orvelis-reading__wrap">
-        <header class="orvelis-reading__intro">
-            <span class="orvelis-reading__name">Orvelis AI</span>
-            <h2 id="orvelisReadingTitle">A second look.</h2>
-            <p>Get the point of a clip, see what supports it, and ask a follow-up.</p>
-            <a class="orvelis-reading__link" href="https://docs.datariot.xyz/#orvelis">How Orvelis works
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m4 12 8-8M6 4h6v6"/></svg>
-            </a>
-        </header>
-        <article class="orvelis-reading__note" aria-label="An example of a clip analysis">
-            <p class="orvelis-reading__label">Ask about a clip</p>
-            <blockquote class="orvelis-reading__question">The ground around a volcano is rising. Is an eruption next?</blockquote>
-            <div class="orvelis-reading__answer">
-                <p class="orvelis-reading__label">Orvelis</p>
-                <p>Swelling can be a sign that magma is moving underground. Scientists look for changes in earthquakes and volcanic gases to judge whether an eruption is becoming more likely.</p>
-            </div>
-            <div class="orvelis-reading__check">
-                <h3>What to check</h3>
-                <p>Check the time scale. A few centimeters overnight tells a different story from the same rise over a year.</p>
-            </div>
-        </article>
-    </div>
-</section>
+        <!-- ORVELIS AI SECTION — INTERACTIVE 3D PRODUCT WALKTHROUGH & GUIDE -->
+        <section class="section orvelis-guide" id="ai-core" aria-labelledby="orvelisReadingTitle" data-inview>
+            <style id="orvelis-guide-styles">
+                #ai-core.orvelis-guide {
+                    --orv-ink: #131F31;
+                    --orv-muted: #42536B;
+                    --orv-accent: #1D3B63;
+                    --orv-ice: #3E6CA8;
+                    --orv-surface: #FFFFFF;
+                    --orv-surface-alt: #EDF3FC;
+                    --orv-device: #0C1018;
+                    --orv-device-bezel: #222B3B;
+                    --orv-sheet: #FFFFFF;
+                    --orv-sheet-alt: #F1F6FD;
+                    --orv-line: rgba(20, 38, 66, 0.13);
+                    --orv-line-strong: rgba(20, 38, 66, 0.25);
+                    --orv-shadow: 0 28px 64px rgba(15, 29, 54, 0.16), 0 6px 18px rgba(15, 29, 54, 0.08);
+                    --orv-amber: #8A4F06;
+                    --orv-amber-bg: rgba(217, 119, 6, 0.13);
+                    --orv-emerald: #046C4E;
+                    --orv-emerald-bg: rgba(5, 150, 105, 0.13);
+                    --orv-ease: cubic-bezier(0.23, 1, 0.32, 1);
+                    padding: clamp(64px, 8.5vw, 118px) clamp(18px, 4.5vw, 48px) !important;
+                    scroll-margin-top: 84px;
+                    color: var(--orv-ink);
+                    overflow: visible;
+                }
 
+                html[data-theme="dark"] #ai-core.orvelis-guide {
+                    --orv-ink: #EEF3FC;
+                    --orv-muted: #B2C2D8;
+                    --orv-accent: #DAE6F7;
+                    --orv-ice: #8DB4E6;
+                    --orv-surface: #111622;
+                    --orv-surface-alt: #182032;
+                    --orv-device: #0B0E15;
+                    --orv-device-bezel: #273246;
+                    --orv-sheet: #121825;
+                    --orv-sheet-alt: #1A2336;
+                    --orv-line: rgba(218, 230, 247, 0.13);
+                    --orv-line-strong: rgba(218, 230, 247, 0.28);
+                    --orv-shadow: 0 34px 76px rgba(0, 0, 0, 0.56), 0 8px 22px rgba(0, 0, 0, 0.32);
+                    --orv-amber: #FCD34D;
+                    --orv-amber-bg: rgba(251, 191, 36, 0.14);
+                    --orv-emerald: #6EE7B7;
+                    --orv-emerald-bg: rgba(52, 211, 153, 0.14);
+                }
+
+                #ai-core.orvelis-guide ::selection {
+                    background: var(--orv-accent);
+                    color: #08090D;
+                }
+
+                html[data-theme="light"] #ai-core.orvelis-guide ::selection {
+                    color: #FFFFFF;
+                }
+
+                #ai-core .orv__shell {
+                    position: relative;
+                    z-index: 2;
+                    width: min(1180px, 100%);
+                    margin-inline: auto;
+                }
+
+                #ai-core .orv__grid {
+                    display: grid;
+                    grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+                    gap: clamp(32px, 5vw, 68px);
+                    align-items: center;
+                }
+
+                /* Left Column: Lockup + 4-Step Interactive Instruction Guide */
+                #ai-core .orv__copy {
+                    min-width: 0;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 22px;
+                }
+
+                #ai-core .orv__head {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                }
+
+                #ai-core .orv__mark {
+                    flex: none;
+                    width: 44px;
+                    height: 44px;
+                    display: grid;
+                    place-items: center;
+                }
+
+                #ai-core .orv__mark svg {
+                    width: 42px;
+                    height: 42px;
+                    display: block;
+                }
+
+                #ai-core .orv__mark .orv-ink { stroke: var(--orv-accent); }
+                #ai-core .orv__mark .orv-ice { stroke: var(--orv-ice); }
+                #ai-core .orv__mark .orv-motion {
+                    transform-origin: 64px 64px;
+                    animation: orvelis-mark-orbit 6.4s cubic-bezier(.77, 0, .175, 1) infinite;
+                    animation-play-state: paused;
+                }
+                #ai-core.is-inview .orv__mark .orv-motion {
+                    animation-play-state: running;
+                }
+                #ai-core .orv__mark.is-thinking .orv-motion,
+                #ai-core .orv__sheet-mark.is-thinking .orv-motion {
+                    animation: orvelis-mark-spin 1.4s linear infinite;
+                    animation-play-state: running;
+                }
+
+                @keyframes orvelis-mark-orbit {
+                    0%, 18% { transform: rotate(0deg); }
+                    75%, 100% { transform: rotate(360deg); }
+                }
+
+                @keyframes orvelis-mark-spin {
+                    to { transform: rotate(360deg); }
+                }
+
+                #ai-core .orv__title {
+                    margin: 0;
+                    color: var(--orv-ink);
+                    font: 700 clamp(38px, 4.5vw, 58px)/0.96 'Syne', sans-serif;
+                    letter-spacing: -0.055em;
+                    text-transform: none;
+                    text-wrap: balance;
+                }
+
+                #ai-core .orv__title span {
+                    display: block;
+                    color: var(--orv-ice);
+                }
+
+                html[data-theme="light"] #ai-core .orv__title span {
+                    color: var(--orv-accent);
+                }
+
+                #ai-core .orv__lede {
+                    margin: 0;
+                    max-width: 48ch;
+                    color: var(--orv-muted);
+                    font: 500 16px/1.62 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__lede strong {
+                    color: var(--orv-ink);
+                    font-weight: 700;
+                }
+
+                /* Playback Control Bar for the Walkthrough */
+                #ai-core .orv__walk-bar {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid var(--orv-line);
+                }
+
+                #ai-core .orv__walk-label {
+                    color: var(--orv-ice);
+                    font: 700 12px/1.3 'JetBrains Mono', monospace;
+                    letter-spacing: 0.04em;
+                    text-transform: uppercase;
+                }
+
+                html[data-theme="light"] #ai-core .orv__walk-label {
+                    color: var(--orv-accent);
+                }
+
+                #ai-core .orv__walk-btns {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                #ai-core .orv__ctrl {
+                    appearance: none;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    min-height: 34px;
+                    padding: 0 12px;
+                    border-radius: 999px;
+                    border: 1px solid var(--orv-line);
+                    background: var(--orv-surface);
+                    color: var(--orv-ink);
+                    font: 700 12px/1 'Manrope', sans-serif;
+                    cursor: pointer;
+                    transition: border-color 0.16s ease, background-color 0.16s ease, transform 0.14s var(--orv-ease);
+                }
+
+                #ai-core .orv__ctrl:active {
+                    transform: scale(0.96);
+                }
+
+                #ai-core .orv__ctrl svg {
+                    width: 13px;
+                    height: 13px;
+                }
+
+                /* Sequential 4-Step Guide List (Hairline list — zero nested boxes) */
+                #ai-core .orv__steps {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                    display: grid;
+                }
+
+                #ai-core .orv__step-item + .orv__step-item {
+                    border-top: 1px solid var(--orv-line);
+                }
+
+                #ai-core .orv__step {
+                    appearance: none;
+                    position: relative;
+                    display: grid;
+                    grid-template-columns: 34px minmax(0, 1fr) auto;
+                    align-items: start;
+                    gap: 14px;
+                    width: 100%;
+                    padding: 15px 14px;
+                    border: 0;
+                    border-radius: 12px;
+                    background: transparent;
+                    color: var(--orv-muted);
+                    text-align: left;
+                    cursor: pointer;
+                    transition: background-color 0.2s var(--orv-ease), color 0.2s var(--orv-ease), transform 0.15s var(--orv-ease);
+                }
+
+                #ai-core .orv__step:active {
+                    transform: scale(0.99);
+                }
+
+                #ai-core .orv__step[aria-selected="true"] {
+                    background: var(--orv-surface-alt);
+                    color: var(--orv-ink);
+                }
+
+                @media (hover: hover) and (pointer: fine) {
+                    #ai-core .orv__step:hover:not([aria-selected="true"]) {
+                        background: rgba(141, 180, 230, 0.08);
+                        color: var(--orv-ink);
+                    }
+                    #ai-core .orv__ctrl:hover {
+                        border-color: var(--orv-line-strong);
+                        background: var(--orv-surface-alt);
+                    }
+                }
+
+                #ai-core .orv__step-num {
+                    display: grid;
+                    place-items: center;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    border: 1px solid var(--orv-line-strong);
+                    color: var(--orv-ice);
+                    font: 700 12px/1 'JetBrains Mono', monospace;
+                    font-variant-numeric: tabular-nums;
+                    transition: background-color 0.2s var(--orv-ease), color 0.2s var(--orv-ease), border-color 0.2s var(--orv-ease);
+                }
+
+                html[data-theme="light"] #ai-core .orv__step-num {
+                    color: var(--orv-accent);
+                }
+
+                #ai-core .orv__step[aria-selected="true"] .orv__step-num {
+                    background: var(--orv-accent);
+                    border-color: var(--orv-accent);
+                    color: #08090D;
+                }
+
+                html[data-theme="light"] #ai-core .orv__step[aria-selected="true"] .orv__step-num {
+                    color: #FFFFFF;
+                }
+
+                #ai-core .orv__step-body {
+                    display: grid;
+                    gap: 4px;
+                    min-width: 0;
+                }
+
+                #ai-core .orv__step-body strong {
+                    color: var(--orv-ink);
+                    font: 700 15.5px/1.3 'Manrope', sans-serif;
+                    letter-spacing: -0.015em;
+                }
+
+                #ai-core .orv__step-body span {
+                    color: var(--orv-muted);
+                    font: 500 13.5px/1.55 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__step-time {
+                    padding-top: 4px;
+                    color: var(--orv-ice);
+                    font: 600 12px/1.2 'JetBrains Mono', monospace;
+                    font-variant-numeric: tabular-nums;
+                    opacity: 0.7;
+                }
+
+                html[data-theme="light"] #ai-core .orv__step-time {
+                    color: var(--orv-accent);
+                }
+
+                #ai-core .orv__step[aria-selected="true"] .orv__step-time {
+                    opacity: 1;
+                }
+
+                /* Animated Step Progress Track along the bottom of the active step */
+                #ai-core .orv__step-progress {
+                    position: absolute;
+                    left: 14px;
+                    right: 14px;
+                    bottom: 0;
+                    height: 2px;
+                    border-radius: 2px;
+                    background: var(--orv-line);
+                    overflow: hidden;
+                    opacity: 0;
+                    transition: opacity 0.2s ease;
+                }
+
+                #ai-core .orv__step[aria-selected="true"] .orv__step-progress {
+                    opacity: 1;
+                }
+
+                #ai-core .orv__step-fill {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    background: var(--orv-accent);
+                    transform-origin: left center;
+                    transform: scaleX(0);
+                }
+
+                #ai-core .orv__actions {
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    gap: 12px 22px;
+                    padding-top: 2px;
+                }
+
+                #ai-core .orv__cta {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    min-height: 44px;
+                    padding: 0 22px;
+                    border-radius: 999px;
+                    background: var(--orv-accent);
+                    color: #08090D;
+                    font: 700 14px/1 'Manrope', sans-serif;
+                    text-decoration: none;
+                    transition: transform 0.16s var(--orv-ease), opacity 0.16s ease;
+                }
+
+                #ai-core .orv__cta:active {
+                    transform: scale(0.97);
+                }
+
+                html[data-theme="light"] #ai-core .orv__cta {
+                    color: #FFFFFF;
+                }
+
+                #ai-core .orv__link {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    min-height: 44px;
+                    color: var(--orv-accent);
+                    font: 700 14px/1.4 'Manrope', sans-serif;
+                    text-decoration: underline;
+                    text-underline-offset: 4px;
+                }
+
+                @media (hover: hover) and (pointer: fine) {
+                    #ai-core .orv__cta:hover { transform: translateY(-2px); opacity: 0.92; }
+                }
+
+                #ai-core :is(button, a, [tabindex]):focus-visible {
+                    outline: 2px solid var(--orv-accent);
+                    outline-offset: 3px;
+                }
+
+                /* =========================================================
+                   RIGHT COLUMN: 3D SPATIAL PRODUCT ANIMATION STAGE
+                   ========================================================= */
+                #ai-core .orv__stage {
+                    position: relative;
+                    min-width: 0;
+                    display: grid;
+                    place-items: center;
+                    perspective: 1400px;
+                    padding: 18px 10px;
+                }
+
+                #ai-core .orv__rig {
+                    position: relative;
+                    width: min(100%, 400px);
+                    transform-style: preserve-3d;
+                    transform: rotateX(var(--rx, 3deg)) rotateY(var(--ry, -8deg));
+                    transition: transform 0.52s var(--orv-ease);
+                }
+
+                /* Depth -36px: Subtle architectural backdrop frame */
+                #ai-core .orv__depth-plate {
+                    position: absolute;
+                    inset: 18px -22px 28px -22px;
+                    border-radius: 36px;
+                    border: 1px solid var(--orv-line);
+                    background: radial-gradient(circle at 50% 35%, rgba(141, 180, 230, 0.12), transparent 72%);
+                    transform: translateZ(-38px);
+                    pointer-events: none;
+                }
+
+                /* Depth 0px: The Datariot App Device Frame */
+                #ai-core .orv__device {
+                    position: relative;
+                    width: 100%;
+                    height: 620px;
+                    padding: 6px;
+                    border-radius: 38px;
+                    border: 2px solid var(--orv-device-bezel);
+                    background: var(--orv-device);
+                    box-shadow: var(--orv-shadow);
+                    overflow: hidden;
+                    transform-style: preserve-3d;
+                }
+
+                #ai-core .orv__screen {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 30px;
+                    display: flex;
+                    flex-direction: column;
+                    color: #EEF3FC;
+                    overflow: hidden;
+                }
+
+                /* Live 3D Volcano InSAR Canvas inside the Short Video Clip */
+                #ai-core .orv__clip-canvas {
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                }
+
+                #ai-core .orv__clip-scrim {
+                    position: absolute;
+                    inset: 0;
+                    background:
+                        linear-gradient(180deg, rgba(8, 11, 18, 0.72) 0%, rgba(8, 11, 18, 0.08) 28%, rgba(8, 11, 18, 0.18) 62%, rgba(8, 11, 18, 0.90) 100%);
+                    pointer-events: none;
+                }
+
+                /* Top Bar inside App */
+                #ai-core .orv__app-top {
+                    position: relative;
+                    z-index: 2;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 16px 20px 10px;
+                    font: 700 12px/1 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__app-tabs {
+                    display: flex;
+                    gap: 14px;
+                    color: rgba(238, 243, 252, 0.6);
+                    font-size: 12px;
+                    letter-spacing: 0.04em;
+                }
+
+                #ai-core .orv__app-tabs b {
+                    color: #FFFFFF;
+                    border-bottom: 2px solid #8DB4E6;
+                    padding-bottom: 4px;
+                }
+
+                #ai-core .orv__clip-timer {
+                    padding: 5px 10px;
+                    border-radius: 999px;
+                    background: rgba(12, 16, 24, 0.65);
+                    color: #DAE6F7;
+                    font: 600 12px/1 'JetBrains Mono', monospace;
+                    font-variant-numeric: tabular-nums;
+                }
+
+                /* Clip Overlay Details & Right Player Action Rail */
+                #ai-core .orv__clip-hud {
+                    position: relative;
+                    z-index: 2;
+                    margin-top: auto;
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) auto;
+                    align-items: end;
+                    gap: 14px;
+                    padding: 16px 16px 22px 18px;
+                    transition: opacity 0.28s var(--orv-ease), transform 0.34s var(--orv-ease);
+                }
+
+                #ai-core .orv__device.is-sheet-open .orv__clip-hud {
+                    opacity: 0.18;
+                    transform: translateY(-28px) scale(0.96);
+                }
+
+                #ai-core .orv__creator {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 8px;
+                    font: 700 13px/1.2 'Manrope', sans-serif;
+                    color: #FFFFFF;
+                }
+
+                #ai-core .orv__creator-dot {
+                    width: 22px;
+                    height: 22px;
+                    border-radius: 50%;
+                    display: grid;
+                    place-items: center;
+                    background: #22324A;
+                    color: #DAE6F7;
+                    font: 700 12px/1 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__clip-title {
+                    margin: 0 0 10px;
+                    color: #EEF3FC;
+                    font: 600 15px/1.38 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__clip-track {
+                    height: 3px;
+                    border-radius: 3px;
+                    background: rgba(255, 255, 255, 0.22);
+                    overflow: hidden;
+                }
+
+                #ai-core .orv__clip-track i {
+                    display: block;
+                    height: 100%;
+                    width: 100%;
+                    background: #8DB4E6;
+                    transform-origin: left center;
+                    transform: scaleX(0.18);
+                    transition: transform 0.35s var(--orv-ease);
+                }
+
+                #ai-core .orv__player-rail {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 12px;
+                }
+
+                #ai-core .orv__rail-icon {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: grid;
+                    place-items: center;
+                    background: rgba(18, 24, 37, 0.72);
+                    color: #DAE6F7;
+                }
+
+                #ai-core .orv__rail-icon svg {
+                    width: 18px;
+                    height: 18px;
+                }
+
+                #ai-core .orv__orvelis-btn {
+                    appearance: none;
+                    width: 44px;
+                    height: 44px;
+                    padding: 0;
+                    border-radius: 50%;
+                    border: 1.5px solid #8DB4E6;
+                    background: rgba(23, 34, 54, 0.92);
+                    display: grid;
+                    place-items: center;
+                    cursor: pointer;
+                    transition: transform 0.16s var(--orv-ease), background-color 0.18s ease;
+                }
+
+                #ai-core .orv__orvelis-btn.is-pressed {
+                    transform: scale(0.88);
+                    background: #2C4369;
+                }
+
+                #ai-core .orv__orvelis-btn svg {
+                    width: 24px;
+                    height: 24px;
+                }
+
+                /* Orvelis DeepDive Bottom Sheet (Slides smoothly up over the video) */
+                #ai-core .orv__sheet {
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    height: 75%;
+                    z-index: 4;
+                    display: flex;
+                    flex-direction: column;
+                    border-top: 1px solid var(--orv-line-strong);
+                    border-radius: 26px 26px 0 0;
+                    background: var(--orv-sheet);
+                    color: var(--orv-ink);
+                    transform: translate3d(0, 102%, 0);
+                    transition: transform 0.48s var(--orv-ease);
+                }
+
+                #ai-core .orv__device.is-sheet-open .orv__sheet {
+                    transform: translate3d(0, 0, 0);
+                }
+
+                #ai-core .orv__sheet-grip {
+                    width: 38px;
+                    height: 4px;
+                    border-radius: 4px;
+                    margin: 10px auto 6px;
+                    background: var(--orv-line-strong);
+                    flex: none;
+                }
+
+                #ai-core .orv__sheet-head {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 6px 18px 12px;
+                    border-bottom: 1px solid var(--orv-line);
+                }
+
+                #ai-core .orv__sheet-mark {
+                    width: 24px;
+                    height: 24px;
+                    flex: none;
+                }
+
+                #ai-core .orv__sheet-mark .orv-ink { stroke: var(--orv-ink); }
+                #ai-core .orv__sheet-mark .orv-ice { stroke: var(--orv-ice); }
+                #ai-core .orv__sheet-mark .orv-motion { transform-origin: 64px 64px; }
+
+                #ai-core .orv__sheet-meta {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                #ai-core .orv__sheet-meta b {
+                    display: block;
+                    font: 700 14px/1.2 'Manrope', sans-serif;
+                    color: var(--orv-ink);
+                }
+
+                #ai-core .orv__sheet-meta span {
+                    display: block;
+                    font: 500 12px/1.3 'JetBrains Mono', monospace;
+                    font-variant-numeric: tabular-nums;
+                    color: var(--orv-muted);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                #ai-core .orv__sheet-close {
+                    appearance: none;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    border: 0;
+                    background: var(--orv-surface-alt);
+                    color: var(--orv-muted);
+                    display: grid;
+                    place-items: center;
+                    cursor: pointer;
+                }
+
+                /* Segmented Tabs inside Orvelis Sheet */
+                #ai-core .orv__sheet-tabs {
+                    position: relative;
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    margin: 10px 16px 0;
+                    padding: 3px;
+                    border-radius: 12px;
+                    background: var(--orv-sheet-alt);
+                }
+
+                #ai-core .orv__sheet-tab-bg {
+                    position: absolute;
+                    top: 3px;
+                    bottom: 3px;
+                    left: 3px;
+                    width: calc((100% - 6px) / 3);
+                    border-radius: 9px;
+                    background: var(--orv-surface);
+                    box-shadow: 0 2px 8px rgba(7, 10, 20, 0.14);
+                    transform: translateX(calc(var(--tab-i, 0) * 100%));
+                    transition: transform 0.28s var(--orv-ease);
+                }
+
+                #ai-core .orv__sheet-tab {
+                    appearance: none;
+                    position: relative;
+                    z-index: 1;
+                    min-height: 32px;
+                    border: 0;
+                    background: transparent;
+                    color: var(--orv-muted);
+                    font: 700 12.5px/1 'Manrope', sans-serif;
+                    cursor: pointer;
+                    transition: color 0.18s ease;
+                }
+
+                #ai-core .orv__sheet-tab[aria-selected="true"] {
+                    color: var(--orv-ink);
+                }
+
+                #ai-core .orv__sheet-body {
+                    position: relative;
+                    flex: 1;
+                    min-height: 0;
+                    padding: 14px 18px 18px;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+
+                #ai-core .orv__pane[hidden] {
+                    display: none;
+                }
+
+                /* Scan Shimmer State before Summary reveals */
+                #ai-core .orv__scan-status {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 10px 12px;
+                    border-radius: 12px;
+                    background: var(--orv-sheet-alt);
+                    color: var(--orv-ink);
+                    font: 600 12.5px/1.35 'Manrope', sans-serif;
+                    margin-bottom: 12px;
+                }
+
+                #ai-core .orv__scan-status[hidden] {
+                    display: none;
+                }
+
+                #ai-core .orv__scan-bar {
+                    position: relative;
+                    height: 3px;
+                    border-radius: 3px;
+                    background: var(--orv-line);
+                    overflow: hidden;
+                    margin-bottom: 12px;
+                }
+
+                #ai-core .orv__scan-bar[hidden] {
+                    display: none;
+                }
+
+                #ai-core .orv__scan-bar::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background: var(--orv-ice);
+                    transform-origin: left center;
+                    animation: orv-scan-sweep 0.95s var(--orv-ease) 1 forwards;
+                }
+
+                @keyframes orv-scan-sweep {
+                    0% { transform: translateX(-100%) scaleX(0.45); }
+                    50% { transform: translateX(30%) scaleX(0.65); }
+                    100% { transform: translateX(115%) scaleX(0.35); }
+                }
+
+                /* Sheet Content Elements (Flat architectural rows — zero nested card borders) */
+                #ai-core .orv__kicker {
+                    display: block;
+                    margin: 0 0 5px;
+                    color: var(--orv-ice);
+                    font: 700 12px/1.2 'JetBrains Mono', monospace;
+                    text-transform: uppercase;
+                }
+
+                html[data-theme="light"] #ai-core .orv__kicker {
+                    color: var(--orv-accent);
+                }
+
+                #ai-core .orv__summary-copy {
+                    margin: 0 0 12px;
+                    color: var(--orv-ink);
+                    font: 500 13.5px/1.5 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__takeaway {
+                    margin: 0 0 12px;
+                    padding: 10px 12px;
+                    border-radius: 12px;
+                    background: var(--orv-sheet-alt);
+                    font: 600 13px/1.45 'Manrope', sans-serif;
+                    color: var(--orv-ink);
+                }
+
+                #ai-core .orv__terms {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    margin-bottom: 12px;
+                }
+
+                #ai-core .orv__term {
+                    padding: 4px 10px;
+                    border-radius: 999px;
+                    background: var(--orv-sheet-alt);
+                    color: var(--orv-ink);
+                    font: 600 12px/1.3 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__timeline {
+                    list-style: none;
+                    margin: 0;
+                    padding: 8px 0 0;
+                    border-top: 1px solid var(--orv-line);
+                    display: grid;
+                    gap: 4px;
+                }
+
+                #ai-core .orv__moment-btn {
+                    appearance: none;
+                    display: grid;
+                    grid-template-columns: 46px minmax(0, 1fr);
+                    align-items: center;
+                    gap: 10px;
+                    width: 100%;
+                    padding: 8px 10px;
+                    border: 0;
+                    border-radius: 10px;
+                    background: transparent;
+                    color: var(--orv-muted);
+                    text-align: left;
+                    font: 600 12.5px/1.35 'Manrope', sans-serif;
+                    cursor: pointer;
+                    transition: background-color 0.16s ease, color 0.16s ease;
+                }
+
+                #ai-core .orv__moment-btn b {
+                    font: 700 12px/1 'JetBrains Mono', monospace;
+                    font-variant-numeric: tabular-nums;
+                    color: var(--orv-ice);
+                }
+
+                html[data-theme="light"] #ai-core .orv__moment-btn b {
+                    color: var(--orv-accent);
+                }
+
+                #ai-core .orv__moment-btn[aria-pressed="true"] {
+                    background: var(--orv-sheet-alt);
+                    color: var(--orv-ink);
+                }
+
+                /* Stagger reveal utility inside Sheet */
+                #ai-core .orv__stagger {
+                    opacity: 1;
+                    transform: translateY(0);
+                    transition: opacity 0.28s var(--orv-ease), transform 0.28s var(--orv-ease);
+                }
+
+                #ai-core .orv__pane.is-scanning .orv__stagger {
+                    opacity: 0;
+                    transform: translateY(8px);
+                }
+
+                /* Claims Pane */
+                #ai-core .orv__verdict {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 5px 11px;
+                    border-radius: 999px;
+                    background: var(--orv-amber-bg);
+                    color: var(--orv-amber);
+                    font: 700 12px/1.2 'Manrope', sans-serif;
+                    margin-bottom: 10px;
+                }
+
+                #ai-core .orv__claim-row {
+                    padding: 10px 0;
+                    border-top: 1px solid var(--orv-line);
+                }
+
+                #ai-core .orv__claim-row p {
+                    margin: 0;
+                    color: var(--orv-ink);
+                    font: 500 13px/1.48 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__source-links {
+                    display: grid;
+                    gap: 4px;
+                    padding-top: 10px;
+                    border-top: 1px solid var(--orv-line);
+                }
+
+                #ai-core .orv__source-link {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 8px;
+                    padding: 8px 10px;
+                    border-radius: 10px;
+                    background: var(--orv-sheet-alt);
+                    color: var(--orv-ink);
+                    font: 600 12.5px/1.3 'Manrope', sans-serif;
+                    text-decoration: none;
+                }
+
+                #ai-core .orv__source-link span:last-child {
+                    color: var(--orv-emerald);
+                    font: 700 12px/1 'JetBrains Mono', monospace;
+                }
+
+                /* Ask & Reply Pane */
+                #ai-core .orv__chat-user {
+                    margin: 0 0 10px auto;
+                    max-width: 88%;
+                    padding: 9px 12px;
+                    border-radius: 14px 14px 4px 14px;
+                    background: var(--orv-sheet-alt);
+                    color: var(--orv-ink);
+                    font: 600 13px/1.4 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__deep-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 8px;
+                    margin-bottom: 10px;
+                }
+
+                #ai-core .orv__deep-btn {
+                    appearance: none;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    min-height: 32px;
+                    padding: 0 11px;
+                    border-radius: 999px;
+                    border: 1px solid var(--orv-line);
+                    background: transparent;
+                    color: var(--orv-muted);
+                    font: 700 12px/1 'Manrope', sans-serif;
+                    cursor: pointer;
+                }
+
+                #ai-core .orv__deep-btn[aria-pressed="true"] {
+                    border-color: var(--orv-accent);
+                    background: var(--orv-accent);
+                    color: #08090D;
+                }
+
+                html[data-theme="light"] #ai-core .orv__deep-btn[aria-pressed="true"] {
+                    color: #FFFFFF;
+                }
+
+                #ai-core .orv__reply-list {
+                    list-style: none;
+                    margin: 0;
+                    padding: 10px 0 0;
+                    border-top: 1px solid var(--orv-line);
+                    display: grid;
+                    gap: 8px;
+                }
+
+                #ai-core .orv__reply-list li {
+                    display: grid;
+                    grid-template-columns: 76px minmax(0, 1fr);
+                    gap: 8px;
+                    font: 500 12.5px/1.4 'Manrope', sans-serif;
+                    color: var(--orv-ink);
+                }
+
+                #ai-core .orv__reply-list b {
+                    font: 700 12px/1.3 'JetBrains Mono', monospace;
+                    color: var(--orv-ice);
+                }
+
+                html[data-theme="light"] #ai-core .orv__reply-list b {
+                    color: var(--orv-accent);
+                }
+
+                /* Animated Pointer Cursor inside the Phone Walkthrough */
+                #ai-core .orv__cursor {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    z-index: 8;
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 50%;
+                    border: 2px solid #FFFFFF;
+                    background: rgba(141, 180, 230, 0.35);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+                    pointer-events: none;
+                    opacity: 0;
+                    transform: translate3d(200px, 300px, 0) scale(1);
+                    transition: transform 0.56s var(--orv-ease), opacity 0.24s ease;
+                }
+
+                #ai-core .orv__cursor.is-visible {
+                    opacity: 1;
+                }
+
+                #ai-core .orv__cursor.is-tap {
+                    transform: translate3d(var(--cx, 200px), var(--cy, 300px), 0) scale(0.74);
+                    background: rgba(218, 230, 247, 0.72);
+                }
+
+                #ai-core .orv__cursor.is-move {
+                    transform: translate3d(var(--cx, 200px), var(--cy, 300px), 0) scale(1);
+                }
+
+                /* Depth +54px: Floating Spatial Context Callout (Sibling of device, zero nested cards) */
+                #ai-core .orv__callout {
+                    position: absolute;
+                    right: -28px;
+                    top: 66px;
+                    z-index: 6;
+                    max-width: 225px;
+                    margin: 0;
+                    padding: 12px 15px;
+                    border-radius: 16px;
+                    border: 1px solid var(--orv-line-strong);
+                    background: var(--orv-surface);
+                    box-shadow: var(--orv-shadow);
+                    transform: translate3d(0, 0, 54px);
+                    pointer-events: none;
+                    transition: transform 0.42s var(--orv-ease), opacity 0.28s var(--orv-ease);
+                }
+
+                #ai-core .orv__callout-tag {
+                    display: block;
+                    margin-bottom: 4px;
+                    color: var(--orv-ice);
+                    font: 700 12px/1.2 'JetBrains Mono', monospace;
+                    text-transform: uppercase;
+                }
+
+                html[data-theme="light"] #ai-core .orv__callout-tag {
+                    color: var(--orv-accent);
+                }
+
+                #ai-core .orv__callout-text {
+                    display: block;
+                    color: var(--orv-ink);
+                    font: 600 13px/1.4 'Manrope', sans-serif;
+                }
+
+                #ai-core .orv__callout.is-swap {
+                    opacity: 0;
+                    transform: translate3d(0, 8px, 54px);
+                }
+
+                @media (max-width: 980px) {
+                    #ai-core .orv__grid {
+                        grid-template-columns: minmax(0, 1fr);
+                        gap: 32px;
+                    }
+                    #ai-core .orv__stage {
+                        padding: 10px 0;
+                    }
+                    #ai-core .orv__callout {
+                        right: 0;
+                        top: 46px;
+                    }
+                }
+
+                @media (max-width: 640px) {
+                    #ai-core.orvelis-guide {
+                        padding: 52px 16px !important;
+                    }
+                    #ai-core .orv__step {
+                        padding: 13px 10px;
+                        gap: 10px;
+                    }
+                    #ai-core .orv__device {
+                        height: 570px;
+                        border-radius: 28px;
+                    }
+                    #ai-core .orv__depth-plate,
+                    #ai-core .orv__callout {
+                        display: none;
+                    }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    #ai-core .orv__mark .orv-motion,
+                    #ai-core .orv__sheet-mark .orv-motion,
+                    #ai-core .orv__scan-bar::after {
+                        animation: none !important;
+                    }
+                    #ai-core .orv__rig,
+                    #ai-core .orv__sheet,
+                    #ai-core .orv__sheet-tab-bg,
+                    #ai-core .orv__cursor,
+                    #ai-core .orv__callout,
+                    #ai-core .orv__step,
+                    #ai-core .orv__stagger {
+                        transition: none !important;
+                    }
+                    #ai-core .orv__rig {
+                        transform: none !important;
+                    }
+                    #ai-core .orv__cursor {
+                        display: none !important;
+                    }
+                }
+            </style>
+
+            <div class="section__container orv__shell">
+                <div class="orv__grid">
+                    <!-- Left: Clear 4-Step Product Instruction -->
+                    <div class="orv__copy">
+                        <div class="orv__head">
+                            <span class="orv__mark" id="orvGuideMark" aria-hidden="true">
+                                <svg viewBox="0 0 128 128" fill="none">
+                                    <g transform="rotate(38 64 64)">
+                                        <g class="orv-motion" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+                                            <path class="orv-ink" d="M 57.9223 108.3163 A 35 45 0 0 1 57.9223 19.6837" />
+                                            <path class="orv-ice" d="M 70.0777 19.6837 A 35 45 0 0 1 70.0777 108.3163" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </span>
+                            <h2 class="orv__title" id="orvelisReadingTitle">Orvelis AI.<span>A second look.</span></h2>
+                        </div>
+
+                        <p class="orv__lede">
+                            Built directly into every public clip on Datariot. <strong>Follow the four steps</strong> to see how Orvelis turns a sixty-second video into clear facts, missing context, and a structured reply.
+                        </p>
+
+                        <div class="orv__walk-bar">
+                            <span class="orv__walk-label" id="orvWalkStatus">Interactive Guide · Step 1 of 4</span>
+                            <div class="orv__walk-btns">
+                                <button class="orv__ctrl" id="orvWalkPlayPause" type="button" aria-pressed="false">
+                                    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="3" y="2.5" width="3.5" height="11" rx="1"/><rect x="9.5" y="2.5" width="3.5" height="11" rx="1"/></svg>
+                                    <span>Pause</span>
+                                </button>
+                                <button class="orv__ctrl" id="orvWalkReplay" type="button">
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9L2.5 5.8"/><path d="M2.5 2.5v3.3h3.3"/></svg>
+                                    <span>Replay</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <ol class="orv__steps" role="tablist" aria-label="How to use Orvelis AI">
+                            <li class="orv__step-item" role="presentation">
+                                <button class="orv__step" type="button" role="tab" aria-selected="true" aria-controls="orvGuideDevice" data-orv-step="0">
+                                    <span class="orv__step-num">1</span>
+                                    <span class="orv__step-body">
+                                        <strong>Open Orvelis on any public clip</strong>
+                                        <span>Tap the Orvelis mark beside the video controls (or “Unpack this clip” in the feed) to pause at the exact second.</span>
+                                    </span>
+                                    <span class="orv__step-time">0:18</span>
+                                    <span class="orv__step-progress" aria-hidden="true"><i class="orv__step-fill"></i></span>
+                                </button>
+                            </li>
+                            <li class="orv__step-item" role="presentation">
+                                <button class="orv__step" type="button" role="tab" aria-selected="false" aria-controls="orvGuideDevice" data-orv-step="1">
+                                    <span class="orv__step-num">2</span>
+                                    <span class="orv__step-body">
+                                        <strong>Scan audio &amp; frames into a timeline</strong>
+                                        <span>Orvelis reads both visuals and speech to build a summary, key terms, and timestamped moments synced to playback.</span>
+                                    </span>
+                                    <span class="orv__step-time">Summary</span>
+                                    <span class="orv__step-progress" aria-hidden="true"><i class="orv__step-fill"></i></span>
+                                </button>
+                            </li>
+                            <li class="orv__step-item" role="presentation">
+                                <button class="orv__step" type="button" role="tab" aria-selected="false" aria-controls="orvGuideDevice" data-orv-step="2">
+                                    <span class="orv__step-num">3</span>
+                                    <span class="orv__step-body">
+                                        <strong>Separate claims from missing context</strong>
+                                        <span>Switch to Claims to compare what the clip actually shows against what it leaves out, then run Check sources.</span>
+                                    </span>
+                                    <span class="orv__step-time">Claims</span>
+                                    <span class="orv__step-progress" aria-hidden="true"><i class="orv__step-fill"></i></span>
+                                </button>
+                            </li>
+                            <li class="orv__step-item" role="presentation">
+                                <button class="orv__step" type="button" role="tab" aria-selected="false" aria-controls="orvGuideDevice" data-orv-step="3">
+                                    <span class="orv__step-num">4</span>
+                                    <span class="orv__step-body">
+                                        <strong>Ask at that second &amp; outline a 30s reply</strong>
+                                        <span>Open Ask to test trade-offs with Deep Think, or build a three-beat outline before recording your own video reply.</span>
+                                    </span>
+                                    <span class="orv__step-time">Ask</span>
+                                    <span class="orv__step-progress" aria-hidden="true"><i class="orv__step-fill"></i></span>
+                                </button>
+                            </li>
+                        </ol>
+
+                        <div class="orv__actions">
+                            <a class="orv__cta" href="https://datariot.xyz/ai" target="_blank" rel="noopener noreferrer">
+                                Open Orvelis in Datariot
+                                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m4 12 8-8M6 4h6v6"/></svg>
+                            </a>
+                            <a class="orv__link" href="https://docs.datariot.xyz/#orvelis" target="_blank" rel="noopener noreferrer">
+                                Read full guide in Docs
+                                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m4 12 8-8M6 4h6v6"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right: Choreographed 3D Spatial Product Walkthrough -->
+                    <div class="orv__stage" id="orvStage">
+                        <div class="orv__rig" id="orvRig">
+                            <div class="orv__depth-plate" aria-hidden="true"></div>
+
+                            <aside class="orv__callout" id="orvCallout" aria-live="polite">
+                                <span class="orv__callout-tag" id="orvCalloutTag">Step 1 · Tap Orvelis</span>
+                                <span class="orv__callout-text" id="orvCalloutText">Watching a volcano clip at 0:18 — tap the mark to inspect.</span>
+                            </aside>
+
+                            <div class="orv__device" id="orvGuideDevice">
+                                <div class="orv__screen">
+                                    <!-- Live 3D Volcano Radar Deformation Canvas -->
+                                    <canvas class="orv__clip-canvas" id="orvClipCanvas" aria-hidden="true"></canvas>
+                                    <div class="orv__clip-scrim" aria-hidden="true"></div>
+
+                                    <header class="orv__app-top">
+                                        <div class="orv__app-tabs" aria-hidden="true">
+                                            <span>ARENA</span>
+                                            <b>FEED</b>
+                                            <span>CIRCLE</span>
+                                        </div>
+                                        <span class="orv__clip-timer" id="orvClipTimer">0:18 / 0:42</span>
+                                    </header>
+
+                                    <div class="orv__clip-hud">
+                                        <div>
+                                            <div class="orv__creator">
+                                                <span class="orv__creator-dot" aria-hidden="true">M</span>
+                                                <span>@maya.geo</span>
+                                            </div>
+                                            <p class="orv__clip-title">The ground around a volcano is rising. Is an eruption next?</p>
+                                            <div class="orv__clip-track" aria-hidden="true"><i id="orvClipTrackFill"></i></div>
+                                        </div>
+
+                                        <div class="orv__player-rail">
+                                            <span class="orv__rail-icon" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2.5c.8 5.2 3.3 7.7 8.5 8.5-5.2.8-7.7 3.3-8.5 8.5-.8-5.2-3.3-7.7-8.5-8.5 5.2-.8 7.7-3.3 8.5-8.5Z"/></svg>
+                                            </span>
+                                            <span class="orv__rail-icon" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3.5c4.8 0 8.5 3.2 8.5 7.2s-3.7 7.2-8.5 7.2c-1 0-1.9-.1-2.8-.4L5 19.6l1.1-3.5c-1.6-1.3-2.6-3.2-2.6-5.4 0-4 3.7-7.2 8.5-7.2Z"/></svg>
+                                            </span>
+                                            <button class="orv__orvelis-btn" id="orvPlayerTrigger" type="button" aria-label="Open Orvelis analysis sheet">
+                                                <svg viewBox="0 0 128 128" fill="none" aria-hidden="true">
+                                                    <g transform="rotate(38 64 64)" stroke-width="13" stroke-linecap="round">
+                                                        <path stroke="#EEF3FC" d="M 57.9223 108.3163 A 35 45 0 0 1 57.9223 19.6837" />
+                                                        <path stroke="#8DB4E6" d="M 70.0777 19.6837 A 35 45 0 0 1 70.0777 108.3163" />
+                                                    </g>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Real DeepDiveModal Orvelis Sheet -->
+                                    <article class="orv__sheet" id="orvSheet" aria-label="Orvelis clip analysis preview">
+                                        <div class="orv__sheet-grip" aria-hidden="true"></div>
+                                        <header class="orv__sheet-head">
+                                            <svg class="orv__sheet-mark" id="orvSheetMark" viewBox="0 0 128 128" fill="none" aria-hidden="true">
+                                                <g transform="rotate(38 64 64)">
+                                                    <g class="orv-motion" stroke-width="13" stroke-linecap="round">
+                                                        <path class="orv-ink" d="M 57.9223 108.3163 A 35 45 0 0 1 57.9223 19.6837" />
+                                                        <path class="orv-ice" d="M 70.0777 19.6837 A 35 45 0 0 1 70.0777 108.3163" />
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <div class="orv__sheet-meta">
+                                                <b>Orvelis</b>
+                                                <span id="orvSheetSub">Volcano ground uplift · 0:18</span>
+                                            </div>
+                                            <button class="orv__sheet-close" id="orvSheetClose" type="button" aria-label="Close Orvelis sheet">✕</button>
+                                        </header>
+
+                                        <nav class="orv__sheet-tabs" role="tablist" aria-label="Orvelis analysis tabs" style="--tab-i: 0;">
+                                            <span class="orv__sheet-tab-bg" aria-hidden="true"></span>
+                                            <button class="orv__sheet-tab" type="button" role="tab" aria-selected="true" data-orv-sheet-tab="0">Summary</button>
+                                            <button class="orv__sheet-tab" type="button" role="tab" aria-selected="false" data-orv-sheet-tab="1">Claims</button>
+                                            <button class="orv__sheet-tab" type="button" role="tab" aria-selected="false" data-orv-sheet-tab="2">Ask</button>
+                                        </nav>
+
+                                        <div class="orv__sheet-body">
+                                            <!-- Pane 0: Summary + Synced Timeline -->
+                                            <section class="orv__pane" id="orvPaneSummary" data-orv-pane="0">
+                                                <div class="orv__scan-status" id="orvScanStatus" hidden>
+                                                    <span>Listening to audio &amp; reading frames…</span>
+                                                </div>
+                                                <div class="orv__scan-bar" id="orvScanBar" hidden></div>
+
+                                                <div class="orv__stagger" style="transition-delay: 0ms;">
+                                                    <span class="orv__kicker">Summary</span>
+                                                    <p class="orv__summary-copy">Ground swelling around a volcano can show magma moving below, yet satellites cannot tell magma from water pressure on their own.</p>
+                                                </div>
+
+                                                <p class="orv__takeaway orv__stagger" style="transition-delay: 55ms;">
+                                                    <span class="orv__kicker">Takeaway</span>
+                                                    Check the time window plus seismic &amp; SO₂ gas signals before calling it an eruption warning.
+                                                </p>
+
+                                                <div class="orv__terms orv__stagger" style="transition-delay: 95ms;">
+                                                    <span class="orv__term">InSAR radar</span>
+                                                    <span class="orv__term">Uplift rate</span>
+                                                    <span class="orv__term">Hydrothermal shift</span>
+                                                </div>
+
+                                                <ul class="orv__timeline orv__stagger" style="transition-delay: 125ms;" aria-label="Timestamped moments">
+                                                    <li><button class="orv__moment-btn" type="button" aria-pressed="false" data-orv-seek="0"><b>0:06</b><span>Concept · Radar passes spot mm uplift</span></button></li>
+                                                    <li><button class="orv__moment-btn" type="button" aria-pressed="true" data-orv-seek="1"><b>0:18</b><span>Claim · 4 cm rise near north flank</span></button></li>
+                                                    <li><button class="orv__moment-btn" type="button" aria-pressed="false" data-orv-seek="2"><b>0:29</b><span>Context · Overnight vs. one-year rate</span></button></li>
+                                                </ul>
+                                            </section>
+
+                                            <!-- Pane 1: Claims & Grounded Sources -->
+                                            <section class="orv__pane" id="orvPaneClaims" data-orv-pane="1" hidden>
+                                                <span class="orv__verdict">Needs external context</span>
+
+                                                <div class="orv__claim-row">
+                                                    <span class="orv__kicker">Main claim</span>
+                                                    <p>Rising ground near the crater means magma is pushing upward toward an eruption.</p>
+                                                </div>
+
+                                                <div class="orv__claim-row">
+                                                    <span class="orv__kicker">Evidence in clip</span>
+                                                    <p>Time-lapse radar interferogram showing 4 cm of uplift on the north flank.</p>
+                                                </div>
+
+                                                <div class="orv__claim-row">
+                                                    <span class="orv__kicker">Missing context</span>
+                                                    <p>4 cm overnight differs from 4 cm over a year; earthquake swarms &amp; SO₂ gas levels are omitted.</p>
+                                                </div>
+
+                                                <div class="orv__source-links">
+                                                    <span class="orv__kicker">Check sources</span>
+                                                    <a class="orv__source-link" href="https://www.usgs.gov/programs/VHP" target="_blank" rel="noopener noreferrer">
+                                                        <span>USGS Volcano Deformation</span>
+                                                        <span>usgs.gov ↗</span>
+                                                    </a>
+                                                    <a class="orv__source-link" href="https://volcano.si.edu/" target="_blank" rel="noopener noreferrer">
+                                                        <span>Smithsonian Volcanism Program</span>
+                                                        <span>volcano.si.edu ↗</span>
+                                                    </a>
+                                                </div>
+                                            </section>
+
+                                            <!-- Pane 2: Ask + Deep Think + 30s Reply Outline -->
+                                            <section class="orv__pane" id="orvPaneAsk" data-orv-pane="2" hidden>
+                                                <p class="orv__chat-user" id="orvAskPrompt">Does 4 cm of uplift mean an eruption is next?</p>
+
+                                                <div class="orv__deep-row">
+                                                    <span class="orv__kicker" style="margin:0;">Orvelis · 0:18</span>
+                                                    <button class="orv__deep-btn" id="orvDeepToggle" type="button" aria-pressed="false">Deep Think: Off</button>
+                                                </div>
+
+                                                <p class="orv__summary-copy" id="orvAskAnswer">Uplift shows pressure changing underground, not whether magma will breach the surface. Compare uplift speed with gas and quake monitoring.</p>
+
+                                                <ul class="orv__reply-list" aria-label="30-second video reply outline">
+                                                    <li><b>01 HOOK</b><span>Uplift alone isn’t an alarm bell.</span></li>
+                                                    <li><b>02 PROOF</b><span>Compare speed against seismic &amp; SO₂ data.</span></li>
+                                                    <li><b>03 CLOSE</b><span>Always ask for the time window first.</span></li>
+                                                </ul>
+                                            </section>
+                                        </div>
+                                    </article>
+
+                                    <div class="orv__cursor" id="orvCursor" aria-hidden="true"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            (function () {
+                'use strict';
+
+                var section = document.getElementById('ai-core');
+                var stage = document.getElementById('orvStage');
+                var rig = document.getElementById('orvRig');
+                var device = document.getElementById('orvGuideDevice');
+                var clipCanvas = document.getElementById('orvClipCanvas');
+                var clipTimer = document.getElementById('orvClipTimer');
+                var clipTrackFill = document.getElementById('orvClipTrackFill');
+                var guideMark = document.getElementById('orvGuideMark');
+                var sheetMark = document.getElementById('orvSheetMark');
+                var sheetSub = document.getElementById('orvSheetSub');
+                var sheetTabsNav = section ? section.querySelector('.orv__sheet-tabs') : null;
+                var scanStatus = document.getElementById('orvScanStatus');
+                var scanBar = document.getElementById('orvScanBar');
+                var summaryPane = document.getElementById('orvPaneSummary');
+                var cursor = document.getElementById('orvCursor');
+                var callout = document.getElementById('orvCallout');
+                var calloutTag = document.getElementById('orvCalloutTag');
+                var calloutText = document.getElementById('orvCalloutText');
+                var walkStatus = document.getElementById('orvWalkStatus');
+                var playPauseBtn = document.getElementById('orvWalkPlayPause');
+                var replayBtn = document.getElementById('orvWalkReplay');
+                var playerTrigger = document.getElementById('orvPlayerTrigger');
+                var sheetCloseBtn = document.getElementById('orvSheetClose');
+                var deepToggle = document.getElementById('orvDeepToggle');
+                var askPrompt = document.getElementById('orvAskPrompt');
+                var askAnswer = document.getElementById('orvAskAnswer');
+                if (!section || !rig || !device || !clipCanvas) return;
+
+                var reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+                var stepBtns = [].slice.call(section.querySelectorAll('[data-orv-step]'));
+                var stepFills = [].slice.call(section.querySelectorAll('.orv__step-fill'));
+                var sheetTabs = [].slice.call(section.querySelectorAll('[data-orv-sheet-tab]'));
+                var panes = [].slice.call(section.querySelectorAll('[data-orv-pane]'));
+                var seekBtns = [].slice.call(section.querySelectorAll('[data-orv-seek]'));
+
+                var STEP_MS = 4800;
+                var MOMENTS = [
+                    { stamp: '0:06', ratio: 0.16, amp: 0.45, sub: 'Volcano ground uplift · 0:06' },
+                    { stamp: '0:18', ratio: 0.44, amp: 1.00, sub: 'Volcano ground uplift · 0:18' },
+                    { stamp: '0:29', ratio: 0.72, amp: 0.72, sub: 'Volcano ground uplift · 0:29' }
+                ];
+
+                var STEP_META = [
+                    {
+                        rx: 3.5, ry: -10.5,
+                        tag: 'Step 1 · Tap Orvelis',
+                        text: 'Pause at 0:18 and tap the Orvelis icon in the player rail.'
+                    },
+                    {
+                        rx: 2.0, ry: -5.0,
+                        tag: 'Step 2 · Audio + Frames',
+                        text: 'Generates summary, key terms, and synced 0:06 · 0:18 · 0:29 notes.'
+                    },
+                    {
+                        rx: 2.0, ry: 5.5,
+                        tag: 'Step 3 · Independent Check',
+                        text: 'Claims & external web sources stay clearly separated.'
+                    },
+                    {
+                        rx: 3.0, ry: -2.0,
+                        tag: 'Step 4 · Record Yourself',
+                        text: 'Test counterarguments with Deep Think & draft a 3-beat reply.'
+                    }
+                ];
+
+                var state = {
+                    step: 0,
+                    sheetOpen: false,
+                    sheetTab: 0,
+                    momentIdx: 1,
+                    deepThink: false,
+                    playing: !reduced,
+                    hovered: false,
+                    focused: false,
+                    stepElapsed: 0,
+                    pointerTilt: false,
+                    visible: false,
+                    raf: 0,
+                    lastNow: 0,
+                    time: 0,
+                    volcanoAmp: 1.0,
+                    targetAmp: 1.0
+                };
+
+                var timers = [];
+                function clearTimers() {
+                    while (timers.length) clearTimeout(timers.pop());
+                }
+                function after(ms, fn) {
+                    var id = setTimeout(fn, ms);
+                    timers.push(id);
+                    return id;
+                }
+
+                function setThinking(on) {
+                    if (guideMark) guideMark.classList.toggle('is-thinking', on);
+                    if (sheetMark) sheetMark.classList.toggle('is-thinking', on);
+                }
+
+                function setSheetOpen(open) {
+                    state.sheetOpen = open;
+                    device.classList.toggle('is-sheet-open', open);
+                }
+
+                function setSheetTab(idx) {
+                    state.sheetTab = Math.max(0, Math.min(2, idx));
+                    if (sheetTabsNav) sheetTabsNav.style.setProperty('--tab-i', String(state.sheetTab));
+                    sheetTabs.forEach(function (btn, k) {
+                        btn.setAttribute('aria-selected', k === state.sheetTab ? 'true' : 'false');
+                    });
+                    panes.forEach(function (pane, k) {
+                        pane.hidden = k !== state.sheetTab;
+                    });
+                }
+
+                function setMoment(idx) {
+                    var item = MOMENTS[idx] || MOMENTS[1];
+                    state.momentIdx = idx;
+                    state.targetAmp = item.amp;
+                    if (clipTimer) clipTimer.textContent = item.stamp + ' / 0:42';
+                    if (clipTrackFill) clipTrackFill.style.transform = 'scaleX(' + item.ratio + ')';
+                    if (sheetSub) sheetSub.textContent = item.sub;
+                    seekBtns.forEach(function (btn, k) {
+                        btn.setAttribute('aria-pressed', k === idx ? 'true' : 'false');
+                    });
+                }
+
+                function setDeepThink(on) {
+                    state.deepThink = on;
+                    if (deepToggle) {
+                        deepToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+                        deepToggle.textContent = 'Deep Think: ' + (on ? 'On' : 'Off');
+                    }
+                    if (askAnswer) {
+                        askAnswer.textContent = on
+                            ? 'Comparing magma intrusion vs. hydrothermal expansion: without seismic tremor rates and SO₂ flux, 4 cm uplift is inconclusive.'
+                            : 'Uplift shows pressure changing underground, not whether magma will breach the surface. Compare uplift speed with gas and quake monitoring.';
+                    }
+                    setThinking(on && state.step === 3);
+                }
+
+                function moveCursor(x, y, tap) {
+                    if (!cursor || reduced) return;
+                    cursor.style.setProperty('--cx', x + 'px');
+                    cursor.style.setProperty('--cy', y + 'px');
+                    cursor.classList.add('is-visible');
+                    cursor.classList.toggle('is-tap', !!tap);
+                    cursor.classList.toggle('is-move', !tap);
+                }
+
+                function moveCursorTo(el, tap) {
+                    if (!cursor || !el || reduced) return;
+                    var x = (el.offsetWidth || 26) / 2;
+                    var y = (el.offsetHeight || 26) / 2;
+                    var cur = el;
+                    while (cur && cur !== device && !cur.classList.contains('orv__screen')) {
+                        x += cur.offsetLeft || 0;
+                        y += cur.offsetTop || 0;
+                        cur = cur.offsetParent;
+                    }
+                    moveCursor(Math.round(x - 13), Math.round(y - 13), tap);
+                }
+
+                function hideCursor() {
+                    if (!cursor) return;
+                    cursor.classList.remove('is-visible', 'is-tap', 'is-move');
+                }
+
+                function updateCallout(stepIdx) {
+                    var meta = STEP_META[stepIdx];
+                    if (!callout || !meta) return;
+                    if (reduced) {
+                        if (calloutTag) calloutTag.textContent = meta.tag;
+                        if (calloutText) calloutText.textContent = meta.text;
+                        return;
+                    }
+                    callout.classList.add('is-swap');
+                    after(140, function () {
+                        if (calloutTag) calloutTag.textContent = meta.tag;
+                        if (calloutText) calloutText.textContent = meta.text;
+                        callout.classList.remove('is-swap');
+                    });
+                }
+
+                function applyCamera(stepIdx) {
+                    if (reduced || state.pointerTilt) return;
+                    var meta = STEP_META[stepIdx];
+                    if (!meta) return;
+                    rig.style.setProperty('--rx', meta.rx + 'deg');
+                    rig.style.setProperty('--ry', meta.ry + 'deg');
+                }
+
+                function updateStepUI(stepIdx) {
+                    stepBtns.forEach(function (btn, k) {
+                        btn.setAttribute('aria-selected', k === stepIdx ? 'true' : 'false');
+                    });
+                    stepFills.forEach(function (fill, k) {
+                        fill.style.transform = reduced && k === stepIdx ? 'scaleX(1)' : 'scaleX(0)';
+                    });
+                    if (walkStatus) walkStatus.textContent = 'Interactive Guide · Step ' + (stepIdx + 1) + ' of 4';
+                }
+
+                function runStep(stepIdx, fromUser) {
+                    clearTimers();
+                    stepIdx = ((stepIdx % 4) + 4) % 4;
+                    state.step = stepIdx;
+                    state.stepElapsed = 0;
+
+                    updateStepUI(stepIdx);
+                    applyCamera(stepIdx);
+                    updateCallout(stepIdx);
+                    if (playerTrigger) playerTrigger.classList.remove('is-pressed');
+                    if (summaryPane) summaryPane.classList.remove('is-scanning');
+                    if (scanStatus) scanStatus.hidden = true;
+                    if (scanBar) scanBar.hidden = true;
+                    setThinking(false);
+
+                    var instant = reduced || !!fromUser;
+                    if (instant) hideCursor();
+
+                    if (stepIdx === 0) {
+                        setSheetOpen(false);
+                        setSheetTab(0);
+                        setMoment(1);
+                        setDeepThink(false);
+                        if (!instant) {
+                            after(450, function () { moveCursorTo(playerTrigger, false); });
+                            after(1100, function () {
+                                moveCursorTo(playerTrigger, true);
+                                if (playerTrigger) playerTrigger.classList.add('is-pressed');
+                            });
+                            after(1320, function () {
+                                if (playerTrigger) playerTrigger.classList.remove('is-pressed');
+                                moveCursorTo(playerTrigger, false);
+                                setSheetOpen(true);
+                            });
+                            after(2050, hideCursor);
+                        }
+                    } else if (stepIdx === 1) {
+                        setSheetOpen(true);
+                        setSheetTab(0);
+                        setMoment(1);
+                        if (!instant) {
+                            if (summaryPane) summaryPane.classList.add('is-scanning');
+                            if (scanStatus) scanStatus.hidden = false;
+                            if (scanBar) scanBar.hidden = false;
+                            setThinking(true);
+                            after(950, function () {
+                                setThinking(false);
+                                if (scanStatus) scanStatus.hidden = true;
+                                if (scanBar) scanBar.hidden = true;
+                                if (summaryPane) summaryPane.classList.remove('is-scanning');
+                            });
+                            after(2100, function () { moveCursorTo(seekBtns[2], false); });
+                            after(2500, function () {
+                                moveCursorTo(seekBtns[2], true);
+                                setMoment(2);
+                            });
+                            after(2720, function () { moveCursorTo(seekBtns[2], false); });
+                            after(3300, hideCursor);
+                        }
+                    } else if (stepIdx === 2) {
+                        setSheetOpen(true);
+                        setMoment(2);
+                        if (instant) {
+                            setSheetTab(1);
+                        } else {
+                            setSheetTab(0);
+                            after(320, function () { moveCursorTo(sheetTabs[1], false); });
+                            after(760, function () {
+                                moveCursorTo(sheetTabs[1], true);
+                                setSheetTab(1);
+                            });
+                            after(980, function () { moveCursorTo(sheetTabs[1], false); });
+                            after(1700, hideCursor);
+                        }
+                    } else if (stepIdx === 3) {
+                        setSheetOpen(true);
+                        setMoment(1);
+                        if (instant) {
+                            setSheetTab(2);
+                            setDeepThink(true);
+                        } else {
+                            setSheetTab(1);
+                            setDeepThink(false);
+                            after(320, function () { moveCursorTo(sheetTabs[2], false); });
+                            after(760, function () {
+                                moveCursorTo(sheetTabs[2], true);
+                                setSheetTab(2);
+                            });
+                            after(1000, function () { moveCursorTo(deepToggle, false); });
+                            after(1550, function () {
+                                moveCursorTo(deepToggle, true);
+                                setDeepThink(true);
+                            });
+                            after(1780, function () { moveCursorTo(deepToggle, false); });
+                            after(2450, hideCursor);
+                        }
+                    }
+                }
+
+                function updatePlayBtn() {
+                    if (!playPauseBtn) return;
+                    playPauseBtn.setAttribute('aria-pressed', state.playing ? 'false' : 'true');
+                    var span = playPauseBtn.querySelector('span');
+                    var svg = playPauseBtn.querySelector('svg');
+                    if (span) span.textContent = state.playing ? 'Pause' : 'Play';
+                    if (svg) {
+                        svg.innerHTML = state.playing
+                            ? '<rect x="3" y="2.5" width="3.5" height="11" rx="1"/><rect x="9.5" y="2.5" width="3.5" height="11" rx="1"/>'
+                            : '<polygon points="4,2.5 13.5,8 4,13.5"/>';
+                    }
+                }
+
+                stepBtns.forEach(function (btn, idx) {
+                    btn.addEventListener('click', function () {
+                        runStep(idx, true);
+                    });
+                    btn.addEventListener('keydown', function (e) {
+                        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                            e.preventDefault();
+                            var n = (idx + 1) % stepBtns.length;
+                            runStep(n, true);
+                            stepBtns[n].focus();
+                        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                            e.preventDefault();
+                            var p = (idx - 1 + stepBtns.length) % stepBtns.length;
+                            runStep(p, true);
+                            stepBtns[p].focus();
+                        }
+                    });
+                });
+
+                if (playPauseBtn) {
+                    playPauseBtn.addEventListener('click', function () {
+                        if (reduced) return;
+                        state.playing = !state.playing;
+                        updatePlayBtn();
+                        startLoop();
+                    });
+                }
+
+                if (replayBtn) {
+                    replayBtn.addEventListener('click', function () {
+                        if (!reduced) {
+                            state.playing = true;
+                            updatePlayBtn();
+                        }
+                        runStep(0, false);
+                        startLoop();
+                    });
+                }
+
+                if (playerTrigger) {
+                    playerTrigger.addEventListener('click', function () {
+                        setSheetOpen(true);
+                        if (state.step === 0) runStep(1, true);
+                    });
+                }
+
+                if (sheetCloseBtn) {
+                    sheetCloseBtn.addEventListener('click', function () {
+                        setSheetOpen(false);
+                        state.playing = false;
+                        updatePlayBtn();
+                    });
+                }
+
+                sheetTabs.forEach(function (btn, idx) {
+                    btn.addEventListener('click', function () {
+                        setSheetOpen(true);
+                        setSheetTab(idx);
+                        state.playing = false;
+                        updatePlayBtn();
+                    });
+                });
+
+                seekBtns.forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var idx = Number(btn.getAttribute('data-orv-seek'));
+                        setMoment(idx);
+                        state.playing = false;
+                        updatePlayBtn();
+                    });
+                });
+
+                if (deepToggle) {
+                    deepToggle.addEventListener('click', function () {
+                        setDeepThink(!state.deepThink);
+                        state.playing = false;
+                        updatePlayBtn();
+                    });
+                }
+
+                /* Pause auto-advance while hovering/focusing so user can inspect freely */
+                if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+                    section.addEventListener('pointerenter', function () { state.hovered = true; });
+                    section.addEventListener('pointerleave', function () { state.hovered = false; });
+                }
+                section.addEventListener('focusin', function () { state.focused = true; });
+                section.addEventListener('focusout', function () { state.focused = false; });
+
+                /* Subtle 3D perspective tilt on stage hover */
+                if (!reduced && stage) {
+                    stage.addEventListener('pointermove', function (e) {
+                        var r = stage.getBoundingClientRect();
+                        if (!r.width || !r.height) return;
+                        var nx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2));
+                        var ny = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height - 0.5) * 2));
+                        state.pointerTilt = true;
+                        rig.style.setProperty('--ry', (nx * 10).toFixed(2) + 'deg');
+                        rig.style.setProperty('--rx', (-ny * 7.5).toFixed(2) + 'deg');
+                    }, { passive: true });
+                    stage.addEventListener('pointerleave', function () {
+                        state.pointerTilt = false;
+                        applyCamera(state.step);
+                    }, { passive: true });
+                }
+
+                /* =========================================================
+                   LIVE 3D VOLCANO InSAR DEFORMATION CANVAS INSIDE CLIP
+                   ========================================================= */
+                var ctx = clipCanvas.getContext('2d');
+                function drawVolcanoScene() {
+                    if (!ctx) return;
+                    var w = clipCanvas.clientWidth || 380;
+                    var h = clipCanvas.clientHeight || 620;
+                    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+                    if (clipCanvas.width !== Math.round(w * dpr) || clipCanvas.height !== Math.round(h * dpr)) {
+                        clipCanvas.width = Math.round(w * dpr);
+                        clipCanvas.height = Math.round(h * dpr);
+                    }
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                    // Atmospheric night obsidian sky
+                    var bg = ctx.createLinearGradient(0, 0, 0, h);
+                    bg.addColorStop(0, '#090D16');
+                    bg.addColorStop(0.52, '#101A2D');
+                    bg.addColorStop(1, '#080B12');
+                    ctx.fillStyle = bg;
+                    ctx.fillRect(0, 0, w, h);
+
+                    var cx = w * 0.5;
+                    var cy = h * 0.44;
+                    var t = state.time;
+                    var amp = state.volcanoAmp;
+
+                    // Subtle orbital satellite pass line at top
+                    var satX = w * (0.2 + 0.6 * (0.5 + 0.5 * Math.sin(t * 0.55)));
+                    var satY = h * 0.14;
+                    ctx.strokeStyle = 'rgba(141, 180, 230, 0.22)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(satX, satY);
+                    ctx.lineTo(cx, cy - 32 * amp);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#DAE6F7';
+                    ctx.beginPath();
+                    ctx.arc(satX, satY, 3, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // 3D Projected Wireframe Volcanic Cone + InSAR Uplift Swell
+                    var rows = 14, cols = 22;
+                    var rotY = Math.sin(t * 0.35) * 0.28 + (state.step - 1.5) * 0.12;
+                    var tiltX = 0.54;
+                    var cyR = Math.cos(rotY), syR = Math.sin(rotY);
+                    var cxT = Math.cos(tiltX), sxT = Math.sin(tiltX);
+                    var scale = Math.min(w, h) * 0.34;
+
+                    function projectGrid(gx, gz) {
+                        var dist = Math.hypot(gx, gz);
+                        var cone = Math.exp(-dist * dist * 1.45) * 0.92;
+                        var swell = Math.exp(-Math.pow(dist - 0.15, 2) * 3.2) * (0.22 + 0.16 * Math.sin(t * 2.1)) * amp;
+                        var crater = Math.exp(-dist * dist * 18) * 0.24;
+                        var gy = cone + swell - crater - 0.28;
+
+                        var x1 = gx * cyR + gz * syR;
+                        var z1 = -gx * syR + gz * cyR;
+                        var y2 = gy * cxT - z1 * sxT;
+                        var z2 = gy * sxT + z1 * cxT;
+                        var f = 3.2 / (4.1 - z2);
+                        return [cx + x1 * scale * f, cy - y2 * scale * f, gy, dist];
+                    }
+
+                    var pts = [];
+                    for (var r = 0; r <= rows; r++) {
+                        pts[r] = [];
+                        var gz = (r / rows - 0.5) * 2.2;
+                        for (var c = 0; c <= cols; c++) {
+                            var gx = (c / cols - 0.5) * 2.2;
+                            pts[r][c] = projectGrid(gx, gz);
+                        }
+                    }
+
+                    // Draw terrain mesh lines
+                    ctx.lineWidth = 1;
+                    for (var r = 0; r <= rows; r++) {
+                        ctx.beginPath();
+                        for (var c = 0; c <= cols; c++) {
+                            var p = pts[r][c];
+                            if (c === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+                        }
+                        var elev = Math.max(0.12, Math.min(0.62, 0.25 + (1 - Math.abs(r / rows - 0.5) * 2) * 0.35));
+                        ctx.strokeStyle = 'rgba(141, 180, 230, ' + elev.toFixed(2) + ')';
+                        ctx.stroke();
+                    }
+                    for (var c = 0; c <= cols; c++) {
+                        ctx.beginPath();
+                        for (var r = 0; r <= rows; r++) {
+                            var p = pts[r][c];
+                            if (r === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+                        }
+                        ctx.strokeStyle = 'rgba(141, 180, 230, 0.22)';
+                        ctx.stroke();
+                    }
+
+                    // Concentric InSAR Interferogram Rings radiating from uplift flank
+                    for (var ring = 0; ring < 3; ring++) {
+                        var phase = ((t * 0.45 + ring / 3) % 1);
+                        var rad = (0.28 + phase * 0.72) * scale * 0.75;
+                        var alpha = (1 - phase) * (0.48 * amp);
+                        ctx.strokeStyle = ring % 2 === 0
+                            ? 'rgba(252, 211, 77, ' + alpha.toFixed(2) + ')'
+                            : 'rgba(110, 231, 183, ' + alpha.toFixed(2) + ')';
+                        ctx.lineWidth = 1.6;
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy - 14 * amp, rad, rad * 0.46, 0, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                }
+
+                function tick(now) {
+                    state.raf = 0;
+                    if (!state.visible || document.hidden || reduced || document.documentElement.classList.contains('navx-open')) {
+                        state.lastNow = 0;
+                        return;
+                    }
+                    state.raf = requestAnimationFrame(tick);
+                    var dt = state.lastNow ? Math.min(0.05, (now - state.lastNow) / 1000) : 0.016;
+                    state.lastNow = now;
+                    state.time += dt;
+                    state.volcanoAmp += (state.targetAmp - state.volcanoAmp) * (1 - Math.exp(-dt * 5));
+
+                    if (state.playing && !state.hovered && !state.focused) {
+                        state.stepElapsed += dt * 1000;
+                        var activeFill = stepFills[state.step];
+                        if (activeFill) {
+                            activeFill.style.transform = 'scaleX(' + Math.min(1, state.stepElapsed / STEP_MS).toFixed(3) + ')';
+                        }
+                        if (state.stepElapsed >= STEP_MS) {
+                            runStep((state.step + 1) % 4, false);
+                        }
+                    }
+
+                    drawVolcanoScene();
+                }
+
+                function startLoop() {
+                    if (reduced) {
+                        drawVolcanoScene();
+                        return;
+                    }
+                    if (!state.raf && state.visible && !document.hidden && !document.documentElement.classList.contains('navx-open')) {
+                        state.raf = requestAnimationFrame(tick);
+                    }
+                }
+
+                if ('IntersectionObserver' in window) {
+                    new IntersectionObserver(function (entries) {
+                        state.visible = entries[entries.length - 1].isIntersecting;
+                        if (state.visible) startLoop();
+                    }, { rootMargin: '160px 0px' }).observe(section);
+                } else {
+                    state.visible = true;
+                    startLoop();
+                }
+
+                document.addEventListener('visibilitychange', function () {
+                    if (!document.hidden && state.visible) startLoop();
+                });
+
+                window.addEventListener('resize', function () {
+                    if (state.visible) drawVolcanoScene();
+                }, { passive: true });
+
+                new MutationObserver(function () {
+                    if (!document.documentElement.classList.contains('navx-open') && state.visible) startLoop();
+                    drawVolcanoScene();
+                }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+
+                updatePlayBtn();
+                runStep(0, reduced);
+                drawVolcanoScene();
+            })();
+            </script>
+        </section>
 
         <!-- GLOBAL NETWORK SECTION -->
         <section class="section section--global gnet" id="global" data-inview>
-<div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
-<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="section__container">
 
                 <div class="gnet__eyebrow">
@@ -2329,7 +4268,6 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 
         <!-- Discord invitation: one reason to join, one clear next step. -->
         <section class="section discord-invitation" id="beta" data-inview aria-labelledby="accessTitle">
-<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="dc-inner">
                 <div class="dc-mast"><span><b>06</b> THE NEXT CHAPTER</span><span>DATARIOT / DISCORD</span></div>
                 <div class="dc-layout">
@@ -2361,8 +4299,6 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
 
         <!-- 08 — FAQ -->
         <section class="section faq" id="faq" data-inview>
-<div class="px-field datariot-shared-wave" aria-hidden="true"><canvas class="px-field__canvas"></canvas></div>
-<div class="datariot-depth-field" aria-hidden="true"><span class="datariot-depth-field__orb datariot-depth-field__orb--one"></span><span class="datariot-depth-field__orb datariot-depth-field__orb--two"></span><span class="datariot-depth-field__ring"></span></div>
             <div class="faq__inner">
                 <div class="faq__head">
                     <span class="faq__tag">[ 08 &mdash; FAQ ]</span>
@@ -2383,7 +4319,7 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
                     </details>
                     <details class="faq__item">
                         <summary><span class="faq__n">03</span><span class="faq__q">What is Orvelis?</span><i class="faq__sign" aria-hidden="true"></i></summary>
-                        <div class="faq__a"><p>The AI inside Datariot. For every clip it builds a Deep Dive: a summary, three key terms and three places to learn more. It answers your questions about the video and flags fallacies and manipulation, timestamped to the second.</p></div>
+                        <div class="faq__a"><p>The AI built into Datariot. For supported public clips it analyzes video and audio to create a summary, key terms, synced timeline notes and a quick comprehension check, separates claims from evidence and missing context, verifies claims with web search sources, and helps you ask follow-ups or structure a 30-second video reply.</p></div>
                     </details>
                     <details class="faq__item">
                         <summary><span class="faq__n">04</span><span class="faq__q">What is a video reply?</span><i class="faq__sign" aria-hidden="true"></i></summary>
@@ -2482,8 +4418,8 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
     <script defer src="https://unpkg.com/split-type"></script>
     <!-- no three.js: the one 3D scene left, the globe in 05, is a pixel
          canvas in clips.js now, and the 600 KB library blocked the page -->
-    <!-- slide 04's dithered wave: plain WebGL, no three.js -->
-    <script defer src="pixel-field.js?v=shared-wave-20261108"></script>
+    <!-- The Feed's dithered 3D background -->
+    <script defer src="pixel-field.js?v=feed-wave-20261125"></script>
 
     <!-- the feed: the hero phone, the tap-a-question demo in 01, the arena vote and the globe -->
     <script defer src="clips.js?v=arena-20261025"></script>
