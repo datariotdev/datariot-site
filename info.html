@@ -1205,7 +1205,6 @@ html[data-theme="dark"] #hero>.datariot-depth-field{z-index:1!important}
 html[data-theme="dark"] #hero>.hero__content,
 html[data-theme="dark"] #hero>.hero__phone-showcase{position:relative;z-index:2}
 html[data-theme="dark"] #ai-core>.px-field{z-index:0;opacity:.48}
-html[data-theme="dark"] #global .gnet__visual{position:relative;z-index:2}
 html[data-theme="dark"] #manifesto .datariot-depth-field__orb--one,
 html[data-theme="dark"] #features .datariot-depth-field__orb--one,
 html[data-theme="dark"] #debates .datariot-depth-field__orb--one,
@@ -1324,6 +1323,195 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
     }
 </style>
 
+
+<style id="datariot-global-network">
+    #global {
+        --network-ink: #142234;
+        --network-muted: #475b72;
+        --network-accent: #315c8d;
+        --network-rule: rgb(50 82 118 / .18);
+        --network-surface: rgb(255 255 255 / .62);
+        --network-selected: #dbe9fa;
+        padding: clamp(56px, 8vw, 112px) clamp(16px, 5vw, 44px) !important;
+        min-height: 0;
+        color: var(--network-ink);
+        scroll-margin-top: 76px;
+    }
+
+    [data-theme="dark"] #global {
+        --network-ink: #eef4ff;
+        --network-muted: #aabbd0;
+        --network-accent: #afcff9;
+        --network-rule: rgb(167 199 244 / .18);
+        --network-surface: rgb(18 24 34 / .78);
+        --network-selected: #263950;
+    }
+
+    #global .network__heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr);
+        align-items: end;
+        gap: 20px 44px;
+        margin-bottom: clamp(24px, 4vw, 39px);
+    }
+
+    #global .network__label {
+        color: var(--network-accent);
+        font: 550 11px/1.4 var(--font-tech, monospace);
+        letter-spacing: .16em;
+        text-transform: uppercase;
+    }
+
+    #global h2 {
+        margin: 10px 0 0;
+        color: var(--network-ink);
+        font: 690 clamp(41px, 6vw, 76px)/.98 Syne, Manrope, sans-serif;
+        letter-spacing: -.052em;
+        text-wrap: balance;
+    }
+
+    #global h2 span { color: var(--network-accent); }
+
+    #global .network__intro {
+        max-width: 34ch;
+        margin: 0;
+        color: var(--network-muted);
+        font: 530 clamp(14px, 1.5vw, 17px)/1.55 Manrope, sans-serif;
+    }
+
+    #global .network__demo {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    #global .network__scene,
+    #global .network__dialogue {
+        min-width: 0;
+        border: 1px solid var(--network-rule);
+        border-radius: 24px;
+        background: var(--network-surface);
+    }
+
+    #global .network__scene {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        min-height: 322px;
+        overflow: hidden;
+        background:
+            radial-gradient(ellipse at 50% 36%, rgb(111 156 214 / .19), transparent 72%),
+            var(--network-surface);
+    }
+
+    #global .network__scene[hidden] { display: none; }
+
+    #global .network__canvas {
+        position: absolute;
+        inset: 0 0 52px;
+        width: 100%;
+        height: calc(100% - 52px);
+        z-index: -1;
+    }
+
+    #global .network__route {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: center;
+        gap: 10px;
+        margin-inline: 18px;
+        padding-block: 11px 13px;
+        border-top: 1px solid var(--network-rule);
+        color: var(--network-ink);
+        font: 700 14px/1.4 Manrope, sans-serif;
+    }
+
+    #global .network__route span:last-child { text-align: right; }
+    #global .network__route-arrow { color: var(--network-accent); }
+
+    #global .network__dialogue { padding: clamp(18px, 3vw, 32px); }
+
+    #global .network__topics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin: 10px 0 22px;
+    }
+
+    #global .network__topics[hidden] { display: none; }
+
+    #global .network__topic {
+        min-height: 44px;
+        padding: 6px 13px;
+        border: 1px solid var(--network-rule);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--network-muted);
+        font: 680 13px/1.2 Manrope, sans-serif;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    #global .network__topic[aria-pressed="true"] {
+        background: var(--network-selected);
+        color: var(--network-ink);
+    }
+
+    #global .network__topic:focus-visible {
+        outline: 2px solid var(--network-accent);
+        outline-offset: 2px;
+    }
+
+    @media (hover: hover) {
+        #global .network__topic:hover { color: var(--network-ink); border-color: var(--network-accent); }
+    }
+
+    #global .network__thread {
+        display: grid;
+        gap: 11px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    #global .network__entry {
+        padding: 2px 0 2px 14px;
+        border-inline-start: 2px solid var(--network-rule);
+    }
+
+    #global .network__entry--reply { border-inline-start-color: var(--network-accent); }
+
+    #global .network__entry-label {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--network-accent);
+        font: 560 11px/1.4 var(--font-tech, monospace);
+    }
+
+    #global .network__question {
+        margin: 0;
+        color: var(--network-ink);
+        font: 760 clamp(18px, 2.4vw, 25px)/1.22 Manrope, sans-serif;
+        letter-spacing: -.035em;
+    }
+
+    #global .network__answer {
+        margin: 0;
+        color: var(--network-muted);
+        font: 530 14px/1.48 Manrope, sans-serif;
+    }
+
+    @media (max-width: 740px) {
+        #global .network__heading,
+        #global .network__demo { grid-template-columns: minmax(0, 1fr); }
+        #global .network__heading { gap: 12px; }
+        #global h2 { text-wrap: initial; }
+        #global .network__scene { min-height: clamp(210px, 61vw, 284px); }
+        #global .network__route { margin-inline: 15px; }
+    }
+</style>
 
     <style id="datariot-info-header">
         .info-header {
@@ -4295,113 +4483,221 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
             </script>
         </section>
 
-        <!-- GLOBAL NETWORK SECTION -->
-        <section class="section section--global gnet" id="global" data-inview>
+        <section class="section section--global" id="global" aria-labelledby="globalTitle">
             <div class="section__container">
-
-                <div class="gnet__eyebrow">
-                    <span class="gnet__eyebrow-tag">[ 05 — GLOBAL NETWORK ]</span>
-                    <span class="gnet__eyebrow-rule"></span>
-                    <span class="gnet__eyebrow-meta">
-                        <span class="gnet__pulse"></span>
-                        NETWORK LIVE
-                    </span>
-                </div>
-
-                <div class="gnet__head">
-                    <h2 class="section__title">Good ideas travel.</h2>
-                    <p class="gnet__lede">
-                        A clip made in Lagos gets answered from Warsaw before it finishes buffering.
-                        Topics cluster by meaning, not by map.
-                    </p>
-                </div>
-
-                <div class="gnet__grid">
-
-                    <!-- the map -->
-                    <div class="gnet__map">
-                        <div class="gnet__map-frame">
-                            <span class="gnet__corner gnet__corner--tl" aria-hidden="true"></span>
-                            <span class="gnet__corner gnet__corner--br" aria-hidden="true"></span>
-                            <div class="orvelis-canvas-container gnet__canvas" id="canvas-3d-globe"></div>
-
-                            <div class="gnet__map-hud">
-                                <span class="gnet__map-tag">[ TOPOLOGY // LIVE ]</span>
-                                <span class="gnet__map-coord">LAT 51.50 / LON -0.12</span>
-                            </div>
-
-                            <!-- clusters called out on the sphere -->
-                            <span class="gnet__pin gnet__pin--1"><i></i>EU-WEST</span>
-                            <span class="gnet__pin gnet__pin--2"><i></i>SA-EAST</span>
-                            <span class="gnet__pin gnet__pin--3"><i></i>APAC</span>
-                        </div>
-
-                        <div class="gnet__readout">
-                            <span class="gnet__readout-item"><b>1,247</b><i>ACTIVE NODES</i></span>
-                            <span class="gnet__readout-item"><b>384</b><i>LIVE CLUSTERS</i></span>
-                            <span class="gnet__readout-item"><b>62</b><i>COUNTRIES</i></span>
-                            <span class="gnet__readout-item"><b>34</b><i>MS MEDIAN HOP</i></span>
-                        </div>
+                <header class="network__heading">
+                    <div>
+                        <span class="network__label">Global network</span>
+                        <h2 id="globalTitle">Good ideas <span>travel.</span></h2>
                     </div>
+                    <p class="network__intro">A short clip can spark a video reply from a city you’ve never been to.</p>
+                </header>
 
-                    <!-- the regions board -->
-                    <div class="gnet__board">
-                        <div class="gnet__board-head">
-                            <span class="gnet__board-title">REGIONS BY LIVE DEBATE</span>
-                            <span class="gnet__board-now">NOW</span>
+                <div class="network__demo">
+                    <div class="network__dialogue">
+                        <span class="network__label">Example conversation</span>
+                        <div class="network__topics" role="group" aria-label="Conversation topics" hidden>
+                            <button class="network__topic" type="button" data-topic="running" aria-pressed="true">Running</button>
+                            <button class="network__topic" type="button" data-topic="city" aria-pressed="false">City life</button>
+                            <button class="network__topic" type="button" data-topic="football" aria-pressed="false">Football</button>
                         </div>
-
-                        <ol class="gnet__regions">
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">01</span>
-                                <span class="gnet__region-name">EU&nbsp;WEST</span>
-                                <span class="gnet__region-bar"><i style="width: 92%"></i></span>
-                                <span class="gnet__region-val">418</span>
+                        <ol class="network__thread" aria-live="polite" aria-atomic="true">
+                            <li class="network__entry">
+                                <span class="network__entry-label">Original clip · <span data-from>Lagos</span></span>
+                                <p class="network__question">Can music change your running pace?</p>
                             </li>
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">02</span>
-                                <span class="gnet__region-name">NA&nbsp;EAST</span>
-                                <span class="gnet__region-bar"><i style="width: 78%"></i></span>
-                                <span class="gnet__region-val">356</span>
-                            </li>
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">03</span>
-                                <span class="gnet__region-name">APAC</span>
-                                <span class="gnet__region-bar"><i style="width: 61%"></i></span>
-                                <span class="gnet__region-val">277</span>
-                            </li>
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">04</span>
-                                <span class="gnet__region-name">SA&nbsp;EAST</span>
-                                <span class="gnet__region-bar"><i style="width: 44%"></i></span>
-                                <span class="gnet__region-val">201</span>
-                            </li>
-                            <li class="gnet__region">
-                                <span class="gnet__region-rank">05</span>
-                                <span class="gnet__region-name">AFRICA</span>
-                                <span class="gnet__region-bar"><i style="width: 33%"></i></span>
-                                <span class="gnet__region-val">149</span>
+                            <li class="network__entry network__entry--reply">
+                                <span class="network__entry-label">Video reply · <span data-to>Warsaw</span></span>
+                                <p class="network__answer">I tried the same hill with two playlists. The faster beat made me go out too hard.</p>
                             </li>
                         </ol>
+                    </div>
 
-                        <div class="gnet__feed">
-                            <span class="gnet__feed-title">[ CROSS-BORDER REPLIES ]</span>
-                            <ul class="gnet__feed-list">
-                                <li><em>LAGOS</em><span class="gnet__arrow" aria-hidden="true"></span><em>WARSAW</em><i>0:41</i></li>
-                                <li><em>SÃO PAULO</em><span class="gnet__arrow" aria-hidden="true"></span><em>LISBON</em><i>1:12</i></li>
-                                <li><em>JAKARTA</em><span class="gnet__arrow" aria-hidden="true"></span><em>BERLIN</em><i>0:58</i></li>
-                                <li><em>TORONTO</em><span class="gnet__arrow" aria-hidden="true"></span><em>SEOUL</em><i>2:04</i></li>
-                            </ul>
+                    <div class="network__scene" aria-hidden="true" hidden>
+                        <canvas class="network__canvas"></canvas>
+                        <div class="network__route">
+                            <span data-from>Lagos</span>
+                            <span class="network__route-arrow">→</span>
+                            <span data-to>Warsaw</span>
                         </div>
-
-                        <p class="gnet__note">
-                            Topics are grouped by meaning, so a clip finds the people who care about it,
-                            not the people who happen to share a timezone.
-                        </p>
                     </div>
                 </div>
             </div>
         </section>
+        <script>
+            (() => {
+                const section = document.getElementById('global');
+                const topics = section.querySelector('.network__topics');
+                const buttons = topics.querySelectorAll('button');
+                const question = section.querySelector('.network__question');
+                const answer = section.querySelector('.network__answer');
+                const fromLabels = section.querySelectorAll('[data-from]');
+                const toLabels = section.querySelectorAll('[data-to]');
+                const examples = {
+                    running: {
+                        from: ['Lagos', 6.5, 3.4],
+                        to: ['Warsaw', 52.2, 21],
+                        question: question.textContent,
+                        answer: answer.textContent,
+                    },
+                    city: {
+                        from: ['São Paulo', -23.5, -46.6],
+                        to: ['Lisbon', 38.7, -9.1],
+                        question: 'What makes a street feel safe to walk at night?',
+                        answer: 'I filmed two streets after dark. The one with open cafés felt easier to walk through, even with fewer streetlights.',
+                    },
+                    football: {
+                        from: ['Jakarta', -6.2, 106.8],
+                        to: ['Tokyo', 35.7, 139.7],
+                        question: 'Why does the same chant sound louder in some stadiums?',
+                        answer: 'I recorded the home end from two seats. You can hear the roof change how the chant carries.',
+                    },
+                };
+
+                const canvas = section.querySelector('.network__canvas');
+                const ctx = canvas.getContext('2d');
+                const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+                const radians = Math.PI / 180;
+                const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+                const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+                const unit = vector => {
+                    const length = Math.hypot(...vector);
+                    return vector.map(value => value / length);
+                };
+                const toward = (a, b, progress) => unit(a.map((value, index) => value * (1 - progress) + b[index] * progress));
+                const cityVector = ([, latitude, longitude]) => {
+                    const lat = latitude * radians;
+                    const lon = longitude * radians;
+                    return [Math.cos(lat) * Math.sin(lon), Math.sin(lat), Math.cos(lat) * Math.cos(lon)];
+                };
+
+                // Evenly spaced dots on the sphere keep the silhouette legible on small screens.
+                const pointCount = 420;
+                const points = Array.from({ length: pointCount }, (_, index) => {
+                    const y = 1 - 2 * (index + .5) / pointCount;
+                    const radius = Math.sqrt(1 - y * y);
+                    const angle = Math.PI * (3 - Math.sqrt(5)) * index;
+                    return [Math.cos(angle) * radius, y, Math.sin(angle) * radius];
+                });
+
+                let route = examples.running;
+                let frame = 0;
+
+                function draw(progress = 1) {
+                    const { width, height } = canvas.getBoundingClientRect();
+                    if (!ctx || !width || !height) return;
+                    ctx.clearRect(0, 0, width, height);
+
+                    const start = cityVector(route.from);
+                    const end = cityVector(route.to);
+                    const midpoint = toward(start, end, .5);
+                    const normal = unit(cross(start, end));
+                    const front = unit(midpoint.map((value, index) => value + .38 * normal[index]));
+                    const right = unit(cross([0, 1, 0], front));
+                    const up = cross(front, right);
+                    const radius = Math.min(width, height) * .40;
+                    const centerX = width / 2;
+                    const centerY = height * .54;
+                    const dark = document.documentElement.dataset.theme === 'dark';
+                    const ink = dark ? '#c5ddff' : '#346196';
+                    const bright = dark ? '#f5faff' : '#214a7b';
+                    const position = (point, lift = 1) => [
+                        centerX + dot(point, right) * radius * lift,
+                        centerY - dot(point, up) * radius * lift,
+                    ];
+                    const arc = t => position(toward(start, end, t), 1 + .36 * Math.sin(t * Math.PI));
+                    const circle = ([x, y], size) => {
+                        ctx.beginPath();
+                        ctx.arc(x, y, size, 0, 2 * Math.PI);
+                    };
+
+                    ctx.fillStyle = ink;
+                    ctx.strokeStyle = ink;
+                    ctx.globalAlpha = .18;
+                    ctx.lineWidth = 1;
+                    circle([centerX, centerY], radius);
+                    ctx.stroke();
+
+                    for (const point of points) {
+                        const depth = dot(point, front);
+                        if (depth <= 0) continue;
+                        ctx.globalAlpha = .17 + .54 * depth;
+                        circle(position(point), .65 + Math.min(radius / 110, 1) * depth);
+                        ctx.fill();
+                    }
+
+                    ctx.globalAlpha = 1;
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(...arc(0));
+                    for (let step = 1; step <= 40; step++) ctx.lineTo(...arc(step / 40));
+                    ctx.stroke();
+
+                    ctx.fillStyle = bright;
+                    for (const endpoint of [arc(0), arc(1)]) {
+                        ctx.globalAlpha = .3;
+                        circle(endpoint, 7);
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                        circle(endpoint, 3.3);
+                        ctx.fill();
+                    }
+
+                    if (progress < 1) {
+                        ctx.shadowColor = ink;
+                        ctx.shadowBlur = 11;
+                        circle(arc(progress), 3.5);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+
+                function resize() {
+                    const { width, height } = canvas.getBoundingClientRect();
+                    const scale = Math.min(window.devicePixelRatio || 1, 2);
+                    canvas.width = Math.round(width * scale);
+                    canvas.height = Math.round(height * scale);
+                    ctx.scale(scale, scale);
+                    draw();
+                }
+
+                function select(button) {
+                    if (button.getAttribute('aria-pressed') === 'true') return;
+                    route = examples[button.dataset.topic];
+                    buttons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+                    fromLabels.forEach(label => { label.textContent = route.from[0]; });
+                    toLabels.forEach(label => { label.textContent = route.to[0]; });
+                    question.textContent = route.question;
+                    answer.textContent = route.answer;
+
+                    cancelAnimationFrame(frame);
+                    draw();
+                    if (!ctx || motion.matches) return;
+                    const started = performance.now();
+                    const animate = now => {
+                        const progress = Math.min((now - started) / 680, 1);
+                        draw(progress);
+                        if (progress < 1 && !motion.matches) frame = requestAnimationFrame(animate);
+                    };
+                    frame = requestAnimationFrame(animate);
+                }
+
+                buttons.forEach(button => button.addEventListener('click', () => select(button)));
+                topics.hidden = false;
+                if (ctx) {
+                    canvas.parentElement.hidden = false;
+                    resize();
+                    motion.addEventListener('change', () => {
+                        cancelAnimationFrame(frame);
+                        draw();
+                    });
+                    new ResizeObserver(resize).observe(canvas);
+                    new MutationObserver(() => draw()).observe(document.documentElement, {
+                        attributes: true, attributeFilter: ['data-theme'],
+                    });
+                }
+            })();
+        </script>
 
         <!-- Discord invitation: one reason to join, one clear next step. -->
         <section class="section discord-invitation" id="beta" data-inview aria-labelledby="accessTitle">
@@ -4553,12 +4849,10 @@ copy.addEventListener('click',async()=>{const value=command.textContent;try{if(n
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script defer src="https://unpkg.com/split-type"></script>
-    <!-- no three.js: the one 3D scene left, the globe in 05, is a pixel
-         canvas in clips.js now, and the 600 KB library blocked the page -->
     <!-- The Feed's dithered 3D background -->
     <script defer src="pixel-field.js?v=feed-wave-20261125"></script>
 
-    <!-- the feed: the hero phone, the tap-a-question demo in 01, the arena vote and the globe -->
+    <!-- The hero phone and interactive clip previews -->
     <script defer src="clips.js?v=arena-20261025"></script>
     <script defer src="curiosity.js?v=1.0.0"></script>
     <script defer src="script.js?v=dark-default-20261108"></script>
