@@ -1,123 +1,131 @@
-/* The main and nested landing pages share this mobile navigation. */
 @media (max-width: 660px) {
     .curiosity-topbar { display: none; }
 
     #siteHeader {
-        --mast-ink: #152238;
-        --mast-surface: rgb(245 248 253 / .93);
-        --mast-key: #1e314b;
-        --mast-glyph: #edf5ff;
-        --mast-edge: rgb(42 64 95 / .15);
+        --mast-ink: #101b2a;
+        --mast-wash: rgb(245 249 255 / .92);
+        --mast-accent: #426184;
         position: fixed;
         z-index: 30001;
-        inset: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) auto max(12px, env(safe-area-inset-left));
+        inset: 0 0 auto;
+        isolation: isolate;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 14px;
         box-sizing: border-box;
-        height: 54px;
-        padding: 4px 5px 4px 12px;
+        height: calc(66px + env(safe-area-inset-top));
+        padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
         color: var(--mast-ink);
-        background: var(--mast-surface);
-        border: 1px solid var(--mast-edge);
-        border-radius: 12px;
-        box-shadow: 0 5px 16px rgb(0 10 26 / .10);
-        -webkit-backdrop-filter: blur(14px);
-        backdrop-filter: blur(14px);
+        border: 0;
+        background: transparent;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        pointer-events: none;
+    }
+    [data-theme="dark"] #siteHeader {
+        --mast-ink: #eff5ff;
+        --mast-wash: rgb(9 12 18 / .93);
+        --mast-accent: #b5cceb;
     }
 
-    [data-theme="dark"] #siteHeader {
-        --mast-ink: #e3edfa;
-        --mast-surface: rgb(16 21 29 / .94);
-        --mast-key: #d2e4fb;
-        --mast-glyph: #142338;
-        --mast-edge: rgb(185 212 247 / .17);
+    /* Blend the fixed controls into the page as content passes underneath. */
+    #siteHeader::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        inset: 0 0 -10px;
+        background: var(--mast-wash);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        mask-image: linear-gradient(#000 64%, transparent);
+        -webkit-mask-image: linear-gradient(#000 64%, transparent);
+    }
+    @supports (animation-timeline: scroll()) {
+        #siteHeader::before {
+            animation: mast-surface linear both;
+            animation-timeline: scroll(root);
+            animation-range: 0px 85px;
+        }
+        @keyframes mast-surface { from { opacity: 0; } to { opacity: 1; } }
     }
 
     #siteHeader .brandmark {
         position: static;
-        flex: none;
-        gap: 8px;
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+        min-height: 44px;
         color: inherit;
+        pointer-events: auto;
     }
-    #siteHeader .brandmark__logo { width: 31px; height: 31px; }
+    #siteHeader .brandmark__logo { width: 32px; height: 32px; }
+    @supports (mask-mode: luminance) {
+        #siteHeader .brandmark__logo { display: none; }
+        #siteHeader .brandmark::before {
+            content: "";
+            width: 32px;
+            height: 32px;
+            background: currentColor;
+            mask: url("assets/datariot-mark.jpg?v=brand-20261021") center / contain no-repeat;
+            mask-mode: luminance;
+        }
+    }
     #siteHeader .brandmark__word {
-        font: 750 21px/1 'Manrope', system-ui, sans-serif;
+        font: 750 27px/1 'Syne', 'Manrope', system-ui, sans-serif;
         letter-spacing: -.065em;
+        text-transform: lowercase;
     }
     #siteHeader .brandmark__badge,
     #siteHeader .navx-trigger__label { display: none; }
 
-    /* A quiet printed rule links the wordmark and the index key. */
-    #siteHeader::before {
-        content: "";
-        order: 1;
-        flex: 1;
-        height: 1px;
-        background: repeating-linear-gradient(to right, currentColor 0 2px, transparent 2px 6px);
-        opacity: .24;
-    }
-
     #siteHeader .navx-trigger {
-        position: relative;
-        inset: auto;
-        order: 2;
+        position: static;
         display: grid;
         place-items: center;
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         padding: 0;
-        color: var(--mast-glyph);
         border: 0;
-        border-radius: 8px;
+        border-radius: 50%;
         background: transparent;
-        isolation: isolate;
+        color: inherit;
+        pointer-events: auto;
     }
-    #siteHeader .navx-trigger::before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        inset: 2px;
-        background: var(--mast-key);
-        clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
-        border-radius: 5px;
-    }
-    #siteHeader .navx-trigger:focus-visible { outline: 2px solid var(--mast-ink); }
-    #siteHeader .navx-trigger__bars { width: 16px; height: 16px; }
+    #siteHeader .navx-trigger__bars { width: 28px; height: 18px; }
     #siteHeader .navx-trigger__bars i {
-        inset: 1px auto auto 1px;
-        width: 5px;
-        height: 5px;
-        border-radius: .5px;
+        left: auto;
+        right: 0;
+        top: 4px;
+        width: 28px;
+        height: 2px;
+        border-radius: 2px;
         background: currentColor;
-        box-shadow: 0 9px currentColor, 9px 9px currentColor;
-        transition: none;
+        transition: width .2s ease, transform .2s ease;
     }
     #siteHeader .navx-trigger__bars i:last-child {
-        inset: 1px 1px auto auto;
-        box-shadow: none;
-        transform: rotate(45deg);
+        top: 12px;
+        width: 18px;
+        color: var(--mast-accent);
     }
-
-    html.navx-open #siteHeader {
-        background: transparent;
-        border-color: transparent;
-        box-shadow: none;
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-        opacity: 1;
-        pointer-events: none;
-    }
+    html.navx-open #siteHeader { opacity: 1; pointer-events: none; }
     html.navx-open #siteHeader::before,
     html.navx-open #siteHeader .brandmark { visibility: hidden; }
-    html.navx-open #siteHeader .navx-trigger { pointer-events: auto; }
     #siteHeader .is-active .navx-trigger__bars i {
-        inset: 7px auto auto 0;
-        width: 16px;
-        height: 2px;
-        box-shadow: none;
+        top: 8px;
+        right: 2px;
+        width: 23px;
         transform: rotate(45deg);
     }
-    #siteHeader .is-active .navx-trigger__bars i:last-child { transform: rotate(-45deg); }
+    #siteHeader .is-active .navx-trigger__bars i:last-child {
+        color: inherit;
+        transform: rotate(-45deg);
+    }
+    #siteHeader :is(.brandmark, .navx-trigger):focus-visible {
+        outline: 2px solid var(--mast-accent);
+        outline-offset: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #siteHeader .navx-trigger__bars i { transition: none; }
+        #siteHeader::before { animation: none; }
+    }
 }
