@@ -1472,8 +1472,7 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
     </style>
 
     <style id="datariot-mobile-menu">
-        #navOverlay { transition: visibility 0s linear .16s; }
-        #navOverlay.is-open { transition-delay: 0s; }
+        #navOverlay { transition: none; }
         #navOverlay .navx__panel {
             transform: none;
             opacity: 0;
@@ -1486,7 +1485,7 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
             transform: none;
         }
         @media (prefers-reduced-motion: reduce) {
-            #navOverlay, #navOverlay .navx__panel { transition-duration: 0s; }
+            #navOverlay .navx__panel { transition-duration: 0s; }
         }
         @media (max-width: 900px), (pointer: coarse) and (orientation: portrait) {
             #navOverlay .navx__bar {
@@ -1674,7 +1673,7 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
             if (!overlay || !trigger) return;
 
             var root = document.documentElement;
-            var lastFocus = null;
+            var closeButton = overlay.querySelector('.info-header__button--close');
 
             function isOpen() { return overlay.classList.contains('is-open'); }
 
@@ -1689,16 +1688,14 @@ html[data-theme="light"] .datariot-depth-field{display:none!important}
 
             function open() {
                 if (isOpen()) return;
-                lastFocus = document.activeElement;
                 setState(true);
-                var first = overlay.querySelector('[data-navx-link]');
-                if (first) { try { first.focus({ preventScroll: true }); } catch (e) { } }
+                closeButton.focus({ preventScroll: true });
             }
 
             function close() {
                 if (!isOpen()) return;
                 setState(false);
-                if (lastFocus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { } }
+                trigger.focus({ preventScroll: true });
             }
 
             trigger.addEventListener('click', open);
