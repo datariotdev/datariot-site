@@ -1,0 +1,123 @@
+/* The main and nested landing pages share this mobile navigation. */
+@media (max-width: 660px) {
+    .curiosity-topbar { display: none; }
+
+    #siteHeader {
+        --mast-ink: #152238;
+        --mast-surface: rgb(245 248 253 / .93);
+        --mast-key: #1e314b;
+        --mast-glyph: #edf5ff;
+        --mast-edge: rgb(42 64 95 / .15);
+        position: fixed;
+        z-index: 30001;
+        inset: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) auto max(12px, env(safe-area-inset-left));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        box-sizing: border-box;
+        height: 54px;
+        padding: 4px 5px 4px 12px;
+        color: var(--mast-ink);
+        background: var(--mast-surface);
+        border: 1px solid var(--mast-edge);
+        border-radius: 12px;
+        box-shadow: 0 5px 16px rgb(0 10 26 / .10);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+    }
+
+    [data-theme="dark"] #siteHeader {
+        --mast-ink: #e3edfa;
+        --mast-surface: rgb(16 21 29 / .94);
+        --mast-key: #d2e4fb;
+        --mast-glyph: #142338;
+        --mast-edge: rgb(185 212 247 / .17);
+    }
+
+    #siteHeader .brandmark {
+        position: static;
+        flex: none;
+        gap: 8px;
+        color: inherit;
+    }
+    #siteHeader .brandmark__logo { width: 31px; height: 31px; }
+    #siteHeader .brandmark__word {
+        font: 750 21px/1 'Manrope', system-ui, sans-serif;
+        letter-spacing: -.065em;
+    }
+    #siteHeader .brandmark__badge,
+    #siteHeader .navx-trigger__label { display: none; }
+
+    /* A quiet printed rule links the wordmark and the index key. */
+    #siteHeader::before {
+        content: "";
+        order: 1;
+        flex: 1;
+        height: 1px;
+        background: repeating-linear-gradient(to right, currentColor 0 2px, transparent 2px 6px);
+        opacity: .24;
+    }
+
+    #siteHeader .navx-trigger {
+        position: relative;
+        inset: auto;
+        order: 2;
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        color: var(--mast-glyph);
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        isolation: isolate;
+    }
+    #siteHeader .navx-trigger::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        inset: 2px;
+        background: var(--mast-key);
+        clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+        border-radius: 5px;
+    }
+    #siteHeader .navx-trigger:focus-visible { outline: 2px solid var(--mast-ink); }
+    #siteHeader .navx-trigger__bars { width: 16px; height: 16px; }
+    #siteHeader .navx-trigger__bars i {
+        inset: 1px auto auto 1px;
+        width: 5px;
+        height: 5px;
+        border-radius: .5px;
+        background: currentColor;
+        box-shadow: 0 9px currentColor, 9px 9px currentColor;
+        transition: none;
+    }
+    #siteHeader .navx-trigger__bars i:last-child {
+        inset: 1px 1px auto auto;
+        box-shadow: none;
+        transform: rotate(45deg);
+    }
+
+    html.navx-open #siteHeader {
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        opacity: 1;
+        pointer-events: none;
+    }
+    html.navx-open #siteHeader::before,
+    html.navx-open #siteHeader .brandmark { visibility: hidden; }
+    html.navx-open #siteHeader .navx-trigger { pointer-events: auto; }
+    #siteHeader .is-active .navx-trigger__bars i {
+        inset: 7px auto auto 0;
+        width: 16px;
+        height: 2px;
+        box-shadow: none;
+        transform: rotate(45deg);
+    }
+    #siteHeader .is-active .navx-trigger__bars i:last-child { transform: rotate(-45deg); }
+}

@@ -1350,6 +1350,7 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
             #navOverlay .navx__theme, #navOverlay .navx__cta { min-height: 44px; }
         }
     </style>
+    <link rel="stylesheet" href="datariot-info/mobile-masthead.css" media="(max-width: 660px)">
 </head>
 
 <body>
@@ -1382,16 +1383,15 @@ html[data-theme="dark"] :is(#hero,#manifesto,#features,#catch,#debates,#ai-core,
 
 
     <div class="curiosity-topbar" aria-hidden="true"></div>
-    <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
-        <img class="brandmark__logo" src="assets/datariot-mark.jpg?v=brand-20261021" alt="" aria-hidden="true" width="40" height="40" decoding="async">
-        <span class="brandmark__word">Datariot</span>
-    </a>
-
-    <!-- Menu trigger. One control at every width — the overlay below is the
-         same menu on a phone and on a desktop. -->
-    <button class="navx-trigger" id="navTrigger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navOverlay">
-        <span class="navx-trigger__bars" aria-hidden="true"><i></i><i></i></span>
-    </button>
+    <header id="siteHeader" class="mobile-masthead">
+        <a class="brandmark" href="#hero" aria-label="Datariot — back to top">
+            <img class="brandmark__logo" src="assets/datariot-mark.jpg?v=brand-20261021" alt="" aria-hidden="true" width="40" height="40" decoding="async">
+            <span class="brandmark__word">Datariot</span>
+        </a>
+        <button class="navx-trigger" id="navTrigger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navOverlay">
+            <span class="navx-trigger__bars" aria-hidden="true"><i></i><i></i></span>
+        </button>
+    </header>
 
     <!-- Full-screen navigation -->
     <div class="navx" id="navOverlay" role="dialog" aria-modal="true" aria-label="Site navigation">
