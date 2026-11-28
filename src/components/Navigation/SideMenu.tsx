@@ -1,4 +1,5 @@
 /** @jsxImportSource react */
+import { socialLinks } from '../../lib/socialLinks';
 import { MOBILE_CONTENT_WIDTH } from '../Layout/ScreenFrame';
 // Preserve the menu buttons' native Pressable style callbacks.
 import React, { useEffect, useState, useCallback } from 'react';
@@ -74,9 +75,9 @@ const MENU_ITEMS: MenuItemConfig[] = [
 ];
 
 const SOCIAL_LINKS = [
-    { id: 'twitter', icon: 'twitter', url: 'https://twitter.com/datariot_xyz' },
-    { id: 'discord', icon: 'discord', url: 'https://discord.gg/KvBpEVrk2' },
-    { id: 'instagram', icon: 'instagram', url: 'https://instagram.com/datariot.xyz' },
+    { id: 'twitter', icon: 'twitter', url: socialLinks.x },
+    { id: 'discord', icon: 'discord', url: socialLinks.discord },
+    { id: 'instagram', icon: 'instagram', url: socialLinks.instagram },
 ];
 
 export function SideMenu({ isOpen, onClose }: SideMenuProps) {

@@ -10,6 +10,8 @@ import { useTheme, type ThemeMode } from '../components/Theme/ThemeProvider';
 import { usePalette } from '../design-system/palette';
 import { useAuth } from '../lib/supabase/hooks/useAuth';
 
+import { socialLinks } from '../lib/socialLinks';
+
 type Icon = keyof typeof Ionicons.glyphMap;
 
 export default function SettingsScreen() {
@@ -84,6 +86,11 @@ export default function SettingsScreen() {
                                 <SettingRow icon="bookmark-outline" title="Saved clips" subtitle="Keep your favourite ideas close" onPress={() => router.push(user ? { pathname: '/profile', params: { tab: 'saved' } } : '/auth/login')} />
                                 <SettingRow icon="notifications-outline" title="Notifications" subtitle="Likes, replies, follows and updates" onPress={() => router.push('/notifications')} />
                                 <SettingRow icon="shield-checkmark-outline" title="Account details" subtitle="Your sign-in email and account information" onPress={openAccount} last />
+                            </SettingsGroup>
+                            <SettingsGroup title="Community" icon="people-outline">
+                                <SettingRow icon="chatbubbles-outline" title="Discord" subtitle="Join the Datariot community" external onPress={() => openLink(socialLinks.discord)} />
+                                <SettingRow icon="at-outline" title="X" subtitle="@datariot_xyz" external onPress={() => openLink(socialLinks.x)} />
+                                <SettingRow icon="camera-outline" title="Instagram" subtitle="@datariotai" external onPress={() => openLink(socialLinks.instagram)} last />
                             </SettingsGroup>
                             <SettingsGroup title="A little help" icon="help-buoy-outline">
                                 <SettingRow icon="book-outline" title="Help & documentation" subtitle="Get to know Datariot and Orvelis" external onPress={() => openLink('https://info.datariot.xyz')} />
