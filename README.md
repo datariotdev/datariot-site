@@ -15,7 +15,7 @@
   <p>
     <a href="https://datariot.xyz">Web app</a> ·
     <a href="https://info.datariot.xyz">About</a> ·
-    <a href="https://discord.gg/SKWCux4bb">Discord</a>
+    <a href="https://discord.gg/W2aCyTU4R">Discord</a> · <a href="https://x.com/datariot_xyz">X</a> · <a href="https://www.instagram.com/datariotai?cnvx=MjY2N2x0OGQyMHRo">Instagram</a>
   </p>
 </div>
 
